@@ -1,0 +1,186 @@
+{
+  "name": "UBX-MGA-INI-TIME-UTC",
+  "protocol_version": 0,
+  "class_id": "0x13",
+  "message_id": "0x40",
+  "description": "Initial time assistance UTC",
+  "adjudicated": {
+    "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967_anthropic",
+    "reason": "Manual adjudication - no consensus due to protocol evolution",
+    "adjudication_date": "2025-12-30",
+    "older_manuals": [
+      "F9-HPS-1.21",
+      "F9-HPS120",
+      "F9-HPG-1.13",
+      "F9-HPG-1.32",
+      "M9-ADR-5.10",
+      "M9-MDR-2.10",
+      "LAP120",
+      "ZED-F9H"
+    ],
+    "newer_manuals": [
+      "F9-HPG-1.50",
+      "F9-HPG-1.51",
+      "F9-HPS-1.30",
+      "F9-HPS-1.40",
+      "F9-LAP-1.30",
+      "F9-LAP-1.50",
+      "F10-SPG-6.00",
+      "M10-SPG-5.10",
+      "M10-SPG-5.30",
+      "M9-SPG-4.04",
+      "X20-HPG-2.00",
+      "X20-HPG-2.02"
+    ]
+  },
+  "annotations": [
+    {
+      "type": "evolution",
+      "severity": "info",
+      "issue": "Field added without version bump",
+      "details": "Offset 11 changed from 'reserved0' (U1) to 'bitfield0' (X1) with 'trustedSource' bit in newer firmware, but message version remained 0x00.",
+      "affected_offset": 11,
+      "recommendation": "Use newer structure with trustedSource bitfield"
+    }
+  ],
+  "fields": [
+    {
+      "name": "type",
+      "byte_offset": 0,
+      "data_type": "U1",
+      "description": "Message type (0x10 for this type)"
+    },
+    {
+      "name": "version",
+      "byte_offset": 1,
+      "data_type": "U1",
+      "description": "Message version (0x00 for this version)"
+    },
+    {
+      "name": "ref",
+      "byte_offset": 2,
+      "data_type": "X1",
+      "description": "Reference to be used to set time",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "source",
+            "bit_start": 3,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "Source reference: 0=none (inaccurate), 1=relative to EXTINT0, 2=relative to EXTINT1, 3-15=reserved"
+          },
+          {
+            "name": "fall",
+            "bit_start": 4,
+            "bit_end": 4,
+            "data_type": "U",
+            "description": "Use falling edge of EXTINT pulse (default rising) - only if source is EXTINT"
+          },
+          {
+            "name": "last",
+            "bit_start": 5,
+            "bit_end": 5,
+            "data_type": "U",
+            "description": "Use last EXTINT pulse (default next pulse) - only if source is EXTINT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "leapSecs",
+      "byte_offset": 3,
+      "data_type": "I1",
+      "unit": "s",
+      "description": "Number of leap seconds since 1980 (or 0x80 = -128 if unknown)"
+    },
+    {
+      "name": "year",
+      "byte_offset": 4,
+      "data_type": "U2",
+      "description": "Year"
+    },
+    {
+      "name": "month",
+      "byte_offset": 6,
+      "data_type": "U1",
+      "description": "Month, starting at 1"
+    },
+    {
+      "name": "day",
+      "byte_offset": 7,
+      "data_type": "U1",
+      "description": "Day, starting at 1"
+    },
+    {
+      "name": "hour",
+      "byte_offset": 8,
+      "data_type": "U1",
+      "description": "Hour, from 0 to 23"
+    },
+    {
+      "name": "minute",
+      "byte_offset": 9,
+      "data_type": "U1",
+      "description": "Minute, from 0 to 59"
+    },
+    {
+      "name": "second",
+      "byte_offset": 10,
+      "data_type": "U1",
+      "unit": "s",
+      "description": "Seconds, from 0 to 59"
+    },
+    {
+      "name": "bitfield0",
+      "byte_offset": 11,
+      "data_type": "X1",
+      "description": "bitfield",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "trustedSource",
+            "bit_start": 0,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "Time is provided from a trusted source. Potentially usable for replay attack detection: 0=Unknown, 1=Time source can be trusted for spoofing detection"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ns",
+      "byte_offset": 12,
+      "data_type": "U4",
+      "unit": "ns",
+      "description": "Nanoseconds, from 0 to 999,999,999"
+    },
+    {
+      "name": "tAccS",
+      "byte_offset": 16,
+      "data_type": "U2",
+      "unit": "s",
+      "description": "Seconds part of time accuracy"
+    },
+    {
+      "name": "reserved0",
+      "byte_offset": 18,
+      "data_type": {
+        "array_of": "U1",
+        "count": 2
+      },
+      "description": "Reserved",
+      "reserved": true
+    },
+    {
+      "name": "tAccNs",
+      "byte_offset": 20,
+      "data_type": "U4",
+      "unit": "ns",
+      "description": "Nanoseconds part of time accuracy, from 0 to 999,999,999"
+    }
+  ],
+  "payload_length": {
+    "fixed": 24
+  }
+}

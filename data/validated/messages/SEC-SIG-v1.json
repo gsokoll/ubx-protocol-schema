@@ -1,0 +1,127 @@
+{
+  "name": "UBX-SEC-SIG",
+  "protocol_version": 1,
+  "fingerprint": "a30367c0ef4d0e91",
+  "consensus": {
+    "sources": [
+      "F9-HPS-1.21",
+      "M9-ADR-5.15",
+      "F9-DBD-1.30",
+      "F9-HPG-L1L5-1.40",
+      "F9-HPS-1.30",
+      "F9-HPS-1.40"
+    ],
+    "agreement_count": 6,
+    "total_count": 7,
+    "confidence": "medium",
+    "confidence_score": 0.771,
+    "last_validated": "2025-12-30",
+    "outliers": [
+      {
+        "source": "F10-SPG-6.00",
+        "fingerprint": "896426172d59b2dc",
+        "discrepancy": "field count differs by -2; field at offset 1: reserved(U1[3]) vs sigsecflags(X1); missing field at offset 2; missing field at offset 3"
+      }
+    ]
+  },
+  "class_id": "0x27",
+  "message_id": "0x09",
+  "description": "Signal security information",
+  "payload_length": null,
+  "fields": [
+    {
+      "name": "version",
+      "byte_offset": 0,
+      "data_type": "U1",
+      "description": "Message version (0x01 for this version)"
+    },
+    {
+      "name": "reserved0",
+      "byte_offset": 1,
+      "data_type": {
+        "array_of": "U1",
+        "count": 3
+      },
+      "description": "Reserved",
+      "reserved": true
+    },
+    {
+      "name": "jamFlags",
+      "byte_offset": 4,
+      "data_type": "X1",
+      "description": "Information related to jamming/interference",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "jamDetEnabled",
+            "bit_start": 0,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "Flag indicates whether jamming/interference detection is enabled"
+          },
+          {
+            "name": "jammingState",
+            "bit_start": 2,
+            "bit_end": 1,
+            "data_type": "U",
+            "description": "Jamming/interference state: 0: Unknown, 1: No jamming indicated, 2: Warning; jamming indicated but fix OK, 3: Critical; jamming indicated and no fix"
+          }
+        ]
+      }
+    },
+    {
+      "name": "reserved1",
+      "byte_offset": 5,
+      "data_type": {
+        "array_of": "U1",
+        "count": 3
+      },
+      "description": "Reserved",
+      "reserved": true
+    },
+    {
+      "name": "spfFlags",
+      "byte_offset": 8,
+      "data_type": "X1",
+      "description": "Information related to GNSS spoofing",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "spfDetEnabled",
+            "bit_start": 0,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "Flag indicates whether spoofing detection is enabled"
+          },
+          {
+            "name": "spoofingState",
+            "bit_start": 3,
+            "bit_end": 1,
+            "data_type": "U",
+            "description": "Spoofing state: 0: Unknown, 1: No spoofing indicated, 2: Spoofing indicated, 3: Spoofing affirmed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "reserved2",
+      "byte_offset": 9,
+      "data_type": {
+        "array_of": "U1",
+        "count": 3
+      },
+      "description": "Reserved",
+      "reserved": true
+    }
+  ],
+  "annotations": [
+    {
+      "type": "evolution",
+      "severity": "warning",
+      "field": "sigSecFlags",
+      "offset": 1,
+      "message": "Field at offset 1 varies between reserved and sigSecFlags within same protocol version.",
+      "details": "Some v1 firmware has reserved0, others have sigSecFlags bitfield. Check firmware version."
+    }
+  ]
+}

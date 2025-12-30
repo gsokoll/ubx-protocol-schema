@@ -1,0 +1,197 @@
+{
+  "name": "UBX-MGA-INI-TIME-GNSS",
+  "protocol_version": 0,
+  "class_id": "0x13",
+  "message_id": "0x40",
+  "description": "Initial time assistance GNSS",
+  "adjudicated": {
+    "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967_anthropic",
+    "reason": "Manual adjudication - no consensus due to protocol evolution",
+    "adjudication_date": "2025-12-30",
+    "older_manuals": [
+      "F9-HPS-1.21",
+      "F9-HPS120",
+      "F9-HPG-1.13",
+      "F9-HPG-1.32",
+      "M9-ADR-5.10",
+      "M9-MDR-2.10",
+      "LAP120",
+      "ZED-F9H"
+    ],
+    "newer_manuals": [
+      "F9-HPG-1.50",
+      "F9-HPG-1.51",
+      "F9-HPS-1.30",
+      "F9-HPS-1.40",
+      "F9-LAP-1.30",
+      "F9-LAP-1.50",
+      "F10-SPG-6.00",
+      "M10-SPG-5.10",
+      "M10-SPG-5.30",
+      "M9-SPG-4.04",
+      "X20-HPG-2.00",
+      "X20-HPG-2.02"
+    ]
+  },
+  "annotations": [
+    {
+      "type": "evolution",
+      "severity": "info",
+      "issue": "Field added without version bump",
+      "details": "Same issue as MGA-INI-TIME-UTC - offset 11 changed from reserved to bitfield with trustedSource.",
+      "affected_offset": 11,
+      "recommendation": "Use newer structure with trustedSource bitfield"
+    }
+  ],
+  "fields": [
+    {
+      "name": "type",
+      "byte_offset": 0,
+      "data_type": "U1",
+      "description": "Message type (0x11 for this type)"
+    },
+    {
+      "name": "version",
+      "byte_offset": 1,
+      "data_type": "U1",
+      "description": "Message version (0x00 for this version)"
+    },
+    {
+      "name": "ref",
+      "byte_offset": 2,
+      "data_type": "X1",
+      "description": "Reference to be used to set time",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "source",
+            "bit_start": 0,
+            "bit_end": 3,
+            "data_type": "U",
+            "description": "0 = none, i.e. on receipt of message (will be inaccurate!); 1 = relative to pulse sent to EXTINT0; 2 = relative to pulse sent to EXTINT1; 3-15 = reserved"
+          },
+          {
+            "name": "fall",
+            "bit_start": 4,
+            "bit_end": 4,
+            "data_type": "U",
+            "description": "use falling edge of EXTINT pulse (default rising) - only if source is EXTINT"
+          },
+          {
+            "name": "last",
+            "bit_start": 5,
+            "bit_end": 5,
+            "data_type": "U",
+            "description": "use last EXTINT pulse (default next pulse) - only if source is EXTINT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gnssId",
+      "byte_offset": 3,
+      "data_type": "U1",
+      "description": "Source of time information. Currently supported: 0 = GPS time, 2 = Galileo time, 3 = BeiDou time, 6 = GLONASS time, 7 = NavIC time",
+      "enumeration": {
+        "values": [
+          {
+            "value": 0,
+            "name": "gps",
+            "description": "GPS time"
+          },
+          {
+            "value": 2,
+            "name": "galileo",
+            "description": "Galileo time"
+          },
+          {
+            "value": 3,
+            "name": "beidou",
+            "description": "BeiDou time"
+          },
+          {
+            "value": 6,
+            "name": "glonass",
+            "description": "GLONASS time"
+          },
+          {
+            "value": 7,
+            "name": "navic",
+            "description": "NavIC time"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bitfield0",
+      "byte_offset": 4,
+      "data_type": "X1",
+      "description": "bitfield:",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "trustedSource",
+            "bit_start": 0,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "Time is provided from a trusted source. Potentially usable for replay attack detection: 0: Unknown; 1: Time source can be trusted for spoofing detection"
+          }
+        ]
+      }
+    },
+    {
+      "name": "reserved0",
+      "byte_offset": 5,
+      "data_type": "U1",
+      "reserved": true,
+      "description": "Reserved"
+    },
+    {
+      "name": "week",
+      "byte_offset": 6,
+      "data_type": "U2",
+      "description": "GNSS week number"
+    },
+    {
+      "name": "tow",
+      "byte_offset": 8,
+      "data_type": "U4",
+      "unit": "s",
+      "description": "GNSS time of week"
+    },
+    {
+      "name": "ns",
+      "byte_offset": 12,
+      "data_type": "U4",
+      "unit": "ns",
+      "description": "GNSS time of week, nanosecond part from 0 to 999,999,999"
+    },
+    {
+      "name": "tAccS",
+      "byte_offset": 16,
+      "data_type": "U2",
+      "unit": "s",
+      "description": "Seconds part of time accuracy"
+    },
+    {
+      "name": "reserved1",
+      "byte_offset": 18,
+      "data_type": {
+        "array_of": "U1",
+        "count": 2
+      },
+      "reserved": true,
+      "description": "Reserved"
+    },
+    {
+      "name": "tAccNs",
+      "byte_offset": 20,
+      "data_type": "U4",
+      "unit": "ns",
+      "description": "Nanoseconds part of time accuracy, from 0 to 999,999,999"
+    }
+  ],
+  "payload_length": {
+    "fixed": 24
+  }
+}

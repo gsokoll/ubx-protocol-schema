@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/ubx-config-keys.schema.json",
+  "title": "UBX Configuration Key Database",
+  "description": "Schema for defining u-blox UBX configuration keys used with CFG-VAL* messages (VALGET, VALSET, VALDEL). Primarily for u-blox F9 and later generations.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema format (e.g., '1.0')"
+    },
+    "source_documents": {
+      "type": "array",
+      "description": "References to source u-blox documentation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "document_number": { "type": "string" },
+          "revision": { "type": "string" },
+          "device_family": { "type": "string" }
+        }
+      }
+    },
+    "key_id_structure": {
+      "type": "object",
+      "description": "Documents the bit layout of 32-bit key IDs",
+      "properties": {
+        "description": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "bit_start": { "type": "integer" },
+              "bit_end": { "type": "integer" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "storage_layers": {
+      "type": "object",
+      "description": "Configuration storage layer definitions",
+      "additionalProperties": {
+        "$ref": "#/$defs/storage_layer"
+      }
+    },
+    "data_types": {
+      "type": "object",
+      "description": "Configuration value data type definitions",
+      "additionalProperties": {
+        "$ref": "#/$defs/config_data_type"
+      }
+    },
+    "groups": {
+      "type": "object",
+      "description": "Configuration key groups indexed by group name",
+      "additionalProperties": {
+        "$ref": "#/$defs/key_group"
+      }
+    },
+    "keys": {
+      "type": "array",
+      "description": "All configuration key definitions",
+      "items": {
+        "$ref": "#/$defs/config_key"
+      }
+    }
+  },
+  "required": ["schema_version", "groups", "keys"],
+
+  "$defs": {
+    "storage_layer": {
+      "type": "object",
+      "description": "A configuration storage layer",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Layer name (e.g., 'RAM', 'BBR', 'Flash')"
+        },
+        "layer_id": {
+          "type": "integer",
+          "description": "Layer ID used in CFG-VAL* messages"
+        },
+        "description": { "type": "string" },
+        "persistent": {
+          "type": "boolean",
+          "description": "Whether values survive power cycling"
+        },
+        "writeable": {
+          "type": "boolean",
+          "description": "Whether this layer can be written to"
+        }
+      },
+      "required": ["name", "layer_id"]
+    },
+
+    "config_data_type": {
+      "type": "object",
+      "description": "A configuration value data type",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Type name (e.g., 'L', 'U1', 'U4', 'R8')"
+        },
+        "size_id": {
+          "type": "integer",
+          "description": "Size ID encoded in key (0=1bit, 1=1byte, 2=2bytes, 3=4bytes, 4=8bytes)"
+        },
+        "size_bytes": {
+          "type": "number",
+          "description": "Size in bytes (0.125 for single bit)"
+        },
+        "rust_type": {
+          "type": "string",
+          "description": "Corresponding Rust type"
+        },
+        "description": { "type": "string" },
+        "signed": {
+          "type": "boolean",
+          "description": "Whether the type is signed"
+        },
+        "floating_point": {
+          "type": "boolean",
+          "description": "Whether the type is floating point"
+        }
+      },
+      "required": ["name", "size_id", "size_bytes"]
+    },
+
+    "key_group": {
+      "type": "object",
+      "description": "A group of related configuration keys",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Group name (e.g., 'CFG-RATE', 'CFG-UART1')"
+        },
+        "group_id": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{2}$",
+          "description": "Group ID as hex (bits 23-16 of key ID)"
+        },
+        "description": { "type": "string" },
+        "category": {
+          "type": "string",
+          "description": "Functional category (e.g., 'Communication', 'Navigation', 'Timing')"
+        }
+      },
+      "required": ["name", "group_id"]
+    },
+
+    "config_key": {
+      "type": "object",
+      "description": "A single configuration key definition",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full key name (e.g., 'CFG-RATE-MEAS')"
+        },
+        "key_id": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{8}$",
+          "description": "Full 32-bit key ID as hex"
+        },
+        "group": {
+          "type": "string",
+          "description": "Reference to group name"
+        },
+        "item_id": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{4}$",
+          "description": "Item ID within group (bits 15-0)"
+        },
+        "data_type": {
+          "type": "string",
+          "description": "Data type name (L, U1, I1, U2, I2, U4, I4, X4, R4, R8, etc.)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Extended comments or notes"
+        },
+        "unit": {
+          "type": "string",
+          "description": "Physical unit (e.g., 'ms', 'Hz', 'deg', 'm')"
+        },
+        "scale": {
+          "$ref": "#/$defs/scale_factor",
+          "description": "Scale factor if raw value needs conversion"
+        },
+        "default_value": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "integer" },
+            { "type": "number" },
+            { "type": "string" }
+          ],
+          "description": "Default value (from Default layer)"
+        },
+        "constraints": {
+          "$ref": "#/$defs/value_constraints",
+          "description": "Valid value constraints"
+        },
+        "enumeration": {
+          "type": "string",
+          "description": "Reference to named enumeration"
+        },
+        "inline_enum": {
+          "$ref": "#/$defs/enumeration",
+          "description": "Inline enumeration for this key"
+        },
+        "bitfield": {
+          "$ref": "#/$defs/bitfield",
+          "description": "Bitfield definition for X-type keys"
+        },
+        "layers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Storage layers that support this key (e.g., ['RAM', 'BBR', 'Flash'])"
+        },
+        "supported_versions": {
+          "$ref": "#/$defs/version_support",
+          "description": "Protocol version support"
+        },
+        "deprecated": {
+          "$ref": "#/$defs/deprecation_info",
+          "description": "Deprecation information"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/key_dependency"
+          },
+          "description": "Dependencies on other configuration keys"
+        },
+        "affects": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Other keys or features affected by this key"
+        },
+        "requires_reset": {
+          "type": "boolean",
+          "description": "Whether changing this key requires a reset to take effect"
+        },
+        "read_only": {
+          "type": "boolean",
+          "description": "Whether this key is read-only"
+        },
+        "transaction_required": {
+          "type": "boolean",
+          "description": "Whether this key must be set within a transaction"
+        }
+      },
+      "required": ["name", "key_id", "group", "data_type"]
+    },
+
+    "scale_factor": {
+      "type": "object",
+      "description": "Scale factor for value conversion",
+      "properties": {
+        "raw": {
+          "type": "string",
+          "description": "Original scale string (e.g., '2^-7', '1e-9')"
+        },
+        "multiplier": {
+          "type": "number",
+          "description": "Numeric multiplier (raw_value * multiplier = physical_value)"
+        },
+        "representation": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["power_of_2", "power_of_10", "fraction", "integer"]
+            },
+            "base": { "type": "integer" },
+            "exponent": { "type": "integer" },
+            "numerator": { "type": "integer" },
+            "denominator": { "type": "integer" }
+          }
+        }
+      },
+      "required": ["raw", "multiplier"]
+    },
+
+    "value_constraints": {
+      "type": "object",
+      "description": "Constraints on valid values",
+      "properties": {
+        "min": {
+          "type": "number",
+          "description": "Minimum allowed value"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum allowed value"
+        },
+        "valid_values": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "boolean" },
+              { "type": "integer" },
+              { "type": "number" }
+            ]
+          },
+          "description": "Explicit list of valid values"
+        },
+        "multiple_of": {
+          "type": "number",
+          "description": "Value must be a multiple of this"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regex pattern for string values"
+        },
+        "max_length": {
+          "type": "integer",
+          "description": "Maximum length for string/array values"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Complex constraint expression"
+        }
+      }
+    },
+
+    "enumeration": {
+      "type": "object",
+      "description": "Enumeration of valid values",
+      "properties": {
+        "description": { "type": "string" },
+        "values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "oneOf": [
+                  { "type": "integer" },
+                  { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+                ]
+              },
+              "description": { "type": "string" }
+            },
+            "required": ["value"]
+          }
+        }
+      },
+      "required": ["values"]
+    },
+
+    "bitfield": {
+      "type": "object",
+      "description": "Bitfield definition for X-type values",
+      "properties": {
+        "bits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/bitfield_entry"
+          }
+        }
+      },
+      "required": ["bits"]
+    },
+
+    "bitfield_entry": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "bit_start": {
+          "type": "integer",
+          "description": "Starting bit position (0-indexed, LSB)"
+        },
+        "bit_end": {
+          "type": "integer",
+          "description": "Ending bit position (inclusive)"
+        },
+        "data_type": {
+          "type": "string",
+          "enum": ["U", "I", "S"],
+          "description": "U=unsigned, I=signed two's complement, S=sign-magnitude"
+        },
+        "description": { "type": "string" },
+        "enumeration": { "type": "string" },
+        "inline_enum": { "$ref": "#/$defs/enumeration" },
+        "default": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "integer" }
+          ]
+        }
+      },
+      "required": ["name", "bit_start", "bit_end", "data_type"]
+    },
+
+    "version_support": {
+      "type": "object",
+      "description": "Protocol version and device support",
+      "properties": {
+        "min_protocol_version": { "type": "string" },
+        "max_protocol_version": { "type": "string" },
+        "device_families": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "product_variants": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "deprecation_info": {
+      "type": "object",
+      "properties": {
+        "is_deprecated": { "type": "boolean" },
+        "since_version": { "type": "string" },
+        "replacement": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "required": ["is_deprecated"]
+    },
+
+    "key_dependency": {
+      "type": "object",
+      "description": "Dependency on another configuration key",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Name of the key this depends on"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition expression (e.g., 'CFG-UART1-ENABLED == 1')"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["requires", "conflicts", "enables", "modifies"],
+          "description": "Type of dependency relationship"
+        },
+        "description": { "type": "string" }
+      },
+      "required": ["key", "type"]
+    }
+  }
+}
