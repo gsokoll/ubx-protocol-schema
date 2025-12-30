@@ -60,6 +60,12 @@ from .structural import (
     ValidationResult,
 )
 
+from .merge import (
+    merge_bitfield_bits,
+    merge_field_bitfields,
+    merge_message_bitfields,
+)
+
 __all__ = [
     # Fingerprinting
     "compute_field_fingerprint",
@@ -101,4 +107,8 @@ __all__ = [
     "build_reextraction_prompt",
     "ValidationIssue",
     "ValidationResult",
+    # Bitfield merging
+    "merge_bitfield_bits",
+    "merge_field_bitfields",
+    "merge_message_bitfields",
 ]
