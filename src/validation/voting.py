@@ -10,6 +10,7 @@ from typing import Any
 
 from .grouping import MessageGroup, GroupedMessage
 from .fingerprint import compute_fingerprint_distance
+from .merge import merge_message_bitfields
 
 
 @dataclass
@@ -134,11 +135,18 @@ def vote_on_group(group: MessageGroup, config: VotingConfig | None = None) -> Co
     # Get winning message (first one with winning fingerprint)
     winning_message = None
     winning_detailed = None
+    agreeing_messages = []  # Collect all messages with winning fingerprint for merging
+    
     for msg in group.messages:
         if msg.fingerprint == winning_fingerprint:
-            winning_message = msg.message_data
-            winning_detailed = msg.fingerprint_detailed
-            break
+            if winning_message is None:
+                winning_message = msg.message_data
+                winning_detailed = msg.fingerprint_detailed
+            agreeing_messages.append(msg.message_data)
+    
+    # Merge bitfield bits from all agreeing sources to get superset
+    if winning_message and len(agreeing_messages) > 1:
+        winning_message = merge_message_bitfields(winning_message, agreeing_messages)
     
     # Collect sources
     agreeing_sources = []
