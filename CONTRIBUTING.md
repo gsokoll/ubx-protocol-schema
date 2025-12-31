@@ -4,7 +4,7 @@ Thank you for your interest in contributing! This project provides accurate, mac
 
 ## Quick Links
 
-- [Validated Data](data/validated/) — Ready-to-use message definitions
+- [Validated Data](data/ubx/validated/) — Ready-to-use message definitions
 - [Schema Design](docs/schema-design-notes.md) — Design rationale and data format
 - [Extraction Guide](docs/extraction-guide.md) — How to add new manuals
 - [Majority Voting Pipeline](docs/majority-voting-pipeline.md) — Validation process
@@ -50,7 +50,7 @@ uv run python scripts/extract_with_anthropic.py \
 
 # 4. Run validation
 uv run python scripts/validate_majority.py \
-  --extractions-dir data/by-manual \
+  --extractions-dir data/ubx/by-manual \
   --verbose
 
 # 5. Re-extract any outliers identified by validation
@@ -92,7 +92,7 @@ When messages cannot reach consensus due to legitimate protocol evolution (not e
 uv run python scripts/generate_adjudication_reports.py
 
 # Review reports in analysis_reports/adjudication/
-# Update data/validated/protocol_notes.json with documented decision
+# Update data/ubx/validated/protocol_notes.json with documented decision
 
 # Generate validated JSON for adjudicated messages
 uv run python scripts/generate_adjudicated_messages.py

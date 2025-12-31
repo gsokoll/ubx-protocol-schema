@@ -2,7 +2,7 @@
 """Majority-voting validation pipeline for UBX message extractions.
 
 This script implements the full validation pipeline:
-1. Load all extractions from data/by-manual/
+1. Load all extractions from data/ubx/by-manual/
 2. Group by (message_name, protocol_version)
 3. Compute structural fingerprints
 4. Vote on canonical definition via majority rules
@@ -39,13 +39,13 @@ def main():
     parser.add_argument(
         "--extractions-dir",
         type=Path,
-        default=Path("data/by-manual"),
+        default=Path("data/ubx/by-manual"),
         help="Directory containing *_anthropic.json extraction files",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("data/validated"),
+        default=Path("data/ubx/validated"),
         help="Output directory for validated canonical files",
     )
     parser.add_argument(

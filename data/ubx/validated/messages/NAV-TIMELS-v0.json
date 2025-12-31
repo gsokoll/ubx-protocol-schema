@@ -1,0 +1,270 @@
+{
+  "name": "UBX-NAV-TIMELS",
+  "protocol_version": 0,
+  "fingerprint": "c2efa7d4887e4330",
+  "consensus": {
+    "sources": [
+      "F9-HPS-1.21",
+      "F9-HPS-1.20",
+      "F9-LAP-1.20",
+      "M9-ADR-5.10",
+      "M9-ADR-5.15",
+      "M9-MDR-2.10",
+      "X20-HPG-2.00",
+      "F10-SPG-6.00",
+      "F9-DBD-1.30",
+      "F9-HPG-1.13",
+      "F9-HPG-1.32",
+      "F9-HPG-1.50",
+      "F9-HPG-1.51",
+      "F9-HPG-L1L5-1.40",
+      "F9-HPS-1.30",
+      "F9-HPS-1.40",
+      "F9-LAP-1.30",
+      "F9-LAP-1.50",
+      "M10-SPG-5.10",
+      "M10-SPG-5.30",
+      "M9-MDR-2.16",
+      "M9-SPG-4.04",
+      "X20-HPG-2.02",
+      "M8-SPG-0.0",
+      "F9-F9H-1.0"
+    ],
+    "agreement_count": 25,
+    "total_count": 25,
+    "confidence": "high",
+    "confidence_score": 1.0,
+    "last_validated": "2025-12-30",
+    "outliers": []
+  },
+  "class_id": "0x01",
+  "message_id": "0x26",
+  "description": "Leap second event information",
+  "payload_length": null,
+  "fields": [
+    {
+      "name": "iTOW",
+      "byte_offset": 0,
+      "data_type": "U4",
+      "unit": "ms",
+      "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+    },
+    {
+      "name": "version",
+      "byte_offset": 4,
+      "data_type": "U1",
+      "description": "Message version (0x00 for this version)"
+    },
+    {
+      "name": "reserved0",
+      "byte_offset": 5,
+      "data_type": {
+        "array_of": "U1",
+        "count": 3
+      },
+      "reserved": true,
+      "description": "Reserved"
+    },
+    {
+      "name": "srcOfCurrLs",
+      "byte_offset": 8,
+      "data_type": "U1",
+      "description": "Information source for the current number of leap seconds.",
+      "enumeration": {
+        "values": [
+          {
+            "value": 0,
+            "name": "default",
+            "description": "Default (hardcoded in firmware, can be outdated)"
+          },
+          {
+            "value": 1,
+            "name": "gps_glo_diff",
+            "description": "Derived from time difference between GPS and GLONASS time"
+          },
+          {
+            "value": 2,
+            "name": "gps",
+            "description": "GPS"
+          },
+          {
+            "value": 3,
+            "name": "sbas",
+            "description": "SBAS"
+          },
+          {
+            "value": 4,
+            "name": "beidou",
+            "description": "BeiDou"
+          },
+          {
+            "value": 5,
+            "name": "galileo",
+            "description": "Galileo"
+          },
+          {
+            "value": 6,
+            "name": "aided",
+            "description": "Aided data"
+          },
+          {
+            "value": 7,
+            "name": "configured",
+            "description": "Configured"
+          },
+          {
+            "value": 8,
+            "name": "navic",
+            "description": "NavIC"
+          },
+          {
+            "value": 255,
+            "name": "unknown",
+            "description": "Unknown"
+          }
+        ]
+      }
+    },
+    {
+      "name": "currLs",
+      "byte_offset": 9,
+      "data_type": "I1",
+      "unit": "s",
+      "description": "Current number of leap seconds since start of GPS time (Jan 6, 1980). It reflects how much GPS time is ahead of UTC time. Galileo number of leap seconds is the same as GPS. BeiDou number of leap seconds is 14 less than GPS. GLONASS follows UTC time, so no leap seconds."
+    },
+    {
+      "name": "srcOfLsChange",
+      "byte_offset": 10,
+      "data_type": "U1",
+      "description": "Information source for the future leap second event.",
+      "enumeration": {
+        "values": [
+          {
+            "value": 0,
+            "name": "no_source",
+            "description": "No source"
+          },
+          {
+            "value": 2,
+            "name": "gps",
+            "description": "GPS"
+          },
+          {
+            "value": 3,
+            "name": "sbas",
+            "description": "SBAS"
+          },
+          {
+            "value": 4,
+            "name": "beidou",
+            "description": "BeiDou"
+          },
+          {
+            "value": 5,
+            "name": "galileo",
+            "description": "Galileo"
+          },
+          {
+            "value": 6,
+            "name": "glonass",
+            "description": "GLONASS"
+          },
+          {
+            "value": 7,
+            "name": "navic",
+            "description": "NavIC"
+          }
+        ]
+      }
+    },
+    {
+      "name": "lsChange",
+      "byte_offset": 11,
+      "data_type": "I1",
+      "unit": "s",
+      "description": "Future leap second change if one is scheduled. +1 = positive leap second, -1 = negative leap second, 0 = no future leap second event scheduled or no information available.",
+      "enumeration": {
+        "values": [
+          {
+            "value": 0,
+            "name": "no_leap",
+            "description": "no future leap second event scheduled or no information available"
+          },
+          {
+            "value": 1,
+            "name": "positive_leap",
+            "description": "positive leap second"
+          }
+        ]
+      }
+    },
+    {
+      "name": "timeToLsEvent",
+      "byte_offset": 12,
+      "data_type": "I4",
+      "unit": "s",
+      "description": "Number of seconds until the next leap second event, or from the last leap second event if no future event scheduled. If > 0 event is in the future, = 0 event is now, < 0 event is in the past. Valid only if validTimeToLsEvent = 1."
+    },
+    {
+      "name": "dateOfLsGpsWn",
+      "byte_offset": 16,
+      "data_type": "U2",
+      "description": "GPS week number (WN) of the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1."
+    },
+    {
+      "name": "dateOfLsGpsDn",
+      "byte_offset": 18,
+      "data_type": "U2",
+      "description": "GPS day of week number (DN) for the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1. (GPS and Galileo DN: from 1 = Sun to 7 = Sat. BeiDou DN: from 0 = Sun to 6 = Sat.)"
+    },
+    {
+      "name": "reserved1",
+      "byte_offset": 20,
+      "data_type": {
+        "array_of": "U1",
+        "count": 3
+      },
+      "reserved": true,
+      "description": "Reserved"
+    },
+    {
+      "name": "valid",
+      "byte_offset": 23,
+      "data_type": "X1",
+      "description": "Validity Flags",
+      "bitfield": {
+        "bits": [
+          {
+            "name": "validCurrLs",
+            "bit_start": 0,
+            "bit_end": 0,
+            "data_type": "U",
+            "description": "1 = Valid current number of leap seconds value."
+          },
+          {
+            "name": "validTimeToLsEvent",
+            "bit_start": 1,
+            "bit_end": 1,
+            "data_type": "U",
+            "description": "1 = Valid time to next leap second event or from the last leap second event if no future event scheduled."
+          }
+        ]
+      },
+      "enumeration": {
+        "values": [
+          {
+            "value": 0,
+            "name": "invalid",
+            "description": "Not valid"
+          },
+          {
+            "value": 1,
+            "name": "valid",
+            "description": "Valid"
+          }
+        ]
+      }
+    }
+  ],
+  "annotations": []
+}

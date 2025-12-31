@@ -18,6 +18,7 @@ This project provides **validated, machine-readable UBX message definitions** th
 | Metric | Count |
 |--------|-------|
 | Validated message definitions | 209 |
+| Configuration keys | 1,063 |
 | Source manuals | 34 |
 | Device families | M8, M9, M10, F9, F10, X20 |
 | Enumeration definitions | 29 |
@@ -26,10 +27,10 @@ This project provides **validated, machine-readable UBX message definitions** th
 
 ## Quick Start
 
-Message definitions are in `data/validated/messages/`. Each JSON file describes one message:
+Message definitions are in `data/ubx/validated/messages/`. Each JSON file describes one message:
 
 ```bash
-cat data/validated/messages/NAV-PVT-v0.json
+cat data/ubx/validated/messages/NAV-PVT-v0.json
 ```
 
 ```json
@@ -59,8 +60,11 @@ data/
     messages/             # One JSON file per message-version (209 files)
     protocol_notes.json   # Known protocol inconsistencies
     manifest.json         # Index of all validated messages
+  config_keys/            # ⭐ Configuration key database
+    unified_config_keys.json  # All 1,063 keys, schema-validated
+    by-manual/            # Per-manual extractions (21 manuals)
   enumerations.json       # Canonical enum definitions (fixType, dynModel, etc.)
-  by-manual/              # Raw extractions per source manual (34 manuals)
+  by-manual/              # Raw message extractions per source manual
 
 schema/                   # JSON Schema definitions for validation
 src/                      # Python extraction and validation pipeline
@@ -92,9 +96,41 @@ Fields with enumeration values (like `fixType`, `dynModel`, `gnssId`) include st
 }
 ```
 
-Canonical definitions are in `data/enumerations.json` (29 enums across 28 messages).
+Canonical definitions are in `data/ubx/validated/enumerations.json` (29 enums across 28 messages).
 
 > **Note:** Enum values may vary by firmware version. The schema captures commonly supported values.
+
+## Configuration Keys
+
+Configuration keys are used with CFG-VAL* messages (VALGET, VALSET, VALDEL) on F9 and later devices:
+
+```bash
+cat data/config_keys/unified_config_keys.json | jq '.keys[0]'
+```
+
+```json
+{
+  "name": "CFG-RATE-MEAS",
+  "key_id": "0x30210001",
+  "group": "CFG-RATE",
+  "item_id": "0x0001",
+  "data_type": "U2",
+  "description": "Nominal time between GNSS measurements",
+  "unit": "ms",
+  "scale": {
+    "raw": "1",
+    "multiplier": 1.0
+  }
+}
+```
+
+The database includes:
+- **1,063 unique keys** across 47 groups
+- **57 keys with inline enumerations** (valid values)
+- **17 keys with bitfield definitions**
+- **Schema-validated** against `schema/ubx-config-keys-schema.json`
+
+See [docs/config-key-extraction-workflow.md](docs/config-key-extraction-workflow.md) for extraction details.
 
 ## Code Generation
 
@@ -104,7 +140,7 @@ The schema data is designed to be consumed by code generators. Each message defi
 - **Fuzz test strategies** — Enumeration values for semantically-valid test data
 - **Documentation** — Field descriptions, units, scale factors
 
-Example workflow: Read `data/validated/messages/MON-RXBUF-v0.json` and generate a parser struct in your target language.
+Example workflow: Read `data/ubx/validated/messages/MON-RXBUF-v0.json` and generate a parser struct in your target language.
 
 ## Data Format
 
@@ -161,7 +197,7 @@ Other quirks:
 - **Skipped versions**: `CFG-NAVX5` has v0 and v2, but no v1
 - **Dual-format messages**: `RXM-PMREQ` has 8-byte and 16-byte formats that coexist
 
-For full details, see `data/validated/protocol_notes.json`.
+For full details, see `data/ubx/validated/protocol_notes.json`.
 
 ## Maintaining the Schema
 
@@ -182,7 +218,7 @@ uv run python scripts/extract_with_anthropic.py \
 
 # 4. Run majority voting validation
 uv run python scripts/validate_majority.py \
-  --extractions-dir data/by-manual \
+  --extractions-dir data/ubx/by-manual \
   --verbose
 
 # 5. Re-extract any outliers
@@ -201,6 +237,9 @@ See [docs/extraction-guide.md](docs/extraction-guide.md) for detailed instructio
 | `reextract_outliers.py` | Re-extract messages that differ from consensus |
 | `extract_enumerations.py` | Extract and apply enum definitions |
 | `generate_adjudication_reports.py` | Generate reports for no-consensus messages |
+| `extract_config_keys_pergroup.py` | Extract config keys using Gemini 3 Flash |
+| `detect_config_key_conflicts.py` | Detect conflicts across config key extractions |
+| `merge_config_keys.py` | Merge config keys into unified database |
 
 ## Contributing
 

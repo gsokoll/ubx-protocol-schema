@@ -61,7 +61,7 @@ uv run python scripts/extract_with_anthropic.py \
 
 ## Output Format
 
-Extractions are saved to `data/by-manual/<manual-name>_anthropic.json`:
+Extractions are saved to `data/ubx/by-manual/<manual-name>_anthropic.json`:
 
 ```json
 {
@@ -102,14 +102,14 @@ After extraction, validate using majority voting:
 ```bash
 # Run validation with verbose output
 uv run python scripts/validate_majority.py \
-  --extractions-dir data/by-manual \
+  --extractions-dir data/ubx/by-manual \
   --verbose
 ```
 
 This produces:
 - `analysis_reports/validation_report.json` — Consensus results per message
 - `analysis_reports/discrepancy_report.json` — Outliers and differences
-- `data/validated/messages/*.json` — Canonical message definitions
+- `data/ubx/validated/messages/*.json` — Canonical message definitions
 
 ## Re-extraction of Outliers
 
@@ -151,13 +151,13 @@ When validation shows messages without consensus due to protocol evolution:
 uv run python scripts/generate_adjudication_reports.py
 
 # Review reports in analysis_reports/adjudication/
-# Update data/validated/protocol_notes.json with decision
+# Update data/ubx/validated/protocol_notes.json with decision
 
 # Generate validated JSON for adjudicated messages
 uv run python scripts/generate_adjudicated_messages.py
 ```
 
-See `data/validated/protocol_notes.json` for documented protocol inconsistencies.
+See `data/ubx/validated/protocol_notes.json` for documented protocol inconsistencies.
 
 ## Troubleshooting
 
@@ -211,7 +211,7 @@ uv run python scripts/extract_with_anthropic.py \
 
 # 4. Run validation
 uv run python scripts/validate_majority.py \
-  --extractions-dir data/by-manual \
+  --extractions-dir data/ubx/by-manual \
   --verbose
 
 # 5. Re-extract outliers if needed
@@ -219,7 +219,7 @@ uv run python scripts/reextract_outliers.py
 
 # 6. Re-run validation to confirm
 uv run python scripts/validate_majority.py \
-  --extractions-dir data/by-manual \
+  --extractions-dir data/ubx/by-manual \
   --verbose
 
 # 7. Commit changes
