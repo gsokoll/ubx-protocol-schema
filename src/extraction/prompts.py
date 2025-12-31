@@ -653,7 +653,7 @@ def build_extraction_prompt(
 
 @lru_cache(maxsize=1)
 def load_enumerations() -> dict:
-    """Load canonical enumeration definitions from data/enumerations.json."""
+    """Load canonical enumeration definitions from data/ubx/validated/enumerations.json."""
     enum_file = Path(__file__).parent.parent.parent / "data" / "enumerations.json"
     if enum_file.exists():
         with open(enum_file) as f:
@@ -674,22 +674,39 @@ def get_enum_hints_for_message(message_name: str) -> str:
     message_enum_fields = {
         "UBX-NAV-PVT": ["fixType", "gnssId"],
         "UBX-NAV-PVAT": ["fixType"],
+        "UBX-NAV-STATUS": ["gpsFix"],
+        "UBX-NAV-SOL": ["gpsFix"],
+        "UBX-NAV-SVIN": ["valid", "active"],
+        "UBX-NAV-GEOFENCE": ["status", "combState"],
+        "UBX-NAV-TIMETRUSTED": ["refSys"],
+        "UBX-NAV-TIMELS": ["lsChange", "srcOfCurrLs", "srcOfLsChange"],
+        "UBX-HNR-PVT": ["gpsFix"],
         "UBX-LOG-BATCH": ["fixType"],
         "UBX-LOG-RETRIEVEPOS": ["fixType"],
         "UBX-CFG-NAV5": ["dynModel", "fixMode", "utcStandard"],
+        "UBX-CFG-NAVX5": ["iniFix3D", "ackAiding", "usePPP", "useAdr"],
         "UBX-CFG-NMEA": ["nmeaVersion", "numSV", "svNumbering", "mainTalkerId", "gsvTalkerId"],
-        "UBX-CFG-GEOFENCE": ["pioEnabled", "pinPolarity"],
+        "UBX-CFG-GEOFENCE": ["pioEnabled", "pinPolarity", "confLvl"],
         "UBX-CFG-PMS": ["powerSetupValue"],
         "UBX-CFG-RATE": ["timeRef"],
         "UBX-CFG-RST": ["resetMode"],
         "UBX-CFG-RXM": ["lpMode"],
         "UBX-CFG-TP5": ["tpIdx"],
         "UBX-CFG-DAT": ["datumNum"],
+        "UBX-CFG-DGNSS": ["dgnssMode"],
+        "UBX-CFG-INF": ["protocolID"],
+        "UBX-CFG-ODO": ["profile"],
+        "UBX-CFG-VALSET": ["transaction"],
         "UBX-MGA-ACK": ["ackType", "infoCode"],
         "UBX-MGA-INI-TIME-GNSS": ["gnssId"],
         "UBX-MON-HW": ["aStatus", "aPower"],
         "UBX-MON-HW2": ["cfgSource"],
-        "UBX-NAV-TIMELS": ["lsChange"],
+        "UBX-MON-COMMS": ["protIds"],
+        "UBX-MON-SYS": ["bootType"],
+        "UBX-MON-SMGR": ["discSrc"],
+        "UBX-ESF-STATUS": ["fusionMode"],
+        "UBX-TIM-HOC": ["oscId"],
+        "UBX-TIM-VCOCAL": ["srcId"],
     }
     
     # Find matching fields for this message

@@ -7,7 +7,7 @@ and generates structured enumeration data.
 Usage:
     python scripts/extract_enumerations.py --report
     python scripts/extract_enumerations.py --apply
-    python scripts/extract_enumerations.py --output data/enumerations.json
+    python scripts/extract_enumerations.py --output data/ubx/validated/enumerations.json
 """
 
 import argparse
@@ -288,7 +288,7 @@ def print_report(all_enums: list[dict], canonical: dict):
 
 def main():
     parser = argparse.ArgumentParser(description="Extract enumeration values from field descriptions")
-    parser.add_argument("--messages-dir", type=Path, default=Path("data/validated/messages"),
+    parser.add_argument("--messages-dir", type=Path, default=Path("data/ubx/validated/messages"),
                         help="Directory containing validated message JSON files")
     parser.add_argument("--report", action="store_true",
                         help="Print extraction report without modifying files")
@@ -296,7 +296,7 @@ def main():
                         help="Output canonical enumerations to JSON file")
     parser.add_argument("--apply", action="store_true",
                         help="Apply enumeration fields to message JSON files")
-    parser.add_argument("--enums-file", type=Path, default=Path("data/enumerations.json"),
+    parser.add_argument("--enums-file", type=Path, default=Path("data/ubx/validated/enumerations.json"),
                         help="Canonical enumerations file (for --apply)")
     args = parser.parse_args()
     

@@ -18,7 +18,7 @@ Claude LLM extracts UBX protocol message definitions from u-blox PDF manuals. We
 ┌─────────────────────────────────────────────────────────────────┐
 │ 1. EXTRACTION (existing)                                        │
 │    Claude extracts from each PDF → per-manual JSON              │
-│    Output: data/by-manual/*_anthropic.json                      │
+│    Output: data/ubx/by-manual/*_anthropic.json                      │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
@@ -74,13 +74,13 @@ When validation identifies outliers (extractions that differ from consensus), us
 
 ```bash
 # 1. Run validation to generate discrepancy report
-uv run python scripts/validate_majority.py --extractions-dir data/by-manual --verbose
+uv run python scripts/validate_majority.py --extractions-dir data/ubx/by-manual --verbose
 
 # 2. Re-extract outliers with consensus context
 uv run python scripts/reextract_outliers.py
 
 # 3. Re-run validation to check improvement
-uv run python scripts/validate_majority.py --extractions-dir data/by-manual --verbose
+uv run python scripts/validate_majority.py --extractions-dir data/ubx/by-manual --verbose
 ```
 
 The re-extraction script:
@@ -261,7 +261,7 @@ Please carefully re-extract all fields with correct byte offsets.
 | Prompt hints for complex messages | ✅ Complete | `src/extraction/prompts.py` |
 | Adjudication report generator | ✅ Complete | `scripts/generate_adjudication_reports.py` |
 | Adjudicated message generator | ✅ Complete | `scripts/generate_adjudicated_messages.py` |
-| Protocol notes for known issues | ✅ Complete | `data/validated/protocol_notes.json` |
+| Protocol notes for known issues | ✅ Complete | `data/ubx/validated/protocol_notes.json` |
 | Self-verification for single-source | ⏳ Future | `src/validation/self_verify.py` |
 
 ---
@@ -300,6 +300,6 @@ VALIDATION_CONFIG = {
 
 ## References
 
-- `data/validated/protocol_notes.json` — Documented protocol inconsistencies
+- `data/ubx/validated/protocol_notes.json` — Documented protocol inconsistencies
 - `analysis_reports/discrepancy_report.json` — Current validation outliers
 - `src/extraction/prompts.py` — Prompt hints for challenging messages

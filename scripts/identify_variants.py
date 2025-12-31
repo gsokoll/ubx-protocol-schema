@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import defaultdict
 
 def main():
-    extractions_dir = Path('data/by-manual')
+    extractions_dir = Path('data/ubx/by-manual')
     
     # Collect all message names across all extractions
     all_messages = defaultdict(list)  # base_name -> [full_names]

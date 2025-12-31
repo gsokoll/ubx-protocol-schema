@@ -64,6 +64,8 @@ from .merge import (
     merge_bitfield_bits,
     merge_field_bitfields,
     merge_message_bitfields,
+    merge_enum_values,
+    merge_field_enumerations,
 )
 
 __all__ = [
@@ -107,8 +109,10 @@ __all__ = [
     "build_reextraction_prompt",
     "ValidationIssue",
     "ValidationResult",
-    # Bitfield merging
+    # Bitfield and enumeration merging
     "merge_bitfield_bits",
     "merge_field_bitfields",
     "merge_message_bitfields",
+    "merge_enum_values",
+    "merge_field_enumerations",
 ]
