@@ -1,0 +1,82 @@
+{
+  "message_name": "UBX-MON-BATCH",
+  "num_extractions": 3,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MON-BATCH",
+      "class_id": "0x0a",
+      "message_id": "0x32",
+      "description": "Data batching buffer status",
+      "message_type": "periodic/polled",
+      "payload": {
+        "length": {
+          "fixed": 12
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "fillLevel",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Current buffer fill level, i.e. number of epochs currently stored"
+          },
+          {
+            "name": "dropsAll",
+            "byte_offset": 6,
+            "data_type": "U2",
+            "description": "Number of dropped epochs since startup"
+          },
+          {
+            "name": "dropsSinceMon",
+            "byte_offset": 8,
+            "data_type": "U2",
+            "description": "Number of dropped epochs since last MON-BATCH message"
+          },
+          {
+            "name": "nextMsgCnt",
+            "byte_offset": 10,
+            "data_type": "U2",
+            "description": "The next retrieved UBX-LOG-BATCH will have this msgCnt value"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "Uses 'reserved1' for the first reserved field where others use 'reserved0'. This is a minor naming difference likely found in the specific document version."
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "All three extractions define an identical binary structure (length 12, identical field offsets and data types). The differences are cosmetic: Extraction 2 names the reserved field 'reserved1' while others use 'reserved0', and descriptions in Extractions 2 and 3 include usage notes absent in Extraction 1. The structural definition is consistent across M8, M9, and M10 generations."
+  }
+}

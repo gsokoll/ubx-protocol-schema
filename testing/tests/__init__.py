@@ -1,0 +1,1 @@
+"""UBX schema validation tests."""

@@ -1,0 +1,188 @@
+{
+  "message_name": "UBX-NAV-SAT",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-SAT",
+      "class_id": "0x01",
+      "message_id": "0x35",
+      "payload": {
+        "header": [
+          {
+            "name": "iTOW",
+            "type": "U4",
+            "offset": 0,
+            "unit": "ms"
+          },
+          {
+            "name": "version",
+            "type": "U1",
+            "offset": 4
+          },
+          {
+            "name": "numSvs",
+            "type": "U1",
+            "offset": 5
+          },
+          {
+            "name": "reserved0",
+            "type": "U1[2]",
+            "offset": 6
+          }
+        ],
+        "repeated_block": {
+          "name": "satellites",
+          "size_bytes": 12,
+          "count_field": "numSvs",
+          "fields": [
+            {
+              "name": "gnssId",
+              "type": "U1",
+              "offset": 0
+            },
+            {
+              "name": "svId",
+              "type": "U1",
+              "offset": 1
+            },
+            {
+              "name": "cno",
+              "type": "U1",
+              "offset": 2,
+              "unit": "dBHz"
+            },
+            {
+              "name": "elev",
+              "type": "I1",
+              "offset": 3,
+              "unit": "deg"
+            },
+            {
+              "name": "azim",
+              "type": "I2",
+              "offset": 4,
+              "unit": "deg"
+            },
+            {
+              "name": "prRes",
+              "type": "I2",
+              "offset": 6,
+              "unit": "m",
+              "scale": 0.1
+            },
+            {
+              "name": "flags",
+              "type": "X4",
+              "offset": 8
+            }
+          ]
+        }
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses absolute byte offsets (8, 9, 10...) inside the repeated group definition instead of relative (0, 1, 2...)",
+          "Lists 'azim' as U2 type, whereas canonical is I2"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": [
+          "Byte offsets extracted as calculation strings (e.g., '(8 + n*12)') rather than integers"
+        ]
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "Hallucinated modern flag bits (slasCorrUsed, spartnCorrUsed, clasCorrUsed) which are not supported by the M8 generation hardware/firmware described in this document"
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360"
+        ],
+        "structure": "Extended Bitfield (up to bit 25)",
+        "reason": "Newer firmware versions (M10, F9 LAP/DBD) include flags for LPP and HAS corrections (bits 24-25)."
+      },
+      {
+        "sources": [
+          "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157"
+        ],
+        "structure": "Absolute Offsets in Group",
+        "reason": "The extraction lists offsets within the repeated group relative to the start of the message (8, 9, 10) rather than the start of the group (0, 1, 2)."
+      }
+    ],
+    "reasoning": "The message structure is highly consistent across generations (Header + 12-byte repeated block). The primary evolution is in the 'flags' bitmask, which grows to include new correction services (SLAS, SPARTN, CLAS, LPP, HAS) in newer generations. Extraction 13 (M8) contains a significant error by including these modern flags for a legacy receiver. Extraction 5 and 7 are structurally valid but use non-standard offset representations (absolute or formulaic)."
+  }
+}

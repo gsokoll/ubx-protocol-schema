@@ -1,0 +1,159 @@
+{
+  "message_name": "UBX-CFG-BATCH",
+  "num_extractions": 2,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-BATCH",
+      "class_id": "0x06",
+      "message_id": "0x93",
+      "description": "Get/set data batching configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "Flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "enable",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Enable data batching"
+                },
+                {
+                  "name": "extraPvt",
+                  "bit_start": 2,
+                  "bit_end": 2,
+                  "description": "Store extra PVT information"
+                },
+                {
+                  "name": "extraOdo",
+                  "bit_start": 3,
+                  "bit_end": 3,
+                  "description": "Store odometer data"
+                },
+                {
+                  "name": "pioEnable",
+                  "bit_start": 5,
+                  "bit_end": 5,
+                  "description": "Enable PIO notification"
+                },
+                {
+                  "name": "pioActiveLow",
+                  "bit_start": 6,
+                  "bit_end": 6,
+                  "description": "PIO is active low"
+                }
+              ]
+            }
+          },
+          {
+            "name": "bufSize",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Size of buffer in number of epochs to store"
+          },
+          {
+            "name": "notifThrs",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Buffer fill level that triggers PIO notification, in number of epochs stored"
+          },
+          {
+            "name": "pioId",
+            "byte_offset": 6,
+            "data_type": "U1",
+            "description": "PIO ID to use for buffer level notification"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Reserved"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
+        ],
+        "structure": {
+          "name": "UBX-CFG-BATCH",
+          "class_id": "0x06",
+          "message_id": "0x93",
+          "payload": {
+            "length": {
+              "fixed": 8
+            },
+            "fields": [
+              {
+                "name": "version",
+                "data_type": "U1"
+              },
+              {
+                "name": "flags",
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "enable",
+                      "bit_start": 0,
+                      "bit_end": 0
+                    },
+                    {
+                      "name": "extraPvt",
+                      "bit_start": 2,
+                      "bit_end": 2
+                    },
+                    {
+                      "name": "extraOdo",
+                      "bit_start": 3,
+                      "bit_end": 3
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "reserved1",
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 6
+                },
+                "description": "Reserved block (covers bufSize, notifThrs, pioId in M8)"
+              }
+            ]
+          }
+        },
+        "reason": "The u-blox M9 generation deprecated the PIO notification and explicit buffer size configuration via this legacy message, marking bytes 2-7 as reserved. The M8 generation (Extraction 2) defines the full schema for this message ID."
+      }
+    ],
+    "reasoning": "Extraction 2 (M8) provides the superset definition, identifying specific configuration fields (bufSize, notifThrs, pioId). Extraction 1 (M9) is a valid variation where these specific features were deprecated or handled internally, resulting in those fields being marked as a single reserved block of 6 bytes. Both extractions are faithful to their respective manuals, but Extraction 2 is chosen as canonical because it describes the underlying data layout that Extraction 1 masks as reserved."
+  }
+}

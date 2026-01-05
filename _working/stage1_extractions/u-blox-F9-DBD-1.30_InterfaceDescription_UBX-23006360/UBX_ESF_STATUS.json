@@ -1,0 +1,231 @@
+{
+  "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360.pdf",
+  "message_name": "UBX-ESF-STATUS",
+  "extraction_timestamp": "2026-01-04T02:59:53.203426+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 69,
+    "end": 71
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-ESF-STATUS\nExpected IDs from TOC: class_id=0x10, message_id=0x10\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-ESF-STATUS\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-ESF-STATUS\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-ESF-STATUS\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-ESF-STATUS\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-ESF-STATUS\",\n  \"class_id\": \"0x10\",\n  \"message_id\": \"0x10\",\n  \"description\": \"External sensor fusion status\",\n  \"message_type\": \"periodic_polled\",\n  \"payload\": {\n    \"length\": {\n      \"variable\": {\n        \"base\": 16,\n        \"formula\": \"16 + numSens*4\",\n        \"min\": 16\n      }\n    },\n    \"fields\": [\n      {\n        \"name\": \"iTOW\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\",\n        \"unit\": \"ms\"\n      },\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 4,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x02 for this version)\"\n      },\n      {\n        \"name\": \"initStatus1\",\n        \"byte_offset\": 5,\n        \"data_type\": \"X1\",\n        \"description\": \"Initialization status bitfield, part 1\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"wtInitStatus\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": \"Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized).\"\n            },\n            {\n              \"name\": \"mntAlgStatus\",\n              \"bit_start\": 2,\n              \"bit_end\": 4,\n              \"description\": \"Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized).\"\n            },\n            {\n              \"name\": \"insInitStatus\",\n              \"bit_start\": 5,\n              \"bit_end\": 6,\n              \"description\": \"INS initialization status (0: off, 1: initializing, 2: initialized).\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"initStatus2\",\n        \"byte_offset\": 6,\n        \"data_type\": \"X1\",\n        \"description\": \"Initialization status bitfield, part 2\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"imuInitStatus\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": \"IMU initialization status (0: off, 1: initializing, 2: initialized).\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 7,\n        \"data_type\": \"U1\",\n        \"count\": 5,\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"fusionMode\",\n        \"byte_offset\": 12,\n        \"data_type\": \"U1\",\n        \"description\": \"Fusion mode:\\n\\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\\n\\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\\n\\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\\n\\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\\nSee the Fusion filter modes section in the integration manual for more details.\"\n      },\n      {\n        \"name\": \"reserved1\",\n        \"byte_offset\": 13,\n        \"data_type\": \"U1\",\n        \"count\": 2,\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"numSens\",\n        \"byte_offset\": 15,\n        \"data_type\": \"U1\",\n        \"description\": \"Number of sensors\"\n      }\n    ],\n    \"repeated_groups\": [\n      {\n        \"name\": \"sensor_status\",\n        \"repetition_type\": \"count_field\",\n        \"count_field\": \"numSens\",\n        \"group_size_bytes\": 4,\n        \"base_offset\": 16,\n        \"fields\": [\n          {\n            \"name\": \"sensStatus1\",\n            \"byte_offset\": 0,\n            \"data_type\": \"X1\",\n            \"description\": \"Sensor status, part 1\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"type\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 5,\n                  \"description\": \"Sensor data type. See section Sensor data types in the integration manual for details.\"\n                },\n                {\n                  \"name\": \"used\",\n                  \"bit_start\": 6,\n                  \"bit_end\": 6,\n                  \"description\": \"If set, sensor data is used for the current sensor fusion solution.\"\n                },\n                {\n                  \"name\": \"ready\",\n                  \"bit_start\": 7,\n                  \"bit_end\": 7,\n                  \"description\": \"If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution.\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"sensStatus2\",\n            \"byte_offset\": 1,\n            \"data_type\": \"X1\",\n            \"description\": \"Sensor status, part 2\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"calibStatus\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 1,\n                  \"description\": \"00: Sensor is not calibrated\\n\\u2022 01: Sensor is calibrating\\n\\u2022 10/11: Sensor is calibrated\\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated.\"\n                },\n                {\n                  \"name\": \"timeStatus\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 3,\n                  \"description\": \"00: No data\\n\\u2022 01: Reception of the first byte used to tag the measurement\\n\\u2022 10: Event input used to tag the measurement\\n\\u2022 11: Time tag provided with the data\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"freq\",\n            \"byte_offset\": 2,\n            \"data_type\": \"U1\",\n            \"description\": \"Observation frequency\",\n            \"unit\": \"Hz\"\n          },\n          {\n            \"name\": \"faults\",\n            \"byte_offset\": 3,\n            \"data_type\": \"X1\",\n            \"description\": \"Sensor faults\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"badMeas\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"Bad measurements detected\"\n                },\n                {\n                  \"name\": \"badTTag\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"Bad measurement time-tags detected\"\n                },\n                {\n                  \"name\": \"missingMeas\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"Missing or time-misaligned measurements detected\"\n                },\n                {\n                  \"name\": \"noisyMeas\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"High measurement noise-level detected\"\n                }\n              ]\n            }\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-ESF-STATUS",
+    "class_id": "0x10",
+    "message_id": "0x10",
+    "description": "External sensor fusion status",
+    "message_type": "periodic_polled",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 16,
+          "formula": "16 + numSens*4",
+          "min": 16
+        }
+      },
+      "fields": [
+        {
+          "name": "iTOW",
+          "byte_offset": 0,
+          "data_type": "U4",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "unit": "ms"
+        },
+        {
+          "name": "version",
+          "byte_offset": 4,
+          "data_type": "U1",
+          "description": "Message version (0x02 for this version)"
+        },
+        {
+          "name": "initStatus1",
+          "byte_offset": 5,
+          "data_type": "X1",
+          "description": "Initialization status bitfield, part 1",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "wtInitStatus",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+              },
+              {
+                "name": "mntAlgStatus",
+                "bit_start": 2,
+                "bit_end": 4,
+                "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+              },
+              {
+                "name": "insInitStatus",
+                "bit_start": 5,
+                "bit_end": 6,
+                "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "initStatus2",
+          "byte_offset": 6,
+          "data_type": "X1",
+          "description": "Initialization status bitfield, part 2",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "imuInitStatus",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 7,
+          "data_type": "U1",
+          "count": 5,
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "fusionMode",
+          "byte_offset": 12,
+          "data_type": "U1",
+          "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 13,
+          "data_type": "U1",
+          "count": 2,
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "numSens",
+          "byte_offset": 15,
+          "data_type": "U1",
+          "description": "Number of sensors"
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "sensor_status",
+          "repetition_type": "count_field",
+          "count_field": "numSens",
+          "group_size_bytes": 4,
+          "base_offset": 16,
+          "fields": [
+            {
+              "name": "sensStatus1",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "Sensor status, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "type",
+                    "bit_start": 0,
+                    "bit_end": 5,
+                    "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                  },
+                  {
+                    "name": "used",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": "If set, sensor data is used for the current sensor fusion solution."
+                  },
+                  {
+                    "name": "ready",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sensStatus2",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Sensor status, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "calibStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                  },
+                  {
+                    "name": "timeStatus",
+                    "bit_start": 2,
+                    "bit_end": 3,
+                    "description": "00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "freq",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Observation frequency",
+              "unit": "Hz"
+            },
+            {
+              "name": "faults",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "Sensor faults",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "badMeas",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Bad measurements detected"
+                  },
+                  {
+                    "name": "badTTag",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Bad measurement time-tags detected"
+                  },
+                  {
+                    "name": "missingMeas",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Missing or time-misaligned measurements detected"
+                  },
+                  {
+                    "name": "noisyMeas",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "High measurement noise-level detected"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/o62jogmnhlhz"
+}

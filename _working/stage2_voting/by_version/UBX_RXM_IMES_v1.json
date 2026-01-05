@@ -1,0 +1,653 @@
+{
+  "message_name": "UBX-RXM-IMES",
+  "protocol_version": 1,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-RXM-IMES",
+    "class_id": "0x02",
+    "message_id": "0x61",
+    "description": "Indoor Messaging System information",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + numTx * 44",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "numTx",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Number of transmitters contained in the message"
+        },
+        {
+          "name": "version",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "transmitters",
+          "repetition_type": "count_field",
+          "count_field": "numTx",
+          "group_size_bytes": 44,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "reserved2",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "txId",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Transmitter identifier"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cno",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "unit": "dBHz",
+              "description": "Carrier to Noise Ratio (Signal Strength)"
+            },
+            {
+              "name": "reserved4",
+              "byte_offset": 10,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "doppler",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "scale": {
+                "raw": "2^-12",
+                "multiplier": 0.000244140625
+              },
+              "unit": "Hz",
+              "description": "Doppler frequency with respect to 1575.4282MHz [IIIII.FFF Hz]"
+            },
+            {
+              "name": "position1_1",
+              "byte_offset": 16,
+              "data_type": "X4",
+              "description": "Position 1 Frame (part 1/2)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "pos1Floor",
+                    "bit_start": 0,
+                    "bit_end": 7,
+                    "data_type": "signed",
+                    "description": "Floor number [1.0 floor resolution] (Offset: -50 floor)"
+                  },
+                  {
+                    "name": "pos1Lat",
+                    "bit_start": 8,
+                    "bit_end": 30,
+                    "data_type": "signed",
+                    "description": "Latitude [deg* (180/2^23)]"
+                  },
+                  {
+                    "name": "reserved",
+                    "bit_start": 31,
+                    "bit_end": 31,
+                    "data_type": "unsigned",
+                    "description": "Reserved",
+                    "reserved": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "position1_2",
+              "byte_offset": 20,
+              "data_type": "X4",
+              "description": "Position 1 Frame (part 2/2)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "pos1Lon",
+                    "bit_start": 0,
+                    "bit_end": 23,
+                    "data_type": "signed",
+                    "description": "Longitude [deg* (360/2^24)]"
+                  },
+                  {
+                    "name": "pos1Valid",
+                    "bit_start": 24,
+                    "bit_end": 24,
+                    "data_type": "unsigned",
+                    "description": "Position 1 Frame valid"
+                  },
+                  {
+                    "name": "reserved",
+                    "bit_start": 25,
+                    "bit_end": 31,
+                    "data_type": "unsigned",
+                    "description": "Reserved",
+                    "reserved": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "position2_1",
+              "byte_offset": 24,
+              "data_type": "X4",
+              "description": "Position 2 Frame (part 1/3)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "pos2Floor",
+                    "bit_start": 0,
+                    "bit_end": 7,
+                    "data_type": "signed",
+                    "description": "Floor number [0.5 floor resolution] (Offset: -50 floor)"
+                  },
+                  {
+                    "name": "pos2Alt",
+                    "bit_start": 8,
+                    "bit_end": 15,
+                    "data_type": "signed",
+                    "description": "Altitude [m] (Offset: -95m)"
+                  },
+                  {
+                    "name": "pos2Acc",
+                    "bit_start": 16,
+                    "bit_end": 17,
+                    "data_type": "unsigned",
+                    "description": "Accuracy Index (0:undef, 1:<7m, 2:<15m, 3:>15m)"
+                  },
+                  {
+                    "name": "pos2Valid",
+                    "bit_start": 18,
+                    "bit_end": 18,
+                    "data_type": "unsigned",
+                    "description": "Position 2 Frame valid"
+                  },
+                  {
+                    "name": "reserved",
+                    "bit_start": 19,
+                    "bit_end": 31,
+                    "data_type": "unsigned",
+                    "description": "Reserved",
+                    "reserved": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "lat",
+              "byte_offset": 28,
+              "data_type": "I4",
+              "scale": {
+                "raw": "180*2^-24",
+                "multiplier": 1.07763671875e-08
+              },
+              "unit": "deg",
+              "description": "Latitude, Position 2 Frame (part 2/3)"
+            },
+            {
+              "name": "lon",
+              "byte_offset": 32,
+              "data_type": "I4",
+              "scale": {
+                "raw": "360*2^-25",
+                "multiplier": 1.07763671875e-08
+              },
+              "unit": "deg",
+              "description": "Longitude, Position 2 Frame (part 3/3)"
+            },
+            {
+              "name": "shortIdFrame",
+              "byte_offset": 36,
+              "data_type": "X4",
+              "description": "Short ID Frame",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "shortId",
+                    "bit_start": 0,
+                    "bit_end": 11,
+                    "data_type": "unsigned",
+                    "description": "Short ID"
+                  },
+                  {
+                    "name": "shortValid",
+                    "bit_start": 12,
+                    "bit_end": 12,
+                    "data_type": "unsigned",
+                    "description": "Short ID Frame valid"
+                  },
+                  {
+                    "name": "shortBoundary",
+                    "bit_start": 13,
+                    "bit_end": 13,
+                    "data_type": "unsigned",
+                    "description": "Boundary Bit"
+                  },
+                  {
+                    "name": "reserved",
+                    "bit_start": 14,
+                    "bit_end": 31,
+                    "data_type": "unsigned",
+                    "description": "Reserved",
+                    "reserved": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mediumIdLSB",
+              "byte_offset": 40,
+              "data_type": "U4",
+              "description": "Medium ID LSB, Medium ID Frame (part 1/2)"
+            },
+            {
+              "name": "mediumId_2",
+              "byte_offset": 44,
+              "data_type": "X4",
+              "description": "Medium ID Frame (part 2/2)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mediumIdMSB",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "data_type": "unsigned",
+                    "description": "Medium ID MSB"
+                  },
+                  {
+                    "name": "mediumValid",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "data_type": "unsigned",
+                    "description": "Medium ID Frame valid"
+                  },
+                  {
+                    "name": "mediumBoundary",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "data_type": "unsigned",
+                    "description": "Boundary Bit"
+                  },
+                  {
+                    "name": "reserved",
+                    "bit_start": 4,
+                    "bit_end": 31,
+                    "data_type": "unsigned",
+                    "description": "Reserved",
+                    "reserved": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "bb62fe62a908cf2e",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-RXM-IMES",
+        "class_id": "0x02",
+        "message_id": "0x61",
+        "description": "Indoor Messaging System information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numTx * 44",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "numTx",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Number of transmitters contained in the message"
+            },
+            {
+              "name": "version",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "transmitters",
+              "repetition_type": "count_field",
+              "count_field": "numTx",
+              "group_size_bytes": 44,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "reserved2",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "txId",
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "description": "Transmitter identifier"
+                },
+                {
+                  "name": "reserved3",
+                  "byte_offset": 6,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "unit": "dBHz",
+                  "description": "Carrier to Noise Ratio (Signal Strength)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 10,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "doppler",
+                  "byte_offset": 12,
+                  "data_type": "I4",
+                  "scale": {
+                    "raw": "2^-12",
+                    "multiplier": 0.000244140625
+                  },
+                  "unit": "Hz",
+                  "description": "Doppler frequency with respect to 1575.4282MHz [IIIII.FFF Hz]"
+                },
+                {
+                  "name": "position1_1",
+                  "byte_offset": 16,
+                  "data_type": "X4",
+                  "description": "Position 1 Frame (part 1/2)",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "pos1Floor",
+                        "bit_start": 0,
+                        "bit_end": 7,
+                        "data_type": "signed",
+                        "description": "Floor number [1.0 floor resolution] (Offset: -50 floor)"
+                      },
+                      {
+                        "name": "pos1Lat",
+                        "bit_start": 8,
+                        "bit_end": 30,
+                        "data_type": "signed",
+                        "description": "Latitude [deg* (180/2^23)]"
+                      },
+                      {
+                        "name": "reserved",
+                        "bit_start": 31,
+                        "bit_end": 31,
+                        "data_type": "unsigned",
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "position1_2",
+                  "byte_offset": 20,
+                  "data_type": "X4",
+                  "description": "Position 1 Frame (part 2/2)",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "pos1Lon",
+                        "bit_start": 0,
+                        "bit_end": 23,
+                        "data_type": "signed",
+                        "description": "Longitude [deg* (360/2^24)]"
+                      },
+                      {
+                        "name": "pos1Valid",
+                        "bit_start": 24,
+                        "bit_end": 24,
+                        "data_type": "unsigned",
+                        "description": "Position 1 Frame valid"
+                      },
+                      {
+                        "name": "reserved",
+                        "bit_start": 25,
+                        "bit_end": 31,
+                        "data_type": "unsigned",
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "position2_1",
+                  "byte_offset": 24,
+                  "data_type": "X4",
+                  "description": "Position 2 Frame (part 1/3)",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "pos2Floor",
+                        "bit_start": 0,
+                        "bit_end": 7,
+                        "data_type": "signed",
+                        "description": "Floor number [0.5 floor resolution] (Offset: -50 floor)"
+                      },
+                      {
+                        "name": "pos2Alt",
+                        "bit_start": 8,
+                        "bit_end": 15,
+                        "data_type": "signed",
+                        "description": "Altitude [m] (Offset: -95m)"
+                      },
+                      {
+                        "name": "pos2Acc",
+                        "bit_start": 16,
+                        "bit_end": 17,
+                        "data_type": "unsigned",
+                        "description": "Accuracy Index (0:undef, 1:<7m, 2:<15m, 3:>15m)"
+                      },
+                      {
+                        "name": "pos2Valid",
+                        "bit_start": 18,
+                        "bit_end": 18,
+                        "data_type": "unsigned",
+                        "description": "Position 2 Frame valid"
+                      },
+                      {
+                        "name": "reserved",
+                        "bit_start": 19,
+                        "bit_end": 31,
+                        "data_type": "unsigned",
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "lat",
+                  "byte_offset": 28,
+                  "data_type": "I4",
+                  "scale": {
+                    "raw": "180*2^-24",
+                    "multiplier": 1.07763671875e-08
+                  },
+                  "unit": "deg",
+                  "description": "Latitude, Position 2 Frame (part 2/3)"
+                },
+                {
+                  "name": "lon",
+                  "byte_offset": 32,
+                  "data_type": "I4",
+                  "scale": {
+                    "raw": "360*2^-25",
+                    "multiplier": 1.07763671875e-08
+                  },
+                  "unit": "deg",
+                  "description": "Longitude, Position 2 Frame (part 3/3)"
+                },
+                {
+                  "name": "shortIdFrame",
+                  "byte_offset": 36,
+                  "data_type": "X4",
+                  "description": "Short ID Frame",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "shortId",
+                        "bit_start": 0,
+                        "bit_end": 11,
+                        "data_type": "unsigned",
+                        "description": "Short ID"
+                      },
+                      {
+                        "name": "shortValid",
+                        "bit_start": 12,
+                        "bit_end": 12,
+                        "data_type": "unsigned",
+                        "description": "Short ID Frame valid"
+                      },
+                      {
+                        "name": "shortBoundary",
+                        "bit_start": 13,
+                        "bit_end": 13,
+                        "data_type": "unsigned",
+                        "description": "Boundary Bit"
+                      },
+                      {
+                        "name": "reserved",
+                        "bit_start": 14,
+                        "bit_end": 31,
+                        "data_type": "unsigned",
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "mediumIdLSB",
+                  "byte_offset": 40,
+                  "data_type": "U4",
+                  "description": "Medium ID LSB, Medium ID Frame (part 1/2)"
+                },
+                {
+                  "name": "mediumId_2",
+                  "byte_offset": 44,
+                  "data_type": "X4",
+                  "description": "Medium ID Frame (part 2/2)",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "mediumIdMSB",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "data_type": "unsigned",
+                        "description": "Medium ID MSB"
+                      },
+                      {
+                        "name": "mediumValid",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "data_type": "unsigned",
+                        "description": "Medium ID Frame valid"
+                      },
+                      {
+                        "name": "mediumBoundary",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "data_type": "unsigned",
+                        "description": "Boundary Bit"
+                      },
+                      {
+                        "name": "reserved",
+                        "bit_start": 4,
+                        "bit_end": 31,
+                        "data_type": "unsigned",
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "bb62fe62a908cf2e"
+    }
+  ]
+}

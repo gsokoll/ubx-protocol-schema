@@ -1,0 +1,358 @@
+{
+  "message_name": "UBX-RXM-MEASX",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-RXM-MEASX",
+      "class_id": "0x02",
+      "message_id": "0x14",
+      "description": "Satellite measurements for RRLP",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 44,
+            "formula": "44 + numSV * 24",
+            "min": 44
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version, currently 0x01"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "reserved": true
+          },
+          {
+            "name": "gpsTOW",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "GPS measurement reference time"
+          },
+          {
+            "name": "gloTOW",
+            "byte_offset": 8,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "GLONASS measurement reference time"
+          },
+          {
+            "name": "bdsTOW",
+            "byte_offset": 12,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "BeiDou measurement reference time"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 16,
+            "data_type": {
+              "array_of": "U1",
+              "count": 4
+            },
+            "reserved": true
+          },
+          {
+            "name": "qzssTOW",
+            "byte_offset": 20,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "QZSS measurement reference time"
+          },
+          {
+            "name": "gpsTOWacc",
+            "byte_offset": 24,
+            "data_type": "U2",
+            "unit": "ms",
+            "scale": {
+              "raw": "2^-4",
+              "multiplier": 0.0625
+            },
+            "description": "GPS measurement reference time accuracy"
+          },
+          {
+            "name": "gloTOWacc",
+            "byte_offset": 26,
+            "data_type": "U2",
+            "unit": "ms",
+            "scale": {
+              "raw": "2^-4",
+              "multiplier": 0.0625
+            },
+            "description": "GLONASS measurement reference time accuracy"
+          },
+          {
+            "name": "bdsTOWacc",
+            "byte_offset": 28,
+            "data_type": "U2",
+            "unit": "ms",
+            "scale": {
+              "raw": "2^-4",
+              "multiplier": 0.0625
+            },
+            "description": "BeiDou measurement reference time accuracy"
+          },
+          {
+            "name": "reserved2",
+            "byte_offset": 30,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "reserved": true
+          },
+          {
+            "name": "qzssTOWacc",
+            "byte_offset": 32,
+            "data_type": "U2",
+            "unit": "ms",
+            "scale": {
+              "raw": "2^-4",
+              "multiplier": 0.0625
+            },
+            "description": "QZSS measurement reference time accuracy"
+          },
+          {
+            "name": "numSV",
+            "byte_offset": 34,
+            "data_type": "U1",
+            "description": "Number of satellites in repeated block"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 35,
+            "data_type": "X1",
+            "description": "Flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "towSet",
+                  "bit_start": 0,
+                  "bit_end": 1,
+                  "description": "TOW set"
+                }
+              ]
+            }
+          },
+          {
+            "name": "reserved3",
+            "byte_offset": 36,
+            "data_type": {
+              "array_of": "U1",
+              "count": 8
+            },
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "satelliteMeasurements",
+            "repetition_type": "count_field",
+            "count_field": "numSV",
+            "group_size_bytes": 24,
+            "base_offset": 44,
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "GNSS ID"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Satellite ID"
+              },
+              {
+                "name": "cNo",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "description": "carrier noise ratio (0..63)"
+              },
+              {
+                "name": "mpathIndic",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "multipath index"
+              },
+              {
+                "name": "dopplerMS",
+                "byte_offset": 4,
+                "data_type": "I4",
+                "unit": "m/s",
+                "scale": {
+                  "raw": "0.04",
+                  "multiplier": 0.04
+                },
+                "description": "Doppler measurement"
+              },
+              {
+                "name": "dopplerHz",
+                "byte_offset": 8,
+                "data_type": "I4",
+                "unit": "Hz",
+                "scale": {
+                  "raw": "0.2",
+                  "multiplier": 0.2
+                },
+                "description": "Doppler measurement"
+              },
+              {
+                "name": "wholeChips",
+                "byte_offset": 12,
+                "data_type": "U2",
+                "description": "whole value of the code phase measurement"
+              },
+              {
+                "name": "fracChips",
+                "byte_offset": 14,
+                "data_type": "U2",
+                "description": "fractional value of the code phase measurement"
+              },
+              {
+                "name": "codePhase",
+                "byte_offset": 16,
+                "data_type": "U4",
+                "unit": "ms",
+                "scale": {
+                  "raw": "2^-21",
+                  "multiplier": 4.76837158203125e-07
+                },
+                "description": "Code phase"
+              },
+              {
+                "name": "intCodePhase",
+                "byte_offset": 20,
+                "data_type": "U1",
+                "unit": "ms",
+                "description": "Integer (part of the) code phase"
+              },
+              {
+                "name": "pseuRangeRMSErr",
+                "byte_offset": 21,
+                "data_type": "U1",
+                "description": "pseudorange RMS error index"
+              },
+              {
+                "name": "reserved4",
+                "byte_offset": 22,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 2
+                },
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "OCR errors: Oxffff (letter O instead of zero)",
+          "Typo in qzsSTOW",
+          "Field 21 name slightly differs (pseuRangeRMSE) which is unique to u-blox 8 generation"
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "extraction_error",
+        "issues": [
+          "Absolute byte offsets used inside repeated group instead of relative offsets (e.g., gnssId offset 44 instead of 0)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "field_21_name": "pseuRangeRMSE"
+        },
+        "reason": "The legacy u-blox 8 manual uses 'pseuRangeRMSE' instead of 'pseuRangeRMSErr' found in M9/M10/F9 generations."
+      }
+    ],
+    "reasoning": "The UBX-RXM-MEASX message is highly consistent across receiver generations. The core structure consists of a 44-byte static header followed by a 24-byte repeated block for each satellite (numSV). Extraction 14 failed to use relative offsets for the repeated group fields. Extraction 13 suffered from OCR errors. Most other differences are minor naming variations for the repeated block or the 'Pseudorange RMS Error Index' field."
+  }
+}

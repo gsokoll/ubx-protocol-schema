@@ -1,166 +1,89 @@
 # u-blox UBX Protocol Schema
 
-A machine-readable database of u-blox UBX binary protocol message definitions, extracted from official interface description manuals.
+Machine-readable database of u-blox UBX binary protocol message definitions, extracted from official interface manuals using LLM-based extraction.
 
 ## What is this?
 
-u-blox GNSS receivers communicate using the proprietary UBX binary protocol. The protocol is documented in PDF manuals, but there's no official machine-readable format—making it tedious to develop parsers without carefully reading hundreds of pages. This can be slow and error-prone. It's also difficult to understand which messages are supported by which device, or when format changes were introduced.
+u-blox GNSS receivers use the proprietary UBX binary protocol. The protocol is documented in PDF manuals, but there's no official machine-readable format. This project provides **validated, schema-compliant UBX message definitions** for:
 
-This project provides **validated, machine-readable UBX message definitions** that can be used for:
-
-- **Code generation** — Generate parser/serializer code in any language
-- **Fuzz testing** — Build test strategies from field definitions and enumerations
-- **Documentation** — Accurate field names, types, offsets, and descriptions
+- **Code generation** — Parser/serializer code in any language
 - **Validation** — Check implementations against canonical definitions
+- **Documentation** — Field names, types, offsets, descriptions
 
-## Coverage
+## Output Files
 
-| Metric | Count |
-|--------|-------|
-| Validated message definitions | 209 |
-| Configuration keys | 1,063 |
-| Source manuals | 34 |
-| Device families | M8, M9, M10, F9, F10, X20 |
-| Enumeration definitions | 29 |
-
-**Protocol Versions:** proto14, proto23, proto27, proto31
+| File | Description |
+|------|-------------|
+| `data/messages/ubx_messages.json` | **208 message definitions** (schema v1.3) |
+| `data/messages/enumerations.json` | **24 enumeration definitions** |
+| `data/config_keys/unified_config_keys.json` | **1,063 configuration keys** |
 
 ## Quick Start
 
-Message definitions are in `data/ubx/validated/messages/`. Each JSON file describes one message:
-
 ```bash
-cat data/ubx/validated/messages/NAV-PVT-v0.json
+# View a message definition
+cat data/messages/ubx_messages.json | python3 -c "
+import json,sys
+data=json.load(sys.stdin)
+msg = next(m for m in data['messages'] if m['name'] == 'UBX-NAV-PVT')
+print(json.dumps(msg, indent=2)[:500])"
 ```
 
-```json
-{
-  "name": "UBX-NAV-PVT",
-  "class_id": "0x01",
-  "message_id": "0x07",
-  "description": "Navigation position velocity time solution",
-  "consensus": {
-    "sources": ["F9-HPG-1.51", "F9-HPG-1.50", "M10-SPG-5.30"],
-    "agreement_count": 14,
-    "confidence": 0.93
-  },
-  "fields": [
-    { "name": "iTOW", "byte_offset": 0, "data_type": "U4", "unit": "ms" },
-    { "name": "year", "byte_offset": 4, "data_type": "U2" },
-    { "name": "fixType", "data_type": "U1", "enumeration": { "values": [...] } }
-  ]
-}
+## Validation Results
+
+The schema has been cross-validated against two independent UBX libraries:
+
+| Test | Pass Rate |
+|------|-----------|
+| Round-trip (our generator → our parser) | 208/208 (100%) |
+| Cross-validation vs pyubx2 (Python) | 190/190 (100%) |
+| Cross-validation vs ublox-rs (Rust) | 92/92 (100%) |
+
+Run validation:
+```bash
+cd testing && uv run python3 generate_coverage_report.py
 ```
 
 ## Directory Structure
 
 ```
 data/
-  validated/              # ⭐ Use this! Validated message definitions
-    messages/             # One JSON file per message-version (209 files)
-    protocol_notes.json   # Known protocol inconsistencies
-    manifest.json         # Index of all validated messages
-  config_keys/            # ⭐ Configuration key database
-    unified_config_keys.json  # All 1,063 keys, schema-validated
-    by-manual/            # Per-manual extractions (21 manuals)
-  enumerations.json       # Canonical enum definitions (fixType, dynModel, etc.)
-  by-manual/              # Raw message extractions per source manual
+  messages/
+    ubx_messages.json       # ⭐ Main output: 208 messages
+    enumerations.json       # 24 enum definitions
+  config_keys/
+    unified_config_keys.json  # 1,063 config keys
 
-schema/                   # JSON Schema definitions for validation
-src/                      # Python extraction and validation pipeline
-scripts/                  # CLI tools for extraction and maintenance
-docs/                     # Technical documentation
-analysis_reports/         # Validation reports and adjudication decisions
-interface_manuals/        # PDF download configuration
+_working/                   # Extraction pipeline artifacts
+  stage1_extractions/       # Per-manual LLM extractions
+  stage2_voting/            # Consensus voting results  
+  stage3_adjudication/      # Final adjudicated structures
+
+testing/                    # Validation framework
+  lib/                      # Generator, parser, schema loader
+  external/                 # pyubx2 and ublox-rs adapters
+
+scripts/                    # Extraction and generation tools
+schema/                     # JSON Schema definitions (v1.3)
+docs/                       # Technical documentation
 ```
 
-## Enumerations
-
-Fields with enumeration values (like `fixType`, `dynModel`, `gnssId`) include structured data:
-
-```json
-{
-  "name": "fixType",
-  "data_type": "U1",
-  "enumeration": {
-    "name": "fixType",
-    "values": [
-      {"value": 0, "name": "no_fix", "description": "no fix"},
-      {"value": 1, "name": "dr_only", "description": "dead reckoning only"},
-      {"value": 2, "name": "fix_2d", "description": "2D-fix"},
-      {"value": 3, "name": "fix_3d", "description": "3D-fix"},
-      {"value": 4, "name": "gnss_dr", "description": "GNSS + dead reckoning"},
-      {"value": 5, "name": "time_only", "description": "time only fix"}
-    ]
-  }
-}
-```
-
-Canonical definitions are in `data/ubx/validated/enumerations.json` (29 enums across 28 messages).
-
-> **Note:** Enum values may vary by firmware version. The schema captures commonly supported values.
-
-## Configuration Keys
-
-Configuration keys are used with CFG-VAL* messages (VALGET, VALSET, VALDEL) on F9 and later devices:
-
-```bash
-cat data/config_keys/unified_config_keys.json | jq '.keys[0]'
-```
-
-```json
-{
-  "name": "CFG-RATE-MEAS",
-  "key_id": "0x30210001",
-  "group": "CFG-RATE",
-  "item_id": "0x0001",
-  "data_type": "U2",
-  "description": "Nominal time between GNSS measurements",
-  "unit": "ms",
-  "scale": {
-    "raw": "1",
-    "multiplier": 1.0
-  }
-}
-```
-
-The database includes:
-- **1,063 unique keys** across 47 groups
-- **57 keys with inline enumerations** (valid values)
-- **17 keys with bitfield definitions**
-- **Schema-validated** against `schema/ubx-config-keys-schema.json`
-
-See [docs/config-key-extraction-workflow.md](docs/config-key-extraction-workflow.md) for extraction details.
-
-## Code Generation
-
-The schema data is designed to be consumed by code generators. Each message definition includes everything needed to generate:
-
-- **Parser/serializer code** — Field names, types, byte offsets, payload lengths
-- **Fuzz test strategies** — Enumeration values for semantically-valid test data
-- **Documentation** — Field descriptions, units, scale factors
-
-Example workflow: Read `data/ubx/validated/messages/MON-RXBUF-v0.json` and generate a parser struct in your target language.
-
-## Data Format
-
-### Message Structure
+## Message Schema (v1.3)
 
 ```json
 {
   "name": "UBX-NAV-PVT",
   "class_id": "0x01",
   "message_id": "0x07",
-  "protocol_version": 0,
-  "description": "Navigation position velocity time solution",
-  "consensus": {
-    "sources": ["F9-HPG-1.51", "M10-SPG-5.30"],
-    "agreement_count": 14,
-    "total_count": 15,
-    "confidence": 0.93,
-    "payload_length": { "value": 92 }
-  },
-  "fields": [...]
+  "message_type": "periodic_polled",
+  "payload": {
+    "length": {"fixed": 92},
+    "fields": [
+      {"name": "iTOW", "byte_offset": 0, "data_type": "U4", "unit": "ms"},
+      {"name": "year", "byte_offset": 4, "data_type": "U2"},
+      {"name": "fixType", "byte_offset": 20, "data_type": "U1"}
+    ]
+  }
 }
 ```
 
@@ -168,85 +91,59 @@ Example workflow: Read `data/ubx/validated/messages/MON-RXBUF-v0.json` and gener
 
 | Type | Size | Description |
 |------|------|-------------|
-| U1, U2, U4 | 1, 2, 4 bytes | Unsigned integers (little-endian) |
-| I1, I2, I4 | 1, 2, 4 bytes | Signed integers |
+| U1, U2, U4, U8 | 1-8 bytes | Unsigned integers (little-endian) |
+| I1, I2, I4, I8 | 1-8 bytes | Signed integers |
 | R4, R8 | 4, 8 bytes | IEEE 754 floats |
-| X1, X2, X4 | 1, 2, 4 bytes | Bitfields |
+| X1, X2, X4 | 1-4 bytes | Bitfields |
 | CH | 1 byte | ASCII character |
 
-### Variant Messages
+## Extraction Workflow
 
-Some messages have multiple variants:
-
-- **Protocol versions**: `NAV-RELPOSNED-v0` (proto14/23) vs `NAV-RELPOSNED-v1` (proto27+)
-- **Direction**: `LOG-FINDTIME-INPUT` vs `LOG-FINDTIME-OUTPUT`
-- **Length**: `RXM-RLM-SHORT` vs `RXM-RLM-LONG`
-
-## Protocol Gotchas
-
-During validation, several cases were found where u-blox modified message structures **without incrementing the version field**:
-
-| Message | Change | Affected Firmware |
-|---------|--------|-------------------|
-| `MGA-INI-TIME-UTC` | `reserved` → `trustedSource` bitfield | F9-HPG-1.50+, M10-SPG-5.10+ |
-| `MGA-INI-TIME-GNSS` | `reserved` → `trustedSource` bitfield | Same as above |
-| `CFG-NAVX5` v2 | Reserved field layout changed | F9-HPG-1.50+ |
-| `SEC-SIG` v1 | `reserved` → `sigSecFlags` bitfield | F10-SPG-6.00 |
-
-Other quirks:
-- **Skipped versions**: `CFG-NAVX5` has v0 and v2, but no v1
-- **Dual-format messages**: `RXM-PMREQ` has 8-byte and 16-byte formats that coexist
-
-For full details, see `data/ubx/validated/protocol_notes.json`.
-
-## Maintaining the Schema
-
-> **Note:** Most users only need the validated data. This section is for maintainers adding new manuals or updating extraction logic.
-
-### Adding a New Manual
+The extraction uses Gemini models with multi-shot conversations:
 
 ```bash
-# 1. Add manual URL to interface_manuals/manuals.json
-# 2. Download the PDF
-uv run python scripts/download_manuals.py
+export GOOGLE_API_KEY=your_key
 
-# 3. Extract messages (requires ANTHROPIC_API_KEY)
-export ANTHROPIC_API_KEY=your_key
-uv run python scripts/extract_with_anthropic.py \
-  --pdf interface_manuals/your-manual.pdf \
-  --all-messages
+# Stage 1: Extract from PDFs (3 extractions per message)
+uv run python scripts/extract_messages_v2.py extract --all-messages
 
-# 4. Run majority voting validation
-uv run python scripts/validate_majority.py \
-  --extractions-dir data/ubx/by-manual \
-  --verbose
+# Stage 2: Consensus voting
+uv run python scripts/vote_preliminary_v2.py
 
-# 5. Re-extract any outliers
-uv run python scripts/reextract_outliers.py
+# Stage 3: LLM adjudication for conflicts
+uv run python scripts/extract_messages_v2.py adjudicate --model 3-flash
+
+# Stage 4: Generate final schema-validated output
+uv run python scripts/generate_message_collection.py
+
+# Stage 5: Extract enumerations from field descriptions
+uv run python scripts/extract_enumerations.py --output data/messages/enumerations.json
 ```
 
-See [docs/extraction-guide.md](docs/extraction-guide.md) for detailed instructions.
+## Configuration Keys
 
-### Key Scripts
+For F9+ devices using CFG-VAL* messages:
 
-| Script | Purpose |
-|--------|---------|
-| `download_manuals.py` | Download PDFs from configured URLs |
-| `extract_with_anthropic.py` | Extract messages using Claude API |
-| `validate_majority.py` | Run majority voting validation |
-| `reextract_outliers.py` | Re-extract messages that differ from consensus |
-| `extract_enumerations.py` | Extract and apply enum definitions |
-| `generate_adjudication_reports.py` | Generate reports for no-consensus messages |
-| `extract_config_keys_pergroup.py` | Extract config keys using Gemini 3 Flash |
-| `detect_config_key_conflicts.py` | Detect conflicts across config key extractions |
-| `merge_config_keys.py` | Merge config keys into unified database |
+```json
+{
+  "name": "CFG-RATE-MEAS",
+  "key_id": "0x30210001",
+  "group": "CFG-RATE",
+  "data_type": "U2",
+  "description": "Nominal time between GNSS measurements",
+  "unit": "ms"
+}
+```
 
-## Contributing
+See [docs/config-key-extraction-workflow.md](docs/config-key-extraction-workflow.md) for details.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
-- Reporting extraction errors
-- Adding new manuals
-- Improving extraction prompts
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [config-key-extraction-workflow.md](docs/config-key-extraction-workflow.md) | Config key extraction process |
+| [config-keys-notes.md](docs/config-keys-notes.md) | Config key schema design notes |
+| [schema-design-notes.md](docs/schema-design-notes.md) | Message schema design decisions |
 
 ## License
 
@@ -254,6 +151,5 @@ MIT License — see [LICENSE](LICENSE)
 
 ## Acknowledgments
 
-- Message definitions from [u-blox](https://www.u-blox.com/) interface manuals
-- Extraction powered by [Claude AI](https://anthropic.com/)
-- PDF archives via [Wayback Machine](https://web.archive.org/)
+- Protocol definitions from [u-blox](https://www.u-blox.com/) interface manuals
+- Cross-validation against [pyubx2](https://github.com/semuconsulting/pyubx2) and [ublox-rs](https://github.com/ublox-rs/ublox)

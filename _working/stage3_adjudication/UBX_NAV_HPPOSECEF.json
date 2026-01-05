@@ -1,0 +1,164 @@
+{
+  "message_name": "UBX-NAV-HPPOSECEF",
+  "num_extractions": 9,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-HPPOSECEF",
+      "class_id": "0x01",
+      "message_id": "0x13",
+      "payload": {
+        "length": 28,
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": "U1[3]",
+            "description": "Reserved"
+          },
+          {
+            "name": "iTOW",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "description": "GPS time of week",
+            "unit": "ms"
+          },
+          {
+            "name": "ecefX",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "ECEF X coordinate",
+            "unit": "cm"
+          },
+          {
+            "name": "ecefY",
+            "byte_offset": 12,
+            "data_type": "I4",
+            "description": "ECEF Y coordinate",
+            "unit": "cm"
+          },
+          {
+            "name": "ecefZ",
+            "byte_offset": 16,
+            "data_type": "I4",
+            "description": "ECEF Z coordinate",
+            "unit": "cm"
+          },
+          {
+            "name": "ecefXHp",
+            "byte_offset": 20,
+            "data_type": "I1",
+            "description": "High precision component of ECEF X coordinate",
+            "unit": "mm",
+            "scale": 0.1
+          },
+          {
+            "name": "ecefYHp",
+            "byte_offset": 21,
+            "data_type": "I1",
+            "description": "High precision component of ECEF Y coordinate",
+            "unit": "mm",
+            "scale": 0.1
+          },
+          {
+            "name": "ecefZHp",
+            "byte_offset": 22,
+            "data_type": "I1",
+            "description": "High precision component of ECEF Z coordinate",
+            "unit": "mm",
+            "scale": 0.1
+          },
+          {
+            "name": "flags",
+            "byte_offset": 23,
+            "data_type": "X1",
+            "description": "Additional flags",
+            "bitfield": {
+              "invalidEcef": {
+                "bit": 0,
+                "description": "1 = Invalid ecefX, ecefY, ecefZ, ecefXHp, ecefYHp and ecefZHp"
+              }
+            }
+          },
+          {
+            "name": "pAcc",
+            "byte_offset": 24,
+            "data_type": "U4",
+            "description": "Position Accuracy Estimate",
+            "unit": "mm",
+            "scale": 0.1
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect message structure (32 bytes vs 28 bytes)",
+          "Incorrect byte offsets (iTOW at 0 instead of 4, version at 4 instead of 0)",
+          "Hallucinated field 'reserved1' containing the description string for the 'flags' bitfield"
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+        ],
+        "structure": {
+          "diff": "Offset 24 contains a 4-byte 'reserved' block instead of 'pAcc'."
+        },
+        "reason": "The X20 module is an older/specific automotive dead reckoning implementation that does not provide the Position Accuracy Estimate in this message version."
+      }
+    ],
+    "reasoning": "The vast majority of extractions (7 out of 9, covering M8 and most F9 variants) agree on a 28-byte structure containing version at offset 0, iTOW at offset 4, and pAcc at offset 24. Extraction 1 (X20) is a valid legacy variation where pAcc is reserved. Extraction 9 is a clear parsing error: it displaces the header fields and creates a fake 'reserved1' field populated with the text description of the flags bitfield, resulting in an incorrect 32-byte length."
+  }
+}

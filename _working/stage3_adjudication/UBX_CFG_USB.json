@@ -1,0 +1,194 @@
+{
+  "message_name": "UBX-CFG-USB",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-USB",
+      "class_id": "0x06",
+      "message_id": "0x1b",
+      "description": "USB configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 108
+        },
+        "fields": [
+          {
+            "name": "vendorID",
+            "byte_offset": 0,
+            "data_type": "U2",
+            "description": "Vendor ID. This field shall only be set to registered Vendor IDs. Changing this field requires special Host drivers."
+          },
+          {
+            "name": "productID",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Product ID. Changing this field requires special Host drivers."
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 4,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 6,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "powerConsumption",
+            "byte_offset": 8,
+            "data_type": "U2",
+            "description": "Power consumed by the device",
+            "unit": "mA"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 10,
+            "data_type": "X2",
+            "description": "various configuration flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "reEnum",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "force re-enumeration"
+                },
+                {
+                  "name": "powerMode",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "self-powered (1), bus-powered (0)"
+                }
+              ]
+            }
+          },
+          {
+            "name": "vendorString",
+            "byte_offset": 12,
+            "data_type": {
+              "array_of": "CH",
+              "count": 32
+            },
+            "description": "String containing the vendor name. 32 ASCII bytes including 0-termination."
+          },
+          {
+            "name": "productString",
+            "byte_offset": 44,
+            "data_type": {
+              "array_of": "CH",
+              "count": 32
+            },
+            "description": "String containing the product name. 32 ASCII bytes including 0-termination."
+          },
+          {
+            "name": "serialNumber",
+            "byte_offset": 76,
+            "data_type": {
+              "array_of": "CH",
+              "count": 32
+            },
+            "description": "String containing the serial number. 32 ASCII bytes including 0-termination. Changing the String fields requires special Host drivers."
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Naming convention difference for reserved fields (reserved1/reserved2 vs reserved0/reserved1)"
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "vendorID",
+              "byte_offset": 0,
+              "data_type": "U2"
+            },
+            {
+              "name": "productID",
+              "byte_offset": 2,
+              "data_type": "U2"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "reserved": true
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "The older M8 generation documentation uses 1-based indexing (reserved1, reserved2) or non-standard naming for reserved fields, whereas M9/F9 generations use 0-based indexing (reserved0, reserved1). The binary layout remains identical."
+      }
+    ],
+    "reasoning": "The message structure is highly stable across u-blox receiver generations (M8, M9, F9). All 8 extractions describe an identical 108-byte binary layout. Extractions 1-7 use the modern naming convention for reserved fields (`reserved0` at offset 4, `reserved1` at offset 6). Extraction 8 (M8) uses an older naming convention (`reserved1` at offset 4, `reserved2` at offset 6) which matches its source PDF. This is a valid naming variation, not a structural error. Minor differences in description text (e.g., warnings about special host drivers) and JSON string formatting ('get/set' vs 'get_set') are present but do not affect the structural correctness."
+  }
+}

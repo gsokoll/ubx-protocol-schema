@@ -1,0 +1,75 @@
+{
+  "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968.pdf",
+  "message_name": "UBX-RXM-SPARTN",
+  "extraction_timestamp": "2026-01-04T03:36:52.717472+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 192,
+    "end": 193
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-RXM-SPARTN\nExpected IDs from TOC: class_id=0x02, message_id=0x33\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-RXM-SPARTN\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-RXM-SPARTN\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-RXM-SPARTN\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-RXM-SPARTN\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-RXM-SPARTN\",\n  \"class_id\": \"0x02\",\n  \"message_id\": \"0x33\",\n  \"description\": \"This message shows info on a received SPARTN input message. It is output upon successful parsing of a SPARTN input message, irrespective of whether the SPARTN message is supported or not by the receiver.\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"fixed\": 8\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"flags\",\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"description\": \"SPARTN input status flags\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"msgUsed\",\n              \"bit_start\": 1,\n              \"bit_end\": 2,\n              \"description\": \"2 = SPARTN message used successfully by the receiver, 1 = not used, 0 = do not know\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"subType\",\n        \"byte_offset\": 2,\n        \"data_type\": \"U2\",\n        \"description\": \"Message subtype\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-RXM-SPARTN",
+    "class_id": "0x02",
+    "message_id": "0x33",
+    "description": "This message shows info on a received SPARTN input message. It is output upon successful parsing of a SPARTN input message, irrespective of whether the SPARTN message is supported or not by the receiver.",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "fixed": 8
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "flags",
+          "byte_offset": 1,
+          "data_type": "X1",
+          "description": "SPARTN input status flags",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "msgUsed",
+                "bit_start": 1,
+                "bit_end": 2,
+                "description": "2 = SPARTN message used successfully by the receiver, 1 = not used, 0 = do not know"
+              }
+            ]
+          }
+        },
+        {
+          "name": "subType",
+          "byte_offset": 2,
+          "data_type": "U2",
+          "description": "Message subtype"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/4x2ajxfcsdal"
+}

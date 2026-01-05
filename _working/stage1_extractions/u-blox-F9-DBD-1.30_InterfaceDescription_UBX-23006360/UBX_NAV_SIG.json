@@ -1,0 +1,218 @@
+{
+  "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360.pdf",
+  "message_name": "UBX-NAV-SIG",
+  "extraction_timestamp": "2026-01-04T03:21:15.224917+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 124,
+    "end": 126
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SIG\nExpected IDs from TOC: class_id=0x01, message_id=0x43\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SIG\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-NAV-SIG\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-NAV-SIG\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-NAV-SIG\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-SIG\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x43\",\n  \"description\": \"Signal information\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"variable\": {\n        \"base\": 8,\n        \"formula\": \"8 + numSigs * 16\",\n        \"min\": 8\n      }\n    },\n    \"fields\": [\n      {\n        \"name\": \"iTOW\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\",\n        \"unit\": \"ms\"\n      },\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 4,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"name\": \"numSigs\",\n        \"byte_offset\": 5,\n        \"data_type\": \"U1\",\n        \"description\": \"Number of signals\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 6,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ],\n    \"repeated_groups\": [\n      {\n        \"name\": \"signal_info\",\n        \"repetition_type\": \"count_field\",\n        \"count_field\": \"numSigs\",\n        \"group_size_bytes\": 16,\n        \"base_offset\": 8,\n        \"fields\": [\n          {\n            \"name\": \"gnssId\",\n            \"byte_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"GNSS identifier (see Satellite Numbering) for assignment\"\n          },\n          {\n            \"name\": \"svId\",\n            \"byte_offset\": 1,\n            \"data_type\": \"U1\",\n            \"description\": \"Satellite identifier (see Satellite Numbering) for assignment\"\n          },\n          {\n            \"name\": \"sigId\",\n            \"byte_offset\": 2,\n            \"data_type\": \"U1\",\n            \"description\": \"New style signal identifier (see Signal Identifiers)\"\n          },\n          {\n            \"name\": \"freqId\",\n            \"byte_offset\": 3,\n            \"data_type\": \"U1\",\n            \"description\": \"Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)\"\n          },\n          {\n            \"name\": \"prRes\",\n            \"byte_offset\": 4,\n            \"data_type\": \"I2\",\n            \"description\": \"Pseudorange residual\",\n            \"scale\": {\n              \"raw\": \"0.1\",\n              \"multiplier\": 0.1\n            },\n            \"unit\": \"m\"\n          },\n          {\n            \"name\": \"cno\",\n            \"byte_offset\": 6,\n            \"data_type\": \"U1\",\n            \"description\": \"Carrier-to-noise density ratio (signal strength)\",\n            \"unit\": \"dBHz\"\n          },\n          {\n            \"name\": \"qualityInd\",\n            \"byte_offset\": 7,\n            \"data_type\": \"U1\",\n            \"description\": \"Signal quality indicator:\\n0 = no signal\\n1 = searching signal\\n2 = signal acquired\\n3 = signal detected but unusable\\n4 = code locked and time synchronized\\n5, 6, 7 = code and carrier locked and time synchronized\"\n          },\n          {\n            \"name\": \"corrSource\",\n            \"byte_offset\": 8,\n            \"data_type\": \"U1\",\n            \"description\": \"Correction source:\\n0 = no corrections\\n1 = SBAS corrections\\n2 = BeiDou corrections\\n3 = RTCM2 corrections\\n4 = RTCM3 OSR corrections\\n5 = RTCM3 SSR corrections\\n6 = QZSS SLAS corrections\\n7 = SPARTN corrections\\n9 = CLAS corrections\\n10 = LPP OSR corrections\\n11 = LPP SSR corrections\\n12 = GAL HAS corrections\"\n          },\n          {\n            \"name\": \"ionoModel\",\n            \"byte_offset\": 9,\n            \"data_type\": \"U1\",\n            \"description\": \"Ionospheric model used:\\n0 = Default delay values\\n1 = Klobuchar model transmitted by GPS\\n2 = SBAS model\\n3 = Klobuchar model transmitted by BeiDou\\n4 = NTCM model transmitted by Galileo\\n8 = Iono delay derived from dual frequency observations\"\n          },\n          {\n            \"name\": \"sigFlags\",\n            \"byte_offset\": 10,\n            \"data_type\": \"X2\",\n            \"description\": \"Signal related flags\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"health\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 1,\n                  \"description\": \"Signal health flag:\\n0 = unknown\\n1 = healthy\\n2 = unhealthy\"\n                },\n                {\n                  \"name\": \"prSmoothed\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"1 = Pseudorange has been smoothed\"\n                },\n                {\n                  \"name\": \"prUsed\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"1 = Pseudorange has been used for this signal\"\n                },\n                {\n                  \"name\": \"crUsed\",\n                  \"bit_start\": 4,\n                  \"bit_end\": 4,\n                  \"description\": \"1 = Carrier range has been used for this signal\"\n                },\n                {\n                  \"name\": \"doUsed\",\n                  \"bit_start\": 5,\n                  \"bit_end\": 5,\n                  \"description\": \"1 = Range rate (Doppler) has been used for this signal\"\n                },\n                {\n                  \"name\": \"prCorrUsed\",\n                  \"bit_start\": 6,\n                  \"bit_end\": 6,\n                  \"description\": \"1 = Pseudorange corrections have been used for this signal\"\n                },\n                {\n                  \"name\": \"crCorrUsed\",\n                  \"bit_start\": 7,\n                  \"bit_end\": 7,\n                  \"description\": \"1 = Carrier range corrections have been used for this signal\"\n                },\n                {\n                  \"name\": \"doCorrUsed\",\n                  \"bit_start\": 8,\n                  \"bit_end\": 8,\n                  \"description\": \"1 = Range rate (Doppler) corrections have been used for this signal\"\n                },\n                {\n                  \"name\": \"authStatus\",\n                  \"bit_start\": 9,\n                  \"bit_end\": 9,\n                  \"description\": \"Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\\n0 = Unknown\\n1 = Authenticated\\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message.\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"reserved1\",\n            \"byte_offset\": 12,\n            \"data_type\": {\n              \"array_of\": \"U1\",\n              \"count\": 4\n            },\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-SIG",
+    "class_id": "0x01",
+    "message_id": "0x43",
+    "description": "Signal information",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numSigs * 16",
+          "min": 8
+        }
+      },
+      "fields": [
+        {
+          "name": "iTOW",
+          "byte_offset": 0,
+          "data_type": "U4",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "unit": "ms"
+        },
+        {
+          "name": "version",
+          "byte_offset": 4,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "numSigs",
+          "byte_offset": 5,
+          "data_type": "U1",
+          "description": "Number of signals"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "signal_info",
+          "repetition_type": "count_field",
+          "count_field": "numSigs",
+          "group_size_bytes": 16,
+          "base_offset": 8,
+          "fields": [
+            {
+              "name": "gnssId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "GNSS identifier (see Satellite Numbering) for assignment"
+            },
+            {
+              "name": "svId",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Satellite identifier (see Satellite Numbering) for assignment"
+            },
+            {
+              "name": "sigId",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "New style signal identifier (see Signal Identifiers)"
+            },
+            {
+              "name": "freqId",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+            },
+            {
+              "name": "prRes",
+              "byte_offset": 4,
+              "data_type": "I2",
+              "description": "Pseudorange residual",
+              "scale": {
+                "raw": "0.1",
+                "multiplier": 0.1
+              },
+              "unit": "m"
+            },
+            {
+              "name": "cno",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Carrier-to-noise density ratio (signal strength)",
+              "unit": "dBHz"
+            },
+            {
+              "name": "qualityInd",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Signal quality indicator:\n0 = no signal\n1 = searching signal\n2 = signal acquired\n3 = signal detected but unusable\n4 = code locked and time synchronized\n5, 6, 7 = code and carrier locked and time synchronized"
+            },
+            {
+              "name": "corrSource",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Correction source:\n0 = no corrections\n1 = SBAS corrections\n2 = BeiDou corrections\n3 = RTCM2 corrections\n4 = RTCM3 OSR corrections\n5 = RTCM3 SSR corrections\n6 = QZSS SLAS corrections\n7 = SPARTN corrections\n9 = CLAS corrections\n10 = LPP OSR corrections\n11 = LPP SSR corrections\n12 = GAL HAS corrections"
+            },
+            {
+              "name": "ionoModel",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Ionospheric model used:\n0 = Default delay values\n1 = Klobuchar model transmitted by GPS\n2 = SBAS model\n3 = Klobuchar model transmitted by BeiDou\n4 = NTCM model transmitted by Galileo\n8 = Iono delay derived from dual frequency observations"
+            },
+            {
+              "name": "sigFlags",
+              "byte_offset": 10,
+              "data_type": "X2",
+              "description": "Signal related flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "health",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Signal health flag:\n0 = unknown\n1 = healthy\n2 = unhealthy"
+                  },
+                  {
+                    "name": "prSmoothed",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Pseudorange has been smoothed"
+                  },
+                  {
+                    "name": "prUsed",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "1 = Pseudorange has been used for this signal"
+                  },
+                  {
+                    "name": "crUsed",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "1 = Carrier range has been used for this signal"
+                  },
+                  {
+                    "name": "doUsed",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "1 = Range rate (Doppler) has been used for this signal"
+                  },
+                  {
+                    "name": "prCorrUsed",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": "1 = Pseudorange corrections have been used for this signal"
+                  },
+                  {
+                    "name": "crCorrUsed",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": "1 = Carrier range corrections have been used for this signal"
+                  },
+                  {
+                    "name": "doCorrUsed",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                  },
+                  {
+                    "name": "authStatus",
+                    "bit_start": 9,
+                    "bit_end": 9,
+                    "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\n0 = Unknown\n1 = Authenticated\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ybod1cgj1qsd"
+}

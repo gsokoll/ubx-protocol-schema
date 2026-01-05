@@ -1,0 +1,2674 @@
+{
+  "message_name": "UBX-ESF-STATUS",
+  "protocol_version": 2,
+  "status": "split",
+  "agreement_ratio": 0.46153846153846156,
+  "winning_structure": {
+    "name": "UBX-ESF-STATUS",
+    "class_id": "0x10",
+    "message_id": "0x10",
+    "description": "External sensor fusion status",
+    "message_type": "periodic_polled",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 16,
+          "formula": "16 + numSens * 4",
+          "min": 16
+        }
+      },
+      "fields": [
+        {
+          "name": "iTOW",
+          "byte_offset": 0,
+          "data_type": "U4",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "unit": "ms"
+        },
+        {
+          "name": "version",
+          "byte_offset": 4,
+          "data_type": "U1",
+          "description": "Message version (0x02 for this version)"
+        },
+        {
+          "name": "initStatus1",
+          "byte_offset": 5,
+          "data_type": "X1",
+          "description": "Initialization status bitfield, part 1",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "wtInitStatus",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+              },
+              {
+                "name": "mntAlgStatus",
+                "bit_start": 2,
+                "bit_end": 4,
+                "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+              },
+              {
+                "name": "insInitStatus",
+                "bit_start": 5,
+                "bit_end": 6,
+                "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "initStatus2",
+          "byte_offset": 6,
+          "data_type": "X1",
+          "description": "Initialization status bitfield, part 2",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "imuInitStatus",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 7,
+          "data_type": {
+            "array_of": "U1",
+            "count": 5
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "fusionMode",
+          "byte_offset": 12,
+          "data_type": "U1",
+          "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 13,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "numSens",
+          "byte_offset": 15,
+          "data_type": "U1",
+          "description": "Number of sensors"
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "sensors",
+          "repetition_type": "count_field",
+          "count_field": "numSens",
+          "group_size_bytes": 4,
+          "base_offset": 16,
+          "fields": [
+            {
+              "name": "sensStatus1",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "Sensor status, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "type",
+                    "bit_start": 0,
+                    "bit_end": 5,
+                    "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                  },
+                  {
+                    "name": "used",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": "If set, sensor data is used for the current sensor fusion solution."
+                  },
+                  {
+                    "name": "ready",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sensStatus2",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Sensor status, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "calibStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "\u2022 00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                  },
+                  {
+                    "name": "timeStatus",
+                    "bit_start": 2,
+                    "bit_end": 3,
+                    "description": "\u2022 00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "freq",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Observation frequency",
+              "unit": "Hz"
+            },
+            {
+              "name": "faults",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "Sensor faults",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "badMeas",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Bad measurements detected"
+                  },
+                  {
+                    "name": "badTTag",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Bad measurement time-tags detected"
+                  },
+                  {
+                    "name": "missingMeas",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Missing or time-misaligned measurements detected"
+                  },
+                  {
+                    "name": "noisyMeas",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "High measurement noise-level detected"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "2acc20395ecaceec",
+  "agreeing_sources": [
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+    "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+  ],
+  "disagreeing_sources": [
+    "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+    "LAP120_Interfacedescription_UBX-20046191"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensors",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "\u2022 00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "\u2022 00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    },
+    {
+      "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch.\nSee section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 7
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "base_offset": 16,
+              "group_size_bytes": 4,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 16,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 17,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "\u2022 00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "\u2022 00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 19,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "48089f9c5c19bbfb"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "fixed": 16
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: \n \u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n \u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n \u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n \u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ]
+        }
+      },
+      "fingerprint": "0061fd177b7f38e2"
+    },
+    {
+      "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion; 1: Fusion mode: GNSS and sensor data are used for navigation solution computation; 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry; 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error. See the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated; 01: Sensor is calibrating; 10/11: Sensor is calibrated. Good dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data; 01: Reception of the first byte used to tag the measurement; 10: Event input used to tag the measurement; 11: Time tag provided with the data."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 7
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: \u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion 1: Fusion mode: GNSS and sensor data are used for navigation solution computation 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error See the Fusion filter modes section in Integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the Integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated \u2022 01: Sensor is calibrating \u2022 10/11: Sensor is calibrated Good dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data \u2022 01: Reception of the first byte used to tag the measurement \u2022 10: Event input used to tag the measurement \u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ff82085d0ca9b853"
+    },
+    {
+      "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion; 1: Fusion mode: GNSS and sensor data are used for navigation solution computation; 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry; 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error. See the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "numSens times",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated; 01: Sensor is calibrating; 10/11: Sensor is calibrated. Good dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data; 01: Reception of the first byte used to tag the measurement; 10: Event input used to tag the measurement; 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens*4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "count": 5,
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "count": 2,
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensor_status",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "780600669d13308b"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 7
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatuses",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset_in_group": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset_in_group": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated\n01: Sensor is calibrating\n10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data\n01: Reception of the first byte used to tag the measurement\n10: Event input used to tag the measurement\n11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset_in_group": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset_in_group": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dd36e9cf1682c7d4"
+    },
+    {
+      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 7
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion; 1: Fusion mode: GNSS and sensor data are used for navigation solution computation; 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry; 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error. See the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated; 01: Sensor is calibrating; 10/11: Sensor is calibrated. Good dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data; 01: Reception of the first byte used to tag the measurement; 10: Event input used to tag the measurement; 11: Time tag provided with the data."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ff82085d0ca9b853"
+    },
+    {
+      "source": "LAP120_Interfacedescription_UBX-20046191",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 7
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in Integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the Integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ff82085d0ca9b853"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 3,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 4,
+                    "bit_end": 5,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion 1: Fusion mode: GNSS and sensor data are used for navigation solution computation 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error More details can be found in the Fusion Modes section."
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: No data 01: Reception of the first byte used to tag the measurement 10: Event input used to tag the measurement 11: Time tag provided with the data"
+                      },
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: Sensor is not calibrated 01: Sensor is calibrating 10/11: Sensor is calibrated Good dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode: 0: Initialization mode; 1: Fusion mode; 2: Suspended fusion mode; 3: Disabled fusion mode"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "group_size_bytes": 4,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "00: Sensor is not calibrated; 01: Sensor is calibrating; 10/11: Sensor is calibrated"
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "00: No data; 01: Reception of the first byte used to tag the measurement; 10: Event input used to tag the measurement; 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + numSens * 4",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x02 for this version)"
+            },
+            {
+              "name": "initStatus1",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "wtInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Wheel tick factor initialization status (0: off, 1: initializing, 2: initialized)."
+                  },
+                  {
+                    "name": "mntAlgStatus",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Automatic IMU-mount alignment status (0: off, 1: initializing, 2: initialized, 3: initialized)."
+                  },
+                  {
+                    "name": "insInitStatus",
+                    "bit_start": 5,
+                    "bit_end": 6,
+                    "description": "INS initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "initStatus2",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Initialization status bitfield, part 2",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "imuInitStatus",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "IMU initialization status (0: off, 1: initializing, 2: initialized)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": {
+                "array_of": "U1",
+                "count": 5
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fusionMode",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Fusion mode:\n\u2022 0: Initialization mode: receiver is initializing some unknown values required for doing sensor fusion\n\u2022 1: Fusion mode: GNSS and sensor data are used for navigation solution computation\n\u2022 2: Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry\n\u2022 3: Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error\nSee the Fusion filter modes section in the integration manual for more details."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSens",
+              "byte_offset": 15,
+              "data_type": "U1",
+              "description": "Number of sensors"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorStatus",
+              "repetition_type": "count_field",
+              "count_field": "numSens",
+              "base_offset": 16,
+              "group_size_bytes": 4,
+              "fields": [
+                {
+                  "name": "sensStatus1",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 1",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "type",
+                        "bit_start": 0,
+                        "bit_end": 5,
+                        "description": "Sensor data type. See section Sensor data types in the integration manual for details."
+                      },
+                      {
+                        "name": "used",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "If set, sensor data is used for the current sensor fusion solution."
+                      },
+                      {
+                        "name": "ready",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sensStatus2",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Sensor status, part 2",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "calibStatus",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "\u2022 00: Sensor is not calibrated\n\u2022 01: Sensor is calibrating\n\u2022 10/11: Sensor is calibrated\nGood dead reckoning performance is only possible when all used sensors are calibrated. Depending on the quality of the GNSS signals and the sensor data, the sensors may take a longer time to get calibrated."
+                      },
+                      {
+                        "name": "timeStatus",
+                        "bit_start": 2,
+                        "bit_end": 3,
+                        "description": "\u2022 00: No data\n\u2022 01: Reception of the first byte used to tag the measurement\n\u2022 10: Event input used to tag the measurement\n\u2022 11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Observation frequency",
+                  "unit": "Hz"
+                },
+                {
+                  "name": "faults",
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "description": "Sensor faults",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "badMeas",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Bad measurements detected"
+                      },
+                      {
+                        "name": "badTTag",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Bad measurement time-tags detected"
+                      },
+                      {
+                        "name": "missingMeas",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Missing or time-misaligned measurements detected"
+                      },
+                      {
+                        "name": "noisyMeas",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "High measurement noise-level detected"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "2acc20395ecaceec"
+    }
+  ]
+}

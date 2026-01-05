@@ -1,0 +1,84 @@
+{
+  "message_name": "UBX-CFG-OTP",
+  "num_extractions": 7,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-OTP",
+      "class_id": "0x06",
+      "message_id": "0x41",
+      "description": "Writes configuration data (key ID and value pairs) for one or more configuration items to the OTP memory. The message consists of a fixed 12-byte header followed by variable length configuration data.",
+      "message_type": "set",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 12,
+            "formula": "12 + n",
+            "min": 12
+          }
+        },
+        "fields": [
+          {
+            "name": "cfgHeader",
+            "byte_offset": 0,
+            "data_type": {
+              "array_of": "U1",
+              "count": 12
+            },
+            "description": "File header: use u-center tool to compose the message"
+          },
+          {
+            "name": "cfgData",
+            "byte_offset": 12,
+            "data_type": {
+              "array_of": "U1",
+              "count": "N"
+            },
+            "description": "Configuration data (key and value pairs)"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect payload fields. The extracted fields (clearMask, saveMask, loadMask, deviceMask) belong to UBX-CFG-CFG (0x06 0x09), not UBX-CFG-OTP."
+        ]
+      },
+      {
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "Six out of seven extractions consistently define UBX-CFG-OTP as having a 12-byte header ('cfgHeader') followed by a variable length data array ('cfgData'). Extraction 3 incorrectly attributes the fields of UBX-CFG-CFG (clearMask, saveMask, etc.) to this message ID. Extraction 2 uses a 'repeated_groups' construct to represent the variable data tail, which is semantically equivalent to the byte array used in the other correct extractions."
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "message_name": "UBX-MGA-QZSS-HEALTH",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MGA-QZSS-HEALTH",
+      "class_id": "0x13",
+      "message_id": "0x05",
+      "description": "QZSS health assistance",
+      "message_type": "input",
+      "payload": {
+        "length": {
+          "fixed": 12
+        },
+        "fields": [
+          {
+            "name": "type",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message type (0x04 for this type)"
+          },
+          {
+            "name": "version",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "healthCode",
+            "byte_offset": 4,
+            "data_type": {
+              "array_of": "U1",
+              "count": 5
+            },
+            "description": "Each byte represents a QZSS SV (1-5). The 6 LSBs of each byte contains the 6 bit health code from subframes 4/5, data ID = 3, SV ID = 51"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 9,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": [
+          "Payload defined as single reserved block"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing fields 'healthCode' and 'reserved1'",
+          "Field definitions sum to 4 bytes but fixed length is 12"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+        ],
+        "structure": {
+          "length": {
+            "fixed": 12
+          },
+          "fields": [
+            {
+              "name": "reserved0",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "Reserved for future use or unspecified payload data.",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "The source document likely lists the payload as 'Reserved' without detailing the health code structure, or the message is reserved in this specific firmware version."
+      }
+    ],
+    "reasoning": "The vast majority of extractions (13/15) define a consistent 12-byte payload with 'type' (0), 'version' (1), a 2-byte 'reserved' block, a 5-byte 'healthCode' array, and a trailing 3-byte 'reserved' block. Extraction 5 is a clear error as it truncates the field list after 4 bytes despite stating a length of 12. Extraction 3 defines the entire payload as reserved, which is accepted as a valid variation reflecting a less detailed or provisional document. Extraction 13 uses slightly different reserved field names (reserved1/reserved2 instead of reserved0/reserved1) but is structurally identical to the canonical form."
+  }
+}

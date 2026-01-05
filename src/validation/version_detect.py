@@ -74,7 +74,8 @@ def detect_version_field(message: dict) -> VersionFieldInfo:
     fields_by_offset = {}
     for f in fields:
         offset = f.get('byte_offset', -1)
-        if offset >= 0:
+        # Handle string offsets (formulas) by skipping them
+        if isinstance(offset, int) and offset >= 0:
             fields_by_offset[offset] = f
     
     # Strategy 1: Look for field named "version" at offset 0 or 1

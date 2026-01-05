@@ -1,0 +1,134 @@
+{
+  "message_name": "UBX-NAV-GEOFENCE",
+  "num_extractions": 10,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-GEOFENCE",
+      "class_id": "0x01",
+      "message_id": "0x39",
+      "description": "Geofencing status. This message outputs the evaluated states of all configured geofences.",
+      "message_type": "periodic_polled",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 8,
+            "formula": "8 + numFences * 2",
+            "count_field": "numFences",
+            "min": 8
+          }
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "version",
+            "byte_offset": 4,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "status",
+            "byte_offset": 5,
+            "data_type": "U1",
+            "description": "Geofencing status: 0 - Geofencing not available/reliable, 1 - Geofencing active"
+          },
+          {
+            "name": "numFences",
+            "byte_offset": 6,
+            "data_type": "U1",
+            "description": "Number of geofences"
+          },
+          {
+            "name": "combState",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Combined (logical OR) state of all geofences: 0 - Unknown, 1 - Inside, 2 - Outside"
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "fences",
+            "repetition_type": "count_field",
+            "count_field": "numFences",
+            "group_size_bytes": 2,
+            "base_offset": 8,
+            "fields": [
+              {
+                "name": "state",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Geofence state: 0 - Unknown, 1 - Inside, 2 - Outside"
+              },
+              {
+                "name": "id",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Geofence ID"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The message structure is consistent across all provided generations (M8 through M10). All extractions correctly identified the fixed 8-byte header and the variable length repeated group controlled by 'numFences'. Minor differences exist in the data type notation for state fields (older manuals use 'U1' for unsigned integer, newer manuals often use 'X1' for bitfield/byte), but the binary structure and enumerated values (0, 1, 2) remain identical. 'X1' and 'U1' are functionally compatible for these 1-byte enumerated fields."
+  }
+}

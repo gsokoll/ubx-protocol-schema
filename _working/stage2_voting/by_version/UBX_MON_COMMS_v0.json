@@ -1,0 +1,2725 @@
+{
+  "message_name": "UBX-MON-COMMS",
+  "protocol_version": 0,
+  "status": "majority",
+  "agreement_ratio": 0.7857142857142857,
+  "winning_structure": {
+    "name": "UBX-MON-COMMS",
+    "class_id": "0x0a",
+    "message_id": "0x36",
+    "description": "Consolidated communications information for all ports. The size of the message is determined by the number of ports that are in use on the receiver. A port is only included if communication, either send or receive, has been initiated on that port.",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + nPorts * 40",
+          "min": 8
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "nPorts",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of ports included"
+        },
+        {
+          "name": "txErrors",
+          "byte_offset": 2,
+          "data_type": "X1",
+          "description": "TX error bitmask",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "mem",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Memory Allocation error"
+              },
+              {
+                "name": "alloc",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Allocation error (TX buffer full)"
+              },
+              {
+                "name": "outputPort",
+                "bit_start": 2,
+                "bit_end": 4,
+                "description": "Output port: Reports the port from which this message was output from. 0 = N/A, 1 = I2C, 2 = UART1, 3 = UART2, 4 = USB, 5 = SPI"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 3,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "protIds",
+          "byte_offset": 4,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "port_info",
+          "repetition_type": "count_field",
+          "count_field": "nPorts",
+          "group_size_bytes": 40,
+          "base_offset": 8,
+          "fields": [
+            {
+              "name": "portId",
+              "byte_offset": 0,
+              "data_type": "U2",
+              "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+            },
+            {
+              "name": "txPending",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of bytes pending in transmitter buffer",
+              "unit": "bytes"
+            },
+            {
+              "name": "txBytes",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Number of bytes ever sent",
+              "unit": "bytes"
+            },
+            {
+              "name": "txUsage",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Maximum usage transmitter buffer during the last sysmon period",
+              "unit": "%"
+            },
+            {
+              "name": "txPeakUsage",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Maximum usage transmitter buffer",
+              "unit": "%"
+            },
+            {
+              "name": "rxPending",
+              "byte_offset": 10,
+              "data_type": "U2",
+              "description": "Number of bytes in receiver buffer",
+              "unit": "bytes"
+            },
+            {
+              "name": "rxBytes",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "Number of bytes ever received",
+              "unit": "bytes"
+            },
+            {
+              "name": "rxUsage",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Maximum usage receiver buffer during the last sysmon period",
+              "unit": "%"
+            },
+            {
+              "name": "rxPeakUsage",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Maximum usage receiver buffer",
+              "unit": "%"
+            },
+            {
+              "name": "overrunErrs",
+              "byte_offset": 18,
+              "data_type": "U2",
+              "description": "Number of 100 ms timeslots with overrun errors"
+            },
+            {
+              "name": "msgs",
+              "byte_offset": 20,
+              "data_type": {
+                "array_of": "U2",
+                "count": 4
+              },
+              "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+              "unit": "msg"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 28,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "skipped",
+              "byte_offset": 36,
+              "data_type": "U4",
+              "description": "Number of skipped bytes",
+              "unit": "bytes"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "fd914a573a856e44",
+  "agreeing_sources": [
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+  ],
+  "disagreeing_sources": [
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Consolidated communications information for all ports. The size of the message is determined by the number of ports that are in use on the receiver. A port is only included if communication, either send or receive, has been initiated on that port.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from. 0 = N/A, 1 = I2C, 2 = UART1, 3 = UART2, 4 = USB, 5 = SPI"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "port_info",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Consolidated communications information for all ports. The size of the message is determined by the number of ports that are in use on the receiver. A port is only included if communication, either send or receive, has been initiated on that port.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protids field."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Consolidated communications information for all ports. The size of the message is determined by the number of ports that are in use on the receiver. A port is only included if communication, either send or receive, has been initiated on that port.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from.\n0 = N/A\n1 = I2C\n2 = UART1\n3 = UART2\n4 = USB\n5 = SPI"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 20,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 24,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 25,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 26,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 36,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 44,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "3fb298bd77901b60"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from. 0 = N/A, 1 = I2C"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "port_info",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 20,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 24,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 25,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 26,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protids field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 36,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 44,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "3fb298bd77901b60"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in Integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in Integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information. Consolidated communications information for all ports. The size of the message is determined by the number of ports that are in use on the receiver. A port is only included if communication, either send or receive, has been initiated on that port.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from.\n\u2022 0 = N/A\n\u2022 1 = I2C\n\u2022 2 = UART1\n\u2022 3 = UART2\n\u2022 4 = USB\n\u2022 5 = SPI"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "unit": "bytes",
+                  "description": "Number of bytes pending in transmitter buffer"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever sent"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage transmitter buffer"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "unit": "bytes",
+                  "description": "Number of bytes in receiver buffer"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever received"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage receiver buffer during the last sysmon period"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage receiver buffer"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "unit": "msg",
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of skipped bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts * 40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "port_statistics",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from. 0 = N/A, 1 = I2C, 2 = UART1, 3 = UART2, 4 = USB, 5 = SPI"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "reserved_gap",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protids field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ec5b869676051cad"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Number of bytes pending in transmitter buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Maximum usage transmitter buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of bytes in receiver buffer",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer during the last sysmon period",
+                  "unit": "%"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Maximum usage receiver buffer",
+                  "unit": "%"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protids field.",
+                  "unit": "msg"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "description": "Number of skipped bytes",
+                  "unit": "bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-MON-COMMS",
+        "class_id": "0x0a",
+        "message_id": "0x36",
+        "description": "Communication port information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + nPorts*40",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPorts",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of ports included"
+            },
+            {
+              "name": "txErrors",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "TX error bitmask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mem",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Memory Allocation error"
+                  },
+                  {
+                    "name": "alloc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Allocation error (TX buffer full)"
+                  },
+                  {
+                    "name": "outputPort",
+                    "bit_start": 2,
+                    "bit_end": 4,
+                    "description": "Output port: Reports the port from which this message was output from.\n\u2022 0 = N/A\n\u2022 1 = I2C\n\u2022 2 = UART1\n\u2022 3 = UART2\n\u2022 4 = USB\n\u2022 5 = SPI"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "reserved": true
+            },
+            {
+              "name": "protIds",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 6: SPARTN, 0xFF: No protocol reported."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "portData",
+              "repetition_type": "count_field",
+              "count_field": "nPorts",
+              "group_size_bytes": 40,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "portId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Unique identifier for the port. See section Communications ports in the integration manual for details."
+                },
+                {
+                  "name": "txPending",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "unit": "bytes",
+                  "description": "Number of bytes pending in transmitter buffer"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever sent"
+                },
+                {
+                  "name": "txUsage",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage transmitter buffer during the last sysmon period"
+                },
+                {
+                  "name": "txPeakUsage",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage transmitter buffer"
+                },
+                {
+                  "name": "rxPending",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "unit": "bytes",
+                  "description": "Number of bytes in receiver buffer"
+                },
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever received"
+                },
+                {
+                  "name": "rxUsage",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage receiver buffer during the last sysmon period"
+                },
+                {
+                  "name": "rxPeakUsage",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "unit": "%",
+                  "description": "Maximum usage receiver buffer"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "msgs",
+                  "byte_offset": 20,
+                  "data_type": {
+                    "array_of": "U2",
+                    "count": 4
+                  },
+                  "unit": "msg",
+                  "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 28,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 8
+                  },
+                  "reserved": true
+                },
+                {
+                  "name": "skipped",
+                  "byte_offset": 36,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of skipped bytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fd914a573a856e44"
+    }
+  ]
+}

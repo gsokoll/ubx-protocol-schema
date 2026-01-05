@@ -1,0 +1,179 @@
+{
+  "message_name": "UBX-CFG-ESRC",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-ESRC",
+      "class_id": "0x06",
+      "message_id": "0x60",
+      "description": "External synchronization source configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + 36 * numSources",
+            "min": 4
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "numSources",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of sources"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "sources",
+            "repetition_type": "count_field",
+            "count_field": "numSources",
+            "group_size_bytes": 36,
+            "base_offset": 4,
+            "fields": [
+              {
+                "name": "extInt",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "EXTINT index of this source (0 for EXTINT0, 1 for EXTINT1)"
+              },
+              {
+                "name": "sourceType",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Source type: 0: none, 1: frequency source, 2: time source, 3: feedback from external oscillator"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 2,
+                "data_type": "X2",
+                "description": "Flags",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "polarity",
+                      "bit_start": 0,
+                      "bit_end": 0,
+                      "description": "Polarity of signal: 0: rising edge, 1: falling edge"
+                    },
+                    {
+                      "name": "gnssUtc",
+                      "bit_start": 1,
+                      "bit_end": 1,
+                      "description": "Time base of timing signal: 0: GNSS, 1: UTC"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "freq",
+                "byte_offset": 4,
+                "data_type": "U4",
+                "description": "Nominal frequency of source",
+                "unit": "Hz",
+                "scale": {
+                  "raw": "2^-2",
+                  "multiplier": 0.25
+                }
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 8,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 4
+                },
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "withTemp",
+                "byte_offset": 12,
+                "data_type": "U4",
+                "description": "Oscillator stability limit over operating temperature range",
+                "unit": "ppb",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "withAge",
+                "byte_offset": 16,
+                "data_type": "U4",
+                "description": "Oscillator stability with age",
+                "unit": "ppb/year",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "timeToTemp",
+                "byte_offset": 20,
+                "data_type": "U2",
+                "description": "Minimum time to move oscillator frequency by withTemp",
+                "unit": "s"
+              },
+              {
+                "name": "maxDevLifeTime",
+                "byte_offset": 22,
+                "data_type": "U2",
+                "description": "Maximum frequency deviation during lifetime",
+                "unit": "ppb"
+              },
+              {
+                "name": "offset",
+                "byte_offset": 24,
+                "data_type": "I4",
+                "description": "Phase offset of signal",
+                "unit": "ns"
+              },
+              {
+                "name": "offsetUncertainty",
+                "byte_offset": 28,
+                "data_type": "U4",
+                "description": "Uncertainty of phase offset",
+                "unit": "ns"
+              },
+              {
+                "name": "jitter",
+                "byte_offset": 32,
+                "data_type": "U4",
+                "description": "Phase jitter",
+                "unit": "ns/s"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The single extraction provided is from the authoritative u-blox 8/M8 Receiver Description and Protocol Specification. It correctly defines the message header (4 bytes) and the repeating block for source configuration (36 bytes). The field offsets, types, units, and scaling factors (specifically the fractional scalings for frequency and stability) are consistent with known u-blox 8 specifications."
+  }
+}

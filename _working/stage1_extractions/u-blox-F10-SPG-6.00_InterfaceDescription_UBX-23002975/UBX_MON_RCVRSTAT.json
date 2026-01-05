@@ -1,0 +1,980 @@
+{
+  "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975.pdf",
+  "message_name": "UBX-MON-RCVRSTAT",
+  "extraction_timestamp": "2026-01-04T03:10:42.500118+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 84,
+    "end": 89
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-RCVRSTAT\nExpected IDs from TOC: class_id=0x0a, message_id=0x40\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-RCVRSTAT\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-MON-RCVRSTAT\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-MON-RCVRSTAT\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-MON-RCVRSTAT\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-RCVRSTAT\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x40\",\n  \"description\": \"Status of the configurable receiver features\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"fixed\": 84\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"sbas\",\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"description\": \"SBAS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_sbas_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"SBAS enabled\"\n            },\n            {\n              \"name\": \"sig_sbas_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_sbasL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"SBAS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_sbasL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"navic\",\n        \"byte_offset\": 2,\n        \"data_type\": \"X1\",\n        \"description\": \"NAVIC signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_navic_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"NAVIC enabled\"\n            },\n            {\n              \"name\": \"sig_navic_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_navicL5_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"NAVIC L5 enabled\"\n            },\n            {\n              \"name\": \"sig_navicL5_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 3,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"gps\",\n        \"byte_offset\": 4,\n        \"data_type\": \"X4\",\n        \"description\": \"GPS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_gps_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GPS enabled\"\n            },\n            {\n              \"name\": \"sig_gps_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GPS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GPS L1C enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL1c_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL2c_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GPS L2C enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL2c_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL5_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"GPS L5 enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL5_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"gal\",\n        \"byte_offset\": 8,\n        \"data_type\": \"X4\",\n        \"description\": \"GAL signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_gal_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GAL enabled\"\n            },\n            {\n              \"name\": \"sig_gal_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE1_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GAL E1 enabled\"\n            },\n            {\n              \"name\": \"sig_galE1_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE5a_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GAL E5A enabled\"\n            },\n            {\n              \"name\": \"sig_galE5a_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE5b_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GAL E5B enabled\"\n            },\n            {\n              \"name\": \"sig_galE5b_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE6_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"GAL E6 enabled\"\n            },\n            {\n              \"name\": \"sig_galE6_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"qzss\",\n        \"byte_offset\": 12,\n        \"data_type\": \"X4\",\n        \"description\": \"QZSS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_qzss_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"QZSS enabled\"\n            },\n            {\n              \"name\": \"sig_qzss_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"QZSS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"QZSS L1C enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1c_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1s_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"QZSS L1S enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1s_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL2c_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"QZSS L2C enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL2c_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL5_en_val\",\n              \"bit_start\": 20,\n              \"bit_end\": 20,\n              \"description\": \"QZSS L5 enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL5_en_src\",\n              \"bit_start\": 21,\n              \"bit_end\": 23,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"bds\",\n        \"byte_offset\": 16,\n        \"data_type\": \"X4\",\n        \"description\": \"BDS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_bds_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"BDS enabled\"\n            },\n            {\n              \"name\": \"sig_bds_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB1i_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"BDS B1I enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB1i_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"BDS B1C enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB1c_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB2_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"BDS B2 enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB2_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB2a_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"BDS B2A enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB2a_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"glo\",\n        \"byte_offset\": 20,\n        \"data_type\": \"X2\",\n        \"description\": \"GLONASS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_glo_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GLO enabled\"\n            },\n            {\n              \"name\": \"sig_glo_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL1_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GLO L1 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL1_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL2_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GLO L2 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL2_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL3_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GLO L3 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL3_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"lnaMode\",\n        \"byte_offset\": 22,\n        \"data_type\": \"X2\",\n        \"description\": \"Mode for internal LNA\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"lna_lnaMode_reg_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 3,\n              \"description\": \"Current internal LNA gain\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"RF normal gain\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"RF now gain\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"RF bypass LNA\"\n                }\n              ]\n            },\n            {\n              \"name\": \"lna_lnaMode_cfg_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 7,\n              \"description\": \"Configured internal LNA gain\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"RF normal gain\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"RF low gain\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"RF bypass LNA\"\n                }\n              ]\n            },\n            {\n              \"name\": \"lna_lnaMode_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved1\",\n        \"byte_offset\": 24,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"reserved2\",\n        \"byte_offset\": 28,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"reserved3\",\n        \"byte_offset\": 32,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"uartBitfield\",\n        \"byte_offset\": 36,\n        \"data_type\": \"X4\",\n        \"description\": \"UART settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"uart_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"UART enabled\"\n            },\n            {\n              \"name\": \"uart_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_remaped_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"UART remapping\"\n            },\n            {\n              \"name\": \"uart_remaped_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_dataBits_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"UART number of used databits\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"8 bits\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"7 bits\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_dataBits_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_stopBits_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 13,\n              \"description\": \"UART number of stopbits\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"0.5 bits\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"1 bit\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"1.5 bits\"\n                },\n                {\n                  \"value\": 3,\n                  \"description\": \"2 bits\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_stopBits_src\",\n              \"bit_start\": 14,\n              \"bit_end\": 16,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_parityBits_val\",\n              \"bit_start\": 17,\n              \"bit_end\": 18,\n              \"description\": \"UART parity mode\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"None\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Odd\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"Even\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_parityBits_src\",\n              \"bit_start\": 19,\n              \"bit_end\": 21,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"uartBaudrate\",\n        \"byte_offset\": 40,\n        \"data_type\": \"X4\",\n        \"description\": \"UART baud rate\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"uart_baudrate_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 19,\n              \"description\": \"UART baud rate\"\n            },\n            {\n              \"name\": \"uart_baudrate_src\",\n              \"bit_start\": 20,\n              \"bit_end\": 22,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"spiBitfield\",\n        \"byte_offset\": 44,\n        \"data_type\": \"X4\",\n        \"description\": \"SPI settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"spi_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"SPI enabled\"\n            },\n            {\n              \"name\": \"spi_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_extendedTimeout_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"Disable timeout of the interface after 1.5 s\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"False\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"True\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_extendedTimeout_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_CPolarity_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"Clock polarity\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"Active high clock, SCLK idles low\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Active low clock, SCLK idles high\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_CPolarity_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_CPhase_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"Clock phase\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"Data captured on first edge of SCLK\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Data captured on second edge of SCLK\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_CPhase_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_maxFf_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 23,\n              \"description\": \"Number of bytes containing 0xFF to receive before switching off reception. Range: 0 (mechanism off) - 63\"\n            },\n            {\n              \"name\": \"spi_maxFf_src\",\n              \"bit_start\": 24,\n              \"bit_end\": 26,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"i2cBitfield\",\n        \"byte_offset\": 48,\n        \"data_type\": \"X4\",\n        \"description\": \"I2C settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"i2c_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"I2C enabled\"\n            },\n            {\n              \"name\": \"i2c_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_extendedTimeout_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"Disable timeout of the interface after 1.5 s\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"False\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"True\"\n                }\n              ]\n            },\n            {\n              \"name\": \"i2c_extendedTimeout_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_remap_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"I2C remapped\"\n            },\n            {\n              \"name\": \"i2c_remap_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_address_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 19,\n              \"description\": \"I2C address of the receiver (7 bits)\"\n            },\n            {\n              \"name\": \"i2c_address_src\",\n              \"bit_start\": 20,\n              \"bit_end\": 22,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved4\",\n        \"byte_offset\": 52,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"operatemode\",\n        \"byte_offset\": 53,\n        \"data_type\": \"X1\",\n        \"description\": \"General mode of operation\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"psm_operateMode_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": null,\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"PSM disabled\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"PSMOO\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"PSMCT\"\n                }\n              ]\n            },\n            {\n              \"name\": \"psm_operateMode_src\",\n              \"bit_start\": 2,\n              \"bit_end\": 4,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"psm_operateMode_state\",\n              \"bit_start\": 5,\n              \"bit_end\": 6,\n              \"description\": \"Power save mode state\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"ACQUISITION [or when PSM disabled]\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"TRACKING\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"POWER OPTIMIZED TRACKING\"\n                },\n                {\n                  \"value\": 3,\n                  \"description\": \"INACTIVE\"\n                }\n              ]\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"status\",\n        \"byte_offset\": 54,\n        \"data_type\": \"X1\",\n        \"description\": \"Antenna supervisor status\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"antSup_smStatus_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": \"Status of the antenna supervisor engine\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"INIT\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"DONTKNOW\"\n                }\n              ]\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved5\",\n        \"byte_offset\": 55,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 29\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        "Please review your earlier extraction against the consensus structure from multiple manuals.\n\nMessage version being compared: v1\n\n=== CONSENSUS (PRELIMINARY) STRUCTURE ===\n{\n  \"name\": \"UBX-MON-RCVRSTAT\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x40\",\n  \"description\": \"Status of the configurable receiver features\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"fixed\": 84\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"sbas\",\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"description\": \"SBAS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_sbas_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"SBAS enabled\"\n            },\n            {\n              \"name\": \"sig_sbas_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_sbasL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"SBAS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_sbasL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"navic\",\n        \"byte_offset\": 2,\n        \"data_type\": \"X1\",\n        \"description\": \"NAVIC signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_navic_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"NAVIC enabled\"\n            },\n            {\n              \"name\": \"sig_navic_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_navicL5_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"NAVIC L5 enabled\"\n            },\n            {\n              \"name\": \"sig_navicL5_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 3,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"gps\",\n        \"byte_offset\": 4,\n        \"data_type\": \"X4\",\n        \"description\": \"GPS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_gps_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GPS enabled\"\n            },\n            {\n              \"name\": \"sig_gps_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GPS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GPS L1C enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL1c_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL2c_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GPS L2C enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL2c_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gpsL5_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"GPS L5 enabled\"\n            },\n            {\n              \"name\": \"sig_gpsL5_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"gal\",\n        \"byte_offset\": 8,\n        \"data_type\": \"X4\",\n        \"description\": \"GAL signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_gal_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GAL enabled\"\n            },\n            {\n              \"name\": \"sig_gal_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE1_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GAL E1 enabled\"\n            },\n            {\n              \"name\": \"sig_galE1_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE5a_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GAL E5A enabled\"\n            },\n            {\n              \"name\": \"sig_galE5a_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE5b_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GAL E5B enabled\"\n            },\n            {\n              \"name\": \"sig_galE5b_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_galE6_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"GAL E6 enabled\"\n            },\n            {\n              \"name\": \"sig_galE6_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"qzss\",\n        \"byte_offset\": 12,\n        \"data_type\": \"X4\",\n        \"description\": \"QZSS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_qzss_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"QZSS enabled\"\n            },\n            {\n              \"name\": \"sig_qzss_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1ca_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"QZSS L1C/A enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1ca_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"QZSS L1C enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1c_en_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL1s_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"QZSS L1S enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL1s_en_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL2c_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"QZSS L2C enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL2c_en_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_qzssL5_en_val\",\n              \"bit_start\": 20,\n              \"bit_end\": 20,\n              \"description\": \"QZSS L5 enabled\"\n            },\n            {\n              \"name\": \"sig_qzssL5_en_src\",\n              \"bit_start\": 21,\n              \"bit_end\": 23,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"bds\",\n        \"byte_offset\": 16,\n        \"data_type\": \"X4\",\n        \"description\": \"BDS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_bds_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"BDS enabled\"\n            },\n            {\n              \"name\": \"sig_bds_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB1i_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"BDS B1I enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB1i_en_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB1c_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"BDS B1C enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB1c_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB2_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"BDS B2 enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB2_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_bdsB2a_en_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 16,\n              \"description\": \"BDS B2A enabled\"\n            },\n            {\n              \"name\": \"sig_bdsB2a_src\",\n              \"bit_start\": 17,\n              \"bit_end\": 19,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"glo\",\n        \"byte_offset\": 20,\n        \"data_type\": \"X2\",\n        \"description\": \"GLONASS signals enabled\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"sig_glo_en_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"GLO enabled\"\n            },\n            {\n              \"name\": \"sig_glo_en_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL1_en_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"GLO L1 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL1_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL2_en_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"GLO L2 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL2_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"sig_gloL3_en_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"GLO L3 enabled\"\n            },\n            {\n              \"name\": \"sig_gloL3_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"lnaMode\",\n        \"byte_offset\": 22,\n        \"data_type\": \"X2\",\n        \"description\": \"Mode for internal LNA\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"lna_lnaMode_reg_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 3,\n              \"description\": \"Current internal LNA gain\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"RF normal gain\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"RF now gain\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"RF bypass LNA\"\n                }\n              ]\n            },\n            {\n              \"name\": \"lna_lnaMode_cfg_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 7,\n              \"description\": \"Configured internal LNA gain\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"RF normal gain\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"RF low gain\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"RF bypass LNA\"\n                }\n              ]\n            },\n            {\n              \"name\": \"lna_lnaMode_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved1\",\n        \"byte_offset\": 24,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"reserved2\",\n        \"byte_offset\": 28,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"reserved3\",\n        \"byte_offset\": 32,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"uartBitfield\",\n        \"byte_offset\": 36,\n        \"data_type\": \"X4\",\n        \"description\": \"UART settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"uart_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"UART enabled\"\n            },\n            {\n              \"name\": \"uart_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_remaped_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"UART remapping\"\n            },\n            {\n              \"name\": \"uart_remaped_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_dataBits_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"UART number of used databits\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"8 bits\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"7 bits\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_dataBits_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_stopBits_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 13,\n              \"description\": \"UART number of stopbits\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"0.5 bits\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"1 bit\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"1.5 bits\"\n                },\n                {\n                  \"value\": 3,\n                  \"description\": \"2 bits\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_stopBits_src\",\n              \"bit_start\": 14,\n              \"bit_end\": 16,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"uart_parityBits_val\",\n              \"bit_start\": 17,\n              \"bit_end\": 18,\n              \"description\": \"UART parity mode\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"None\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Odd\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"Even\"\n                }\n              ]\n            },\n            {\n              \"name\": \"uart_parityBits_src\",\n              \"bit_start\": 19,\n              \"bit_end\": 21,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"uartBaudrate\",\n        \"byte_offset\": 40,\n        \"data_type\": \"X4\",\n        \"description\": \"UART baud rate\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"uart_baudrate_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 19,\n              \"description\": \"UART baud rate\"\n            },\n            {\n              \"name\": \"uart_baudrate_src\",\n              \"bit_start\": 20,\n              \"bit_end\": 22,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"spiBitfield\",\n        \"byte_offset\": 44,\n        \"data_type\": \"X4\",\n        \"description\": \"SPI settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"spi_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"SPI enabled\"\n            },\n            {\n              \"name\": \"spi_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_extendedTimeout_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"Disable timeout of the interface after 1.5 s\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"False\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"True\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_extendedTimeout_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_CPolarity_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"Clock polarity\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"Active high clock, SCLK idles low\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Active low clock, SCLK idles high\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_CPolarity_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_CPhase_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 12,\n              \"description\": \"Clock phase\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"Data captured on first edge of SCLK\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"Data captured on second edge of SCLK\"\n                }\n              ]\n            },\n            {\n              \"name\": \"spi_CPhase_src\",\n              \"bit_start\": 13,\n              \"bit_end\": 15,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"spi_maxFf_val\",\n              \"bit_start\": 16,\n              \"bit_end\": 23,\n              \"description\": \"Number of bytes containing 0xFF to receive before switching off reception. Range: 0 (mechanism off) - 63\"\n            },\n            {\n              \"name\": \"spi_maxFf_src\",\n              \"bit_start\": 24,\n              \"bit_end\": 26,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"i2cBitfield\",\n        \"byte_offset\": 48,\n        \"data_type\": \"X4\",\n        \"description\": \"I2C settings\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"i2c_enable_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"I2C enabled\"\n            },\n            {\n              \"name\": \"i2c_enable_src\",\n              \"bit_start\": 1,\n              \"bit_end\": 3,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_extendedTimeout_val\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"description\": \"Disable timeout of the interface after 1.5 s\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"False\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"True\"\n                }\n              ]\n            },\n            {\n              \"name\": \"i2c_extendedTimeout_src\",\n              \"bit_start\": 5,\n              \"bit_end\": 7,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_remap_val\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"I2C remapped\"\n            },\n            {\n              \"name\": \"i2c_remap_src\",\n              \"bit_start\": 9,\n              \"bit_end\": 11,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"i2c_address_val\",\n              \"bit_start\": 12,\n              \"bit_end\": 19,\n              \"description\": \"I2C address of the receiver (7 bits)\"\n            },\n            {\n              \"name\": \"i2c_address_src\",\n              \"bit_start\": 20,\n              \"bit_end\": 22,\n              \"description\": \"Data source\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved4\",\n        \"byte_offset\": 52,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"operatemode\",\n        \"byte_offset\": 53,\n        \"data_type\": \"X1\",\n        \"description\": \"General mode of operation\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"psm_operateMode_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": null,\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"PSM disabled\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"PSMOO\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"PSMCT\"\n                }\n              ]\n            },\n            {\n              \"name\": \"psm_operateMode_src\",\n              \"bit_start\": 2,\n              \"bit_end\": 4,\n              \"description\": \"Data source\"\n            },\n            {\n              \"name\": \"psm_operateMode_state\",\n              \"bit_start\": 5,\n              \"bit_end\": 6,\n              \"description\": \"Power save mode state\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"ACQUISITION [or when PSM disabled]\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"TRACKING\"\n                },\n                {\n                  \"value\": 2,\n                  \"description\": \"POWER OPTIMIZED TRACKING\"\n                },\n                {\n                  \"value\": 3,\n                  \"description\": \"INACTIVE\"\n                }\n              ]\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"status\",\n        \"byte_offset\": 54,\n        \"data_type\": \"X1\",\n        \"description\": \"Antenna supervisor status\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"antSup_smStatus_val\",\n              \"bit_start\": 0,\n              \"bit_end\": 1,\n              \"description\": \"Status of the antenna supervisor engine\",\n              \"value_descriptions\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"INIT\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"DONTKNOW\"\n                }\n              ]\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved5\",\n        \"byte_offset\": 55,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 29\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}\n\n\n=== REVIEW TASK ===\n\nCompare your original extraction (from earlier in this conversation) against:\n1. The PDF pages you originally read\n2. The consensus structure shown above\n3. The extractions from other manuals (if shown)\n\nDetermine which category applies:\n\n- **correct**: Your extraction matches the consensus structure\n- **extraction_error**: You made a mistake in your original extraction\n- **valid_change**: The protocol genuinely differs in this manual (documented change)\n- **version_bump**: This is a different version of the message (v0 vs v1 etc.)\n\n=== RESPONSE FORMAT ===\n\nReturn a JSON object:\n{\n  \"verdict\": \"correct\" | \"extraction_error\" | \"valid_change\" | \"version_bump\",\n  \"confidence\": \"high\" | \"medium\" | \"low\",\n  \"reasoning\": \"Explanation of your determination\",\n  \"corrected_structure\": null,  // or corrected JSON if extraction_error\n  \"change_details\": null  // or details if valid_change/version_bump\n}\n\nIf verdict is \"extraction_error\", provide the corrected structure in corrected_structure.\nIf verdict is \"valid_change\" or \"version_bump\", explain the difference in change_details."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"verdict\": \"correct\",\n  \"confidence\": \"high\",\n  \"reasoning\": \"The extracted structure for UBX-MON-RCVRSTAT matches the provided PDF screenshots and OCR perfectly. Byte offsets are correctly calculated (e.g., reserved5 at offset 55 with 29 bytes leads to the correct total length of 84 bytes). Bitfield definitions, including the inconsistent naming for BDS (using '_src' instead of '_en_src') and LNA mode bit gaps, were captured accurately and match the consensus structure. Data types (U1, X1, X4, etc.) are consistent with the field widths and descriptions.\",\n  \"corrected_structure\": null,\n  \"change_details\": null\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-RCVRSTAT",
+    "class_id": "0x0a",
+    "message_id": "0x40",
+    "description": "Status of the configurable receiver features",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "fixed": 84
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "sbas",
+          "byte_offset": 1,
+          "data_type": "X1",
+          "description": "SBAS signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_sbas_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "SBAS enabled"
+              },
+              {
+                "name": "sig_sbas_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_sbasL1ca_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "SBAS L1C/A enabled"
+              },
+              {
+                "name": "sig_sbasL1ca_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "navic",
+          "byte_offset": 2,
+          "data_type": "X1",
+          "description": "NAVIC signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_navic_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "NAVIC enabled"
+              },
+              {
+                "name": "sig_navic_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_navicL5_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "NAVIC L5 enabled"
+              },
+              {
+                "name": "sig_navicL5_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 3,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "gps",
+          "byte_offset": 4,
+          "data_type": "X4",
+          "description": "GPS signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_gps_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "GPS enabled"
+              },
+              {
+                "name": "sig_gps_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gpsL1ca_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "GPS L1C/A enabled"
+              },
+              {
+                "name": "sig_gpsL1ca_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gpsL1c_en_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "GPS L1C enabled"
+              },
+              {
+                "name": "sig_gpsL1c_en_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gpsL2c_en_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "GPS L2C enabled"
+              },
+              {
+                "name": "sig_gpsL2c_en_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gpsL5_en_val",
+                "bit_start": 16,
+                "bit_end": 16,
+                "description": "GPS L5 enabled"
+              },
+              {
+                "name": "sig_gpsL5_en_src",
+                "bit_start": 17,
+                "bit_end": 19,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "gal",
+          "byte_offset": 8,
+          "data_type": "X4",
+          "description": "GAL signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_gal_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "GAL enabled"
+              },
+              {
+                "name": "sig_gal_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_galE1_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "GAL E1 enabled"
+              },
+              {
+                "name": "sig_galE1_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_galE5a_en_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "GAL E5A enabled"
+              },
+              {
+                "name": "sig_galE5a_en_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_galE5b_en_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "GAL E5B enabled"
+              },
+              {
+                "name": "sig_galE5b_en_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_galE6_en_val",
+                "bit_start": 16,
+                "bit_end": 16,
+                "description": "GAL E6 enabled"
+              },
+              {
+                "name": "sig_galE6_en_src",
+                "bit_start": 17,
+                "bit_end": 19,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "qzss",
+          "byte_offset": 12,
+          "data_type": "X4",
+          "description": "QZSS signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_qzss_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "QZSS enabled"
+              },
+              {
+                "name": "sig_qzss_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_qzssL1ca_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "QZSS L1C/A enabled"
+              },
+              {
+                "name": "sig_qzssL1ca_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_qzssL1c_en_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "QZSS L1C enabled"
+              },
+              {
+                "name": "sig_qzssL1c_en_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_qzssL1s_en_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "QZSS L1S enabled"
+              },
+              {
+                "name": "sig_qzssL1s_en_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_qzssL2c_en_val",
+                "bit_start": 16,
+                "bit_end": 16,
+                "description": "QZSS L2C enabled"
+              },
+              {
+                "name": "sig_qzssL2c_en_src",
+                "bit_start": 17,
+                "bit_end": 19,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_qzssL5_en_val",
+                "bit_start": 20,
+                "bit_end": 20,
+                "description": "QZSS L5 enabled"
+              },
+              {
+                "name": "sig_qzssL5_en_src",
+                "bit_start": 21,
+                "bit_end": 23,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bds",
+          "byte_offset": 16,
+          "data_type": "X4",
+          "description": "BDS signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_bds_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "BDS enabled"
+              },
+              {
+                "name": "sig_bds_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_bdsB1i_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "BDS B1I enabled"
+              },
+              {
+                "name": "sig_bdsB1i_en_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_bdsB1c_en_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "BDS B1C enabled"
+              },
+              {
+                "name": "sig_bdsB1c_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_bdsB2_en_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "BDS B2 enabled"
+              },
+              {
+                "name": "sig_bdsB2_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_bdsB2a_en_val",
+                "bit_start": 16,
+                "bit_end": 16,
+                "description": "BDS B2A enabled"
+              },
+              {
+                "name": "sig_bdsB2a_src",
+                "bit_start": 17,
+                "bit_end": 19,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "glo",
+          "byte_offset": 20,
+          "data_type": "X2",
+          "description": "GLONASS signals enabled",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "sig_glo_en_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "GLO enabled"
+              },
+              {
+                "name": "sig_glo_en_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gloL1_en_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "GLO L1 enabled"
+              },
+              {
+                "name": "sig_gloL1_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gloL2_en_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "GLO L2 enabled"
+              },
+              {
+                "name": "sig_gloL2_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "sig_gloL3_en_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "GLO L3 enabled"
+              },
+              {
+                "name": "sig_gloL3_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lnaMode",
+          "byte_offset": 22,
+          "data_type": "X2",
+          "description": "Mode for internal LNA",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "lna_lnaMode_reg_val",
+                "bit_start": 0,
+                "bit_end": 3,
+                "description": "Current internal LNA gain",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "RF normal gain"
+                  },
+                  {
+                    "value": 1,
+                    "description": "RF now gain"
+                  },
+                  {
+                    "value": 2,
+                    "description": "RF bypass LNA"
+                  }
+                ]
+              },
+              {
+                "name": "lna_lnaMode_cfg_val",
+                "bit_start": 4,
+                "bit_end": 7,
+                "description": "Configured internal LNA gain",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "RF normal gain"
+                  },
+                  {
+                    "value": 1,
+                    "description": "RF low gain"
+                  },
+                  {
+                    "value": 2,
+                    "description": "RF bypass LNA"
+                  }
+                ]
+              },
+              {
+                "name": "lna_lnaMode_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 24,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "reserved2",
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "reserved3",
+          "byte_offset": 32,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "uartBitfield",
+          "byte_offset": 36,
+          "data_type": "X4",
+          "description": "UART settings",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "uart_enable_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "UART enabled"
+              },
+              {
+                "name": "uart_enable_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "uart_remaped_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "UART remapping"
+              },
+              {
+                "name": "uart_remaped_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "uart_dataBits_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "UART number of used databits",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "8 bits"
+                  },
+                  {
+                    "value": 1,
+                    "description": "7 bits"
+                  }
+                ]
+              },
+              {
+                "name": "uart_dataBits_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "uart_stopBits_val",
+                "bit_start": 12,
+                "bit_end": 13,
+                "description": "UART number of stopbits",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "0.5 bits"
+                  },
+                  {
+                    "value": 1,
+                    "description": "1 bit"
+                  },
+                  {
+                    "value": 2,
+                    "description": "1.5 bits"
+                  },
+                  {
+                    "value": 3,
+                    "description": "2 bits"
+                  }
+                ]
+              },
+              {
+                "name": "uart_stopBits_src",
+                "bit_start": 14,
+                "bit_end": 16,
+                "description": "Data source"
+              },
+              {
+                "name": "uart_parityBits_val",
+                "bit_start": 17,
+                "bit_end": 18,
+                "description": "UART parity mode",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "None"
+                  },
+                  {
+                    "value": 1,
+                    "description": "Odd"
+                  },
+                  {
+                    "value": 2,
+                    "description": "Even"
+                  }
+                ]
+              },
+              {
+                "name": "uart_parityBits_src",
+                "bit_start": 19,
+                "bit_end": 21,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "uartBaudrate",
+          "byte_offset": 40,
+          "data_type": "X4",
+          "description": "UART baud rate",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "uart_baudrate_val",
+                "bit_start": 0,
+                "bit_end": 19,
+                "description": "UART baud rate"
+              },
+              {
+                "name": "uart_baudrate_src",
+                "bit_start": 20,
+                "bit_end": 22,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "spiBitfield",
+          "byte_offset": 44,
+          "data_type": "X4",
+          "description": "SPI settings",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "spi_enable_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "SPI enabled"
+              },
+              {
+                "name": "spi_enable_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "spi_extendedTimeout_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "Disable timeout of the interface after 1.5 s",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "False"
+                  },
+                  {
+                    "value": 1,
+                    "description": "True"
+                  }
+                ]
+              },
+              {
+                "name": "spi_extendedTimeout_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "spi_CPolarity_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "Clock polarity",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "Active high clock, SCLK idles low"
+                  },
+                  {
+                    "value": 1,
+                    "description": "Active low clock, SCLK idles high"
+                  }
+                ]
+              },
+              {
+                "name": "spi_CPolarity_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "spi_CPhase_val",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "Clock phase",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "Data captured on first edge of SCLK"
+                  },
+                  {
+                    "value": 1,
+                    "description": "Data captured on second edge of SCLK"
+                  }
+                ]
+              },
+              {
+                "name": "spi_CPhase_src",
+                "bit_start": 13,
+                "bit_end": 15,
+                "description": "Data source"
+              },
+              {
+                "name": "spi_maxFf_val",
+                "bit_start": 16,
+                "bit_end": 23,
+                "description": "Number of bytes containing 0xFF to receive before switching off reception. Range: 0 (mechanism off) - 63"
+              },
+              {
+                "name": "spi_maxFf_src",
+                "bit_start": 24,
+                "bit_end": 26,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "i2cBitfield",
+          "byte_offset": 48,
+          "data_type": "X4",
+          "description": "I2C settings",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "i2c_enable_val",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "I2C enabled"
+              },
+              {
+                "name": "i2c_enable_src",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Data source"
+              },
+              {
+                "name": "i2c_extendedTimeout_val",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "Disable timeout of the interface after 1.5 s",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "False"
+                  },
+                  {
+                    "value": 1,
+                    "description": "True"
+                  }
+                ]
+              },
+              {
+                "name": "i2c_extendedTimeout_src",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "Data source"
+              },
+              {
+                "name": "i2c_remap_val",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "I2C remapped"
+              },
+              {
+                "name": "i2c_remap_src",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Data source"
+              },
+              {
+                "name": "i2c_address_val",
+                "bit_start": 12,
+                "bit_end": 19,
+                "description": "I2C address of the receiver (7 bits)"
+              },
+              {
+                "name": "i2c_address_src",
+                "bit_start": 20,
+                "bit_end": 22,
+                "description": "Data source"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved4",
+          "byte_offset": 52,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "operatemode",
+          "byte_offset": 53,
+          "data_type": "X1",
+          "description": "General mode of operation",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "psm_operateMode_val",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": null,
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "PSM disabled"
+                  },
+                  {
+                    "value": 1,
+                    "description": "PSMOO"
+                  },
+                  {
+                    "value": 2,
+                    "description": "PSMCT"
+                  }
+                ]
+              },
+              {
+                "name": "psm_operateMode_src",
+                "bit_start": 2,
+                "bit_end": 4,
+                "description": "Data source"
+              },
+              {
+                "name": "psm_operateMode_state",
+                "bit_start": 5,
+                "bit_end": 6,
+                "description": "Power save mode state",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "ACQUISITION [or when PSM disabled]"
+                  },
+                  {
+                    "value": 1,
+                    "description": "TRACKING"
+                  },
+                  {
+                    "value": 2,
+                    "description": "POWER OPTIMIZED TRACKING"
+                  },
+                  {
+                    "value": 3,
+                    "description": "INACTIVE"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "status",
+          "byte_offset": 54,
+          "data_type": "X1",
+          "description": "Antenna supervisor status",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "antSup_smStatus_val",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "Status of the antenna supervisor engine",
+                "value_descriptions": [
+                  {
+                    "value": 0,
+                    "description": "INIT"
+                  },
+                  {
+                    "value": 1,
+                    "description": "DONTKNOW"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved5",
+          "byte_offset": 55,
+          "data_type": {
+            "array_of": "U1",
+            "count": 29
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": {
+    "verdict": "correct",
+    "confidence": "high",
+    "reasoning": "The extracted structure for UBX-MON-RCVRSTAT matches the provided PDF screenshots and OCR perfectly. Byte offsets are correctly calculated (e.g., reserved5 at offset 55 with 29 bytes leads to the correct total length of 84 bytes). Bitfield definitions, including the inconsistent naming for BDS (using '_src' instead of '_en_src') and LNA mode bit gaps, were captured accurately and match the consensus structure. Data types (U1, X1, X4, etc.) are consistent with the field widths and descriptions.",
+    "corrected_structure": null,
+    "change_details": null
+  },
+  "uploaded_file_name": "files/ji2i54cgwtnq"
+}

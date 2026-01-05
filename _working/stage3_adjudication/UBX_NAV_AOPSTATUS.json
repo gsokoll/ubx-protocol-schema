@@ -1,0 +1,115 @@
+{
+  "message_name": "UBX-NAV-AOPSTATUS",
+  "num_extractions": 5,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-AOPSTATUS",
+      "class_id": "0x01",
+      "message_id": "0x60",
+      "description": "This message provides information on the status of the AssistNow Autonomous subsystem on the receiver.",
+      "message_type": "periodic_polled",
+      "payload": {
+        "length": {
+          "fixed": 16
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "aopCfg",
+            "byte_offset": 4,
+            "data_type": "X1",
+            "description": "AssistNow Autonomous configuration",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "useAOP",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "AOP enabled flag"
+                }
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "byte_offset": 5,
+            "data_type": "U1",
+            "description": "AssistNow Autonomous subsystem is idle (0) or running (not 0)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 6,
+            "data_type": {
+              "array_of": "U1",
+              "count": 10
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field 'status' is typed as X1 (Bitfield) in this document version, whereas the canonical definition is U1 (Integer). The binary layout is identical."
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field 'status' is typed as X1 (Bitfield) instead of U1."
+        ]
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Reserved field is named 'reserved1' instead of 'reserved0'."
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
+        ],
+        "structure": {
+          "status_data_type": "X1"
+        },
+        "reason": "Certain generations of documentation define the 'status' byte as X1 (bitfield) rather than U1 (integer). No specific bits are defined, and the binary layout remains 1 byte, making this a documentation style variation."
+      },
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "reserved_field_name": "reserved1"
+        },
+        "reason": "Legacy documentation naming convention for the reserved block."
+      }
+    ],
+    "reasoning": "The message structure is binary-compatible across all analyzed versions (16 bytes). The 'status' field is the primary point of variation in documentation: M8, M10 (SPG 5.10), and F10 define it as U1, while M9 and M10 (SPG 5.30) define it as X1. Given that F10 (the newest) and M8 (the oldest) both use U1, and the field value is described as '0 or not 0' (integer logic) rather than flag bits, U1 is chosen as canonical. The M8 'reserved1' naming is treated as a valid legacy variation."
+  }
+}

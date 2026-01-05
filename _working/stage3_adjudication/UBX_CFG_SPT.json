@@ -1,0 +1,113 @@
+{
+  "message_name": "UBX-CFG-SPT",
+  "num_extractions": 13,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-SPT",
+      "class_id": "0x06",
+      "message_id": "0x64",
+      "description": "Configure and start a sensor production test",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 12
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "sensorId",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "ID of the sensor to be tested; see UBX-MON-SPT for defined IDs"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 4,
+            "data_type": {
+              "array_of": "U1",
+              "count": 8
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct"
+      },
+      {
+        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+        "verdict": "extraction_error",
+        "issues": [
+          "Fields `navBbrMask` and `resetMode` belong to UBX-CFG-RST (0x06 0x04), not UBX-CFG-SPT (0x06 0x64).",
+          "Payload length is 4 instead of 12."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct"
+      },
+      {
+        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+        "verdict": "correct"
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct"
+      },
+      {
+        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+        "verdict": "correct"
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct"
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct"
+      },
+      {
+        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+        "verdict": "correct"
+      },
+      {
+        "source": "LAP120_Interfacedescription_UBX-20046191",
+        "verdict": "correct"
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "Minor naming difference in reserved fields (reserved1/reserved2 vs reserved0/reserved1)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+        "verdict": "correct"
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct"
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "12 out of 13 extractions agree on a specific 12-byte structure containing a `sensorId`. Extraction 2 provides fields (`navBbrMask`, `resetMode`) that are characteristic of the `UBX-CFG-RST` message, not `UBX-CFG-SPT`. This is a clear hallucination or parsing error in Extraction 2, likely confusing the similar message Class (0x06) but different ID (0x04 for RST vs 0x64 for SPT). The M8 extraction (Extraction 11) is structurally identical but uses slightly different indices for reserved field names, which is acceptable."
+  }
+}

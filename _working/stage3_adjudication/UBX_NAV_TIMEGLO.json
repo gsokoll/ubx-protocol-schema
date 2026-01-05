@@ -1,0 +1,212 @@
+{
+  "message_name": "UBX-NAV-TIMEGLO",
+  "num_extractions": 14,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-TIMEGLO",
+      "class_id": "0x01",
+      "message_id": "0x23",
+      "description": "GLONASS time solution. Reports the precise GLO time of the most recent navigation solution.",
+      "payload": {
+        "length": {
+          "fixed": 20
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "TOD",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "description": "GLONASS time of day (rounded to integer seconds)",
+            "unit": "s"
+          },
+          {
+            "name": "fTOD",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "Fractional part of TOD (range: +/-500000000). Precise GLO time = TOD + fTOD * 1e-9",
+            "unit": "ns"
+          },
+          {
+            "name": "Nt",
+            "byte_offset": 12,
+            "data_type": "U2",
+            "description": "Current date (range: 1-1461)",
+            "unit": "days"
+          },
+          {
+            "name": "N4",
+            "byte_offset": 14,
+            "data_type": "U1",
+            "description": "Four-year interval number starting from 1996"
+          },
+          {
+            "name": "valid",
+            "byte_offset": 15,
+            "data_type": "X1",
+            "description": "Validity flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "todValid",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "1 = Valid TOD and fTOD"
+                },
+                {
+                  "name": "dateValid",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "1 = Valid N4 and Nt"
+                }
+              ]
+            }
+          },
+          {
+            "name": "tAcc",
+            "byte_offset": 16,
+            "data_type": "U4",
+            "description": "Time Accuracy Estimate",
+            "unit": "ns"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "extraction_error",
+        "issues": [
+          "Mixed fields from UBX-NAV-TIMEGAL (Galileo fields like galWno, galTowValid) into a GLONASS (TIMEGLO) message."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "valid_variation",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395"
+        ],
+        "structure": {
+          "fields_offset_12": [
+            {
+              "name": "gloWno",
+              "type": "I2",
+              "offset": 12
+            },
+            {
+              "name": "leaps",
+              "type": "I1",
+              "offset": 14
+            },
+            {
+              "name": "valid",
+              "type": "X1",
+              "offset": 15,
+              "bits": [
+                "todValid",
+                "gloWnoValid",
+                "leapSValid"
+              ]
+            },
+            {
+              "name": "tAcc",
+              "type": "U4",
+              "offset": 16
+            }
+          ]
+        },
+        "reason": "M10 SPG 5.30 introduced GLONASS week number (gloWno) and leap second fields in place of the older Nt/N4 date fields."
+      },
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+        ],
+        "structure": {
+          "fields_offset_12": [
+            {
+              "name": "reserved0",
+              "type": "U1[8]",
+              "offset": 12
+            }
+          ]
+        },
+        "reason": "Some high-precision and early M10/F9 variants mark the last 8 bytes (previously Nt/N4/valid/tAcc) as reserved."
+      }
+    ],
+    "reasoning": "The message UBX-NAV-TIMEGLO exists in three distinct forms. The most common (canonical) form is found in u-blox 8, M9, and most F9 firmwares, containing GLONASS specific date fields Nt/N4. The M10 SPG 5.30 updated this to include the GLONASS week number (gloWno) and leap seconds. A third variant found in X20 and some HPG firmwares treats the second half of the 20-byte payload as reserved. Extraction 8 contains a major error where the LLM conflated GLONASS time with Galileo time (referencing Galileo week number and TOW in a GLONASS message)."
+  }
+}

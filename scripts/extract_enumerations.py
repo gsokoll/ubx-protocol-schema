@@ -157,19 +157,19 @@ def parse_enum_values(description: str) -> Optional[list[dict]]:
     return None
 
 
-def extract_enums_from_message(msg_path: Path) -> list[dict]:
-    """Extract all enum fields from a message JSON file."""
-    with open(msg_path) as f:
-        msg = json.load(f)
-    
+def extract_enums_from_message(msg: dict) -> list[dict]:
+    """Extract all enum fields from a message dict."""
     results = []
-    for field in msg.get("fields", []):
+    # Handle both direct fields and payload.fields structure
+    fields = msg.get("fields", []) or msg.get("payload", {}).get("fields", [])
+    
+    for field in fields:
         desc = field.get("description", "")
         enum_values = parse_enum_values(desc)
         
         if enum_values:
             results.append({
-                "message": msg["name"],
+                "message": msg.get("name", "UNKNOWN"),
                 "field_name": field["name"],
                 "data_type": field.get("data_type", "U1"),
                 "byte_offset": field.get("byte_offset"),
@@ -183,13 +183,25 @@ def extract_enums_from_message(msg_path: Path) -> list[dict]:
     return results
 
 
-def extract_all_enums(messages_dir: Path) -> list[dict]:
-    """Extract enums from all message files."""
+def extract_all_enums(messages_source: Path) -> list[dict]:
+    """Extract enums from messages (file or directory)."""
     all_enums = []
     
-    for msg_file in sorted(messages_dir.glob("*.json")):
-        enums = extract_enums_from_message(msg_file)
-        all_enums.extend(enums)
+    if messages_source.is_file():
+        # Combined JSON file (e.g., ubx_messages.json)
+        with open(messages_source) as f:
+            data = json.load(f)
+        messages = data.get("messages", [data])  # Handle both formats
+        for msg in messages:
+            enums = extract_enums_from_message(msg)
+            all_enums.extend(enums)
+    else:
+        # Directory of individual JSON files
+        for msg_file in sorted(messages_source.glob("*.json")):
+            with open(msg_file) as f:
+                msg = json.load(f)
+            enums = extract_enums_from_message(msg)
+            all_enums.extend(enums)
     
     return all_enums
 
@@ -288,24 +300,24 @@ def print_report(all_enums: list[dict], canonical: dict):
 
 def main():
     parser = argparse.ArgumentParser(description="Extract enumeration values from field descriptions")
-    parser.add_argument("--messages-dir", type=Path, default=Path("data/ubx/validated/messages"),
-                        help="Directory containing validated message JSON files")
+    parser.add_argument("--messages", type=Path, default=Path("data/messages/ubx_messages.json"),
+                        help="Messages JSON file or directory containing message files")
     parser.add_argument("--report", action="store_true",
                         help="Print extraction report without modifying files")
     parser.add_argument("--output", type=Path,
                         help="Output canonical enumerations to JSON file")
     parser.add_argument("--apply", action="store_true",
                         help="Apply enumeration fields to message JSON files")
-    parser.add_argument("--enums-file", type=Path, default=Path("data/ubx/validated/enumerations.json"),
+    parser.add_argument("--enums-file", type=Path, default=Path("data/messages/enumerations.json"),
                         help="Canonical enumerations file (for --apply)")
     args = parser.parse_args()
     
-    if not args.messages_dir.exists():
-        print(f"Error: Messages directory not found: {args.messages_dir}")
+    if not args.messages.exists():
+        print(f"Error: Messages source not found: {args.messages}")
         return 1
     
     # Extract all enums
-    all_enums = extract_all_enums(args.messages_dir)
+    all_enums = extract_all_enums(args.messages)
     canonical = build_canonical_enums(all_enums)
     
     if args.report or (not args.output and not args.apply):
