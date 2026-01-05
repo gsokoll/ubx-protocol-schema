@@ -1,0 +1,83 @@
+{
+  "message_name": "UBX-RXM-MEASC12",
+  "num_extractions": 2,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-RXM-MEASC12",
+      "class_id": "0x02",
+      "message_id": "0x82",
+      "description": "Satellite measurements for CloudLocate location service (second 12 bytes message)",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 0,
+            "formula": "N",
+            "min": 0
+          }
+        },
+        "fields": [
+          {
+            "name": "payload",
+            "byte_offset": 0,
+            "data_type": {
+              "array_of": "U1",
+              "count": "N"
+            },
+            "description": "The message payload"
+          }
+        ],
+        "repeated_groups": []
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "valid_variation",
+        "issues": [
+          "Inferred structural repetition not explicitly defined in the standard field list of the manual, though logically consistent with the message purpose."
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+        ],
+        "structure": {
+          "payload": {
+            "length": {
+              "variable": {
+                "formula": "N * 12"
+              }
+            },
+            "repeated_groups": [
+              {
+                "name": "measurements",
+                "repetition_type": "variable_count",
+                "group_size_bytes": 12,
+                "fields": [
+                  {
+                    "name": "payload",
+                    "data_type": {
+                      "array_of": "U1",
+                      "count": 12
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "reason": "This variation models the payload as repeating 12-byte blocks. While the u-blox manual usually defines the payload as an opaque U1[N] array (as these messages are meant to be passed directly to CloudLocate), the '12' in the message name refers to the fact that it contains 12 bytes of data per satellite measurement. This structure is a more granular representation of that reality."
+      }
+    ],
+    "reasoning": "Both extractions are largely accurate, but they represent the payload at different levels of abstraction. Extraction 1 follows the literal presentation in the u-blox Interface Descriptions (SPG 5.10 and 5.30), which describe the payload as a single variable-length byte array (U1[N]) to indicate its opaque nature for the host. Extraction 2 provides a structured interpretation by grouping the data into 12-byte units, which is logically correct given the message name 'MEASC12' but is not how the fields are typically tabulated in the official PDF documentation."
+  }
+}

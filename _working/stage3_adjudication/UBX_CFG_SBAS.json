@@ -1,0 +1,190 @@
+{
+  "message_name": "UBX-CFG-SBAS",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-SBAS",
+      "class_id": "0x06",
+      "message_id": "0x16",
+      "description": "SBAS configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "mode",
+            "byte_offset": 0,
+            "data_type": "X1",
+            "description": "SBAS mode",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "enabled",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "SBAS enabled (1) / disabled (0)"
+                },
+                {
+                  "name": "test",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode"
+                }
+              ]
+            }
+          },
+          {
+            "name": "usage",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "SBAS usage",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "range",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Use SBAS GEOs as a ranging source (for navigation)"
+                },
+                {
+                  "name": "diffCorr",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "Use SBAS differential corrections"
+                },
+                {
+                  "name": "integrity",
+                  "bit_start": 2,
+                  "bit_end": 2,
+                  "description": "Use SBAS integrity information"
+                }
+              ]
+            }
+          },
+          {
+            "name": "maxSBAS",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3)"
+          },
+          {
+            "name": "scanmode2",
+            "byte_offset": 3,
+            "data_type": "X1",
+            "description": "Continuation of scanmode bitmask. Bits 0-6 correspond to PRN 152-158.",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "PRN152",
+                  "bit_start": 0,
+                  "bit_end": 0
+                },
+                {
+                  "name": "PRN153",
+                  "bit_start": 1,
+                  "bit_end": 1
+                },
+                {
+                  "name": "PRN154",
+                  "bit_start": 2,
+                  "bit_end": 2
+                },
+                {
+                  "name": "PRN155",
+                  "bit_start": 3,
+                  "bit_end": 3
+                },
+                {
+                  "name": "PRN156",
+                  "bit_start": 4,
+                  "bit_end": 4
+                },
+                {
+                  "name": "PRN157",
+                  "bit_start": 5,
+                  "bit_end": 5
+                },
+                {
+                  "name": "PRN158",
+                  "bit_start": 6,
+                  "bit_end": 6
+                }
+              ]
+            }
+          },
+          {
+            "name": "scanmode1",
+            "byte_offset": 4,
+            "data_type": "X4",
+            "description": "Which SBAS PRN numbers to search for (bitmask). Bits 0-31 correspond to PRN 120-151.",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "PRN120",
+                  "bit_start": 0,
+                  "bit_end": 0
+                },
+                {
+                  "name": "PRN151",
+                  "bit_start": 31,
+                  "bit_end": 31
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "Inverted bits for 'usage' field (listed bit 0 as integrity, should be range)",
+          "Incorrect PRN mapping for 'scanmode1' (listed bit 0 as PRN119, should be PRN120)",
+          "Incorrect bit definitions for 'scanmode2' (hallucinated PRN159 for bit 7, which is usually reserved)"
+        ]
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "Seven out of eight extractions (covering M9, F9, and ZED-F9H generations) are consistent with each other and the standard u-blox protocol definition where 'usage' bit 0 is 'range' and 'scanmode1' bit 0 is PRN 120. Extraction 8 (M8) contains significant errors: it reverses the bit order for the 'usage' field (likely reading a table from bottom-to-top or misinterpreting row order) and shifts the PRN mapping for the scanmodes (starting at 119 instead of 120), which is not consistent with the documented SBAS PRN assignments for u-blox receivers."
+  }
+}

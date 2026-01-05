@@ -1,0 +1,154 @@
+{
+  "message_name": "UBX-RXM-RTCM",
+  "num_extractions": 10,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-RXM-RTCM",
+      "class_id": "0x02",
+      "message_id": "0x32",
+      "description": "RTCM input status",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x02 for this version)"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "RTCM input status flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "crcFailed",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "0 when RTCM message received and passed CRC check, 1 when failed"
+                },
+                {
+                  "name": "msgUsed",
+                  "bit_start": 1,
+                  "bit_end": 2,
+                  "description": "2 = RTCM message used successfully, 1 = not used, 0 = do not know"
+                }
+              ]
+            }
+          },
+          {
+            "name": "subType",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Message subtype, only applicable to u-blox proprietary RTCM message 4072"
+          },
+          {
+            "name": "refStation",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Reference station ID"
+          },
+          {
+            "name": "msgType",
+            "byte_offset": 6,
+            "data_type": "U2",
+            "description": "Message type"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": [
+          "Description includes deprecation warning for this specific firmware version"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "valid_variation",
+        "issues": [
+          "Byte offset 6 is marked as Reserved instead of msgType"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Mismapped bitfield 'msgUsed' as a standalone U2 field at offset 2",
+          "Subsequent field offsets are shifted incorrectly (subType at 4, refStation missing)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": [
+          "Byte offset 6 is marked as Reserved instead of msgType"
+        ]
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Byte offset 6 is marked as Reserved array of U1[2] instead of U2 msgType"
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "valid_variation",
+        "issues": [
+          "Byte offset 6 is marked as Reserved instead of msgType"
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "In several newer F9 series firmwares, the msgType field at offset 6 is documented as Reserved, although the payload length remains 8 bytes."
+      }
+    ],
+    "reasoning": "The UBX-RXM-RTCM message is a stable 8-byte message. The most significant variation between manuals is whether the last two bytes (offset 6) are explicitly labeled as 'msgType' (the RTCM message ID) or 'Reserved'. Both are logically the same in binary structure. Extraction 4 is a clear error where the parser failed to handle the bitfield within the 'flags' byte, resulting in an offset cascade. Extraction 2 notes that the message is deprecated in favor of UBX-RXM-COR in newer F9 LAP firmware."
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "message_name": "UBX-CFG-DOSC",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-DOSC",
+      "class_id": "0x06",
+      "message_id": "0x61",
+      "description": "Disciplined oscillator configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + numOsc * 32",
+            "min": 4
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "numOsc",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of oscillators to configure"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "oscillators",
+            "repetition_type": "count_field",
+            "count_field": "numOsc",
+            "group_size_bytes": 32,
+            "base_offset": 4,
+            "fields": [
+              {
+                "name": "oscId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Id of oscillator. 0 - internal oscillator, 1 - external oscillator"
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "flags",
+                "byte_offset": 2,
+                "data_type": "X2",
+                "description": "flags",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "isCalibrated",
+                      "bit_start": 0,
+                      "bit_end": 0,
+                      "description": "1 if the oscillator gain is calibrated"
+                    },
+                    {
+                      "name": "controlIf",
+                      "bit_start": 1,
+                      "bit_end": 3,
+                      "description": "Communication interface for oscillator control"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "freq",
+                "byte_offset": 4,
+                "data_type": "U4",
+                "description": "Nominal frequency of source",
+                "unit": "Hz",
+                "scale": {
+                  "raw": "2^-2",
+                  "multiplier": 0.25
+                }
+              },
+              {
+                "name": "phaseOffset",
+                "byte_offset": 8,
+                "data_type": "I4",
+                "description": "Intended phase offset of the oscillator relative to the leading edge of the time pulse",
+                "unit": "ps"
+              },
+              {
+                "name": "withTemp",
+                "byte_offset": 12,
+                "data_type": "U4",
+                "description": "Oscillator stability limit over operating temperature range",
+                "unit": "ppb",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "withAge",
+                "byte_offset": 16,
+                "data_type": "U4",
+                "description": "Oscillator stability with age",
+                "unit": "ppb/year",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "timeToTemp",
+                "byte_offset": 20,
+                "data_type": "U2",
+                "description": "Minimum time for temp variation to move freq by 'withTemp'",
+                "unit": "s"
+              },
+              {
+                "name": "reserved3",
+                "byte_offset": 22,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 2
+                },
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "gainVco",
+                "byte_offset": 24,
+                "data_type": "I4",
+                "description": "Oscillator control gain/slope",
+                "unit": "ppb/raw LSB",
+                "scale": {
+                  "raw": "2^-16",
+                  "multiplier": 1.52587890625e-05
+                }
+              },
+              {
+                "name": "gainUncertainty",
+                "byte_offset": 28,
+                "data_type": "U1",
+                "description": "Relative uncertainty of oscillator control gain/slope",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "reserved4",
+                "byte_offset": 29,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 3
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The single extraction provided is from the u-blox 8 M8 Receiver Description and Protocol Specification. The structure (header + repeated block of 32 bytes) is consistent with u-blox message definitions for this generation. The specific scaling factors (2^-2 for frequency, 2^-8 for stability, 2^-16 for gain) are specific to the DOSC message and appear correctly transcribed."
+  }
+}

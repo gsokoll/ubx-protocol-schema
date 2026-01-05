@@ -1,0 +1,718 @@
+{
+  "message_name": "UBX-RXM-PMP",
+  "protocol_version": 1,
+  "status": "split",
+  "agreement_ratio": 0.4,
+  "winning_structure": {
+    "name": "UBX-RXM-PMP",
+    "class_id": "0x02",
+    "message_id": "0x72",
+    "description": "Point to Multipoint (LBAND) input message",
+    "message_type": "input",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 24,
+          "formula": "24 + numBytesUserData",
+          "min": 24,
+          "max": 528
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "numBytesUserData",
+          "byte_offset": 2,
+          "data_type": "U2",
+          "description": "Number of bytes the userData block has in this frame (0...504)"
+        },
+        {
+          "name": "timeTag",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Time since startup when frame started - if max value of type is reached the counter will be reset"
+        },
+        {
+          "name": "uniqueWord",
+          "byte_offset": 8,
+          "data_type": {
+            "array_of": "U4",
+            "count": 2
+          },
+          "description": "Received unique words"
+        },
+        {
+          "name": "serviceIdentifier",
+          "byte_offset": 16,
+          "data_type": "U2",
+          "description": "Received service identifier"
+        },
+        {
+          "name": "spare",
+          "byte_offset": 18,
+          "data_type": "U1",
+          "description": "Received spare data"
+        },
+        {
+          "name": "uniqueWordBitErrors",
+          "byte_offset": 19,
+          "data_type": "U1",
+          "description": "Number of bit errors in both unique words"
+        },
+        {
+          "name": "fecBits",
+          "byte_offset": 20,
+          "data_type": "U2",
+          "description": "Number of bits corrected by FEC (forward error correction)"
+        },
+        {
+          "name": "ebno",
+          "byte_offset": 22,
+          "data_type": "U1",
+          "scale": {
+            "raw": "2^-3",
+            "multiplier": 0.125
+          },
+          "unit": "dB",
+          "description": "Energy per bit to noise power spectral density ratio"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 23,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "userData",
+          "byte_offset": 24,
+          "data_type": {
+            "array_of": "U1",
+            "count": "N"
+          },
+          "description": "Received user data, which is variable (=numBytesUserData)"
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "92f2bc5744be7b2c",
+  "agreeing_sources": [
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+  ],
+  "disagreeing_sources": [
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-RXM-PMP",
+        "class_id": "0x02",
+        "message_id": "0x72",
+        "description": "PMP (LBAND) message",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 24,
+              "formula": "24 + numSV * 24",
+              "min": 24
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 22
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 23,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satelliteData",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 24,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMS",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63) Err"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "0e7ee888b3a60633"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-RXM-PMP",
+        "class_id": "0x02",
+        "message_id": "0x72",
+        "description": "Point to Multipoint (LBAND) input message",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 24,
+              "formula": "24 + numBytesUserData",
+              "min": 24
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numBytesUserData",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of bytes the userData block has in this frame (0...504)"
+            },
+            {
+              "name": "timeTag",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Time since startup when frame started - if max value of type is reached the counter will be reset",
+              "unit": "ms"
+            },
+            {
+              "name": "uniqueWord",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U4",
+                "count": 2
+              },
+              "description": "Received unique words"
+            },
+            {
+              "name": "serviceIdentifier",
+              "byte_offset": 16,
+              "data_type": "U2",
+              "description": "Received service identifier"
+            },
+            {
+              "name": "spare",
+              "byte_offset": 18,
+              "data_type": "U1",
+              "description": "Received spare data"
+            },
+            {
+              "name": "uniqueWordBitErrors",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of bit errors in both unique words"
+            },
+            {
+              "name": "fecBits",
+              "byte_offset": 20,
+              "data_type": "U2",
+              "description": "Number of bits corrected by FEC (forward error correction)"
+            },
+            {
+              "name": "ebno",
+              "byte_offset": 22,
+              "data_type": "U1",
+              "description": "Energy per bit to noise power spectral density ratio",
+              "unit": "dB",
+              "scale": {
+                "raw": "2^-3",
+                "multiplier": 0.125
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 23,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "userData",
+              "repetition_type": "count_field",
+              "count_field": "numBytesUserData",
+              "group_size_bytes": 1,
+              "base_offset": 24,
+              "fields": [
+                {
+                  "name": "data",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Individual byte of user data"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "17a391682e58c86f"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-RXM-PMP",
+        "class_id": "0x02",
+        "message_id": "0x72",
+        "description": "Point to Multipoint (LBAND) input message",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 24,
+              "formula": "24 + numBytesUserData",
+              "min": 24,
+              "max": 528
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numBytesUserData",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of bytes the userData block has in this frame (0...504)"
+            },
+            {
+              "name": "timeTag",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "Time since startup when frame started - if max value of type is reached the counter will be reset"
+            },
+            {
+              "name": "uniqueWord",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U4",
+                "count": 2
+              },
+              "description": "Received unique words"
+            },
+            {
+              "name": "serviceIdentifier",
+              "byte_offset": 16,
+              "data_type": "U2",
+              "description": "Received service identifier"
+            },
+            {
+              "name": "spare",
+              "byte_offset": 18,
+              "data_type": "U1",
+              "description": "Received spare data"
+            },
+            {
+              "name": "uniqueWordBitErrors",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of bit errors in both unique words"
+            },
+            {
+              "name": "fecBits",
+              "byte_offset": 20,
+              "data_type": "U2",
+              "description": "Number of bits corrected by FEC (forward error correction)"
+            },
+            {
+              "name": "ebno",
+              "byte_offset": 22,
+              "data_type": "U1",
+              "scale": {
+                "raw": "2^-3",
+                "multiplier": 0.125
+              },
+              "unit": "dB",
+              "description": "Energy per bit to noise power spectral density ratio"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 23,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "userData",
+              "byte_offset": 24,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Received user data, which is variable (=numBytesUserData)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "92f2bc5744be7b2c"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-RXM-PMP",
+        "class_id": "0x02",
+        "message_id": "0x72",
+        "description": "Point to Multipoint (LBAND) input message",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 24,
+              "formula": "24 + numBytesUserData",
+              "min": 24
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numBytesUserData",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of bytes the userData block has in this frame (0...504)"
+            },
+            {
+              "name": "timeTag",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Time since startup when frame started - if max value of type is reached the counter will be reset",
+              "unit": "ms"
+            },
+            {
+              "name": "uniqueWord",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U4",
+                "count": 2
+              },
+              "description": "Received unique words"
+            },
+            {
+              "name": "serviceIdentifier",
+              "byte_offset": 16,
+              "data_type": "U2",
+              "description": "Received service identifier"
+            },
+            {
+              "name": "spare",
+              "byte_offset": 18,
+              "data_type": "U1",
+              "description": "Received spare data"
+            },
+            {
+              "name": "uniqueWordBitErrors",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of bit errors in both unique words"
+            },
+            {
+              "name": "fecBits",
+              "byte_offset": 20,
+              "data_type": "U2",
+              "description": "Number of bits corrected by FEC (forward error correction)"
+            },
+            {
+              "name": "ebno",
+              "byte_offset": 22,
+              "data_type": "U1",
+              "description": "Energy per bit to noise power spectral density ratio",
+              "scale": {
+                "raw": "2^-3",
+                "multiplier": 0.125
+              },
+              "unit": "dB"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 23,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "userData",
+              "byte_offset": 24,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Received user data, which is variable (=numBytesUserData)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "92f2bc5744be7b2c"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-RXM-PMP",
+        "class_id": "0x02",
+        "message_id": "0x72",
+        "description": "Point to Multipoint (LBAND) input message",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 24,
+              "count_field": "numBytesUserData"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "numBytesUserData",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of bytes the userData block has in this frame (0...504)"
+            },
+            {
+              "name": "timeTag",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Time since startup when frame started - if max value of type is reached the counter will be reset",
+              "unit": "ms"
+            },
+            {
+              "name": "uniqueWord",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U4",
+                "count": 2
+              },
+              "description": "Received unique words"
+            },
+            {
+              "name": "serviceIdentifier",
+              "byte_offset": 16,
+              "data_type": "U2",
+              "description": "Received service identifier"
+            },
+            {
+              "name": "spare",
+              "byte_offset": 18,
+              "data_type": "U1",
+              "description": "Received spare data"
+            },
+            {
+              "name": "uniqueWordBitErrors",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of bit errors in both unique words"
+            },
+            {
+              "name": "fecBits",
+              "byte_offset": 20,
+              "data_type": "U2",
+              "description": "Number of bits corrected by FEC (forward error correction)"
+            },
+            {
+              "name": "ebno",
+              "byte_offset": 22,
+              "data_type": "U1",
+              "description": "Energy per bit to noise power spectral density ratio",
+              "unit": "dB",
+              "scale": {
+                "raw": "2^-3",
+                "multiplier": 0.125
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 23,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "userDataBlock",
+              "repetition_type": "count_field",
+              "count_field": "numBytesUserData",
+              "base_offset": 24,
+              "group_size_bytes": 1,
+              "fields": [
+                {
+                  "name": "userData",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Received user data, which is variable (=numBytesUserData)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "386f03c5c0785a9a"
+    }
+  ]
+}

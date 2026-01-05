@@ -1,0 +1,14 @@
+/home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/deps/serde-81633f1e08c4f3f6.d: /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/build/serde-2bfb92bfee02571d/out/private.rs
+
+/home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/deps/libserde-81633f1e08c4f3f6.rlib: /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/build/serde-2bfb92bfee02571d/out/private.rs
+
+/home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/deps/libserde-81633f1e08c4f3f6.rmeta: /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/build/serde-2bfb92bfee02571d/out/private.rs
+
+/home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/cmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/build/serde-2bfb92bfee02571d/out/private.rs:
+
+# env-dep:OUT_DIR=/home/cmp/ros2_ws/src/ubx-protocol-schema/testing/external/ublox_rs_validator/target/release/build/serde-2bfb92bfee02571d/out

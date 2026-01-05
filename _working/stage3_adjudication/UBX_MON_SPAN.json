@@ -1,0 +1,188 @@
+{
+  "message_name": "UBX-MON-SPAN",
+  "num_extractions": 13,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MON-SPAN",
+      "class_id": "0x0a",
+      "message_id": "0x31",
+      "description": "Signal characteristics and spectrum analyzer message. Displays spectrum data and PGA gain for each RF path.",
+      "message_type": "periodic_polled",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + numRfBlocks * 272",
+            "min": 4,
+            "count_field": "numRfBlocks"
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "numRfBlocks",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of RF blocks included"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "rfBlocks",
+            "repetition_type": "count_field",
+            "count_field": "numRfBlocks",
+            "group_size_bytes": 272,
+            "base_offset": 4,
+            "fields": [
+              {
+                "name": "spectrum",
+                "byte_offset": 0,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 256
+                },
+                "description": "Spectrum data (number of points = span/res) [Uuu.ff dB]",
+                "unit": "dB",
+                "scale": {
+                  "raw": "2^-2",
+                  "multiplier": 0.25
+                }
+              },
+              {
+                "name": "span",
+                "byte_offset": 256,
+                "data_type": "U4",
+                "description": "Spectrum span",
+                "unit": "Hz"
+              },
+              {
+                "name": "res",
+                "byte_offset": 260,
+                "data_type": "U4",
+                "description": "Resolution of the spectrum",
+                "unit": "Hz"
+              },
+              {
+                "name": "center",
+                "byte_offset": 264,
+                "data_type": "U4",
+                "description": "Center of spectrum span",
+                "unit": "Hz"
+              },
+              {
+                "name": "pga",
+                "byte_offset": 268,
+                "data_type": "U1",
+                "description": "Programmable gain amplifier",
+                "unit": "dB"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 269,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 3
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": [
+          "Missing scaling factor for 'spectrum' field (likely missing in source document text)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": [
+          "Missing scaling factor for 'spectrum' field (likely missing in source document text)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": [
+          "Missing scaling factor for 'spectrum' field (likely missing in source document text)"
+        ]
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": [
+          "Missing scaling factor for 'spectrum' field (likely missing in source document text)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The message structure is identical across all 13 extractions, covering multiple device generations (M8, M9, M10, F9, F10). The payload consists of a 4-byte header followed by N blocks of 272 bytes. All field offsets and types align perfectly. A subset of extractions (sources 5, 6, 7, 8) lacks the scaling factor (0.25) for the spectrum array, but this appears to be due to less detailed descriptions in those specific PDF manuals rather than a protocol difference; the field size and message ID remain the same."
+  }
+}

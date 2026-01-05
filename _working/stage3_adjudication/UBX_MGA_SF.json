@@ -1,0 +1,135 @@
+{
+  "message_name": "UBX-MGA-SF",
+  "num_extractions": 5,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MGA-SF",
+      "class_id": "0x13",
+      "message_id": "0x10",
+      "description": "Sensor fusion initialization data",
+      "message_type": "input/output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 96,
+            "formula": "96 + nValA * 8 + nValB * 8",
+            "min": 96
+          }
+        },
+        "fields": [
+          {
+            "name": "type",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message type (0x00 for this type)"
+          },
+          {
+            "name": "version",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "nValA",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Number of values in sensor data repeated group"
+          },
+          {
+            "name": "nValB",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "Number of values in sensor data repeated group B"
+          },
+          {
+            "name": "age",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Age of calibration data. (Set to 0 if unknown)",
+            "unit": "s"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 6,
+            "data_type": {
+              "array_of": "U1",
+              "count": 90
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "groupA",
+            "repetition_type": "count_field",
+            "count_field": "nValA",
+            "group_size_bytes": 8,
+            "base_offset": 96,
+            "fields": [
+              {
+                "name": "reserved1",
+                "byte_offset": 0,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 8
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          },
+          {
+            "name": "groupB",
+            "repetition_type": "count_field",
+            "count_field": "nValB",
+            "group_size_bytes": 8,
+            "base_offset": "96 + nValA * 8",
+            "fields": [
+              {
+                "name": "reserved2",
+                "byte_offset": 0,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 8
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "All five extractions describe the exact same binary protocol structure. The message consists of a 96-byte fixed header containing two counts (nValA, nValB) and a 90-byte reserved block, followed by two variable-length repeated groups of 8-byte reserved blocks. Minor differences in JSON values (e.g., 'S' vs 's' for units, group names like 'repeatedGroupA' vs 'groupA') are stylistic artifacts of the extraction process rather than legitimate protocol variations. The canonical structure standardizes these names and units."
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "message_name": "UBX-LOG-STRING",
+  "num_extractions": 11,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-LOG-STRING",
+      "class_id": "0x21",
+      "message_id": "0x04",
+      "description": "Store arbitrary string in on-board flash",
+      "message_type": "command",
+      "payload": {
+        "length": {
+          "variable": {
+            "min": 0,
+            "max": 256,
+            "formula": "N"
+          }
+        },
+        "fields": [
+          {
+            "name": "bytes",
+            "byte_offset": 0,
+            "data_type": {
+              "array_of": "U1",
+              "count": "N"
+            },
+            "description": "The string of bytes to be logged"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "valid_variation",
+        "issues": [
+          "Models U1[N] payload as repeated group instead of array field"
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+        ],
+        "structure": {
+          "payload": {
+            "repeated_groups": [
+              {
+                "repetition_type": "fill_remaining",
+                "fields": [
+                  {
+                    "data_type": "U1"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "reason": "These extractions model the variable length byte sequence (U1[N]) as a repeated group of single bytes filling the remaining payload space. This is binary-equivalent to the array formulation but structurally more verbose."
+      }
+    ],
+    "reasoning": "The message UBX-LOG-STRING is a simple command to write N bytes (0 to 256) to flash. The standard UBX notation for a byte string is a single field of type `U1[N]` or similar. The canonical form chosen uses the `array_of` construct, which best represents this primitive array. The majority of extractions (8 out of 11) modeled this as a `repeated_group` with `fill_remaining`. While this produces the same binary layout, the array field is semantically cleaner for a raw byte buffer. Both 'command' and 'input' are accepted as valid message types. All extractions successfully identified the Class (0x21), ID (0x04), and the variable length nature of the payload."
+  }
+}

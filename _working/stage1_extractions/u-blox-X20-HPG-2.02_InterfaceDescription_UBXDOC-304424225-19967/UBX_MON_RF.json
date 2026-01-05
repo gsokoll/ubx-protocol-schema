@@ -1,0 +1,185 @@
+{
+  "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967.pdf",
+  "message_name": "UBX-MON-RF",
+  "extraction_timestamp": "2026-01-04T03:13:51.590725+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 93,
+    "end": 94
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-RF\nExpected IDs from TOC: class_id=0x0a, message_id=0x38\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-RF\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n=== UBX-MON-RF ===\nThis message has a repeated block structure. Header fields:\n- version(U1)@0, nBlocks(U1)@1, reserved0(U1[2])@2\n\nRepeated block (per RF block, ~24 bytes each) includes:\n- blockId, flags, antStatus, antPower, postStatus, reserved1\n- noisePerMS, agcCnt, jamInd, ofsI, magI, ofsQ, magQ, reserved2\n\nExtract ALL fields in the repeated block. Do NOT skip 'flags' field.\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-MON-RF\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-MON-RF\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-MON-RF\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-RF\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x38\",\n  \"description\": \"RF information\",\n  \"message_type\": \"periodic/polled\",\n  \"payload\": {\n    \"length\": {\n      \"variable\": {\n        \"base\": 4,\n        \"formula\": \"4 + nBlocks * 24\",\n        \"min\": 4\n      }\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"name\": \"nBlocks\",\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"description\": \"The number of RF blocks included\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 2,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ],\n    \"repeated_groups\": [\n      {\n        \"name\": \"rfBlock\",\n        \"repetition_type\": \"count_field\",\n        \"count_field\": \"nBlocks\",\n        \"group_size_bytes\": 24,\n        \"base_offset\": 4,\n        \"fields\": [\n          {\n            \"name\": \"blockId\",\n            \"byte_offset\": \"4 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"RF block ID, this is a unique value assigned to every RF block. The band which the RF block represents is subject to product configuration.\"\n          },\n          {\n            \"name\": \"flags\",\n            \"byte_offset\": \"5 + n*24\",\n            \"data_type\": \"X1\",\n            \"description\": \"Flags\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"jammingState\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 1,\n                  \"description\": \"Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored.\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"antStatus\",\n            \"byte_offset\": \"6 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)\"\n          },\n          {\n            \"name\": \"antPower\",\n            \"byte_offset\": \"7 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)\"\n          },\n          {\n            \"name\": \"postStatus\",\n            \"byte_offset\": \"8 + n*24\",\n            \"data_type\": \"U4\",\n            \"description\": \"POST status word. This field is deprecated and always reports 0, please monitor postStatus field in UBX-MON-POST instead.\"\n          },\n          {\n            \"name\": \"reserved1\",\n            \"byte_offset\": \"12 + n*24\",\n            \"data_type\": {\n              \"array_of\": \"U1\",\n              \"count\": 4\n            },\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          },\n          {\n            \"name\": \"noisePerMS\",\n            \"byte_offset\": \"16 + n*24\",\n            \"data_type\": \"U2\",\n            \"description\": \"Noise level as measured by the GPS core\"\n          },\n          {\n            \"name\": \"agcCnt\",\n            \"byte_offset\": \"18 + n*24\",\n            \"data_type\": \"U2\",\n            \"description\": \"AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)\"\n          },\n          {\n            \"name\": \"cwSuppression\",\n            \"byte_offset\": \"20 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)\"\n          },\n          {\n            \"name\": \"ofsI\",\n            \"byte_offset\": \"21 + n*24\",\n            \"data_type\": \"I1\",\n            \"description\": \"Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)\"\n          },\n          {\n            \"name\": \"magI\",\n            \"byte_offset\": \"22 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)\"\n          },\n          {\n            \"name\": \"ofsQ\",\n            \"byte_offset\": \"23 + n*24\",\n            \"data_type\": \"I1\",\n            \"description\": \"Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)\"\n          },\n          {\n            \"name\": \"magQ\",\n            \"byte_offset\": \"24 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)\"\n          },\n          {\n            \"name\": \"rfBlockGnssBand\",\n            \"byte_offset\": \"25 + n*24\",\n            \"data_type\": \"U1\",\n            \"description\": \"GNSS band associated with the reported RF block. 0 - unknown band or unsupported field 1 - L1 band 2- L2 band 3- L3 band 4 - L5 band\"\n          },\n          {\n            \"name\": \"reserved2\",\n            \"byte_offset\": \"26 + n*24\",\n            \"data_type\": {\n              \"array_of\": \"U1\",\n              \"count\": 2\n            },\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-RF",
+    "class_id": "0x0a",
+    "message_id": "0x38",
+    "description": "RF information",
+    "message_type": "periodic/polled",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + nBlocks * 24",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "nBlocks",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "The number of RF blocks included"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "rfBlock",
+          "repetition_type": "count_field",
+          "count_field": "nBlocks",
+          "group_size_bytes": 24,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "blockId",
+              "byte_offset": "4 + n*24",
+              "data_type": "U1",
+              "description": "RF block ID, this is a unique value assigned to every RF block. The band which the RF block represents is subject to product configuration."
+            },
+            {
+              "name": "flags",
+              "byte_offset": "5 + n*24",
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "jammingState",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "antStatus",
+              "byte_offset": "6 + n*24",
+              "data_type": "U1",
+              "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+            },
+            {
+              "name": "antPower",
+              "byte_offset": "7 + n*24",
+              "data_type": "U1",
+              "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+            },
+            {
+              "name": "postStatus",
+              "byte_offset": "8 + n*24",
+              "data_type": "U4",
+              "description": "POST status word. This field is deprecated and always reports 0, please monitor postStatus field in UBX-MON-POST instead."
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": "12 + n*24",
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "noisePerMS",
+              "byte_offset": "16 + n*24",
+              "data_type": "U2",
+              "description": "Noise level as measured by the GPS core"
+            },
+            {
+              "name": "agcCnt",
+              "byte_offset": "18 + n*24",
+              "data_type": "U2",
+              "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+            },
+            {
+              "name": "cwSuppression",
+              "byte_offset": "20 + n*24",
+              "data_type": "U1",
+              "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+            },
+            {
+              "name": "ofsI",
+              "byte_offset": "21 + n*24",
+              "data_type": "I1",
+              "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+            },
+            {
+              "name": "magI",
+              "byte_offset": "22 + n*24",
+              "data_type": "U1",
+              "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+            },
+            {
+              "name": "ofsQ",
+              "byte_offset": "23 + n*24",
+              "data_type": "I1",
+              "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+            },
+            {
+              "name": "magQ",
+              "byte_offset": "24 + n*24",
+              "data_type": "U1",
+              "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+            },
+            {
+              "name": "rfBlockGnssBand",
+              "byte_offset": "25 + n*24",
+              "data_type": "U1",
+              "description": "GNSS band associated with the reported RF block. 0 - unknown band or unsupported field 1 - L1 band 2- L2 band 3- L3 band 4 - L5 band"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": "26 + n*24",
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/hk243fyue0ix"
+}

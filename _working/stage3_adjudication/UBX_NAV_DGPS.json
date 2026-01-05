@@ -1,0 +1,142 @@
+{
+  "message_name": "UBX-NAV-DGPS",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-DGPS",
+      "class_id": "0x01",
+      "message_id": "0x31",
+      "description": "DGPS data used for NAV",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 16,
+            "formula": "16 + 12*numCh",
+            "min": 16
+          }
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+            "unit": "ms"
+          },
+          {
+            "name": "age",
+            "byte_offset": 4,
+            "data_type": "I4",
+            "description": "Age of newest correction data",
+            "unit": "ms"
+          },
+          {
+            "name": "baseId",
+            "byte_offset": 8,
+            "data_type": "I2",
+            "description": "DGPS base station identifier"
+          },
+          {
+            "name": "baseHealth",
+            "byte_offset": 10,
+            "data_type": "I2",
+            "description": "DGPS base station health status"
+          },
+          {
+            "name": "numCh",
+            "byte_offset": 12,
+            "data_type": "U1",
+            "description": "Number of channels for which correction data is following"
+          },
+          {
+            "name": "status",
+            "byte_offset": 13,
+            "data_type": "U1",
+            "description": "DGPS correction type status: 0x00: none 0x01: PR+PRR correction"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 14,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "channels",
+            "repetition_type": "count_field",
+            "count_field": "numCh",
+            "group_size_bytes": 12,
+            "base_offset": 16,
+            "fields": [
+              {
+                "name": "svid",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Satellite ID"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 1,
+                "data_type": "X1",
+                "description": "Channel number and usage",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "channel",
+                      "bit_start": 0,
+                      "bit_end": 3,
+                      "description": "GPS channel number this SV is on. Channel numbers in the firmware greater than 15 are displayed as having channel number 15"
+                    },
+                    {
+                      "name": "dgpsUsed",
+                      "bit_start": 4,
+                      "bit_end": 4,
+                      "description": "1 = DGPS used for this SV"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "agec",
+                "byte_offset": 2,
+                "data_type": "U2",
+                "description": "Age of latest correction data",
+                "unit": "ms"
+              },
+              {
+                "name": "prc",
+                "byte_offset": 4,
+                "data_type": "R4",
+                "description": "Pseudorange correction",
+                "unit": "m"
+              },
+              {
+                "name": "prrc",
+                "byte_offset": 8,
+                "data_type": "R4",
+                "description": "Pseudorange rate correction",
+                "unit": "m/s"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The single provided extraction matches the known standard definition for UBX-NAV-DGPS (0x01 0x31) in u-blox M8 devices. The payload structure consists of a 16-byte header followed by a variable number of 12-byte blocks (channels), defined by the 'numCh' field. All data types and offsets are consistent with the protocol specification."
+  }
+}

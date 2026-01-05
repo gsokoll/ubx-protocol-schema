@@ -166,14 +166,17 @@ def group_extractions(extractions_dir: Path) -> dict[tuple[str, int], MessageGro
     """Load all extractions and group by (message_name, protocol_version).
     
     Args:
-        extractions_dir: Directory containing *_anthropic.json files
+        extractions_dir: Directory containing *_anthropic.json and *_gemini.json files
     
     Returns:
         Dict mapping (message_name, protocol_version) to MessageGroup
     """
     groups: dict[tuple[str, int], MessageGroup] = {}
     
-    extraction_files = sorted(extractions_dir.glob("*_anthropic.json"))
+    # Load both Anthropic and Gemini extractions for validation voting
+    anthropic_files = sorted(extractions_dir.glob("*_anthropic.json"))
+    gemini_files = sorted(extractions_dir.glob("*_gemini.json"))
+    extraction_files = anthropic_files + gemini_files
     
     for filepath in extraction_files:
         source, messages = load_extraction(filepath)

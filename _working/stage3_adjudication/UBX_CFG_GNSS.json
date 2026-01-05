@@ -1,0 +1,151 @@
+{
+  "message_name": "UBX-CFG-GNSS",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-GNSS",
+      "class_id": "0x06",
+      "message_id": "0x3e",
+      "description": "GNSS system configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + numConfigBlocks * 8",
+            "min": 4
+          }
+        },
+        "fields": [
+          {
+            "name": "msgVer",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version"
+          },
+          {
+            "name": "numTrkChHw",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of tracking channels available in hardware"
+          },
+          {
+            "name": "numTrkChUse",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Number of tracking channels to use"
+          },
+          {
+            "name": "numConfigBlocks",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "Number of configuration blocks following"
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "configBlock",
+            "repetition_type": "count_field",
+            "count_field": "numConfigBlocks",
+            "base_offset": 4,
+            "group_size_bytes": 8,
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "System identifier"
+              },
+              {
+                "name": "resTrkCh",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Number of reserved (minimum) tracking channels for this system"
+              },
+              {
+                "name": "maxTrkCh",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "description": "Maximum number of tracking channels used for this system"
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "flags",
+                "byte_offset": 4,
+                "data_type": "X4",
+                "description": "Bitfield of flags",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "enable",
+                      "bit_start": 0,
+                      "bit_end": 0,
+                      "description": "Enable this system"
+                    },
+                    {
+                      "name": "sigCfgMask",
+                      "bit_start": 16,
+                      "bit_end": 23,
+                      "description": "Signal configuration mask"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The UBX-CFG-GNSS message structure is highly stable across u-blox receiver generations (M8, M9, F9). All 8 extractions correctly identified the fixed 4-byte header and the variable-length repeated block structure (8 bytes per block). All extractions correctly identified the fields within the block and the bit positions in the 'flags' bitfield. Differences in the description text (e.g., specific signals listed in 'sigCfgMask' or read-only version constraints) accurately reflect the differences in the source hardware manuals and are not extraction errors. Minor naming differences (e.g., 'reserved0' vs 'reserved1' or 'gnssConfigBlock' vs 'configBlock') are valid aliases."
+  }
+}

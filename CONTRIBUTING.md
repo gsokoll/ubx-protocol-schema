@@ -125,7 +125,7 @@ data/
   by-manual/              # Raw extractions per manual (34 files)
 
 schema/
-  ubx-message-schema-v1.2.json   # JSON Schema for message definitions
+  ubx-message-schema-v1.3.json   # JSON Schema for message definitions
 
 src/
   extraction/             # PDF extraction pipeline

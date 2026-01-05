@@ -53,7 +53,7 @@ class ExtractionResult:
 
 
 def _build_extraction_tool_schema() -> dict[str, Any]:
-    """Build the tool schema for message extraction, matching ubx-message-schema-v1.1.json."""
+    """Build the tool schema for message extraction, matching ubx-message-schema-v1.3.json."""
     return {
         "name": "ubx_message_extraction",
         "description": "Extract a single UBX message definition from PDF page images into structured JSON.",
@@ -133,6 +133,10 @@ def _build_extraction_tool_schema() -> dict[str, Any]:
                                         "required": ["raw", "multiplier"]
                                     },
                                     "reserved": {"type": "boolean"},
+                                    "fixed_value": {
+                                        "type": "integer",
+                                        "description": "Required value for type discriminator fields (e.g., MGA message type)"
+                                    },
                                     "bitfield": {
                                         "type": "object",
                                         "properties": {

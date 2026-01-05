@@ -1,0 +1,379 @@
+{
+  "message_name": "UBX-SEC-OSNMA",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-SEC-OSNMA",
+      "class_id": "0x27",
+      "message_id": "0x0a",
+      "description": "Galileo Open Service Navigation Message Authentication (OSNMA) security information",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 28,
+            "formula": "28 + authSVs * 4",
+            "count_field": "generalAndTiming.authSVs"
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x03 for this version)"
+          },
+          {
+            "name": "nmaHeader",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "NMA header (status of the OSNMA service: NMA status, chain in force and CPKS)",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "headerAuthStatus",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Indicates if the NMA header has been authenticated."
+                },
+                {
+                  "name": "nmaStatus",
+                  "bit_start": 1,
+                  "bit_end": 2,
+                  "description": "Status of OSNMA service (as indicated by the Galileo system)"
+                },
+                {
+                  "name": "chainInForce",
+                  "bit_start": 3,
+                  "bit_end": 4,
+                  "description": "Id of the TESLA chain in force"
+                },
+                {
+                  "name": "CPKS",
+                  "bit_start": 5,
+                  "bit_end": 7,
+                  "description": "TESLA chain and public key status"
+                }
+              ]
+            }
+          },
+          {
+            "name": "osnmaMonitoring",
+            "byte_offset": 2,
+            "data_type": "X2",
+            "description": "Monitoring information on OSNMA service as observed by the receiver",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "osnmaEnabled",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Flag that indicates whether OSNMA execution is enabled in the receiver"
+                },
+                {
+                  "name": "numberSVs",
+                  "bit_start": 1,
+                  "bit_end": 5,
+                  "description": "Number of SVs from which OSNMA data is being collected"
+                },
+                {
+                  "name": "nmaHeaderUpdate",
+                  "bit_start": 6,
+                  "bit_end": 7,
+                  "description": "New unauthenticated NMA header status"
+                },
+                {
+                  "name": "noData",
+                  "bit_start": 8,
+                  "bit_end": 8,
+                  "description": "OSNMA data is not available"
+                },
+                {
+                  "name": "wrongData",
+                  "bit_start": 9,
+                  "bit_end": 9,
+                  "description": "OSNMA data is inconsistent"
+                },
+                {
+                  "name": "wrongFlxMac",
+                  "bit_start": 10,
+                  "bit_end": 10,
+                  "description": "Flexible slots authentication have failed"
+                },
+                {
+                  "name": "wrongMaclt",
+                  "bit_start": 11,
+                  "bit_end": 11,
+                  "description": "Tags sequence do not follow the MAC look-up table"
+                }
+              ]
+            }
+          },
+          {
+            "name": "timSyncReq",
+            "byte_offset": 4,
+            "data_type": "X1",
+            "description": "Information related to OSNMA Time Synchronization requirement status",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "timSyncEnabled",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Flag that indicates if OSNMA must be executed applying Time Synchronization"
+                },
+                {
+                  "name": "timSyncStatus",
+                  "bit_start": 1,
+                  "bit_end": 3,
+                  "description": "Indicates if the time synchronization check has been applied"
+                }
+              ]
+            }
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 5,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "reserved": true
+          },
+          {
+            "name": "timSyncReqDiff",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "unit": "ms",
+            "description": "Time difference from the Time Synchronization requirement"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 12,
+            "data_type": {
+              "array_of": "U1",
+              "count": 4
+            },
+            "reserved": true
+          },
+          {
+            "name": "dsmAuthentication",
+            "byte_offset": 16,
+            "data_type": "X4",
+            "description": "Information related to the DSM authentication",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "dsmAuthenticationStatus",
+                  "bit_start": 0,
+                  "bit_end": 5
+                },
+                {
+                  "name": "hashFunction",
+                  "bit_start": 6,
+                  "bit_end": 7
+                },
+                {
+                  "name": "macFunction",
+                  "bit_start": 8,
+                  "bit_end": 9
+                },
+                {
+                  "name": "pubKeyId",
+                  "bit_start": 10,
+                  "bit_end": 13
+                },
+                {
+                  "name": "macLookupTable",
+                  "bit_start": 14,
+                  "bit_end": 21
+                },
+                {
+                  "name": "keySize",
+                  "bit_start": 22,
+                  "bit_end": 25
+                },
+                {
+                  "name": "macSize",
+                  "bit_start": 26,
+                  "bit_end": 29
+                },
+                {
+                  "name": "fromNVS",
+                  "bit_start": 30,
+                  "bit_end": 30
+                }
+              ]
+            }
+          },
+          {
+            "name": "teslaKey",
+            "byte_offset": 20,
+            "data_type": "X4",
+            "description": "Information related to the TESLA key authentication",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "teslaKeyAuthStatus",
+                  "bit_start": 0,
+                  "bit_end": 2
+                },
+                {
+                  "name": "wnSf",
+                  "bit_start": 3,
+                  "bit_end": 14
+                },
+                {
+                  "name": "towSf",
+                  "bit_start": 15,
+                  "bit_end": 29,
+                  "scale": {
+                    "raw": "1/30",
+                    "multiplier": 0.03333333333333333
+                  },
+                  "unit": "S"
+                },
+                {
+                  "name": "chainId",
+                  "bit_start": 30,
+                  "bit_end": 31
+                }
+              ]
+            }
+          },
+          {
+            "name": "generalAndTiming",
+            "byte_offset": 24,
+            "data_type": "X4",
+            "description": "Information related to the overall authentication process",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "authSVs",
+                  "bit_start": 0,
+                  "bit_end": 5,
+                  "description": "Total number of SVs for which orbit/clocks data authentication has been performed"
+                },
+                {
+                  "name": "authNumTim",
+                  "bit_start": 6,
+                  "bit_end": 11
+                },
+                {
+                  "name": "timingAuthResult",
+                  "bit_start": 12,
+                  "bit_end": 13
+                },
+                {
+                  "name": "macAdkdType",
+                  "bit_start": 14,
+                  "bit_end": 14
+                },
+                {
+                  "name": "pubKeySrc",
+                  "bit_start": 15,
+                  "bit_end": 16
+                },
+                {
+                  "name": "merkleRootSrc",
+                  "bit_start": 17,
+                  "bit_end": 18
+                },
+                {
+                  "name": "merkleRootVal",
+                  "bit_start": 19,
+                  "bit_end": 19
+                },
+                {
+                  "name": "futureMerkleRootSrc",
+                  "bit_start": 20,
+                  "bit_end": 21
+                },
+                {
+                  "name": "futureMerkleRootVal",
+                  "bit_start": 22,
+                  "bit_end": 22
+                },
+                {
+                  "name": "pubKeyVal",
+                  "bit_start": 23,
+                  "bit_end": 23
+                },
+                {
+                  "name": "futurePubKeyVal",
+                  "bit_start": 24,
+                  "bit_end": 24
+                },
+                {
+                  "name": "futurePubKeySrc",
+                  "bit_start": 25,
+                  "bit_end": 26
+                },
+                {
+                  "name": "futurePubKeyId",
+                  "bit_start": 27,
+                  "bit_end": 30
+                }
+              ]
+            }
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "authSVs",
+            "repetition_type": "count_field",
+            "count_field": "generalAndTiming.authSVs",
+            "group_size_bytes": 4,
+            "fields": [
+              {
+                "name": "bitfield1",
+                "byte_offset": 0,
+                "data_type": "X2",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "IODE",
+                      "bit_start": 0,
+                      "bit_end": 9
+                    },
+                    {
+                      "name": "authNum",
+                      "bit_start": 10,
+                      "bit_end": 14
+                    },
+                    {
+                      "name": "authStatus",
+                      "bit_start": 15,
+                      "bit_end": 15
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "svId",
+                "byte_offset": 2,
+                "data_type": "U1"
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The provided extraction is accurate and follows the standard u-blox structure for UBX-SEC-OSNMA version 0x03. The payload length logic (28 bytes base + 4 bytes per authenticated SV) is correctly mapped to the 'authSVs' count field embedded in the 'generalAndTiming' bitfield. Bit offsets and scale factors (like the 1/30 scale for TOW) match expected protocol specifications."
+  }
+}

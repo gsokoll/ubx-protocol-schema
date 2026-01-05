@@ -1,0 +1,338 @@
+{
+  "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967.pdf",
+  "message_name": "UBX-MON-GNSS",
+  "extraction_timestamp": "2026-01-04T03:12:19.359666+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 89,
+    "end": 91
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-GNSS\nExpected IDs from TOC: class_id=0x0a, message_id=0x28\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-GNSS\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n=== VARIANT MESSAGE: UBX-MON-GNSS ===\nThis message has TWO structures:\n- V0 (8 bytes): version=0x00, supported/defaultGnss/enabled bitfields, simultaneous\n- V1 (variable): version=0x01, numPlans, activePlanInfo, repeated signal plan group\nField at offset 1: \"supported\" (X1) = V0, \"numPlans\" (U1) = V1.\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-MON-GNSS\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-MON-GNSS\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-MON-GNSS\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-GNSS\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x28\",\n  \"description\": \"Information message with supported GNSS and signal plans\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"variable\": {\n        \"base\": 4,\n        \"formula\": \"4 + numPlans*28\",\n        \"min\": 4\n      }\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"numPlans\",\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"description\": \"Number of signal plans available\"\n      },\n      {\n        \"name\": \"activePlanInfo\",\n        \"byte_offset\": 2,\n        \"data_type\": \"X2\",\n        \"description\": \"Information about currently active signal plan\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"planCfgId\",\n              \"bit_start\": 0,\n              \"bit_end\": 7,\n              \"description\": \"Configuration value of the currently active plan\"\n            },\n            {\n              \"name\": \"gnssCfgLevel\",\n              \"bit_start\": 8,\n              \"bit_end\": 10,\n              \"description\": \"Configuration level of currently active plan/constellation/signal combination. 0 - N/A, 1 Standard (currently active constellation/signal combination is supported), 2 Advanced (an advanced constellation/signal combination is selected; performance may be sub-optimal)\"\n            }\n          ]\n        }\n      }\n    ],\n    \"repeated_groups\": [\n      {\n        \"name\": \"signalPlans\",\n        \"repetition_type\": \"count_field\",\n        \"count_field\": \"numPlans\",\n        \"group_size_bytes\": 28,\n        \"base_offset\": 4,\n        \"fields\": [\n          {\n            \"name\": \"id\",\n            \"byte_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"Plan identifier\"\n          },\n          {\n            \"name\": \"name\",\n            \"byte_offset\": 1,\n            \"data_type\": {\n              \"array_of\": \"CH\",\n              \"count\": 5\n            },\n            \"description\": \"Plan name\"\n          },\n          {\n            \"name\": \"gpsSup\",\n            \"byte_offset\": 6,\n            \"data_type\": \"X2\",\n            \"description\": \"GPS supported signals. A non-zero value indicates GPS is supported. A zero value indicates GPS is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"gps_L1CA\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"GPS L1C/A\"\n                },\n                {\n                  \"name\": \"gps_L1C\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"GPS L1C\"\n                },\n                {\n                  \"name\": \"gps_L2C\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"GPS L2C\"\n                },\n                {\n                  \"name\": \"gps_L5\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"GPS L5\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"galSup\",\n            \"byte_offset\": 8,\n            \"data_type\": \"X2\",\n            \"description\": \"GAL supported signals. A non-zero value indicates Galileo is supported. A zero value indicates Galileo is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"gal_E1\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"Galileo E1\"\n                },\n                {\n                  \"name\": \"gal_E5A\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"Galileo E5a\"\n                },\n                {\n                  \"name\": \"gal_E5B\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"Galileo E5b\"\n                },\n                {\n                  \"name\": \"gal_E6\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"Galileo E6\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"bdsSup\",\n            \"byte_offset\": 10,\n            \"data_type\": \"X2\",\n            \"description\": \"BDS supported signals. A non-zero value indicates BeiDou is supported. A zero value indicates BeiDou is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"bds_B1I\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"BeiDou B1I\"\n                },\n                {\n                  \"name\": \"bds_B1C\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"BeiDou B1C\"\n                },\n                {\n                  \"name\": \"bds_B2I\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"BeiDou B2I\"\n                },\n                {\n                  \"name\": \"bds_B2A\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"BeiDou B2a\"\n                },\n                {\n                  \"name\": \"bds_B3I\",\n                  \"bit_start\": 4,\n                  \"bit_end\": 4,\n                  \"description\": \"BeiDou B3I\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"gloSup\",\n            \"byte_offset\": 12,\n            \"data_type\": \"X2\",\n            \"description\": \"GLONASS supported signals. A non-zero value indicates GLONASS is supported. A zero value indicates GLONASS is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"glo_L1OF\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"GLONASS L1OF\"\n                },\n                {\n                  \"name\": \"glo_L2OF\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"GLONASS L2OF\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"sbasSup\",\n            \"byte_offset\": 14,\n            \"data_type\": \"X2\",\n            \"description\": \"SBAS supported signals. A non-zero value indicates SBAS is supported. A zero value indicates SBAS is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"sbas_L1CA\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"SBAS L1C/A\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"qzssSup\",\n            \"byte_offset\": 16,\n            \"data_type\": \"X2\",\n            \"description\": \"QZSS supported signals. A non-zero value indicates QZSS is supported. A zero value indicates QZSS is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"qzss_L1CA\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"QZSS L1C/A\"\n                },\n                {\n                  \"name\": \"qzss_L1CB\",\n                  \"bit_start\": 1,\n                  \"bit_end\": 1,\n                  \"description\": \"QZSS L1C/B\"\n                },\n                {\n                  \"name\": \"qzss_L1C\",\n                  \"bit_start\": 2,\n                  \"bit_end\": 2,\n                  \"description\": \"QZSS L1C\"\n                },\n                {\n                  \"name\": \"qzss_L1S\",\n                  \"bit_start\": 3,\n                  \"bit_end\": 3,\n                  \"description\": \"QZSS L1S\"\n                },\n                {\n                  \"name\": \"qzss_L2C\",\n                  \"bit_start\": 4,\n                  \"bit_end\": 4,\n                  \"description\": \"QZSS L2C\"\n                },\n                {\n                  \"name\": \"qzss_L5\",\n                  \"bit_start\": 5,\n                  \"bit_end\": 5,\n                  \"description\": \"QZSS L5\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"navicSup\",\n            \"byte_offset\": 18,\n            \"data_type\": \"X2\",\n            \"description\": \"NavIC supported signals. A non-zero value indicates NavIC is supported. A zero value indicates NavIC is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"navic_L5\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"NavIC L5\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"lbandSup\",\n            \"byte_offset\": 20,\n            \"data_type\": \"X2\",\n            \"description\": \"Lband supported. A non-zero value indicates Lband is supported. A zero value indicates Lband is not supported.\",\n            \"bitfield\": {\n              \"bits\": [\n                {\n                  \"name\": \"lband_L1\",\n                  \"bit_start\": 0,\n                  \"bit_end\": 0,\n                  \"description\": \"supported range: 1539-1559 MHz\"\n                }\n              ]\n            }\n          },\n          {\n            \"name\": \"reserved0\",\n            \"byte_offset\": 22,\n            \"data_type\": {\n              \"array_of\": \"U1\",\n              \"count\": 6\n            },\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-GNSS",
+    "class_id": "0x0a",
+    "message_id": "0x28",
+    "description": "Information message with supported GNSS and signal plans",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + numPlans*28",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "numPlans",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of signal plans available"
+        },
+        {
+          "name": "activePlanInfo",
+          "byte_offset": 2,
+          "data_type": "X2",
+          "description": "Information about currently active signal plan",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "planCfgId",
+                "bit_start": 0,
+                "bit_end": 7,
+                "description": "Configuration value of the currently active plan"
+              },
+              {
+                "name": "gnssCfgLevel",
+                "bit_start": 8,
+                "bit_end": 10,
+                "description": "Configuration level of currently active plan/constellation/signal combination. 0 - N/A, 1 Standard (currently active constellation/signal combination is supported), 2 Advanced (an advanced constellation/signal combination is selected; performance may be sub-optimal)"
+              }
+            ]
+          }
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "signalPlans",
+          "repetition_type": "count_field",
+          "count_field": "numPlans",
+          "group_size_bytes": 28,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "id",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Plan identifier"
+            },
+            {
+              "name": "name",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "CH",
+                "count": 5
+              },
+              "description": "Plan name"
+            },
+            {
+              "name": "gpsSup",
+              "byte_offset": 6,
+              "data_type": "X2",
+              "description": "GPS supported signals. A non-zero value indicates GPS is supported. A zero value indicates GPS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gps_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "GPS L1C/A"
+                  },
+                  {
+                    "name": "gps_L1C",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "GPS L1C"
+                  },
+                  {
+                    "name": "gps_L2C",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "GPS L2C"
+                  },
+                  {
+                    "name": "gps_L5",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "GPS L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "galSup",
+              "byte_offset": 8,
+              "data_type": "X2",
+              "description": "GAL supported signals. A non-zero value indicates Galileo is supported. A zero value indicates Galileo is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gal_E1",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Galileo E1"
+                  },
+                  {
+                    "name": "gal_E5A",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Galileo E5a"
+                  },
+                  {
+                    "name": "gal_E5B",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Galileo E5b"
+                  },
+                  {
+                    "name": "gal_E6",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Galileo E6"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "bdsSup",
+              "byte_offset": 10,
+              "data_type": "X2",
+              "description": "BDS supported signals. A non-zero value indicates BeiDou is supported. A zero value indicates BeiDou is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bds_B1I",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "BeiDou B1I"
+                  },
+                  {
+                    "name": "bds_B1C",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "BeiDou B1C"
+                  },
+                  {
+                    "name": "bds_B2I",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "BeiDou B2I"
+                  },
+                  {
+                    "name": "bds_B2A",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "BeiDou B2a"
+                  },
+                  {
+                    "name": "bds_B3I",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "BeiDou B3I"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "gloSup",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "GLONASS supported signals. A non-zero value indicates GLONASS is supported. A zero value indicates GLONASS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "glo_L1OF",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "GLONASS L1OF"
+                  },
+                  {
+                    "name": "glo_L2OF",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "GLONASS L2OF"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sbasSup",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "SBAS supported signals. A non-zero value indicates SBAS is supported. A zero value indicates SBAS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "sbas_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "SBAS L1C/A"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "qzssSup",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "QZSS supported signals. A non-zero value indicates QZSS is supported. A zero value indicates QZSS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "qzss_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "QZSS L1C/A"
+                  },
+                  {
+                    "name": "qzss_L1CB",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "QZSS L1C/B"
+                  },
+                  {
+                    "name": "qzss_L1C",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "QZSS L1C"
+                  },
+                  {
+                    "name": "qzss_L1S",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "QZSS L1S"
+                  },
+                  {
+                    "name": "qzss_L2C",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "QZSS L2C"
+                  },
+                  {
+                    "name": "qzss_L5",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "QZSS L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "navicSup",
+              "byte_offset": 18,
+              "data_type": "X2",
+              "description": "NavIC supported signals. A non-zero value indicates NavIC is supported. A zero value indicates NavIC is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "navic_L5",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "NavIC L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "lbandSup",
+              "byte_offset": 20,
+              "data_type": "X2",
+              "description": "Lband supported. A non-zero value indicates Lband is supported. A zero value indicates Lband is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "lband_L1",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "supported range: 1539-1559 MHz"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 22,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/b6ldcfkxgbnr"
+}

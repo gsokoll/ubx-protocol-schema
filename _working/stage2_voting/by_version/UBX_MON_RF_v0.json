@@ -1,0 +1,2369 @@
+{
+  "message_name": "UBX-MON-RF",
+  "protocol_version": 0,
+  "status": "split",
+  "agreement_ratio": 0.42857142857142855,
+  "winning_structure": {
+    "name": "UBX-MON-RF",
+    "class_id": "0x0a",
+    "message_id": "0x38",
+    "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + nBlocks*24"
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "nBlocks",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "The number of RF blocks included"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "rfBlocks",
+          "repetition_type": "count_field",
+          "count_field": "nBlocks",
+          "group_size_bytes": 24,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "blockId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "jammingState",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "antStatus",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+            },
+            {
+              "name": "antPower",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+            },
+            {
+              "name": "postStatus",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "POST status word"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "noisePerMS",
+              "byte_offset": 12,
+              "data_type": "U2",
+              "description": "Noise level as measured by the GPS core"
+            },
+            {
+              "name": "agcCnt",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+            },
+            {
+              "name": "cwSuppression",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+            },
+            {
+              "name": "ofsI",
+              "byte_offset": 17,
+              "data_type": "I1",
+              "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+            },
+            {
+              "name": "magI",
+              "byte_offset": 18,
+              "data_type": "U1",
+              "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+            },
+            {
+              "name": "ofsQ",
+              "byte_offset": 19,
+              "data_type": "I1",
+              "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+            },
+            {
+              "name": "magQ",
+              "byte_offset": 20,
+              "data_type": "U1",
+              "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 21,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "26e1b23ce1156512",
+  "agreeing_sources": [
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+  ],
+  "disagreeing_sources": [
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rf_blocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID, this is a unique value assigned to every RF block.\nThe band which the RF block represents is subject to product configuration."
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)",
+                  "unit": "%"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "rfBlockGnssBand",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "GNSS band associated with the reported RF block.\n0 - unknown band or unsupported field 1 - L1 band 2 - L2 band 3 - L3 band 4 - L5 band"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "6c983f140272ed84"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "RF block",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 5,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 8,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 16,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 21,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 22,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 23,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 24,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 25,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "a3d339c822810568"
+    },
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "periodic/polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlock",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": "4 + n*24",
+                  "data_type": "U1",
+                  "description": "RF block ID, this is a unique value assigned to every RF block. The band which the RF block represents is subject to product configuration."
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": "5 + n*24",
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": "6 + n*24",
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": "7 + n*24",
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": "8 + n*24",
+                  "data_type": "U4",
+                  "description": "POST status word. This field is deprecated and always reports 0, please monitor postStatus field in UBX-MON-POST instead."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": "12 + n*24",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": "16 + n*24",
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": "18 + n*24",
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": "20 + n*24",
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": "21 + n*24",
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": "22 + n*24",
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": "23 + n*24",
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": "24 + n*24",
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "rfBlockGnssBand",
+                  "byte_offset": "25 + n*24",
+                  "data_type": "U1",
+                  "description": "GNSS band associated with the reported RF block. 0 - unknown band or unsupported field 1 - L1 band 2- L2 band 3- L3 band 4 - L5 band"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": "26 + n*24",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "b7ab006b2ed6d7c8"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks*24"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks*24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rf_blocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "output from Jamming/Interference Monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+                },
+                {
+                  "name": "jamInd",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW jamming indicator, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "28a38da32462c77d"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks*24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "output from Jamming/Interference Monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02); instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 5,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "output from Jamming/Interference Monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 8,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 16,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+                },
+                {
+                  "name": "jamInd",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "CW jamming indicator, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 21,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 22,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 23,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 24,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 25,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "7a6e8f1e98602c7f"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks*24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlock",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlock",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "RF block ID, this is a unique value assigned to every RF block. The band which the RF block represents is subject to product configuration."
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 5,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 8,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 16,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 18,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 21,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 22,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 23,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 24,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "rfBlockGnssBand",
+                  "byte_offset": 25,
+                  "data_type": "U1",
+                  "description": "GNSS band associated with the reported RF block. 0 - unknown band or unsupported field 1 - L1 band 2 - L2 band 3 - L3 band 4 - L5 band"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 26,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "8afe73dba83450b6"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Output from Jamming/Interference Monitor",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+                },
+                {
+                  "name": "jamInd",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW jamming indicator, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "28a38da32462c77d"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rf_blocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "RF information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 24",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rfBlocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 24,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "jammingState",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 16,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 17,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 18,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 19,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 21,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "26e1b23ce1156512"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-MON-RF",
+        "class_id": "0x0a",
+        "message_id": "0x38",
+        "description": "Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nBlocks * 20",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nBlocks",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of RF blocks included"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "rf_blocks",
+              "repetition_type": "count_field",
+              "count_field": "nBlocks",
+              "group_size_bytes": 20,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "blockId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+                },
+                {
+                  "name": "antStatus",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+                },
+                {
+                  "name": "antPower",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+                },
+                {
+                  "name": "cwSuppression",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "CW interference suppression level, scaled (0=no CW jamming, 255 = strong CW jamming)"
+                },
+                {
+                  "name": "postStatus",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "POST status word"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 8,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "noisePerMS",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Noise level as measured by the GPS core"
+                },
+                {
+                  "name": "agcCnt",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+                },
+                {
+                  "name": "ofsI",
+                  "byte_offset": 16,
+                  "data_type": "I1",
+                  "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magI",
+                  "byte_offset": 17,
+                  "data_type": "U1",
+                  "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                },
+                {
+                  "name": "ofsQ",
+                  "byte_offset": 18,
+                  "data_type": "I1",
+                  "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+                },
+                {
+                  "name": "magQ",
+                  "byte_offset": 19,
+                  "data_type": "U1",
+                  "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max.magnitude)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "de85b9fb7a2ded28"
+    }
+  ]
+}

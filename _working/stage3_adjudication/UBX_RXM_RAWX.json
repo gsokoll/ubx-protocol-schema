@@ -1,0 +1,261 @@
+{
+  "message_name": "UBX-RXM-RAWX",
+  "num_extractions": 12,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-RXM-RAWX",
+      "class_id": "0x02",
+      "message_id": "0x15",
+      "description": "Multi-GNSS raw measurements",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 16,
+            "formula": "16 + numMeas * 32"
+          }
+        },
+        "fields": [
+          {
+            "name": "rcvTow",
+            "byte_offset": 0,
+            "data_type": "R8",
+            "description": "Measurement time of week in receiver local time approximately aligned to the GPS time system.",
+            "unit": "s"
+          },
+          {
+            "name": "week",
+            "byte_offset": 8,
+            "data_type": "U2",
+            "description": "GPS week number in receiver local time.",
+            "unit": "weeks"
+          },
+          {
+            "name": "leaps",
+            "byte_offset": 10,
+            "data_type": "I1",
+            "description": "GPS leap seconds (GPS-UTC).",
+            "unit": "s"
+          },
+          {
+            "name": "numMeas",
+            "byte_offset": 11,
+            "data_type": "U1",
+            "description": "Number of measurements to follow"
+          },
+          {
+            "name": "recStat",
+            "byte_offset": 12,
+            "data_type": "X1",
+            "description": "Receiver tracking status bitfield",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "leapSec",
+                  "bit_start": 0,
+                  "bit_end": 0
+                },
+                {
+                  "name": "clkReset",
+                  "bit_start": 1,
+                  "bit_end": 1
+                }
+              ]
+            }
+          },
+          {
+            "name": "version",
+            "byte_offset": 13,
+            "data_type": "U1",
+            "description": "Message version (0x01)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 14,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "measurements",
+            "repetition_type": "count_field",
+            "count_field": "numMeas",
+            "group_size_bytes": 32,
+            "base_offset": 16,
+            "fields": [
+              {
+                "name": "prMes",
+                "byte_offset": 0,
+                "data_type": "R8",
+                "unit": "m"
+              },
+              {
+                "name": "cpMes",
+                "byte_offset": 8,
+                "data_type": "R8",
+                "unit": "cycles"
+              },
+              {
+                "name": "doMes",
+                "byte_offset": 16,
+                "data_type": "R4",
+                "unit": "Hz"
+              },
+              {
+                "name": "gnssId",
+                "byte_offset": 20,
+                "data_type": "U1"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 21,
+                "data_type": "U1"
+              },
+              {
+                "name": "sigId",
+                "byte_offset": 22,
+                "data_type": "U1"
+              },
+              {
+                "name": "freqId",
+                "byte_offset": 23,
+                "data_type": "U1"
+              },
+              {
+                "name": "locktime",
+                "byte_offset": 24,
+                "data_type": "U2",
+                "unit": "ms"
+              },
+              {
+                "name": "cno",
+                "byte_offset": 26,
+                "data_type": "U1",
+                "unit": "dBHz"
+              },
+              {
+                "name": "prStdev",
+                "byte_offset": 27,
+                "data_type": "X1",
+                "scale": "0.01 * 2^prStd"
+              },
+              {
+                "name": "cpStdev",
+                "byte_offset": 28,
+                "data_type": "X1",
+                "scale": "0.004"
+              },
+              {
+                "name": "doStdev",
+                "byte_offset": 29,
+                "data_type": "X1",
+                "scale": "0.002 * 2^doStd"
+              },
+              {
+                "name": "trkStat",
+                "byte_offset": 30,
+                "data_type": "X1"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 31,
+                "data_type": "U1",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses 'leapS' instead of 'leaps' (M10 specific naming)"
+        ]
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "extraction_error",
+        "issues": [
+          "Stdev scale fields incorrectly simplified to constant multipliers, losing the 2^n component"
+        ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "extraction_error",
+        "issues": [
+          "Field offsets in repeated group are absolute (starting at 16) instead of relative to the group start"
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "leapS",
+              "byte_offset": 10
+            }
+          ]
+        },
+        "reason": "M10 Interface Descriptions use 'leapS' (GPS Leap Seconds) as a field name, while M8/M9/F9 manuals generally use 'leaps'."
+      }
+    ],
+    "reasoning": "The UBX-RXM-RAWX message is extremely stable across u-blox receiver generations (M8 to M10). The canonical structure is clearly established by the majority of extractions. Errors in Extraction 8 and 10 are technical extraction artifacts (absolute offsets vs relative offsets, and over-simplified scaling math) rather than protocol variants. The only true variant is a minor naming change in the M10 generation."
+  }
+}

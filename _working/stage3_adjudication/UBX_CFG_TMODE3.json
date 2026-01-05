@@ -1,0 +1,170 @@
+{
+  "message_name": "UBX-CFG-TMODE3",
+  "num_extractions": 6,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-TMODE3",
+      "class_id": "0x06",
+      "message_id": "0x71",
+      "description": "Time mode settings 3. Configures the receiver to be in Time Mode (Survey-in or Fixed). Position can be ECEF or LLA.",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 40
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00)"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "flags",
+            "byte_offset": 2,
+            "data_type": "X2",
+            "description": "Receiver mode flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "mode",
+                  "bit_start": 0,
+                  "bit_end": 7,
+                  "description": "Receiver Mode: 0=Disabled, 1=Survey In, 2=Fixed Mode"
+                },
+                {
+                  "name": "lla",
+                  "bit_start": 8,
+                  "bit_end": 8,
+                  "description": "Position format: 0=ECEF, 1=LLA"
+                }
+              ]
+            }
+          },
+          {
+            "name": "ecefXOrLat",
+            "byte_offset": 4,
+            "data_type": "I4",
+            "description": "WGS84 ECEF X coordinate (cm) or Latitude (1e-7 deg), depending on flags.lla"
+          },
+          {
+            "name": "ecefYOrLon",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "WGS84 ECEF Y coordinate (cm) or Longitude (1e-7 deg), depending on flags.lla"
+          },
+          {
+            "name": "ecefZOrAlt",
+            "byte_offset": 12,
+            "data_type": "I4",
+            "description": "WGS84 ECEF Z coordinate (cm) or Altitude (cm), depending on flags.lla. Note: Altitude is always linear units (cm), not degrees."
+          },
+          {
+            "name": "ecefXOrLatHP",
+            "byte_offset": 16,
+            "data_type": "I1",
+            "description": "High-precision component. Range -99 to +99. Units: 0.1 mm (if ECEF X) or 1e-9 deg (if Lat)."
+          },
+          {
+            "name": "ecefYOrLonHP",
+            "byte_offset": 17,
+            "data_type": "I1",
+            "description": "High-precision component. Range -99 to +99. Units: 0.1 mm (if ECEF Y) or 1e-9 deg (if Lon)."
+          },
+          {
+            "name": "ecefZOrAltHP",
+            "byte_offset": 18,
+            "data_type": "I1",
+            "description": "High-precision component. Range -99 to +99. Units: 0.1 mm (for both ECEF Z and Altitude)."
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 19,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "fixedPosAcc",
+            "byte_offset": 20,
+            "data_type": "U4",
+            "description": "Fixed position 3D accuracy",
+            "unit": "0.1 mm"
+          },
+          {
+            "name": "svinMinDur",
+            "byte_offset": 24,
+            "data_type": "U4",
+            "description": "Survey-in minimum duration",
+            "unit": "s"
+          },
+          {
+            "name": "svinAccLimit",
+            "byte_offset": 28,
+            "data_type": "U4",
+            "description": "Survey-in position accuracy limit",
+            "unit": "0.1 mm"
+          },
+          {
+            "name": "reserved2",
+            "byte_offset": 32,
+            "data_type": {
+              "array_of": "U1",
+              "count": 8
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": [
+          "Flags bitfield definition missing 'lla' bit (bit 8), though coordinate descriptions imply it."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete payload. Only extracted first 3 fields (4 bytes), actual length is 40."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "Description error in 'ecefZOrAlt' and 'ecefZOrAltHP': incorrectly states Altitude units as 'degrees'. Altitude is linear (cm/0.1mm)."
+        ]
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The message structure is stable across generations (M8 to F9). It consists of a fixed 40-byte payload. Extraction 2 is clearly truncated. Extractions 3, 4, and 5 provide the most complete field definitions, particularly regarding the 'flags' bitfield which controls whether coordinates are ECEF or LLA. Extraction 1 omits the LLA bit definition but is structurally sound. Extraction 6 contains a textual error in the description of Altitude units (degrees instead of cm), likely a documentation or extraction artifact, but the byte structure matches the canonical definition."
+  }
+}

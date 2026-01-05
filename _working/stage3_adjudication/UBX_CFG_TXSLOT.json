@@ -1,0 +1,107 @@
+{
+  "message_name": "UBX-CFG-TXSLOT",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-TXSLOT",
+      "class_id": "0x06",
+      "message_id": "0x53",
+      "description": "TX buffer time slots configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 16
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "enable",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "Bitfield of ports for which the slots are enabled",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "DDC",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "DDC/I2C"
+                },
+                {
+                  "name": "UART1",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "UART 1"
+                },
+                {
+                  "name": "UART2",
+                  "bit_start": 2,
+                  "bit_end": 2,
+                  "description": "UART 2"
+                },
+                {
+                  "name": "USB",
+                  "bit_start": 3,
+                  "bit_end": 3,
+                  "description": "USB"
+                },
+                {
+                  "name": "SPI",
+                  "bit_start": 4,
+                  "bit_end": 4,
+                  "description": "SPI"
+                }
+              ]
+            }
+          },
+          {
+            "name": "refTp",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Reference timepulse source. 0 - Timepulse, 1 - Timepulse 2"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "end",
+            "repetition_type": "fixed_count",
+            "count": 3,
+            "group_size_bytes": 4,
+            "base_offset": 4,
+            "fields": [
+              {
+                "name": "end",
+                "byte_offset": 0,
+                "data_type": "U4",
+                "description": "End of timeslot in milliseconds after time pulse",
+                "unit": "ms"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The single extraction provided from the u-blox M8 protocol specification is structurally sound. The message length of 16 bytes is consistent with a 4-byte header and an array of 3 U4 integers (4 + 3*4 = 16). The field definitions and bitfield mapping are standard for the M8 generation."
+  }
+}

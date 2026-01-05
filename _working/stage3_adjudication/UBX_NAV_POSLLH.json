@@ -1,0 +1,183 @@
+{
+  "message_name": "UBX-NAV-POSLLH",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-POSLLH",
+      "class_id": "0x01",
+      "message_id": "0x02",
+      "description": "Geodetic position solution",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "fixed": 28
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "lon",
+            "byte_offset": 4,
+            "data_type": "I4",
+            "description": "Longitude",
+            "unit": "deg",
+            "scale": {
+              "raw": "1e-7",
+              "multiplier": 1e-07
+            }
+          },
+          {
+            "name": "lat",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "Latitude",
+            "unit": "deg",
+            "scale": {
+              "raw": "1e-7",
+              "multiplier": 1e-07
+            }
+          },
+          {
+            "name": "height",
+            "byte_offset": 12,
+            "data_type": "I4",
+            "description": "Height above ellipsoid",
+            "unit": "mm"
+          },
+          {
+            "name": "hMSL",
+            "byte_offset": 16,
+            "data_type": "I4",
+            "description": "Height above mean sea level",
+            "unit": "mm"
+          },
+          {
+            "name": "hAcc",
+            "byte_offset": 20,
+            "data_type": "U4",
+            "description": "Horizontal accuracy estimate",
+            "unit": "mm"
+          },
+          {
+            "name": "vAcc",
+            "byte_offset": 24,
+            "data_type": "U4",
+            "description": "Vertical accuracy estimate",
+            "unit": "mm"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses 'HMSL' instead of 'hMSL'",
+          "Fields offset 24-27 marked as Reserved"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "valid_variation",
+        "issues": [
+          "Fields offset 24-27 marked as Reserved"
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "valid_variation",
+        "issues": [
+          "Fields offset 24-27 marked as Reserved"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "reserved",
+              "byte_offset": 24,
+              "data_type": "U4",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "In certain firmware versions (e.g., M10-SPG 5.10 or specialized HPG/DBD builds), the vertical accuracy estimate (vAcc) is documented as reserved, though the payload length remain 28 bytes."
+      }
+    ],
+    "reasoning": "The UBX-NAV-POSLLH message is a highly stable message across u-blox 8, 9, 10, and F9 generations. The standard structure ends with vAcc at byte 24. However, some specific documentation versions (likely reflecting early firmware or specialized high-precision/dead-reckoning variants) mark the final 4 bytes as 'Reserved' instead of 'vAcc'. Note that M10-SPG 5.10 marks it as reserved while 5.30 correctly identifies it as vAcc, suggesting a documentation update cycle."
+  }
+}

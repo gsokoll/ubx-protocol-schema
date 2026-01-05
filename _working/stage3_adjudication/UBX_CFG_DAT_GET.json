@@ -1,0 +1,182 @@
+{
+  "message_name": "UBX-CFG-DAT-GET",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-DAT-GET",
+      "class_id": "0x06",
+      "message_id": "0x06",
+      "description": "Returns the parameters of the currently defined datum.",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "fixed": 52
+        },
+        "fields": [
+          {
+            "name": "datumNum",
+            "byte_offset": 0,
+            "data_type": "U2",
+            "description": "Datum number: 0 = WGS84, 0xFFFF = user-defined"
+          },
+          {
+            "name": "datumName",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "CH",
+              "count": 6
+            },
+            "description": "ASCII string: WGS84 or USER"
+          },
+          {
+            "name": "majA",
+            "byte_offset": 8,
+            "data_type": "R8",
+            "description": "Semi-major axis",
+            "unit": "m"
+          },
+          {
+            "name": "flat",
+            "byte_offset": 16,
+            "data_type": "R8",
+            "description": "1.0/flattening"
+          },
+          {
+            "name": "dx",
+            "byte_offset": 24,
+            "data_type": "R4",
+            "description": "X axis shift at the origin",
+            "unit": "m"
+          },
+          {
+            "name": "dy",
+            "byte_offset": 28,
+            "data_type": "R4",
+            "description": "Y axis shift at the origin",
+            "unit": "m"
+          },
+          {
+            "name": "dz",
+            "byte_offset": 32,
+            "data_type": "R4",
+            "description": "Z axis shift at the origin",
+            "unit": "m"
+          },
+          {
+            "name": "rotX",
+            "byte_offset": 36,
+            "data_type": "R4",
+            "description": "Rotation about the X axis",
+            "unit": "s"
+          },
+          {
+            "name": "rotY",
+            "byte_offset": 40,
+            "data_type": "R4",
+            "description": "Rotation about the Y axis",
+            "unit": "s"
+          },
+          {
+            "name": "rotZ",
+            "byte_offset": 44,
+            "data_type": "R4",
+            "description": "Rotation about the Z axis",
+            "unit": "s"
+          },
+          {
+            "name": "scale",
+            "byte_offset": 48,
+            "data_type": "R4",
+            "description": "Scale change",
+            "unit": "ppm"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field naming casing: Uses 'rotx'/'roty'/'rotZ' instead of standard camelCase"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'",
+          "Unit normalization: Uses full description 'milli-arc seconds' instead of symbol 's' found in other specs"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": [
+          "Unit capitalization: Uses 'S' instead of 's'"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "valid_variation",
+        "issues": [
+          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'",
+          "Unit capitalization: Uses 'S' instead of 's'"
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "message_type 'get' is a valid functional description but 'output' is the standard direction"
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "rotx",
+              "byte_offset": 36
+            },
+            {
+              "name": "roty",
+              "byte_offset": 40
+            },
+            {
+              "name": "rotZ",
+              "byte_offset": 44
+            }
+          ]
+        },
+        "reason": "Source documentation inconsistent casing for rotation fields (mixed case 'rotx', 'roty', 'rotZ'). Binary layout is identical."
+      }
+    ],
+    "reasoning": "The binary structure of UBX-CFG-DAT is identical across all receiver generations (M8 through F9). All extractions agree on the payload length (52 bytes), data types, and offsets. The primary variation is in the textual naming of the rotation fields in the source PDF manuals: some use standard camelCase ('rotX', 'rotY', 'rotZ'), while others use mixed case ('rotx', 'roty', 'rotZ'). The canonical structure follows the standard camelCase convention. Unit discrepancies ('s' vs 'S' vs 'milli-arc seconds') are considered text extraction artifacts or inconsistencies in the unit column of the source PDFs; 's' is the standard abbreviation."
+  }
+}

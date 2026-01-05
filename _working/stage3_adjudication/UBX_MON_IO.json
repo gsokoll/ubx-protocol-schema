@@ -1,0 +1,146 @@
+{
+  "message_name": "UBX-MON-IO",
+  "num_extractions": 12,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MON-IO",
+      "class_id": "0x0a",
+      "message_id": "0x02",
+      "description": "I/O system status. Reports receive/transmit byte counts and error statistics for the receiver's communication ports.",
+      "payload": {
+        "length": {
+          "variable": {
+            "formula": "N * 20",
+            "description": "Payload length is determined by the number of ports (N) supported by the receiver. Each port status block is 20 bytes."
+          }
+        },
+        "repeated_groups": [
+          {
+            "name": "portStatus",
+            "repetition_type": "implicit_count",
+            "group_size_bytes": 20,
+            "fields": [
+              {
+                "name": "rxBytes",
+                "byte_offset": 0,
+                "data_type": "U4",
+                "description": "Number of bytes ever received",
+                "unit": "bytes"
+              },
+              {
+                "name": "txBytes",
+                "byte_offset": 4,
+                "data_type": "U4",
+                "description": "Number of bytes ever sent",
+                "unit": "bytes"
+              },
+              {
+                "name": "parityErrs",
+                "byte_offset": 8,
+                "data_type": "U2",
+                "description": "Number of 100 ms timeslots with parity errors"
+              },
+              {
+                "name": "framingErrs",
+                "byte_offset": 10,
+                "data_type": "U2",
+                "description": "Number of 100 ms timeslots with framing errors"
+              },
+              {
+                "name": "overrunErrs",
+                "byte_offset": 12,
+                "data_type": "U2",
+                "description": "Number of 100 ms timeslots with overrun errors"
+              },
+              {
+                "name": "breakCond",
+                "byte_offset": 14,
+                "data_type": "U2",
+                "description": "Number of 100 ms timeslots with break conditions"
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 16,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 4
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect message structure extracted.",
+          "The extracted fields (nPins, flags, pinMask, etc.) correspond to a hardware/PIO monitoring message (likely UBX-MON-HW or similar), not the standard UBX-MON-IO (0x0A 0x02) communication port status message.",
+          "Subsequent version HPG 1.32 (Extraction 6) uses the standard structure, confirming this is an error in Extraction 5."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "11 out of 12 extractions agree on a single structure: a variable-length payload consisting solely of repeated 20-byte blocks describing communication port status (RX/TX bytes, error counts). Extraction 5 is a clear outlier containing fields (nPins, flags with rtcCalib/safeBoot) that belong to a different message (likely UBX-MON-HW or UBX-MON-PIO). Since the message ID 0x0A 0x02 is consistent across all versions, and later versions of the same firmware family (HPG 1.32) return to the standard structure, Extraction 5 is adjudicated as a hallucination/extraction error where the LLM likely parsed the wrong message definition table."
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "message_name": "UBX-CFG-PMS",
+  "num_extractions": 2,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-PMS",
+      "class_id": "0x06",
+      "message_id": "0x86",
+      "description": "Power mode setup",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "powerSetupValue",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Power setup value (0x00=Full, 0x01=Balanced, 0x02=Interval, etc.)"
+          },
+          {
+            "name": "period",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Position update period (valid for Interval mode on supported receivers)",
+            "unit": "s"
+          },
+          {
+            "name": "onTime",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Duration of ON phase (valid for Interval mode on supported receivers)",
+            "unit": "s"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 6,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
+        ],
+        "structure": {
+          "name": "UBX-CFG-PMS",
+          "class_id": "0x06",
+          "message_id": "0x86",
+          "description": "Power mode setup",
+          "message_type": "get_set",
+          "payload": {
+            "length": {
+              "fixed": 8
+            },
+            "fields": [
+              {
+                "name": "version",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Message version"
+              },
+              {
+                "name": "powerSetupValue",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Power setup value"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 2,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 6
+                },
+                "description": "Reserved",
+                "reserved": true
+              }
+            ]
+          }
+        },
+        "reason": "In M9 firmware (SPG 4.04), the interval configuration parameters (period and onTime) previously available in M8 are reserved/deprecated in this message, though the total message length remains 8 bytes."
+      }
+    ],
+    "reasoning": "The two extractions represent a legitimate version difference between u-blox generations M8 and M9. In the M8 generation (Extraction 2), bytes 2-5 are defined as 'period' and 'onTime' to configure the Interval power mode. In the M9 generation (Extraction 1), these bytes are explicitly marked as 'reserved', likely because the configuration logic changed or these specific parameters are no longer accepted via this legacy message. Extraction 2 is chosen as the canonical structure because it contains the superset of field definitions; parsers using the M8 structure can handle M9 messages (interpreting the reserved bytes as values), whereas the M9 structure loses the definitions for M8 devices."
+  }
+}

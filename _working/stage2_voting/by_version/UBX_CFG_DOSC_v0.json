@@ -1,0 +1,365 @@
+{
+  "message_name": "UBX-CFG-DOSC",
+  "protocol_version": 0,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-CFG-DOSC",
+    "class_id": "0x06",
+    "message_id": "0x61",
+    "description": "Disciplined oscillator configuration",
+    "message_type": "get_set",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + numOsc * 32",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "numOsc",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of oscillators to configure (affects length of this message)"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "oscillators",
+          "repetition_type": "count_field",
+          "count_field": "numOsc",
+          "group_size_bytes": 32,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "oscId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Id of oscillator. 0 - internal oscillator, 1 - external oscillator"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "isCalibrated",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 if the oscillator gain is calibrated, 0 if not"
+                  },
+                  {
+                    "name": "controlIf",
+                    "bit_start": 1,
+                    "bit_end": 3,
+                    "description": "Communication interface for oscillator control: 0: Custom DAC, 1: Microchip MCP4726, 2: TI DAC8571, 13: 12 bit DAC attached to host, 14: 14 bit DAC attached to host, 15: 16 bit DAC attached to host"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "freq",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Nominal frequency of source",
+              "unit": "Hz",
+              "scale": {
+                "raw": "2^-2",
+                "multiplier": 0.25
+              }
+            },
+            {
+              "name": "phaseOffset",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Intended phase offset of the oscillator relative to the leading edge of the time pulse",
+              "unit": "ps"
+            },
+            {
+              "name": "withTemp",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "Oscillator stability limit over operating temperature range (must be > 0)",
+              "unit": "ppb",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "withAge",
+              "byte_offset": 16,
+              "data_type": "U4",
+              "description": "Oscillator stability with age (must be > 0)",
+              "unit": "ppb/year",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "timeToTemp",
+              "byte_offset": 20,
+              "data_type": "U2",
+              "description": "The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0)",
+              "unit": "s"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 22,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gainVco",
+              "byte_offset": 24,
+              "data_type": "I4",
+              "description": "Oscillator control gain/slope; change of frequency per unit change in raw control change",
+              "unit": "ppb/raw LSB",
+              "scale": {
+                "raw": "2^-16",
+                "multiplier": 1.52587890625e-05
+              }
+            },
+            {
+              "name": "gainUncertainty",
+              "byte_offset": 28,
+              "data_type": "U1",
+              "description": "Relative uncertainty (1 standard deviation) of oscillator control gain/slope",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "reserved4",
+              "byte_offset": 29,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "f6b02a985bc36e97",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-DOSC",
+        "class_id": "0x06",
+        "message_id": "0x61",
+        "description": "Disciplined oscillator configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numOsc * 32",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numOsc",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of oscillators to configure (affects length of this message)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "oscillators",
+              "repetition_type": "count_field",
+              "count_field": "numOsc",
+              "group_size_bytes": 32,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "oscId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Id of oscillator. 0 - internal oscillator, 1 - external oscillator"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "description": "flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "isCalibrated",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "1 if the oscillator gain is calibrated, 0 if not"
+                      },
+                      {
+                        "name": "controlIf",
+                        "bit_start": 1,
+                        "bit_end": 3,
+                        "description": "Communication interface for oscillator control: 0: Custom DAC, 1: Microchip MCP4726, 2: TI DAC8571, 13: 12 bit DAC attached to host, 14: 14 bit DAC attached to host, 15: 16 bit DAC attached to host"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "freq",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Nominal frequency of source",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "2^-2",
+                    "multiplier": 0.25
+                  }
+                },
+                {
+                  "name": "phaseOffset",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Intended phase offset of the oscillator relative to the leading edge of the time pulse",
+                  "unit": "ps"
+                },
+                {
+                  "name": "withTemp",
+                  "byte_offset": 12,
+                  "data_type": "U4",
+                  "description": "Oscillator stability limit over operating temperature range (must be > 0)",
+                  "unit": "ppb",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "withAge",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Oscillator stability with age (must be > 0)",
+                  "unit": "ppb/year",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "timeToTemp",
+                  "byte_offset": 20,
+                  "data_type": "U2",
+                  "description": "The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0)",
+                  "unit": "s"
+                },
+                {
+                  "name": "reserved3",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "gainVco",
+                  "byte_offset": 24,
+                  "data_type": "I4",
+                  "description": "Oscillator control gain/slope; change of frequency per unit change in raw control change",
+                  "unit": "ppb/raw LSB",
+                  "scale": {
+                    "raw": "2^-16",
+                    "multiplier": 1.52587890625e-05
+                  }
+                },
+                {
+                  "name": "gainUncertainty",
+                  "byte_offset": 28,
+                  "data_type": "U1",
+                  "description": "Relative uncertainty (1 standard deviation) of oscillator control gain/slope",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 29,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f6b02a985bc36e97"
+    }
+  ]
+}

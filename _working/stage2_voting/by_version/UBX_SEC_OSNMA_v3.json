@@ -1,0 +1,811 @@
+{
+  "message_name": "UBX-SEC-OSNMA",
+  "protocol_version": 3,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-SEC-OSNMA",
+    "class_id": "0x27",
+    "message_id": "0x0a",
+    "description": "Galileo Open Service Navigation Message Authentication (OSNMA) security information",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 28,
+          "formula": "28 + authSVs * 4",
+          "count_field": "generalAndTiming.authSVs"
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x03 for this version)"
+        },
+        {
+          "name": "nmaHeader",
+          "byte_offset": 1,
+          "data_type": "X1",
+          "description": "NMA header (status of the OSNMA service: NMA status, chain in force and CPKS)",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "headerAuthStatus",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Indicates if the NMA header has been authenticated."
+              },
+              {
+                "name": "nmaStatus",
+                "bit_start": 1,
+                "bit_end": 2,
+                "description": "Status of OSNMA service (as indicated by the Galileo system)\n0: Service status not authenticated yet\n1: OSNMA service in test\n2: OSNMA service operational\n3: OSNMA service invalid, service not usable"
+              },
+              {
+                "name": "chainInForce",
+                "bit_start": 3,
+                "bit_end": 4,
+                "description": "Id of the TESLA chain in force"
+              },
+              {
+                "name": "CPKS",
+                "bit_start": 5,
+                "bit_end": 7,
+                "description": "TESLA chain and public key status\n0: Data is not applicable\n1: Nominal\n2: End of Chain (EOC), new DSM-KROOT is being transmitted\n3: Chain revoked (CREV), a chain is or has been revoked"
+              }
+            ]
+          }
+        },
+        {
+          "name": "osnmaMonitoring",
+          "byte_offset": 2,
+          "data_type": "X2",
+          "description": "Monitoring information on OSNMA service as observed by the receiver",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "osnmaEnabled",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Flag that indicates whether OSNMA execution is enabled in the receiver"
+              },
+              {
+                "name": "numberSVs",
+                "bit_start": 1,
+                "bit_end": 5,
+                "description": "Number of SVs from which OSNMA data is being collected"
+              },
+              {
+                "name": "nmaHeaderUpdate",
+                "bit_start": 6,
+                "bit_end": 7,
+                "description": "New unauthenticated NMA header (NMA status, chain in force and CPKS) observed in the signal. Changes are pending on authentication. The authentication of the MAC and TESLA keys is discontinued until the new header has been authenticated\n0: Last observed NMA header is the same as the last authenticated header\n1: New observed NMA header pending on authentication: Update still indicates a healthy service\n2: New observed NMA header pending on authentication: Update indicates a problem in the service provision"
+              },
+              {
+                "name": "noData",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "If true, OSNMA data is not available for the time defined in CFG-SEC-SPOOFDET_OSNMA_DENIAL_TIME."
+              },
+              {
+                "name": "wrongData",
+                "bit_start": 9,
+                "bit_end": 9,
+                "description": "If true, OSNMA data is inconsistent."
+              },
+              {
+                "name": "wrongFlxMac",
+                "bit_start": 10,
+                "bit_end": 10,
+                "description": "If true, flexible slots authentication have failed (FLX)"
+              },
+              {
+                "name": "wrongMaclt",
+                "bit_start": 11,
+                "bit_end": 11,
+                "description": "If true, the tags sequence do not follow the MAC look-up table (MACLT)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "timSyncReq",
+          "byte_offset": 4,
+          "data_type": "X1",
+          "description": "Information related to OSNMA Time Synchronization requirement status",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "timSyncEnabled",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Flag that indicates if OSNMA must be executed applying the Time Synchronization requirement"
+              },
+              {
+                "name": "timSyncStatus",
+                "bit_start": 1,
+                "bit_end": 3,
+                "description": "Indicates if the time synchronization check has been applied.\n0: Time synchronization is not performed. Default to outside authentication epochs or when time synchronization is not requested\n1: Time synchronization could not be performed, trusted time is not available\n2: Time synchronization could not be performed, the trusted time is not accurate enough"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 5,
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "timSyncReqDiff",
+          "byte_offset": 8,
+          "data_type": "I4",
+          "unit": "ms",
+          "description": "Time difference from the Time Synchronization requirement. The time difference between the trusted input time and the decoded GSTpropagated to the current local time from the subframe that contains the TESLA key to be authenticated. Note that the time synchronization status must pass or fail (timSyncReq = 3/4). Otherwise, the the time difference cannot be computed"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 12,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "dsmAuthentication",
+          "byte_offset": 16,
+          "data_type": "X4",
+          "description": "Information related to the DSM authentication",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "dsmAuthenticationStatus",
+                "bit_start": 0,
+                "bit_end": 5,
+                "description": "Indicates if the authentication of a Digital Signature Message has been performed\n0: No DSM authentication\n1: DSM-KROOT authenticated, new status and configuration accepted\n2: DSM-PKR authenticated, new public key accepted\n3: OSNMA Alert message: All cryptographic data is dropped. Connect to GSC OSNMA server\n4: DSM-KROOT authentication failed, new status and configuration is not accepted\n5: DSM-PKR authentication failed, new public key is not accepted\n6: Authentication not performed: DSM coded with unknown public key\n7: Authentication not performed: Public key decompression failed\n8: Authentication successful but new configuration is not supported\n9: Authentication of a new public key during a NMT event cannot be performed. Missing future Merkle tree root"
+              },
+              {
+                "name": "hashFunction",
+                "bit_start": 6,
+                "bit_end": 7,
+                "description": "Last authenticated hash function that must be used"
+              },
+              {
+                "name": "macFunction",
+                "bit_start": 8,
+                "bit_end": 9,
+                "description": "Last authenticated MAC function that must be used"
+              },
+              {
+                "name": "pubKeyId",
+                "bit_start": 10,
+                "bit_end": 13,
+                "description": "Last authenticated public key Id that must be used in ECDSA verification"
+              },
+              {
+                "name": "macLookupTable",
+                "bit_start": 14,
+                "bit_end": 21,
+                "description": "Last authenticated MAC Lookup table index"
+              },
+              {
+                "name": "keySize",
+                "bit_start": 22,
+                "bit_end": 25,
+                "description": "Last authenticated TESLA key size index"
+              },
+              {
+                "name": "macSize",
+                "bit_start": 26,
+                "bit_end": 29,
+                "description": "Last authenticated MAC size index. Add an offset of 5 to obtain the index as per Table 11 of OSNMA SIS ICD, Issue 1.1"
+              },
+              {
+                "name": "fromNVS",
+                "bit_start": 30,
+                "bit_end": 30,
+                "description": "Last authenticated configuration comes from NVS"
+              }
+            ]
+          }
+        },
+        {
+          "name": "teslaKey",
+          "byte_offset": 20,
+          "data_type": "X4",
+          "description": "Information related to the TESLA key authentication",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "teslaKeyAuthStatus",
+                "bit_start": 0,
+                "bit_end": 2,
+                "description": "Indicates if the authentication of an element of the TESLA key has been performed and the result thereof\n0: No TESLA key authentication performed\n1: TESLA key successfully authenticated against the root key\n2: TESLA key authentication against the root key has failed\n3: TESLA key authentication on-going: Intermediate authentication step\n4: TESLA key authentication is not performed: Key to authenticate is in the past. Potential replayed signals or simulation.\n5: TESLA key authentication is not performed: The root key is too old"
+              },
+              {
+                "name": "wnSf",
+                "bit_start": 3,
+                "bit_end": 14,
+                "description": "The GST week number of subframe in which the public key has been transmitted"
+              },
+              {
+                "name": "towSf",
+                "bit_start": 15,
+                "bit_end": 29,
+                "data_type": "U15",
+                "scale": {
+                  "raw": "1/30",
+                  "multiplier": 0.03333333333333333
+                },
+                "unit": "S",
+                "description": "Seconds of week of the GST of the subframe in which the public key has been transmitted divided by 30s (subframe length)"
+              },
+              {
+                "name": "chainId",
+                "bit_start": 30,
+                "bit_end": 31,
+                "description": "Chain Id of the TESLA key that has been authenticated"
+              }
+            ]
+          }
+        },
+        {
+          "name": "generalAndTiming",
+          "byte_offset": 24,
+          "data_type": "X4",
+          "description": "Information related to the overall authentication process: Timing parameters and summary of data authenticated",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "authSVs",
+                "bit_start": 0,
+                "bit_end": 5,
+                "description": "Total number of SVs for which orbit/clocks data authentication has been performed (ADKD types 0 or 12)"
+              },
+              {
+                "name": "authNumTim",
+                "bit_start": 6,
+                "bit_end": 11,
+                "description": "Total number of timing parameters authentications (typically one per SV sending MAC ADKD type 4)"
+              },
+              {
+                "name": "timingAuthResult",
+                "bit_start": 12,
+                "bit_end": 13,
+                "description": "Indicates if the authentication of the timing parameters (GST-UTC and GST-GPS) has been performed and the result\n0: No timing parameters authentication performed\n1: Timing parameters successfully authenticated\n2: Timing parameters authentication failed"
+              },
+              {
+                "name": "macAdkdType",
+                "bit_start": 14,
+                "bit_end": 14,
+                "description": "Indicates if the receiver processes fast (1 subframe delay) or slow (10 subframes delay) MACs\n0: Fast MACs (ADKD type 0)\n1: Slow MACs (ADKD type 12)"
+              },
+              {
+                "name": "pubKeySrc",
+                "bit_start": 15,
+                "bit_end": 16,
+                "description": "Origin of the public key\n0: Factory default\n1: From satellites\n2: From aided message\n3: From NVS"
+              },
+              {
+                "name": "merkleRootSrc",
+                "bit_start": 17,
+                "bit_end": 18,
+                "description": "Origin of the Merkle tree root"
+              },
+              {
+                "name": "merkleRootVal",
+                "bit_start": 19,
+                "bit_end": 19,
+                "description": "Validity of the Merkle tree root currently applicable\n0: Merkle tree root is invalid\n1: Merkle tree root is valid"
+              },
+              {
+                "name": "futureMerkleRootSrc",
+                "bit_start": 20,
+                "bit_end": 21,
+                "description": "Origin of the future Merkle tree root\n0: Factory default\n2: From aided message\n3: From NVS"
+              },
+              {
+                "name": "futureMerkleRootVal",
+                "bit_start": 22,
+                "bit_end": 22,
+                "description": "Validity of the future Merkle tree root\n0: Future Merkle tree root is invalid or unknown\n1: Future Merkle tree root is valid"
+              },
+              {
+                "name": "pubKeyVal",
+                "bit_start": 23,
+                "bit_end": 23,
+                "description": "Validity of the public key\n0: Public key is invalid or unknown\n1: Public key is valid"
+              },
+              {
+                "name": "futurePubKeyVal",
+                "bit_start": 24,
+                "bit_end": 24,
+                "description": "Validity of the future public key\n0: Future public key is invalid or unknown\n1: Future public key is valid"
+              },
+              {
+                "name": "futurePubKeySrc",
+                "bit_start": 25,
+                "bit_end": 26,
+                "description": "Origin of the future public key\n0: Factory default\n1: From satellites\n3: From NVS"
+              },
+              {
+                "name": "futurePubKeyId",
+                "bit_start": 27,
+                "bit_end": 30,
+                "description": "Last authenticated public key Id that will be used in ECDSA verification after the next key update"
+              }
+            ]
+          }
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "authSVs",
+          "repetition_type": "count_field",
+          "count_field": "generalAndTiming.authSVs",
+          "group_size_bytes": 4,
+          "base_offset": 28,
+          "fields": [
+            {
+              "name": "bitfield1",
+              "byte_offset": 0,
+              "data_type": "X2",
+              "description": "bitfield:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "IODE",
+                    "bit_start": 0,
+                    "bit_end": 9,
+                    "description": "Issue of data, authenticated ephemeris"
+                  },
+                  {
+                    "name": "authNum",
+                    "bit_start": 10,
+                    "bit_end": 14,
+                    "description": "Number of times that the same block of navigation data has been authenticated in last execution"
+                  },
+                  {
+                    "name": "authStatus",
+                    "bit_start": 15,
+                    "bit_end": 15,
+                    "description": "Indicates the authentication result for current SV's orbits, clocks, flags, group delays and ionospheric delay data:\n0: Navigation data authentication failed\n1: Navigation data successfully authenticated"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "svId",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Satellite identifier whose data gets authenticated (see Satellite Numbering)"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "fb3d38c12c4a1c4d",
+  "agreeing_sources": [
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-SEC-OSNMA",
+        "class_id": "0x27",
+        "message_id": "0x0a",
+        "description": "Galileo Open Service Navigation Message Authentication (OSNMA) security information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 28,
+              "formula": "28 + authSVs * 4",
+              "count_field": "generalAndTiming.authSVs"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x03 for this version)"
+            },
+            {
+              "name": "nmaHeader",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "NMA header (status of the OSNMA service: NMA status, chain in force and CPKS)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "headerAuthStatus",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Indicates if the NMA header has been authenticated."
+                  },
+                  {
+                    "name": "nmaStatus",
+                    "bit_start": 1,
+                    "bit_end": 2,
+                    "description": "Status of OSNMA service (as indicated by the Galileo system)\n0: Service status not authenticated yet\n1: OSNMA service in test\n2: OSNMA service operational\n3: OSNMA service invalid, service not usable"
+                  },
+                  {
+                    "name": "chainInForce",
+                    "bit_start": 3,
+                    "bit_end": 4,
+                    "description": "Id of the TESLA chain in force"
+                  },
+                  {
+                    "name": "CPKS",
+                    "bit_start": 5,
+                    "bit_end": 7,
+                    "description": "TESLA chain and public key status\n0: Data is not applicable\n1: Nominal\n2: End of Chain (EOC), new DSM-KROOT is being transmitted\n3: Chain revoked (CREV), a chain is or has been revoked"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "osnmaMonitoring",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "Monitoring information on OSNMA service as observed by the receiver",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "osnmaEnabled",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Flag that indicates whether OSNMA execution is enabled in the receiver"
+                  },
+                  {
+                    "name": "numberSVs",
+                    "bit_start": 1,
+                    "bit_end": 5,
+                    "description": "Number of SVs from which OSNMA data is being collected"
+                  },
+                  {
+                    "name": "nmaHeaderUpdate",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "New unauthenticated NMA header (NMA status, chain in force and CPKS) observed in the signal. Changes are pending on authentication. The authentication of the MAC and TESLA keys is discontinued until the new header has been authenticated\n0: Last observed NMA header is the same as the last authenticated header\n1: New observed NMA header pending on authentication: Update still indicates a healthy service\n2: New observed NMA header pending on authentication: Update indicates a problem in the service provision"
+                  },
+                  {
+                    "name": "noData",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": "If true, OSNMA data is not available for the time defined in CFG-SEC-SPOOFDET_OSNMA_DENIAL_TIME."
+                  },
+                  {
+                    "name": "wrongData",
+                    "bit_start": 9,
+                    "bit_end": 9,
+                    "description": "If true, OSNMA data is inconsistent."
+                  },
+                  {
+                    "name": "wrongFlxMac",
+                    "bit_start": 10,
+                    "bit_end": 10,
+                    "description": "If true, flexible slots authentication have failed (FLX)"
+                  },
+                  {
+                    "name": "wrongMaclt",
+                    "bit_start": 11,
+                    "bit_end": 11,
+                    "description": "If true, the tags sequence do not follow the MAC look-up table (MACLT)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "timSyncReq",
+              "byte_offset": 4,
+              "data_type": "X1",
+              "description": "Information related to OSNMA Time Synchronization requirement status",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "timSyncEnabled",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Flag that indicates if OSNMA must be executed applying the Time Synchronization requirement"
+                  },
+                  {
+                    "name": "timSyncStatus",
+                    "bit_start": 1,
+                    "bit_end": 3,
+                    "description": "Indicates if the time synchronization check has been applied.\n0: Time synchronization is not performed. Default to outside authentication epochs or when time synchronization is not requested\n1: Time synchronization could not be performed, trusted time is not available\n2: Time synchronization could not be performed, the trusted time is not accurate enough"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "timSyncReqDiff",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "unit": "ms",
+              "description": "Time difference from the Time Synchronization requirement. The time difference between the trusted input time and the decoded GSTpropagated to the current local time from the subframe that contains the TESLA key to be authenticated. Note that the time synchronization status must pass or fail (timSyncReq = 3/4). Otherwise, the the time difference cannot be computed"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "dsmAuthentication",
+              "byte_offset": 16,
+              "data_type": "X4",
+              "description": "Information related to the DSM authentication",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "dsmAuthenticationStatus",
+                    "bit_start": 0,
+                    "bit_end": 5,
+                    "description": "Indicates if the authentication of a Digital Signature Message has been performed\n0: No DSM authentication\n1: DSM-KROOT authenticated, new status and configuration accepted\n2: DSM-PKR authenticated, new public key accepted\n3: OSNMA Alert message: All cryptographic data is dropped. Connect to GSC OSNMA server\n4: DSM-KROOT authentication failed, new status and configuration is not accepted\n5: DSM-PKR authentication failed, new public key is not accepted\n6: Authentication not performed: DSM coded with unknown public key\n7: Authentication not performed: Public key decompression failed\n8: Authentication successful but new configuration is not supported\n9: Authentication of a new public key during a NMT event cannot be performed. Missing future Merkle tree root"
+                  },
+                  {
+                    "name": "hashFunction",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Last authenticated hash function that must be used"
+                  },
+                  {
+                    "name": "macFunction",
+                    "bit_start": 8,
+                    "bit_end": 9,
+                    "description": "Last authenticated MAC function that must be used"
+                  },
+                  {
+                    "name": "pubKeyId",
+                    "bit_start": 10,
+                    "bit_end": 13,
+                    "description": "Last authenticated public key Id that must be used in ECDSA verification"
+                  },
+                  {
+                    "name": "macLookupTable",
+                    "bit_start": 14,
+                    "bit_end": 21,
+                    "description": "Last authenticated MAC Lookup table index"
+                  },
+                  {
+                    "name": "keySize",
+                    "bit_start": 22,
+                    "bit_end": 25,
+                    "description": "Last authenticated TESLA key size index"
+                  },
+                  {
+                    "name": "macSize",
+                    "bit_start": 26,
+                    "bit_end": 29,
+                    "description": "Last authenticated MAC size index. Add an offset of 5 to obtain the index as per Table 11 of OSNMA SIS ICD, Issue 1.1"
+                  },
+                  {
+                    "name": "fromNVS",
+                    "bit_start": 30,
+                    "bit_end": 30,
+                    "description": "Last authenticated configuration comes from NVS"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "teslaKey",
+              "byte_offset": 20,
+              "data_type": "X4",
+              "description": "Information related to the TESLA key authentication",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "teslaKeyAuthStatus",
+                    "bit_start": 0,
+                    "bit_end": 2,
+                    "description": "Indicates if the authentication of an element of the TESLA key has been performed and the result thereof\n0: No TESLA key authentication performed\n1: TESLA key successfully authenticated against the root key\n2: TESLA key authentication against the root key has failed\n3: TESLA key authentication on-going: Intermediate authentication step\n4: TESLA key authentication is not performed: Key to authenticate is in the past. Potential replayed signals or simulation.\n5: TESLA key authentication is not performed: The root key is too old"
+                  },
+                  {
+                    "name": "wnSf",
+                    "bit_start": 3,
+                    "bit_end": 14,
+                    "description": "The GST week number of subframe in which the public key has been transmitted"
+                  },
+                  {
+                    "name": "towSf",
+                    "bit_start": 15,
+                    "bit_end": 29,
+                    "data_type": "U15",
+                    "scale": {
+                      "raw": "1/30",
+                      "multiplier": 0.03333333333333333
+                    },
+                    "unit": "S",
+                    "description": "Seconds of week of the GST of the subframe in which the public key has been transmitted divided by 30s (subframe length)"
+                  },
+                  {
+                    "name": "chainId",
+                    "bit_start": 30,
+                    "bit_end": 31,
+                    "description": "Chain Id of the TESLA key that has been authenticated"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "generalAndTiming",
+              "byte_offset": 24,
+              "data_type": "X4",
+              "description": "Information related to the overall authentication process: Timing parameters and summary of data authenticated",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "authSVs",
+                    "bit_start": 0,
+                    "bit_end": 5,
+                    "description": "Total number of SVs for which orbit/clocks data authentication has been performed (ADKD types 0 or 12)"
+                  },
+                  {
+                    "name": "authNumTim",
+                    "bit_start": 6,
+                    "bit_end": 11,
+                    "description": "Total number of timing parameters authentications (typically one per SV sending MAC ADKD type 4)"
+                  },
+                  {
+                    "name": "timingAuthResult",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Indicates if the authentication of the timing parameters (GST-UTC and GST-GPS) has been performed and the result\n0: No timing parameters authentication performed\n1: Timing parameters successfully authenticated\n2: Timing parameters authentication failed"
+                  },
+                  {
+                    "name": "macAdkdType",
+                    "bit_start": 14,
+                    "bit_end": 14,
+                    "description": "Indicates if the receiver processes fast (1 subframe delay) or slow (10 subframes delay) MACs\n0: Fast MACs (ADKD type 0)\n1: Slow MACs (ADKD type 12)"
+                  },
+                  {
+                    "name": "pubKeySrc",
+                    "bit_start": 15,
+                    "bit_end": 16,
+                    "description": "Origin of the public key\n0: Factory default\n1: From satellites\n2: From aided message\n3: From NVS"
+                  },
+                  {
+                    "name": "merkleRootSrc",
+                    "bit_start": 17,
+                    "bit_end": 18,
+                    "description": "Origin of the Merkle tree root"
+                  },
+                  {
+                    "name": "merkleRootVal",
+                    "bit_start": 19,
+                    "bit_end": 19,
+                    "description": "Validity of the Merkle tree root currently applicable\n0: Merkle tree root is invalid\n1: Merkle tree root is valid"
+                  },
+                  {
+                    "name": "futureMerkleRootSrc",
+                    "bit_start": 20,
+                    "bit_end": 21,
+                    "description": "Origin of the future Merkle tree root\n0: Factory default\n2: From aided message\n3: From NVS"
+                  },
+                  {
+                    "name": "futureMerkleRootVal",
+                    "bit_start": 22,
+                    "bit_end": 22,
+                    "description": "Validity of the future Merkle tree root\n0: Future Merkle tree root is invalid or unknown\n1: Future Merkle tree root is valid"
+                  },
+                  {
+                    "name": "pubKeyVal",
+                    "bit_start": 23,
+                    "bit_end": 23,
+                    "description": "Validity of the public key\n0: Public key is invalid or unknown\n1: Public key is valid"
+                  },
+                  {
+                    "name": "futurePubKeyVal",
+                    "bit_start": 24,
+                    "bit_end": 24,
+                    "description": "Validity of the future public key\n0: Future public key is invalid or unknown\n1: Future public key is valid"
+                  },
+                  {
+                    "name": "futurePubKeySrc",
+                    "bit_start": 25,
+                    "bit_end": 26,
+                    "description": "Origin of the future public key\n0: Factory default\n1: From satellites\n3: From NVS"
+                  },
+                  {
+                    "name": "futurePubKeyId",
+                    "bit_start": 27,
+                    "bit_end": 30,
+                    "description": "Last authenticated public key Id that will be used in ECDSA verification after the next key update"
+                  }
+                ]
+              }
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "authSVs",
+              "repetition_type": "count_field",
+              "count_field": "generalAndTiming.authSVs",
+              "group_size_bytes": 4,
+              "base_offset": 28,
+              "fields": [
+                {
+                  "name": "bitfield1",
+                  "byte_offset": 0,
+                  "data_type": "X2",
+                  "description": "bitfield:",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "IODE",
+                        "bit_start": 0,
+                        "bit_end": 9,
+                        "description": "Issue of data, authenticated ephemeris"
+                      },
+                      {
+                        "name": "authNum",
+                        "bit_start": 10,
+                        "bit_end": 14,
+                        "description": "Number of times that the same block of navigation data has been authenticated in last execution"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 15,
+                        "bit_end": 15,
+                        "description": "Indicates the authentication result for current SV's orbits, clocks, flags, group delays and ionospheric delay data:\n0: Navigation data authentication failed\n1: Navigation data successfully authenticated"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Satellite identifier whose data gets authenticated (see Satellite Numbering)"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "fb3d38c12c4a1c4d"
+    }
+  ]
+}

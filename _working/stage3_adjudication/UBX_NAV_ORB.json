@@ -1,0 +1,269 @@
+{
+  "message_name": "UBX-NAV-ORB",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-ORB",
+      "class_id": "0x01",
+      "message_id": "0x34",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 8,
+            "formula": "8 + numSv * 6",
+            "min": 8
+          }
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch"
+          },
+          {
+            "name": "version",
+            "byte_offset": 4,
+            "data_type": "U1",
+            "description": "Message version (0x01)"
+          },
+          {
+            "name": "numSv",
+            "byte_offset": 5,
+            "data_type": "U1",
+            "description": "Number of SVs in the database"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 6,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved"
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "sv_info",
+            "repetition_type": "count_field",
+            "count_field": "numSv",
+            "group_size_bytes": 6,
+            "base_offset": 8,
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1"
+              },
+              {
+                "name": "svFlag",
+                "byte_offset": 2,
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "health",
+                      "bit_start": 0,
+                      "bit_end": 1
+                    },
+                    {
+                      "name": "visibility",
+                      "bit_start": 2,
+                      "bit_end": 3
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "eph",
+                "byte_offset": 3,
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "ephUsability",
+                      "bit_start": 0,
+                      "bit_end": 4
+                    },
+                    {
+                      "name": "ephSource",
+                      "bit_start": 5,
+                      "bit_end": 7
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "alm",
+                "byte_offset": 4,
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "almUsability",
+                      "bit_start": 0,
+                      "bit_end": 4
+                    },
+                    {
+                      "name": "almSource",
+                      "bit_start": 5,
+                      "bit_end": 7
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "otherOrb",
+                "byte_offset": 5,
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "anoAopUsability",
+                      "bit_start": 0,
+                      "bit_end": 4
+                    },
+                    {
+                      "name": "type",
+                      "bit_start": 5,
+                      "bit_end": 7
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect offsets in repeated group: uses absolute offsets (8, 9, 10...) instead of relative offsets (0, 1, 2...) for the field definitions within the repeating block."
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses algebraic string formulas for offsets (e.g., '8 + n*6') instead of relative integer offsets."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Legacy field naming: 'reserved1' instead of 'reserved0'.",
+          "Explicit definition of reserved bits 4-7 in svFlag (correct but often implicit in newer docs)."
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Truncated description for 'almSource' bitfield (lists only '0 = not available')."
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "payload": {
+            "fields": [
+              {
+                "name": "iTOW",
+                "byte_offset": 0
+              },
+              {
+                "name": "version",
+                "byte_offset": 4
+              },
+              {
+                "name": "numSv",
+                "byte_offset": 5
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 6,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 2
+                }
+              }
+            ]
+          }
+        },
+        "reason": "Older generation (M8) documentation uses 'reserved1' for the header padding field and explicitly documents reserved bits in svFlag."
+      }
+    ],
+    "reasoning": "The message structure is extremely stable across all generations (M8 to F10/M10). The payload consists of an 8-byte header followed by a variable number of 6-byte satellite info blocks. Most verdicts reflect 'correct' extraction. Extraction 1 (M10-SPG-5.30) incorrectly used absolute offsets (starting at 8) inside a repeated group, which typically requires relative offsets (0-5) in this schema format. Extraction 3 used algebraic formulas for offsets, which is semantically valid but non-standard for the schema. Extraction 15 had a text truncation error in a bitfield description. Extraction 13 represents a valid legacy variation for M8 receivers."
+  }
+}

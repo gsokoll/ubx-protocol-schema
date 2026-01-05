@@ -1,0 +1,107 @@
+{
+  "message_name": "UBX-CFG-RINV",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-RINV",
+      "class_id": "0x06",
+      "message_id": "0x34",
+      "description": "Contents of remote inventory. This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. If N is greater than 30, the excess bytes are discarded.",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 1,
+            "formula": "1 + N",
+            "min": 1,
+            "max": 31
+          }
+        },
+        "fields": [
+          {
+            "name": "flags",
+            "byte_offset": 0,
+            "data_type": "X1",
+            "description": "Flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "dump",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Dump data at startup. Does not work if flag binary is set."
+                },
+                {
+                  "name": "binary",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "Data is binary."
+                }
+              ]
+            }
+          },
+          {
+            "name": "data",
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": "N"
+            },
+            "description": "Data to store/stored in remote inventory."
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing bitfield definitions for 'flags' field."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "extraction_error",
+        "issues": [
+          "Uses 'explicit_count' referencing 'N', but 'N' is not defined as a field in the payload. Should use 'fill_remaining' or 'array_of' with implicit length."
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "Bitfield definition swapped. Standard is 'dump' at bit 0 and 'binary' at bit 1. This extraction has 'binary' at 0 and 'dump' at 1."
+        ]
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The message structure is consistent across generations: a 1-byte flag field followed by N bytes of data. The canonical flag definition puts 'dump' at bit 0 and 'binary' at bit 1, supported by 7 of the 8 sources. Extraction 8 (M8) shows a swapped bitfield, which is likely an error in reading the manual table rather than a protocol change. Extraction 6 is incomplete (missing bits). Extraction 7 uses a modeling construct ('explicit_count: N') that refers to a non-existent field variable, whereas others correctly identify the variable data nature via arrays or 'fill_remaining' semantics."
+  }
+}

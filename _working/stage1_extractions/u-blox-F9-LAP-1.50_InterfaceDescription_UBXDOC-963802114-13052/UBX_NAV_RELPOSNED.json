@@ -1,0 +1,288 @@
+{
+  "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052.pdf",
+  "message_name": "UBX-NAV-RELPOSNED",
+  "extraction_timestamp": "2026-01-04T03:22:19.045377+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 125,
+    "end": 127
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-RELPOSNED\nExpected IDs from TOC: class_id=0x01, message_id=0x3c\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-RELPOSNED\". Ignore any other messages visible.\n2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n3. Verify field sizes match offset differences.\n\n=== DATA TYPES ===\n\nScalar types (use EXACTLY these values):\n- U1, U2, U4, U8 = Unsigned integers (1/2/4/8 bytes)\n- I1, I2, I4, I8 = Signed integers - NOTE: \"I\" is capital letter i, NOT digit 1\n- X1, X2, X4, X8 = Bitfields (use for flags, mask, status fields)\n- R4, R8 = Floating point (4/8 bytes)\n- CH = ASCII character (1 byte)\n\nArray types: Use object format {\"array_of\": \"U1\", \"count\": N}\n- Check Type column for \"[N]\" or \"x N\" notation\n- Verify array size matches offset gap to next field\n\n=== CHARACTER RECOGNITION WARNINGS ===\n\nThe PDF uses fonts where these characters look similar:\n- \"I\" (letter i) vs \"1\" (digit one): Data types are I1, I2, I4 (not 11, 12, 14)\n- \"O\" (letter o) vs \"0\" (digit zero): Message names like UBX-ODO use letter \"O\"\n\n=== FIELD EXTRACTION ===\n\nFor each field extract:\n- name: Exact field name from PDF (preserve camelCase)\n- byte_offset: Integer from \"Offset\" column (0-indexed)\n- data_type: UBX type or array object\n- description: Field description text\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- scale: If scaling factor shown, include {\"raw\": \"1e-7\", \"multiplier\": 1e-7}\n- reserved: Set true for reserved fields\n- bitfield: For X-type fields with bit definitions, extract structure\n\n=== ARRAY DETECTION (CRITICAL) ===\n\nCommon extraction error: missing arrays. Check carefully:\n- Type column shows: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = array\n- Offset gaps reveal arrays: offset 4 to 8 with U1 = 4-byte array\n- Reserved fields often span multiple bytes\n\n=== BITFIELD DETECTION (CRITICAL) ===\n\nUse X1/X2/X4 (NOT U1/U2/U4) when:\n- Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n- Description mentions \"bitfield\" or lists bit meanings\n- Sub-table shows bit positions\n\nExtract bitfield structure for ALL X-type fields:\n{\"bits\": [{\"name\": \"bitName\", \"bit_start\": 0, \"bit_end\": 0, \"description\": \"...\"}]}\n\n=== PAYLOAD LENGTH ===\n\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\", \"min\": 8}}\n\n=== REPEATED GROUPS (CRITICAL) ===\n\nMany UBX messages contain repeated blocks of fields. Look for:\n- \"N x ...\" or \"numXxx x ...\" patterns in the payload table\n- Fields that repeat based on a count field (e.g., numSvs, numCh)\n- Variable-length payloads with repeating structures\n\nExtract repeated groups as:\n{\"repeated_groups\": [{\n  \"name\": \"groupName\",\n  \"repetition_type\": \"count_field\",\n  \"count_field\": \"numSvs\",\n  \"group_size_bytes\": 12,\n  \"base_offset\": 8,\n  \"fields\": [...]\n}]}\n\nCommon patterns:\n- INF messages: Have a \"str\" repeated group for variable-length text\n- NAV-SAT, NAV-ORB: Have satellite blocks repeated per numSvs\n- MON-RXBUF: Has pending[] arrays per port\n\n=== MESSAGE TYPE ===\n\nDetermine from context:\n- \"periodic\" or \"periodic_polled\": Output messages sent automatically or on poll\n- \"input\": Messages sent TO the receiver\n- \"output\": Messages sent FROM the receiver  \n- \"command\": One-shot commands\n- \"get\"/\"set\"/\"get_set\": Configuration messages\n- \"poll_request\": Poll request (usually empty payload)\n\n=== SPECIAL MESSAGE TYPES ===\n\n**UBX-INF-* (INF-DEBUG, INF-ERROR, INF-NOTICE, INF-WARNING, INF-TEST):**\n- These contain a variable-length ASCII string payload\n- Extract a single field named \"str\" with data_type {\"array_of\": \"CH\", \"count\": \"variable\"}\n- Use repeated_groups with repetition_type \"fill_remaining\" for the string\n- Do NOT return empty fields array\n\n**UBX-MGA-* (Multiple GNSS Assistance):**\n- Often have MULTIPLE SUB-TYPES on same pages (EPH, ALM, IONO, etc.)\n- Each sub-type has different \"type\" field value and different payload\n- Extract ONLY the sub-type matching the message name\n- If name includes sub-type (e.g., \"UBX-MGA-GPS-EPH\"), extract only that\n\n**UBX-LOG-FINDTIME:**\n- Has TWO structures: INPUT (request) and OUTPUT (response)\n- INPUT: version, type, year, month, day, hour, minute, second, reserved\n- OUTPUT: version, type, reserved, entryNumber\n- Extract based on message name suffix (-INPUT or -OUTPUT)\n\n**UBX-RXM-RLM:**\n- Has SHORT (16 bytes, type=0x01) and LONG (28 bytes, type=0x02) variants\n- Extract based on message name suffix (-SHORT or -LONG)\n\n**UBX-RXM-PMREQ:**\n- V0 (8 bytes): duration, flags - NO version field\n- V1 (16 bytes): version, reserved0[3], duration, flags, wakeupSources\n- Extract based on suffix (-V0 or -V1)\n\n=== QUALITY CHECKS ===\n\nBefore returning, verify:\n- Byte offsets are sequential and non-overlapping\n- Field sizes match offset gaps (offset 4 to 8 = 4 bytes)\n- Total field sizes match payload length\n- All fields from the payload table are included\nIf any of these appear to fail, you should review your initial extraction and re-extract the message.\n\n\n=== VARIANT MESSAGE: UBX-NAV-RELPOSNED ===\nThis message has TWO structures:\n- V0 (40 bytes): version=0x00, older format, flags at offset 36\n- V1 (64 bytes): version=0x01, newer format with relPosLength/Heading, flags at offset 60\nCheck payload length: 40 bytes = V0, 64 bytes = V1.\n\n\n=== MESSAGE NAME FORMAT (CRITICAL) ===\n\nThe \"name\" field MUST be EXACTLY \"UBX-NAV-RELPOSNED\" with NO modifications:\n- Do NOT add descriptions like \"(Poll request)\" or \"(Version 0)\"\n- Do NOT add suffixes like \"Request\" or \"Poll\"\n- Do NOT include any parenthetical text\n- Use ONLY the canonical message name: \"UBX-NAV-RELPOSNED\"\n\n=== OUTPUT FORMAT ===\n\nReturn a JSON object with this structure:\n{\n  \"name\": \"UBX-NAV-RELPOSNED\",\n  \"class_id\": \"0xNN\",\n  \"message_id\": \"0xNN\",\n  \"description\": \"Short description\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\"fixed\": N} or {\"variable\": {...}},\n    \"fields\": [\n      {\n        \"name\": \"fieldName\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"description\": \"...\",\n        \"unit\": \"ms\",\n        \"scale\": {\"raw\": \"1e-7\", \"multiplier\": 1e-7},\n        \"bitfield\": {\"bits\": [...]}\n      }\n    ],\n    \"repeated_groups\": [...]\n  }\n}\n\nExtract the message completely and accurately."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-RELPOSNED\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x3c\",\n  \"description\": \"Relative positioning information in NED frame\",\n  \"message_type\": \"output\",\n  \"payload\": {\n    \"length\": {\n      \"fixed\": 64\n    },\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"refStationId\",\n        \"byte_offset\": 2,\n        \"data_type\": \"U2\",\n        \"description\": \"Reference station ID. Must be in the range 0..4095.\"\n      },\n      {\n        \"name\": \"iTOW\",\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\",\n        \"unit\": \"ms\"\n      },\n      {\n        \"name\": \"relPosN\",\n        \"byte_offset\": 8,\n        \"data_type\": \"I4\",\n        \"description\": \"North component of relative position vector\",\n        \"unit\": \"cm\"\n      },\n      {\n        \"name\": \"relPosE\",\n        \"byte_offset\": 12,\n        \"data_type\": \"I4\",\n        \"description\": \"East component of relative position vector\",\n        \"unit\": \"cm\"\n      },\n      {\n        \"name\": \"relPosD\",\n        \"byte_offset\": 16,\n        \"data_type\": \"I4\",\n        \"description\": \"Down component of relative position vector\",\n        \"unit\": \"cm\"\n      },\n      {\n        \"name\": \"relPosLength\",\n        \"byte_offset\": 20,\n        \"data_type\": \"I4\",\n        \"description\": \"Length of the relative position vector\",\n        \"unit\": \"cm\"\n      },\n      {\n        \"name\": \"relPosHeading\",\n        \"byte_offset\": 24,\n        \"data_type\": \"I4\",\n        \"description\": \"Heading of the relative position vector\",\n        \"unit\": \"deg\",\n        \"scale\": {\n          \"raw\": \"1e-5\",\n          \"multiplier\": 0.00001\n        }\n      },\n      {\n        \"name\": \"reserved1\",\n        \"byte_offset\": 28,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"relPosHPN\",\n        \"byte_offset\": 32,\n        \"data_type\": \"I1\",\n        \"description\": \"High-precision North component of relative position vector. Must be in the range -99 to +99. The full North component of the relative position vector, in units of cm, is given by relPosN + (relPosHPN * 1e-2)\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"relPosHPE\",\n        \"byte_offset\": 33,\n        \"data_type\": \"I1\",\n        \"description\": \"High-precision East component of relative position vector. Must be in the range -99 to +99. The full East component of the relative position vector, in units of cm, is given by relPosE + (relPosHPE * 1e-2)\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"relPosHPD\",\n        \"byte_offset\": 34,\n        \"data_type\": \"I1\",\n        \"description\": \"High-precision Down component of relative position vector. Must be in the range -99 to +99. The full Down component of the relative position vector, in units of cm, is given by relPosD + (relPosHPD * 1e-2)\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"relPosHPLength\",\n        \"byte_offset\": 35,\n        \"data_type\": \"I1\",\n        \"description\": \"High-precision component of the length of the relative position vector. Must be in the range -99 to +99. The full length of the relative position vector, in units of cm, is given by relPosLength + (relPosHPLength * 1e-2)\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"accN\",\n        \"byte_offset\": 36,\n        \"data_type\": \"U4\",\n        \"description\": \"Accuracy of relative position North component\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"accE\",\n        \"byte_offset\": 40,\n        \"data_type\": \"U4\",\n        \"description\": \"Accuracy of relative position East component\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"accD\",\n        \"byte_offset\": 44,\n        \"data_type\": \"U4\",\n        \"description\": \"Accuracy of relative position Down component\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"accLength\",\n        \"byte_offset\": 48,\n        \"data_type\": \"U4\",\n        \"description\": \"Accuracy of length of the relative position vector\",\n        \"unit\": \"mm\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        }\n      },\n      {\n        \"name\": \"accHeading\",\n        \"byte_offset\": 52,\n        \"data_type\": \"U4\",\n        \"description\": \"Accuracy of heading of the relative position vector\",\n        \"unit\": \"deg\",\n        \"scale\": {\n          \"raw\": \"1e-5\",\n          \"multiplier\": 0.00001\n        }\n      },\n      {\n        \"name\": \"reserved2\",\n        \"byte_offset\": 56,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"flags\",\n        \"byte_offset\": 60,\n        \"data_type\": \"X4\",\n        \"description\": \"Flags\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"gnssFixOK\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"description\": \"A valid fix (i.e within DOP & accuracy masks)\"\n            },\n            {\n              \"name\": \"diffSoln\",\n              \"bit_start\": 1,\n              \"bit_end\": 1,\n              \"description\": \"1 if differential corrections were applied\"\n            },\n            {\n              \"name\": \"relPosValid\",\n              \"bit_start\": 2,\n              \"bit_end\": 2,\n              \"description\": \"1 if relative position components and accuracies are valid and, in moving base mode only, if baseline is valid\"\n            },\n            {\n              \"name\": \"carrSoln\",\n              \"bit_start\": 3,\n              \"bit_end\": 4,\n              \"description\": \"Carrier phase range solution status: 0 = no carrier phase range solution, 1 = carrier phase range solution with floating ambiguities, 2 = carrier phase range solution with fixed ambiguities\"\n            },\n            {\n              \"name\": \"isMoving\",\n              \"bit_start\": 5,\n              \"bit_end\": 5,\n              \"description\": \"1 if the receiver is operating in moving base mode\"\n            },\n            {\n              \"name\": \"refPosMiss\",\n              \"bit_start\": 6,\n              \"bit_end\": 6,\n              \"description\": \"1 if extrapolated reference position was used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)\"\n            },\n            {\n              \"name\": \"refObsMiss\",\n              \"bit_start\": 7,\n              \"bit_end\": 7,\n              \"description\": \"1 if extrapolated reference observations were used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)\"\n            },\n            {\n              \"name\": \"relPosHeadingValid\",\n              \"bit_start\": 8,\n              \"bit_end\": 8,\n              \"description\": \"1 if relPosHeading is valid\"\n            },\n            {\n              \"name\": \"relPosNormalized\",\n              \"bit_start\": 9,\n              \"bit_end\": 9,\n              \"description\": \"1 if the components of the relative position vector (including the high-precision parts) are normalized\"\n            }\n          ]\n        }\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-RELPOSNED",
+    "class_id": "0x01",
+    "message_id": "0x3c",
+    "description": "Relative positioning information in NED frame",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "fixed": 64
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "refStationId",
+          "byte_offset": 2,
+          "data_type": "U2",
+          "description": "Reference station ID. Must be in the range 0..4095."
+        },
+        {
+          "name": "iTOW",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "unit": "ms"
+        },
+        {
+          "name": "relPosN",
+          "byte_offset": 8,
+          "data_type": "I4",
+          "description": "North component of relative position vector",
+          "unit": "cm"
+        },
+        {
+          "name": "relPosE",
+          "byte_offset": 12,
+          "data_type": "I4",
+          "description": "East component of relative position vector",
+          "unit": "cm"
+        },
+        {
+          "name": "relPosD",
+          "byte_offset": 16,
+          "data_type": "I4",
+          "description": "Down component of relative position vector",
+          "unit": "cm"
+        },
+        {
+          "name": "relPosLength",
+          "byte_offset": 20,
+          "data_type": "I4",
+          "description": "Length of the relative position vector",
+          "unit": "cm"
+        },
+        {
+          "name": "relPosHeading",
+          "byte_offset": 24,
+          "data_type": "I4",
+          "description": "Heading of the relative position vector",
+          "unit": "deg",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          }
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "relPosHPN",
+          "byte_offset": 32,
+          "data_type": "I1",
+          "description": "High-precision North component of relative position vector. Must be in the range -99 to +99. The full North component of the relative position vector, in units of cm, is given by relPosN + (relPosHPN * 1e-2)",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "relPosHPE",
+          "byte_offset": 33,
+          "data_type": "I1",
+          "description": "High-precision East component of relative position vector. Must be in the range -99 to +99. The full East component of the relative position vector, in units of cm, is given by relPosE + (relPosHPE * 1e-2)",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "relPosHPD",
+          "byte_offset": 34,
+          "data_type": "I1",
+          "description": "High-precision Down component of relative position vector. Must be in the range -99 to +99. The full Down component of the relative position vector, in units of cm, is given by relPosD + (relPosHPD * 1e-2)",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "relPosHPLength",
+          "byte_offset": 35,
+          "data_type": "I1",
+          "description": "High-precision component of the length of the relative position vector. Must be in the range -99 to +99. The full length of the relative position vector, in units of cm, is given by relPosLength + (relPosHPLength * 1e-2)",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "accN",
+          "byte_offset": 36,
+          "data_type": "U4",
+          "description": "Accuracy of relative position North component",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "accE",
+          "byte_offset": 40,
+          "data_type": "U4",
+          "description": "Accuracy of relative position East component",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "accD",
+          "byte_offset": 44,
+          "data_type": "U4",
+          "description": "Accuracy of relative position Down component",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "accLength",
+          "byte_offset": 48,
+          "data_type": "U4",
+          "description": "Accuracy of length of the relative position vector",
+          "unit": "mm",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          }
+        },
+        {
+          "name": "accHeading",
+          "byte_offset": 52,
+          "data_type": "U4",
+          "description": "Accuracy of heading of the relative position vector",
+          "unit": "deg",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          }
+        },
+        {
+          "name": "reserved2",
+          "byte_offset": 56,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "flags",
+          "byte_offset": 60,
+          "data_type": "X4",
+          "description": "Flags",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "gnssFixOK",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "A valid fix (i.e within DOP & accuracy masks)"
+              },
+              {
+                "name": "diffSoln",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "1 if differential corrections were applied"
+              },
+              {
+                "name": "relPosValid",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "1 if relative position components and accuracies are valid and, in moving base mode only, if baseline is valid"
+              },
+              {
+                "name": "carrSoln",
+                "bit_start": 3,
+                "bit_end": 4,
+                "description": "Carrier phase range solution status: 0 = no carrier phase range solution, 1 = carrier phase range solution with floating ambiguities, 2 = carrier phase range solution with fixed ambiguities"
+              },
+              {
+                "name": "isMoving",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "1 if the receiver is operating in moving base mode"
+              },
+              {
+                "name": "refPosMiss",
+                "bit_start": 6,
+                "bit_end": 6,
+                "description": "1 if extrapolated reference position was used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)"
+              },
+              {
+                "name": "refObsMiss",
+                "bit_start": 7,
+                "bit_end": 7,
+                "description": "1 if extrapolated reference observations were used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)"
+              },
+              {
+                "name": "relPosHeadingValid",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "1 if relPosHeading is valid"
+              },
+              {
+                "name": "relPosNormalized",
+                "bit_start": 9,
+                "bit_end": 9,
+                "description": "1 if the components of the relative position vector (including the high-precision parts) are normalized"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/vjgarczzpnwd"
+}

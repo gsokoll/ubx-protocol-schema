@@ -1,0 +1,4264 @@
+{
+  "message_name": "UBX-RXM-MEASX",
+  "protocol_version": 1,
+  "status": "split",
+  "agreement_ratio": 0.6666666666666666,
+  "winning_structure": {
+    "name": "UBX-RXM-MEASX",
+    "class_id": "0x02",
+    "message_id": "0x14",
+    "description": "Satellite measurements for RRLP",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 44,
+          "formula": "44 + numSV*24",
+          "min": 44
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version, currently 0x01"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 1,
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "gpsTOW",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "description": "GPS measurement reference time",
+          "unit": "ms"
+        },
+        {
+          "name": "gloTOW",
+          "byte_offset": 8,
+          "data_type": "U4",
+          "description": "GLONASS measurement reference time",
+          "unit": "ms"
+        },
+        {
+          "name": "bdsTOW",
+          "byte_offset": 12,
+          "data_type": "U4",
+          "description": "BeiDou measurement reference time",
+          "unit": "ms"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 16,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "qzssTOW",
+          "byte_offset": 20,
+          "data_type": "U4",
+          "description": "QZSS measurement reference time",
+          "unit": "ms"
+        },
+        {
+          "name": "gpsTOWacc",
+          "byte_offset": 24,
+          "data_type": "U2",
+          "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+          "unit": "ms",
+          "scale": {
+            "raw": "2^-4",
+            "multiplier": 0.0625
+          }
+        },
+        {
+          "name": "gloTOWacc",
+          "byte_offset": 26,
+          "data_type": "U2",
+          "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+          "unit": "ms",
+          "scale": {
+            "raw": "2^-4",
+            "multiplier": 0.0625
+          }
+        },
+        {
+          "name": "bdsTOWacc",
+          "byte_offset": 28,
+          "data_type": "U2",
+          "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+          "unit": "ms",
+          "scale": {
+            "raw": "2^-4",
+            "multiplier": 0.0625
+          }
+        },
+        {
+          "name": "reserved2",
+          "byte_offset": 30,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "qzssTOWacc",
+          "byte_offset": 32,
+          "data_type": "U2",
+          "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+          "unit": "ms",
+          "scale": {
+            "raw": "2^-4",
+            "multiplier": 0.0625
+          }
+        },
+        {
+          "name": "numSV",
+          "byte_offset": 34,
+          "data_type": "U1",
+          "description": "Number of satellites in repeated block"
+        },
+        {
+          "name": "flags",
+          "byte_offset": 35,
+          "data_type": "X1",
+          "description": "Flags",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "towSet",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "TOW set (0 = no, 1 or 2 = yes)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved3",
+          "byte_offset": 36,
+          "data_type": {
+            "array_of": "U1",
+            "count": 8
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "satellites",
+          "repetition_type": "count_field",
+          "count_field": "numSV",
+          "group_size_bytes": 24,
+          "base_offset": 44,
+          "fields": [
+            {
+              "name": "gnssId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "GNSS ID (see Satellite Numbering)"
+            },
+            {
+              "name": "svId",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Satellite ID (see Satellite Numbering)"
+            },
+            {
+              "name": "CNo",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "carrier noise ratio (0..63)"
+            },
+            {
+              "name": "mpathIndic",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+            },
+            {
+              "name": "dopplerMS",
+              "byte_offset": 4,
+              "data_type": "I4",
+              "description": "Doppler measurement",
+              "unit": "m/s",
+              "scale": {
+                "raw": "0.04",
+                "multiplier": 0.04
+              }
+            },
+            {
+              "name": "dopplerHz",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Doppler measurement",
+              "unit": "Hz",
+              "scale": {
+                "raw": "0.2",
+                "multiplier": 0.2
+              }
+            },
+            {
+              "name": "wholeChips",
+              "byte_offset": 12,
+              "data_type": "U2",
+              "description": "whole value of the code phase measurement (0..1022 for GPS)"
+            },
+            {
+              "name": "fracChips",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "fractional value of the code phase measurement (0..1023)"
+            },
+            {
+              "name": "codePhase",
+              "byte_offset": 16,
+              "data_type": "U4",
+              "description": "Code phase",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-21",
+                "multiplier": 4.76837158203125e-07
+              }
+            },
+            {
+              "name": "intCodePhase",
+              "byte_offset": 20,
+              "data_type": "U1",
+              "description": "Integer (part of the) code phase",
+              "unit": "ms"
+            },
+            {
+              "name": "pseuRangeRMSerr",
+              "byte_offset": 21,
+              "data_type": "U1",
+              "description": "pseudorange RMS error index (according to [1]) (0..63)"
+            },
+            {
+              "name": "reserved4",
+              "byte_offset": 22,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "ddd1620cb386453f",
+  "agreeing_sources": [
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+  ],
+  "disagreeing_sources": [
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellites",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSerr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satelliteMeasurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMS",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63) Err"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "5cadb9ac7d01cf2a"
+    },
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "repeated_group_numSV",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "cNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMS_Err",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e605abfb63c3651f"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satelliteMeasurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMS",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63) Err"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "5cadb9ac7d01cf2a"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_data",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSerr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "Pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "SV_info",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  },
+                  "unit": "m/s"
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  },
+                  "unit": "Hz"
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  },
+                  "unit": "ms"
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "cNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV*24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satelliteMeasurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satellite_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + N*24",
+              "count_field": "numSV"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzsSTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (Oxffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (Oxffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (Oxffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (Oxffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved4",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sv_measurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSE",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved5",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "34375395b5031594"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              },
+              "unit": "ms"
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "satelliteMeasurements",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 44,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 45,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 46,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 47,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 48,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  },
+                  "unit": "m/s"
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 52,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  },
+                  "unit": "Hz"
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 56,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 58,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 60,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  },
+                  "unit": "ms"
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 64,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMS_Err",
+                  "byte_offset": 65,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 66,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "43ab28a41dbb2573"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-RXM-MEASX",
+        "class_id": "0x02",
+        "message_id": "0x14",
+        "description": "Satellite measurements for RRLP",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 44,
+              "formula": "44 + numSV * 24",
+              "min": 44
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version, currently 0x01"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gpsTOW",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gloTOW",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "GLONASS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "bdsTOW",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "description": "BeiDou measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOW",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "QZSS measurement reference time",
+              "unit": "ms"
+            },
+            {
+              "name": "gpsTOWacc",
+              "byte_offset": 24,
+              "data_type": "U2",
+              "description": "GPS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "gloTOWacc",
+              "byte_offset": 26,
+              "data_type": "U2",
+              "description": "GLONASS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "bdsTOWacc",
+              "byte_offset": 28,
+              "data_type": "U2",
+              "description": "BeiDou measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "qzssTOWacc",
+              "byte_offset": 32,
+              "data_type": "U2",
+              "description": "QZSS measurement reference time accuracy (0xffff = > 4s)",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-4",
+                "multiplier": 0.0625
+              }
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 34,
+              "data_type": "U1",
+              "description": "Number of satellites in repeated block"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 35,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "towSet",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "TOW set (0 = no, 1 or 2 = yes)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 36,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sv_data",
+              "repetition_type": "count_field",
+              "count_field": "numSV",
+              "group_size_bytes": 24,
+              "base_offset": 44,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite ID (see Satellite Numbering)"
+                },
+                {
+                  "name": "CNo",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "carrier noise ratio (0..63)"
+                },
+                {
+                  "name": "mpathIndic",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "multipath index (according to [1]) (0 = not measured, 1 = low, 2 = medium, 3 = high)"
+                },
+                {
+                  "name": "dopplerMS",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "m/s",
+                  "scale": {
+                    "raw": "0.04",
+                    "multiplier": 0.04
+                  }
+                },
+                {
+                  "name": "dopplerHz",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "Doppler measurement",
+                  "unit": "Hz",
+                  "scale": {
+                    "raw": "0.2",
+                    "multiplier": 0.2
+                  }
+                },
+                {
+                  "name": "wholeChips",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "whole value of the code phase measurement (0..1022 for GPS)"
+                },
+                {
+                  "name": "fracChips",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "fractional value of the code phase measurement (0..1023)"
+                },
+                {
+                  "name": "codePhase",
+                  "byte_offset": 16,
+                  "data_type": "U4",
+                  "description": "Code phase",
+                  "unit": "ms",
+                  "scale": {
+                    "raw": "2^-21",
+                    "multiplier": 4.76837158203125e-07
+                  }
+                },
+                {
+                  "name": "intCodePhase",
+                  "byte_offset": 20,
+                  "data_type": "U1",
+                  "description": "Integer (part of the) code phase",
+                  "unit": "ms"
+                },
+                {
+                  "name": "pseuRangeRMSErr",
+                  "byte_offset": 21,
+                  "data_type": "U1",
+                  "description": "pseudorange RMS error index (according to [1]) (0..63)"
+                },
+                {
+                  "name": "reserved4",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ddd1620cb386453f"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "message_name": "UBX-TIM-SMEAS",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-TIM-SMEAS",
+      "class_id": "0x0D",
+      "message_id": "0x13",
+      "description": "Source measurement",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 12,
+            "formula": "12 + numMeas * 24",
+            "min": 12
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "numMeas",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of measurements in repeated block"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 2,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "iTow",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "description": "Time of the week",
+            "unit": "ms"
+          },
+          {
+            "name": "reserved2",
+            "byte_offset": 8,
+            "data_type": {
+              "array_of": "U1",
+              "count": 4
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "measurements",
+            "repetition_type": "count_field",
+            "count_field": "numMeas",
+            "group_size_bytes": 24,
+            "base_offset": 12,
+            "fields": [
+              {
+                "name": "sourceId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Index of source"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 1,
+                "data_type": "X1",
+                "description": "Flags",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "freqValid",
+                      "bit_start": 0,
+                      "bit_end": 0,
+                      "description": "1 = frequency measurement is valid"
+                    },
+                    {
+                      "name": "phaseValid",
+                      "bit_start": 1,
+                      "bit_end": 1,
+                      "description": "1 = phase measurement is valid"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "phaseOffsetFrac",
+                "byte_offset": 2,
+                "data_type": "I1",
+                "description": "Sub-nanosecond phase offset",
+                "unit": "ns",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "phaseUncFrac",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "Sub-nanosecond phase uncertainty",
+                "unit": "ns",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "phaseOffset",
+                "byte_offset": 4,
+                "data_type": "I4",
+                "description": "Phase offset",
+                "unit": "ns"
+              },
+              {
+                "name": "phaseUnc",
+                "byte_offset": 8,
+                "data_type": "U4",
+                "description": "Phase uncertainty",
+                "unit": "ns"
+              },
+              {
+                "name": "reserved3",
+                "byte_offset": 12,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 4
+                },
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "freqOffset",
+                "byte_offset": 16,
+                "data_type": "I4",
+                "description": "Frequency offset",
+                "unit": "ppb",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              },
+              {
+                "name": "freqUnc",
+                "byte_offset": 20,
+                "data_type": "U4",
+                "description": "Frequency uncertainty",
+                "unit": "ppb",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The extraction matches the official u-blox 8 series protocol specification exactly. It correctly identifies the 12-byte header followed by a repeating 24-byte block. The data types (U1, U4, I4), bitfields (freqValid, phaseValid), and complex fractional scaling (2^-8) for both phase and frequency fields are accurately represented."
+  }
+}

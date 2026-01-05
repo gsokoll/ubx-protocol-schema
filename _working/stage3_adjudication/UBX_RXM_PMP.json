@@ -1,0 +1,144 @@
+{
+  "message_name": "UBX-RXM-PMP",
+  "num_extractions": 5,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-RXM-PMP",
+      "class_id": "0x02",
+      "message_id": "0x72",
+      "description": "Point to Multipoint (LBAND) input message",
+      "message_type": "input",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 24,
+            "formula": "24 + numBytesUserData",
+            "min": 24,
+            "max": 528
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "numBytesUserData",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Number of bytes the userData block has in this frame (0...504)"
+          },
+          {
+            "name": "timeTag",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "Time since startup when frame started"
+          },
+          {
+            "name": "uniqueWord",
+            "byte_offset": 8,
+            "data_type": {
+              "array_of": "U4",
+              "count": 2
+            },
+            "description": "Received unique words"
+          },
+          {
+            "name": "serviceIdentifier",
+            "byte_offset": 16,
+            "data_type": "U2",
+            "description": "Received service identifier"
+          },
+          {
+            "name": "spare",
+            "byte_offset": 18,
+            "data_type": "U1",
+            "description": "Received spare data"
+          },
+          {
+            "name": "uniqueWordBitErrors",
+            "byte_offset": 19,
+            "data_type": "U1",
+            "description": "Number of bit errors in both unique words"
+          },
+          {
+            "name": "fecBits",
+            "byte_offset": 20,
+            "data_type": "U2",
+            "description": "Number of bits corrected by FEC"
+          },
+          {
+            "name": "ebno",
+            "byte_offset": 22,
+            "data_type": "U1",
+            "scale": {
+              "raw": "2^-3",
+              "multiplier": 0.125
+            },
+            "unit": "dB",
+            "description": "Energy per bit to noise power spectral density ratio"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 23,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "userData",
+            "byte_offset": 24,
+            "data_type": {
+              "array_of": "U1",
+              "count": "numBytesUserData"
+            },
+            "description": "Received user data"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect payload structure. The extraction describes satellite measurements (gnssId, svId, doppler, codePhase) which are typical of UBX-RXM-RAWX or similar, rather than the PMP data frame.",
+          "Incorrect reserved field sizing (22 bytes) and missing critical PMP fields like timeTag and uniqueWord."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "Extractions 2, 3, 4, and 5 are highly consistent, defining RXM-PMP as a message containing a 24-byte header (with Eb/No, FEC bits, and Time Tag) followed by a variable-length userData block. This matches the standard purpose of the PMP (Point-to-Multipoint) message which delivers L-Band correction data frames. Extraction 1 is fundamentally flawed; it identifies the same message ID (0x02 0x72) but populates it with satellite measurement fields (GNSS ID, Code Phase, etc.) which are not part of the PMP protocol specification. The variations between extractions 2-5 are purely representational (e.g., using a repeated group vs. an array field) and do not indicate protocol changes."
+  }
+}

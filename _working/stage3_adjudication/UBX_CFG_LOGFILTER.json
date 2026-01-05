@@ -1,0 +1,169 @@
+{
+  "message_name": "UBX-CFG-LOGFILTER",
+  "num_extractions": 8,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-LOGFILTER",
+      "class_id": "0x06",
+      "message_id": "0x47",
+      "description": "Data logger configuration",
+      "message_type": "get_set",
+      "payload": {
+        "length": {
+          "fixed": 12
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x01 for this version)"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "Flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "recordEnabled",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "1 = enable recording, 0 = disable recording"
+                },
+                {
+                  "name": "psmOncePerWakupEnabled",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "1 = enable recording only one single position per PSM on/off mode wake-up period, 0 = disable once per wake-up"
+                },
+                {
+                  "name": "applyAllFilterSettings",
+                  "bit_start": 2,
+                  "bit_end": 2,
+                  "description": "1 = apply all filter settings, 0 = only apply recordEnabled"
+                }
+              ]
+            }
+          },
+          {
+            "name": "minInterval",
+            "byte_offset": 2,
+            "data_type": "U2",
+            "description": "Minimum time interval between logged positions (0 = not set).",
+            "unit": "s"
+          },
+          {
+            "name": "timeThreshold",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Time difference threshold.",
+            "unit": "s"
+          },
+          {
+            "name": "speedThreshold",
+            "byte_offset": 6,
+            "data_type": "U2",
+            "description": "Speed threshold.",
+            "unit": "m/s"
+          },
+          {
+            "name": "positionThreshold",
+            "byte_offset": 8,
+            "data_type": "U4",
+            "description": "3D position difference threshold.",
+            "unit": "m"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1"
+            },
+            {
+              "name": "minInterval",
+              "byte_offset": 2,
+              "data_type": "U2"
+            },
+            {
+              "name": "timeThreshold",
+              "byte_offset": 4,
+              "data_type": "U2"
+            },
+            {
+              "name": "speedThreshold",
+              "byte_offset": 6,
+              "data_type": "U2"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "The 'positionThreshold' field is marked as Reserved in the HPG 1.32 Interface Description."
+      }
+    ],
+    "reasoning": "The vast majority of extractions (7 out of 8) confirm a consistent structure for UBX-CFG-LOGFILTER across M8, M9, and most F9 firmware versions, including a 'positionThreshold' field at offset 8. Extraction 3 (HPG 1.32) represents a valid variation where this specific field is reserved, likely due to feature limitations or documentation changes in that specific firmware release. Minor inconsistencies in unit capitalization ('S' vs 's') in Extractions 1 and 4 are considered valid verbatim transcripts of their respective manuals but are normalized to 's' in the canonical structure."
+  }
+}

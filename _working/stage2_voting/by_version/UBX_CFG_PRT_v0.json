@@ -1,0 +1,1404 @@
+{
+  "message_name": "UBX-CFG-PRT",
+  "protocol_version": 0,
+  "status": "majority",
+  "agreement_ratio": 0.8571428571428571,
+  "winning_structure": {
+    "name": "UBX-CFG-PRT",
+    "class_id": "0x06",
+    "message_id": "0x00",
+    "description": "Port configuration message. It can be used as a 1-byte poll request (payload contains only portID) or as a 20-byte configuration message for getting/setting port parameters. Multiple 20-byte configurations can be concatenated in an input message. This definition follows the UART port configuration as the primary structure.",
+    "message_type": "get_set",
+    "payload": {
+      "length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "name": "portID",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Port identifier number. Values: 0 for I2C (DDC), 1 for UART1, 2 for UART2, 3 for USB, 4 for SPI. This field determines the interpretation of subsequent payload fields.",
+          "unit": null,
+          "scale": null,
+          "reserved": false
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Reserved",
+          "unit": null,
+          "scale": null,
+          "reserved": true
+        },
+        {
+          "name": "txReady",
+          "byte_offset": 2,
+          "data_type": "X2",
+          "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01)",
+          "unit": null,
+          "scale": null,
+          "reserved": false,
+          "bitfield": {
+            "bits": [
+              {
+                "name": "en",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Enable TX ready feature for this port"
+              },
+              {
+                "name": "pol",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Polarity (0: High-active, 1: Low-active)"
+              },
+              {
+                "name": "pin",
+                "bit_start": 2,
+                "bit_end": 6,
+                "description": "PIO to be used (must not be in use by another function)"
+              },
+              {
+                "name": "thres",
+                "bit_start": 7,
+                "bit_end": 15,
+                "description": "Threshold (given threshold is multiplied by 8 bytes. The TX ready PIN goes active after >= thres*8 bytes are pending for the port and going inactive after the last pending bytes have been written to hardware (0-4 bytes before end of stream). Examples: 0x000 no threshold, 0x001 8byte, 0x002 16byte, 0x1FE 4080byte, 0x1FF 4088byte)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mode",
+          "byte_offset": 4,
+          "data_type": "X4",
+          "description": "This field's interpretation varies by port type. For UART ports (portID 1, 2), it describes the UART mode (see bitfield below). For SPI ports (portID 4), it describes SPI Mode Flags. For I2C ports (portID 0), it describes I2C (DDC) Mode Flags. For USB ports (portID 3), the entire 8-byte block from offset 4 to 11 is reserved.",
+          "unit": null,
+          "scale": null,
+          "reserved": false,
+          "bitfield": {
+            "bits": [
+              {
+                "name": "charLen",
+                "bit_start": 6,
+                "bit_end": 7,
+                "description": "Character length (00: 5bit (not supported), 01: 6bit (not supported), 10: 7bit (supported only with parity), 11: 8bit)"
+              },
+              {
+                "name": "parity",
+                "bit_start": 9,
+                "bit_end": 11,
+                "description": "Parity (000: Even parity, 001: Odd parity, 10X: No parity, X1X: Reserved)"
+              },
+              {
+                "name": "nStopBits",
+                "bit_start": 12,
+                "bit_end": 13,
+                "description": "Number of Stop bits (00: 1 Stop bit, 01: 1.5 Stop bit, 10: 2 Stop bit, 11: 0.5 Stop bit)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "baudRate",
+          "byte_offset": 8,
+          "data_type": "U4",
+          "description": "Baud rate in bits/second (applies to UART ports, portID 1, 2). For other port types, this 4-byte block (offset 8-11) may be reserved or part of port-specific configuration not explicitly detailed as a distinct field.",
+          "unit": "Bits/s",
+          "scale": null,
+          "reserved": false
+        },
+        {
+          "name": "inProtoMask",
+          "byte_offset": 12,
+          "data_type": "X2",
+          "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+          "unit": null,
+          "scale": null,
+          "reserved": false,
+          "bitfield": {
+            "bits": [
+              {
+                "name": "inUbx",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "UBX protocol"
+              },
+              {
+                "name": "inNmea",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "NMEA protocol"
+              },
+              {
+                "name": "inRtcm",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "RTCM2 protocol"
+              },
+              {
+                "name": "inRtcm3",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "outProtoMask",
+          "byte_offset": 14,
+          "data_type": "X2",
+          "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+          "unit": null,
+          "scale": null,
+          "reserved": false,
+          "bitfield": {
+            "bits": [
+              {
+                "name": "outUbx",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "UBX protocol"
+              },
+              {
+                "name": "outNmea",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "NMEA protocol"
+              },
+              {
+                "name": "outRtcm3",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "flags",
+          "byte_offset": 16,
+          "data_type": "X2",
+          "description": "Flags bit mask",
+          "unit": null,
+          "scale": null,
+          "reserved": false,
+          "bitfield": {
+            "bits": [
+              {
+                "name": "extendedTxTimeout",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory (not supported for protocol versions less than 13.01)."
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "unit": null,
+          "scale": null,
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "08a4f162e662f653",
+  "agreeing_sources": [
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Port configuration message. It can be used as a 1-byte poll request (payload contains only portID) or as a 20-byte configuration message for getting/setting port parameters. Multiple 20-byte configurations can be concatenated in an input message. This definition follows the UART port configuration as the primary structure.",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number. Values: 0 for I2C (DDC), 1 for UART1, 2 for UART2, 3 for USB, 4 for SPI. This field determines the interpretation of subsequent payload fields.",
+              "unit": null,
+              "scale": null,
+              "reserved": false
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "unit": null,
+              "scale": null,
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01)",
+              "unit": null,
+              "scale": null,
+              "reserved": false,
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port"
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0: High-active, 1: Low-active)"
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)"
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold (given threshold is multiplied by 8 bytes. The TX ready PIN goes active after >= thres*8 bytes are pending for the port and going inactive after the last pending bytes have been written to hardware (0-4 bytes before end of stream). Examples: 0x000 no threshold, 0x001 8byte, 0x002 16byte, 0x1FE 4080byte, 0x1FF 4088byte)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "This field's interpretation varies by port type. For UART ports (portID 1, 2), it describes the UART mode (see bitfield below). For SPI ports (portID 4), it describes SPI Mode Flags. For I2C ports (portID 0), it describes I2C (DDC) Mode Flags. For USB ports (portID 3), the entire 8-byte block from offset 4 to 11 is reserved.",
+              "unit": null,
+              "scale": null,
+              "reserved": false,
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00: 5bit (not supported), 01: 6bit (not supported), 10: 7bit (supported only with parity), 11: 8bit)"
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity (000: Even parity, 001: Odd parity, 10X: No parity, X1X: Reserved)"
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00: 1 Stop bit, 01: 1.5 Stop bit, 10: 2 Stop bit, 11: 0.5 Stop bit)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second (applies to UART ports, portID 1, 2). For other port types, this 4-byte block (offset 8-11) may be reserved or part of port-specific configuration not explicitly detailed as a distinct field.",
+              "unit": "Bits/s",
+              "scale": null,
+              "reserved": false
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "unit": null,
+              "scale": null,
+              "reserved": false,
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol"
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "unit": null,
+              "scale": null,
+              "reserved": false,
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask",
+              "unit": null,
+              "scale": null,
+              "reserved": false,
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory (not supported for protocol versions less than 13.01)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "unit": null,
+              "scale": null,
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Port configuration for I/O ports (UART, USB, SPI, I2C). This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead.",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number. Valid values depend on the port type: 0 for I2C (DDC), 1 for UART1, 2 for UART2, 3 for USB, 4 for SPI. See Integration manual for specific port IDs."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port"
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0 High-active, 1 Low-active)"
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)"
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold (given threshold is multiplied by 8 bytes. The TX ready PIN goes active after >= thres*8 bytes are pending for the port and going inactive after the last pending bytes have been written to hardware (0-4 bytes before end of stream). 0x000 no threshold, 0x001 8byte, ..., 0x1FF 4088byte)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Mode flags for the respective port. Interpretation varies depending on portID. This bitfield definition reflects UART mode flags (portID = 1 or 2). For SPI (portID = 4), mode contains spiMode and ffCnt. For I2C (portID = 0), mode contains slaveAddr.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00 5bit (not supported), 01 6bit (not supported), 10 7bit (supported only with parity), 11 8bit)"
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity (000 Even parity, 001 Odd parity, 10X No parity, X1X Reserved)"
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00 1 Stop bit, 01 1.5 Stop bit, 10 2 Stop bit, 11 0.5 Stop bit)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second. This field is specific to UART ports; other port types (USB, SPI, I2C) typically use these bytes as reserved fields ('reserved1').",
+              "unit": "Bits/s"
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol"
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory (not supported for protocol versions less than 13.01)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Port configuration for UART ports",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port"
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0: High-active, 1: Low-active)"
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)"
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold (multiplied by 8 bytes; 0x000: no threshold, 0x001: 8byte, 0x002: 16byte, ..., 0x1FE: 4080byte, 0x1FF: 4088byte)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "A bit mask describing the UART mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00: 5bit (not supported), 01: 6bit (not supported), 10: 7bit (supported only with parity), 11: 8bit)"
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity (000: Even parity, 001: Odd parity, 10X: No parity, X1X: Reserved)"
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00: 1 Stop bit, 01: 1.5 Stop bit, 10: 2 Stop bit, 11: 0.5 Stop bit)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second",
+              "unit": "Bits/s"
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol"
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory (not supported for protocol versions less than 13.01)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Port configuration for I/O ports. This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. The payload structure varies based on the portID field.",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number (0=I2C, 1=UART1, 2=UART2, 3=USB, 4=SPI. See integration manual for valid port IDs)."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved.",
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01).",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port."
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0=High-active, 1=Low-active)."
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)."
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold. The given threshold is multiplied by 8 bytes. (0x000 no threshold, 0x001 8byte, 0x002 16byte, ..., 0x1FE 4080byte, 0x1FF 4088byte)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "A bit mask describing the UART mode. (Interpretation varies based on portID. For SPI, it contains spiMode and ffCnt. For I2C, it contains slaveAddr. Other bits may be reserved for non-UART ports.)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00=5bit, 01=6bit, 10=7bit, 11=8bit)."
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity (000=Even parity, 001=Odd parity, 10X=No parity, X1X=Reserved)."
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00=1 Stop bit, 01=1.5 Stop bit, 10=2 Stop bit, 11=0.5 Stop bit)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second (Applicable for UART only. For USB/SPI/I2C, this field is reserved).",
+              "unit": "Bits/s"
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port. (The bitfield inRtcm3 is not supported for protocol versions less than 20.00).",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol."
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol."
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol."
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port. (The bitfield outRtcm3 is not supported for protocol versions less than 20.00).",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol."
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol."
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. (not supported for protocol versions less than 13.01). (Applicable for UART/USB/SPI. Reserved for I2C.)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1_at_18",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved.",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Port configuration (Get/set)",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number (see Integration manual for valid UART port IDs)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration (not supported for protocol versions less than 13.01)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port"
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0 High-active, 1 Low-active)"
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)"
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold (The given threshold is multiplied by 8 bytes. The TX ready PIN goes active after >= thres*8 bytes are pending for the port and going inactive after the last pending bytes have been written to hardware (0-4 bytes before end of stream). 0x000 no threshold, 0x001 8byte, 0x002 16byte, ..., 0x1FE 4080byte, 0x1FF 4088byte)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "A bit mask describing the UART mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00 5bit (not supported), 01 6bit (not supported), 10 7bit (supported only with parity), 11 8bit)"
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity (000 Even parity, 001 Odd parity, 10X No parity, X1X Reserved)"
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00 1 Stop bit, 01 1.5 Stop bit, 10 2 Stop bit, 11 0.5 Stop bit)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second",
+              "unit": "Bits/s"
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol"
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory (not supported for protocol versions less than 13.01)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Polls the configuration for one I/O port",
+        "message_type": "poll_request",
+        "payload": {
+          "length": {
+            "fixed": 1
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number (see the other versions of CFG-PRT for valid values)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "e006fac938cfdf23"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-PRT",
+        "class_id": "0x06",
+        "message_id": "0x00",
+        "description": "Polls or configures the port settings for an I/O port (e.g., UART, USB, SPI). This definition describes the 20-byte Get/Set configuration.",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "portID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Port identifier number (see the other versions of CFG-PRT for valid values)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "txReady",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "TX ready PIN configuration",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "en",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable TX ready feature for this port"
+                  },
+                  {
+                    "name": "pol",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Polarity (0 High-active, 1 Low-active)"
+                  },
+                  {
+                    "name": "pin",
+                    "bit_start": 2,
+                    "bit_end": 6,
+                    "description": "PIO to be used (must not be in use by another function)"
+                  },
+                  {
+                    "name": "thres",
+                    "bit_start": 7,
+                    "bit_end": 15,
+                    "description": "Threshold for TX ready PIN activation. The given threshold is multiplied by 8 bytes. Values like 0x000 (no threshold), 0x001 (8 bytes), 0x002 (16 bytes), ..., 0x1FE (4080 bytes), 0x1FF (4088 bytes)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mode",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "A bit mask describing the UART mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "charLen",
+                    "bit_start": 6,
+                    "bit_end": 7,
+                    "description": "Character length (00 5bit (not supported), 01 6bit (not supported), 10 7bit (supported only with parity), 11 8bit)"
+                  },
+                  {
+                    "name": "parity",
+                    "bit_start": 9,
+                    "bit_end": 11,
+                    "description": "Parity setting (000 Even parity, 001 Odd parity, 10X No parity, X1X Reserved)"
+                  },
+                  {
+                    "name": "nStopBits",
+                    "bit_start": 12,
+                    "bit_end": 13,
+                    "description": "Number of Stop bits (00 1 Stop bit, 01 1.5 Stop bit, 10 2 Stop bit, 11 0.5 Stop bit)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "baudRate",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Baud rate in bits/second",
+              "unit": "Bits/s"
+            },
+            {
+              "name": "inProtoMask",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "inUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "inNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "inRtcm",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTCM2 protocol"
+                  },
+                  {
+                    "name": "inRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported in protocol versions less than 20)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "outProtoMask",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Through that, multiple protocols can be defined on a single port.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "outUbx",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "UBX protocol"
+                  },
+                  {
+                    "name": "outNmea",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "NMEA protocol"
+                  },
+                  {
+                    "name": "outRtcm3",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "RTCM3 protocol (not supported in protocol versions less than 20)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "Flags bit mask",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "extendedTxTimeout",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set the port will time out if no activity for 1.5 s regardless on the amount of allocated TX memory."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "08a4f162e662f653"
+    }
+  ]
+}

@@ -86,9 +86,17 @@ def normalize_data_type(data_type: Any) -> tuple[str, int]:
     if isinstance(data_type, dict):
         if 'array_of' in data_type:
             base_type = data_type['array_of']
+            # Handle case where base_type is also a dict (malformed extraction)
+            if isinstance(base_type, dict):
+                return (json.dumps(data_type, sort_keys=True), 1)
             count = data_type.get('count', 1)
             base_size = DATA_TYPE_SIZES.get(base_type, 1)
-            return (f"{base_type}[{count}]", base_size * count)
+            # Handle variable counts (strings like "N", "variable", formulas)
+            if isinstance(count, int):
+                return (f"{base_type}[{count}]", base_size * count)
+            else:
+                # Variable length array - use count string but size 0
+                return (f"{base_type}[{count}]", 0)
         
         # Handle other dict formats - convert to string for comparison
         return (json.dumps(data_type, sort_keys=True), 1)
@@ -111,7 +119,9 @@ def compute_field_fingerprint(field: dict) -> FieldFingerprint:
         FieldFingerprint with normalized values
     """
     name = normalize_field_name(field.get('name', ''))
-    byte_offset = field.get('byte_offset', 0)
+    byte_offset_raw = field.get('byte_offset', 0)
+    # Handle string offsets (formulas) by using -1 as placeholder
+    byte_offset = byte_offset_raw if isinstance(byte_offset_raw, int) else -1
     
     data_type_raw = field.get('data_type', 'U1')
     data_type_str, computed_size = normalize_data_type(data_type_raw)
@@ -136,17 +146,27 @@ def compute_message_fingerprint(message: dict) -> str:
     Returns:
         Hex string fingerprint (SHA-256 truncated to 16 chars)
     """
-    # Extract fields from message
+    # Extract fields from message (including from repeated_groups)
     fields = message.get('fields', [])
-    if not fields and message.get('payload'):
-        fields = message['payload'].get('fields', [])
+    payload = message.get('payload', {})
+    if not fields and payload:
+        fields = payload.get('fields', [])
     
-    if not fields:
+    # Also include fields from repeated_groups (don't tag - treat same as top-level)
+    repeated_groups = (payload.get('repeated_groups') or []) if payload else []
+    rgroup_fields = []
+    for rg in repeated_groups:
+        for field in rg.get('fields', []):
+            rgroup_fields.append(field)
+    
+    all_fields = list(fields) + rgroup_fields
+    
+    if not all_fields:
         return "empty_" + hashlib.sha256(b"no_fields").hexdigest()[:12]
     
     # Compute fingerprint for each field
     field_fingerprints = []
-    for field in fields:
+    for field in all_fields:
         fp = compute_field_fingerprint(field)
         field_fingerprints.append(fp.to_tuple())
     
@@ -170,11 +190,21 @@ def compute_message_fingerprint_detailed(message: dict) -> dict:
         Dict with fingerprint and per-field details
     """
     fields = message.get('fields', [])
-    if not fields and message.get('payload'):
-        fields = message['payload'].get('fields', [])
+    payload = message.get('payload', {})
+    if not fields and payload:
+        fields = payload.get('fields', [])
+    
+    # Also include fields from repeated_groups (don't tag - treat same as top-level)
+    repeated_groups = (payload.get('repeated_groups') or []) if payload else []
+    rgroup_fields = []
+    for rg in repeated_groups:
+        for field in rg.get('fields', []):
+            rgroup_fields.append(field)
+    
+    all_fields = list(fields) + rgroup_fields
     
     field_details = []
-    for field in fields:
+    for field in all_fields:
         fp = compute_field_fingerprint(field)
         field_details.append({
             'original_name': field.get('name', ''),

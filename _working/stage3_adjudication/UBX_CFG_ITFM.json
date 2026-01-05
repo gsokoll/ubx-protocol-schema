@@ -1,0 +1,120 @@
+{
+  "message_name": "UBX-CFG-ITFM",
+  "num_extractions": 5,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-CFG-ITFM",
+      "class_id": "0x06",
+      "message_id": "0x39",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "config",
+            "byte_offset": 0,
+            "data_type": "X4",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "bbThreshold",
+                  "bit_start": 0,
+                  "bit_end": 3
+                },
+                {
+                  "name": "cwThreshold",
+                  "bit_start": 4,
+                  "bit_end": 8
+                },
+                {
+                  "name": "algorithmBits",
+                  "bit_start": 9,
+                  "bit_end": 30
+                },
+                {
+                  "name": "enable",
+                  "bit_start": 31,
+                  "bit_end": 31
+                }
+              ]
+            }
+          },
+          {
+            "name": "config2",
+            "byte_offset": 4,
+            "data_type": "X4",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "generalBits",
+                  "bit_start": 0,
+                  "bit_end": 11
+                },
+                {
+                  "name": "antSetting",
+                  "bit_start": 12,
+                  "bit_end": 13
+                },
+                {
+                  "name": "enable2",
+                  "bit_start": 14,
+                  "bit_end": 14
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing entire 'config2' field (bytes 4-7) despite message length 8",
+          "Missing 'enable' bit in 'config' bitfield"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": [
+          "Missing 'antSetting' and 'enable2' in config2. Likely a documentation subset for this specific module."
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "Bit order inverted (parsed as Big Endian or table order 31->0 instead of LSB 0)",
+          "Field widths are incorrect (e.g. algorithmBits is 19 bits)",
+          "Logical inconsistency: The documented default hex value '0x16B156' requires 21 bits, but the extracted 'algorithmBits' field is only 19 bits wide."
+        ]
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
+        ],
+        "structure": {
+          "notes": "Subset of the canonical structure. Bits 12-14 of config2 are not defined/documented."
+        },
+        "reason": "Specific product documentation may obscure advanced antenna settings or auxiliary band scanning bits found in the full SPG/HPG interface descriptions."
+      }
+    ],
+    "reasoning": "Extractions 1 and 2 provide identical, mathematically consistent definitions where the bit widths sum correctly to 32 and the reserved hex value fits within the 'algorithmBits' field. Extraction 5 is demonstrably wrong because the documented default value (0x16B156) is larger than the maximum value for its 19-bit field definition, indicating the extractor misparsed the bit table (likely confusing bit ordering). Extraction 3 is incomplete (missing half the payload). Extraction 4 is a valid subset typical of specific module documentation."
+  }
+}

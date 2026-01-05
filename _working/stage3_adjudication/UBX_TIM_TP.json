@@ -1,0 +1,247 @@
+{
+  "message_name": "UBX-TIM-TP",
+  "num_extractions": 15,
+  "adjudication": [
+    {
+      "canonical_structure": {
+        "name": "UBX-TIM-TP",
+        "class_id": "0x0d",
+        "message_id": "0x01",
+        "description": "Time pulse time data. This message contains information on the timing of the next pulse at the time pulse output.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "fixed": 16
+          },
+          "fields": [
+            {
+              "name": "towMS",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "Time pulse time of week according to time base",
+              "unit": "ms"
+            },
+            {
+              "name": "towSubMS",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Submillisecond part of towMS",
+              "unit": "ms",
+              "scale": {
+                "raw": "2^-32",
+                "multiplier": 2.3283064365386963e-10
+              }
+            },
+            {
+              "name": "qErr",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Quantization error of time pulse",
+              "unit": "ps"
+            },
+            {
+              "name": "week",
+              "byte_offset": 12,
+              "data_type": "U2",
+              "description": "Time pulse week number according to time base",
+              "unit": "weeks"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 14,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "timeBase",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "0 = Time base is GNSS; 1 = Time base is UTC"
+                  },
+                  {
+                    "name": "utc",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "0 = UTC not available; 1 = UTC available"
+                  },
+                  {
+                    "name": "raim",
+                    "bit_start": 2,
+                    "bit_end": 3,
+                    "description": "(T)RAIM information: 0 = Information not available; 1 = Not active; 2 = Active"
+                  },
+                  {
+                    "name": "qErrInvalid",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "0 = Quantization error valid; 1 = Quantization error invalid"
+                  },
+                  {
+                    "name": "TpNotLocked",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "0 = Next TP is locked to GNSS; 1 = Next TP is based on local time and not locked to GNSS"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "refInfo",
+              "byte_offset": 15,
+              "data_type": "X1",
+              "description": "Time reference information",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "timeRefGnss",
+                    "bit_start": 0,
+                    "bit_end": 3,
+                    "description": "GNSS reference information (GPS, GLONASS, BeiDou, etc)"
+                  },
+                  {
+                    "name": "utcStandard",
+                    "bit_start": 4,
+                    "bit_end": 7,
+                    "description": "UTC standard identifier (NIST, USNO, BIPM, etc)"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "canonical_confidence": "high",
+      "extraction_verdicts": [
+        {
+          "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "verdict": "extraction_error",
+          "issues": [
+            "Truncated flags description",
+            "Missing refInfo field at byte 15"
+          ]
+        },
+        {
+          "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "verdict": "valid_variation",
+          "issues": [
+            "Byte 15 is reserved in this version"
+          ]
+        },
+        {
+          "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+          "verdict": "extraction_error",
+          "issues": [
+            "qErr data_type should be I4 (signed), not U4",
+            "refInfo bitfield is incomplete"
+          ]
+        },
+        {
+          "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "verdict": "valid_variation",
+          "issues": [
+            "Subset version with bytes 14-15 reserved"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+          "verdict": "extraction_error",
+          "issues": [
+            "Truncated bitfield for raim",
+            "Missing TpNotLocked bit",
+            "Missing byte 15 (refInfo)"
+          ]
+        },
+        {
+          "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+          "verdict": "valid_variation",
+          "issues": [
+            "Subset version with bytes 14-15 reserved"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "verdict": "extraction_error",
+          "issues": [
+            "Mislabeled content: This is the structure for UBX-TIM-TM2 (0x0D 0x03), not UBX-TIM-TP"
+          ]
+        },
+        {
+          "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+          "verdict": "valid_variation",
+          "issues": [
+            "Subset version with bytes 14-15 reserved"
+          ]
+        },
+        {
+          "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+          "verdict": "valid_variation",
+          "issues": [
+            "Missing refInfo byte 15 (reserved or not used in this specific F10 doc)"
+          ]
+        },
+        {
+          "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+          "verdict": "valid_variation",
+          "issues": [
+            "Correct for M8 generation; note timeBase uses 2 bits instead of 1"
+          ]
+        },
+        {
+          "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+          "verdict": "valid_variation",
+          "issues": [
+            "Byte 15 is reserved in this version"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+          "verdict": "extraction_error",
+          "issues": [
+            "Mislabeled content: This is the 28-byte version of UBX-TIM-TM2 (0x0D 0x03)"
+          ]
+        }
+      ],
+      "valid_variations": [
+        {
+          "sources": [
+            "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+            "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+          ],
+          "structure": {
+            "byte_14": "flags",
+            "byte_15": "reserved (U1)"
+          },
+          "reason": "Intermediate protocol version where flags are defined but reference information is not yet exported."
+        },
+        {
+          "sources": [
+            "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+            "F9-HPS120_Interfacedescription_UBX-19056845",
+            "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
+          ],
+          "structure": {
+            "bytes_14_15": "reserved (U2)"
+          },
+          "reason": "Subset/Legacy variation where the message only contains basic time pulse data without flags or reference standard information."
+        }
+      ],
+      "reasoning": "UBX-TIM-TP is a 16-byte message containing timing information for the next pulse. The extraction process encountered significant errors in Extractions 10 and 15, which provided the structure for UBX-TIM-TM2 (Time Mark) instead of UBX-TIM-TP. Across generations (M8 to M10), the definition of the flags in byte 14 has expanded, and byte 15 was transitioned from 'Reserved' to 'refInfo' (Reference Information). The canonical structure chosen represents the most complete modern definition (u-blox M10/F9)."
+    }
+  ]
+}

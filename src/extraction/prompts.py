@@ -37,8 +37,17 @@ TARGET MESSAGE: {message_name}{anchor}
 
 CRITICAL INSTRUCTIONS:
 1. Extract ONLY the message named "{message_name}". Ignore any other messages visible.
-2. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.
-3. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).
+2. Set the "message_type" JSON field based on the "Type" row in the message header table:
+   - "Type: Input" → message_type: "input"
+   - "Type: Output" → message_type: "output"  
+   - "Type: Periodic" → message_type: "periodic"
+   - "Type: Polled" → message_type: "polled"
+   - "Type: Command" → message_type: "command"
+   - "Type: Set" → message_type: "set"
+   - "Type: Get" → message_type: "get"
+   - Combinations like "Periodic/Polled" → message_type: "periodic_polled"
+3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.
+4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).
 
 FIELD EXTRACTION:
 - byte_offset: Exact byte offset from "Offset" column (integer, 0-indexed)
@@ -47,6 +56,9 @@ FIELD EXTRACTION:
 - scale: Include "raw" string and numeric "multiplier" if shown
 - unit: Physical unit if shown (ms, deg, m/s, etc.)
 - reserved: Set true for reserved fields
+- fixed_value: For "type" fields at offset 0 (especially MGA messages), if the description
+  says "Message type (0x01 for this type)", set fixed_value to the integer (e.g., 1).
+  This value identifies the specific message variant.
 
 PAYLOAD LENGTH:
 - Fixed: {{"fixed": 28}}

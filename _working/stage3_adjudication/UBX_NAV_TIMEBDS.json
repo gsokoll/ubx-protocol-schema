@@ -1,0 +1,176 @@
+{
+  "message_name": "UBX-NAV-TIMEBDS",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-TIMEBDS",
+      "class_id": "0x01",
+      "message_id": "0x24",
+      "description": "This message reports the precise BDS time of the most recent navigation solution including validity flags and an accuracy estimate.",
+      "message_type": "periodic_polled",
+      "payload": {
+        "length": {
+          "fixed": 20
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch",
+            "unit": "ms"
+          },
+          {
+            "name": "SOW",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "description": "BDS time of week (rounded to seconds)",
+            "unit": "s"
+          },
+          {
+            "name": "fSOW",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "Fractional part of SOW (range: +/-500000000). The precise BDS time of week in seconds is: SOW + fSOW * 1e-9",
+            "unit": "ns",
+            "scale": {
+              "raw": "1e-9",
+              "multiplier": 1e-09
+            }
+          },
+          {
+            "name": "week",
+            "byte_offset": 12,
+            "data_type": "I2",
+            "description": "BDS week number of the navigation epoch"
+          },
+          {
+            "name": "leaps",
+            "byte_offset": 14,
+            "data_type": "I1",
+            "description": "BDS leap seconds (BDS-UTC)",
+            "unit": "s"
+          },
+          {
+            "name": "valid",
+            "byte_offset": 15,
+            "data_type": "X1",
+            "description": "Validity Flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "sowValid",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "1 = Valid SOW and fSOW"
+                },
+                {
+                  "name": "weekValid",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "1 = Valid week"
+                },
+                {
+                  "name": "leapSValid",
+                  "bit_start": 2,
+                  "bit_end": 2,
+                  "description": "1 = Valid leap second"
+                }
+              ]
+            }
+          },
+          {
+            "name": "tAcc",
+            "byte_offset": 16,
+            "data_type": "U4",
+            "description": "Time Accuracy Estimate",
+            "unit": "ns"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identifies field at offset 16 as 'reserved1' instead of 'tAcc'",
+          "Missing bit definitions for 'weekValid' (bit 1) and 'leapSValid' (bit 2) in 'valid' field"
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The UBX-NAV-TIMEBDS message structure is consistent across 14 of the 15 provided extractions (from M8 to M10/F10 generations), containing exactly 20 bytes with 'tAcc' at offset 16 and a 'valid' bitmask containing 3 flags. Extraction 10 (F9-DBD-1.30) is the only outlier, reporting 'reserved1' at offset 16 and missing validity flags; this is judged to be an extraction error rather than a protocol change, as 'tAcc' is a standard component of all UBX-NAV-TIME* messages. Two extractions (11 and 13) use the field name 'leapS' instead of 'leaps', which is a minor documentation variation; the canonical structure adopts 'leaps' based on the majority."
+  }
+}

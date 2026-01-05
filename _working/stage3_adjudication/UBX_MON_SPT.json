@@ -1,0 +1,199 @@
+{
+  "message_name": "UBX-MON-SPT",
+  "num_extractions": 7,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MON-SPT",
+      "class_id": "0x0a",
+      "message_id": "0x2f",
+      "description": "Sensor production test",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + numSensor*4 + numRes*12"
+          }
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x01)"
+          },
+          {
+            "name": "numSensor",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Number of sensors"
+          },
+          {
+            "name": "numRes",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Number of result items"
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "reserved": true
+          }
+        ],
+        "repeated_groups": [
+          {
+            "name": "sensor_info",
+            "repetition_type": "count_field",
+            "count_field": "numSensor",
+            "base_offset": 4,
+            "group_size_bytes": 4,
+            "fields": [
+              {
+                "name": "sensorId",
+                "byte_offset": 0,
+                "data_type": "U1"
+              },
+              {
+                "name": "drvVer",
+                "byte_offset": 1,
+                "data_type": "X1",
+                "bitfield": {
+                  "bits": [
+                    {
+                      "name": "drvVerMaj",
+                      "bit_start": 0,
+                      "bit_end": 3
+                    },
+                    {
+                      "name": "drvVerMin",
+                      "bit_start": 4,
+                      "bit_end": 7
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "testState",
+                "byte_offset": 2,
+                "data_type": "U1"
+              },
+              {
+                "name": "drvFileName",
+                "byte_offset": 3,
+                "data_type": "U1"
+              }
+            ]
+          },
+          {
+            "name": "sensor_results",
+            "repetition_type": "count_field",
+            "count_field": "numRes",
+            "base_offset": "4 + numSensor*4",
+            "group_size_bytes": 12,
+            "fields": [
+              {
+                "name": "sensorIdRes",
+                "byte_offset": 0,
+                "data_type": "U2"
+              },
+              {
+                "name": "sensorType",
+                "byte_offset": 2,
+                "data_type": "U2"
+              },
+              {
+                "name": "resType",
+                "byte_offset": 4,
+                "data_type": "U2"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 6,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 2
+                },
+                "reserved": true
+              },
+              {
+                "name": "value",
+                "byte_offset": 8,
+                "data_type": "I4"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect base_offset for the second repeated group ('results'). It is statically set to 4, which causes it to overlap with the first group. It must be a formula dependent on 'numSensor'."
+        ]
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect base_offset for the second repeated group ('result_items'). It is statically set to 4, causing overlap with the first group."
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "bitfield": {
+            "drvVer": {
+              "bits": [
+                {
+                  "name": "drvVerMin",
+                  "bit_start": 0,
+                  "bit_end": 3
+                },
+                {
+                  "name": "drvVerMaj",
+                  "bit_start": 4,
+                  "bit_end": 7
+                }
+              ]
+            }
+          }
+        },
+        "reason": "Legacy u-blox M8 documentation defines the driver version nibbles swapped compared to modern F9/M9 documentation."
+      }
+    ],
+    "reasoning": "The message structure consists of two sequential repeated blocks. The first block ('sensors') starts immediately after the header (offset 4) and has a size determined by 'numSensor'. The second block ('results') starts immediately after the first block ends. Therefore, the base offset of the second block must be calculated dynamically (4 + numSensor * 4). Extractions 2 and 5 incorrectly assign a static base offset of 4 to the second block, which is physically impossible as it overlaps the first block. Extraction 6 (M8) presents a valid variation where the version bitfield definitions are swapped (Major/Minor) compared to the F9/M9 extractions."
+  }
+}

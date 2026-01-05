@@ -1,0 +1,182 @@
+{
+  "message_name": "UBX-NAV-CLOCK",
+  "num_extractions": 15,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-NAV-CLOCK",
+      "class_id": "0x01",
+      "message_id": "0x22",
+      "description": "Clock solution",
+      "message_type": "output",
+      "payload": {
+        "length": {
+          "fixed": 20
+        },
+        "fields": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "clkB",
+            "byte_offset": 4,
+            "data_type": "I4",
+            "description": "Clock bias",
+            "unit": "ns"
+          },
+          {
+            "name": "clkD",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "Clock drift",
+            "unit": "ns/s"
+          },
+          {
+            "name": "tAcc",
+            "byte_offset": 12,
+            "data_type": "U4",
+            "description": "Time accuracy estimate",
+            "unit": "ns"
+          },
+          {
+            "name": "fAcc",
+            "byte_offset": 16,
+            "data_type": "U4",
+            "description": "Frequency accuracy estimate",
+            "unit": "ps/s"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing field at offset 16 (fAcc)",
+          "Defined length is 20 but fields sum to 16 bytes"
+        ]
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+        ],
+        "structure": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "unit": "ms"
+            },
+            {
+              "name": "clkB",
+              "byte_offset": 4,
+              "data_type": "I4",
+              "unit": "ns"
+            },
+            {
+              "name": "clkD",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "unit": "ns/s"
+            },
+            {
+              "name": "tAcc",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "unit": "ns"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 16,
+              "data_type": "U4",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "The X20 HPG firmware variant explicitly reserves the field at offset 16, whereas standard SPG/HPG/ADR firmware uses it for 'fAcc'."
+      }
+    ],
+    "reasoning": "The vast majority of sources (13 out of 15) confirm a 20-byte structure with 5 fields: iTOW, clkB, clkD, tAcc, and fAcc. This is the canonical definition for M8, M9, F9, and M10 standard firmware. Extraction 2 is flawed as it reports a 20-byte length but stops extraction after 16 bytes (missing fAcc). Extraction 3 is recognized as a valid hardware-specific variation (X20 HPG) where the last field is reserved."
+  }
+}

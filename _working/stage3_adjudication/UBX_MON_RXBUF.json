@@ -1,0 +1,121 @@
+{
+  "message_name": "UBX-MON-RXBUF",
+  "num_extractions": 12,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-MON-RXBUF",
+      "class_id": "0x0a",
+      "message_id": "0x07",
+      "description": "Receiver buffer status",
+      "message_type": "periodic_polled",
+      "payload": {
+        "length": {
+          "fixed": 24
+        },
+        "fields": [
+          {
+            "name": "pending",
+            "byte_offset": 0,
+            "data_type": {
+              "array_of": "U2",
+              "count": 6
+            },
+            "description": "Number of bytes pending in receiver buffer for each target",
+            "unit": "bytes"
+          },
+          {
+            "name": "usage",
+            "byte_offset": 12,
+            "data_type": {
+              "array_of": "U1",
+              "count": 6
+            },
+            "description": "Maximum usage receiver buffer during the last sysmon period for each target",
+            "unit": "%"
+          },
+          {
+            "name": "peakUsage",
+            "byte_offset": 18,
+            "data_type": {
+              "array_of": "U1",
+              "count": 6
+            },
+            "description": "Maximum usage receiver buffer for each target",
+            "unit": "%"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identifies payload as a repeated group of 'pending' fields",
+          "Misses 'usage' and 'peakUsage' fields entirely",
+          "Misinterprets the 24-byte structure"
+        ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete extraction: identified message and length but failed to extract any fields"
+        ]
+      }
+    ],
+    "valid_variations": [],
+    "reasoning": "The vast majority of extractions (10/12) agree on a specific 24-byte structure composed of three fixed-length arrays (pending[6], usage[6], peakUsage[6]). This structure is consistent from u-blox M8 through M10 and F9 generations. Extraction 8 is a hallucination that attempts to fit the bytes into a loop, ignoring the distinct data types defined in the standard. Extraction 12 is simply incomplete. While several F9 manuals mark the message as deprecated, the binary structure remains unchanged."
+  }
+}

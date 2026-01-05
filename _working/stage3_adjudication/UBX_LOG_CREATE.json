@@ -1,0 +1,144 @@
+{
+  "message_name": "UBX-LOG-CREATE",
+  "num_extractions": 11,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-LOG-CREATE",
+      "class_id": "0x21",
+      "message_id": "0x07",
+      "description": "This message is used to create an initial logging file and activate the logging subsystem.",
+      "message_type": "command",
+      "payload": {
+        "length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "name": "version",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "logCfg",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "Config flags",
+            "bitfield": {
+              "bits": [
+                {
+                  "name": "circular",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Log is circular (new entries overwrite old ones in a full log) if this bit set"
+                }
+              ]
+            }
+          },
+          {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "logSize",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "Indicates the size of the log: 0=Maximum safe size, 1=Minimum size, 2=User-defined size (see userDefinedSize)"
+          },
+          {
+            "name": "userDefinedSize",
+            "byte_offset": 4,
+            "data_type": "U4",
+            "description": "Sets the maximum amount of space in the filestore that can be used by the logging task. Only applicable if logSize is set to user-defined.",
+            "unit": "bytes"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": [
+          "Field at offset 4 named 'userDefined' instead of 'userDefinedSize'"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "extraction_error",
+        "issues": [
+          "Fields array is empty despite message having known payload"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        },
+        "reason": "Older generation documentation (M8) labeled the reserved field at offset 2 as 'reserved1' rather than 'reserved0'. The binary structure is identical."
+      }
+    ],
+    "reasoning": "10 out of 11 extractions agree on the exact 8-byte structure. Extraction 9 failed to parse fields entirely. Extraction 7 had a minor naming truncation on 'userDefinedSize'. Extraction 11 (M8 generation) used a slightly different naming convention for the reserved field ('reserved1' vs 'reserved0'), which is a known documentation variance between u-blox generations."
+  }
+}
