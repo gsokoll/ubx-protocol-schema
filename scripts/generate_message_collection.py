@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Generate a schema-compliant UBX message collection from adjudicated results.
 
-Outputs a single JSON file with all messages conforming to ubx-message-schema-v1.3.json.
+Outputs a single JSON file with all messages conforming to ubx-message-schema-v1.4.json.
+
+Key features:
+- Loads manual metadata to get protocol versions for each source manual
+- Extracts source manuals from adjudication extraction_verdicts
+- Populates supported_versions with protocol version integers and source manuals
 """
 
 import argparse
@@ -57,8 +62,76 @@ def parse_offset_formula(formula: str) -> dict:
     return result
 
 
-def generate_collection(adjudicated_dir: Path, output_file: Path):
+def load_manual_metadata(metadata_file: Path) -> dict:
+    """Load manual metadata containing protocol versions.
+    
+    Returns:
+        Dict mapping manual_key -> {protocol_version: int, firmware_version: str, ...}
+    """
+    if not metadata_file.exists():
+        print(f"Warning: Manual metadata file not found: {metadata_file}")
+        return {}
+    
+    data = json.loads(metadata_file.read_text())
+    return data.get("manuals", {})
+
+
+def extract_source_manuals(adjudication_data: dict) -> list[str]:
+    """Extract list of source manual keys from adjudication data.
+    
+    Looks for extraction_verdicts in the adjudication section.
+    """
+    sources = []
+    adjudication = adjudication_data.get("adjudication", {})
+    
+    # Handle case where adjudication is a list
+    if isinstance(adjudication, list):
+        adjudication = adjudication[0] if adjudication else {}
+    
+    # Get extraction verdicts
+    verdicts = adjudication.get("extraction_verdicts", [])
+    for verdict in verdicts:
+        source = verdict.get("source", "")
+        if source and source not in sources:
+            sources.append(source)
+    
+    return sources
+
+
+def build_supported_versions(source_manuals: list[str], manual_metadata: dict) -> dict | None:
+    """Build supported_versions object from source manuals and metadata.
+    
+    Returns:
+        Dict with protocol_versions (sorted list of ints), min_protocol_version, source_manuals
+        or None if no protocol versions found
+    """
+    protocol_versions = set()
+    
+    for manual_key in source_manuals:
+        if manual_key in manual_metadata:
+            pv = manual_metadata[manual_key].get("protocol_version")
+            if pv:
+                protocol_versions.add(pv)
+    
+    if not protocol_versions:
+        return None
+    
+    sorted_versions = sorted(protocol_versions)
+    return {
+        "protocol_versions": sorted_versions,
+        "min_protocol_version": sorted_versions[0],
+        "source_manuals": source_manuals,
+    }
+
+
+def generate_collection(adjudicated_dir: Path, output_file: Path, metadata_file: Path | None = None):
     """Generate schema-compliant message collection from adjudicated results."""
+    
+    # Load manual metadata for protocol version lookup
+    if metadata_file is None:
+        metadata_file = adjudicated_dir.parent.parent / "data" / "manual_metadata.json"
+    manual_metadata = load_manual_metadata(metadata_file)
+    print(f"Loaded metadata for {len(manual_metadata)} manuals")
     
     adjudicated_files = sorted(adjudicated_dir.glob("*.json"))
     print(f"Found {len(adjudicated_files)} adjudicated messages")
@@ -255,13 +328,20 @@ def generate_collection(adjudicated_dir: Path, output_file: Path):
                 
                 message["payload"] = schema_payload
             
+            # Add supported_versions with protocol version information
+            source_manuals = extract_source_manuals(data)
+            supported_versions = build_supported_versions(source_manuals, manual_metadata)
+            if supported_versions:
+                message["supported_versions"] = supported_versions
+            
             # Add metadata as comment
             confidence = adjudication.get("canonical_confidence", "unknown")
             num_sources = data.get("num_extractions", 0)
             message["comment"] = f"Confidence: {confidence}, Sources: {num_sources}"
             
             messages.append(message)
-            print(f"  {msg_name}: OK")
+            pv_info = f", ProtVer: {supported_versions['min_protocol_version']}-{supported_versions['protocol_versions'][-1]}" if supported_versions else ""
+            print(f"  {msg_name}: OK{pv_info}")
             
         except Exception as e:
             print(f"  {adj_file.stem}: ERROR - {e}")
@@ -269,7 +349,7 @@ def generate_collection(adjudicated_dir: Path, output_file: Path):
     
     # Build collection
     collection = {
-        "schema_version": "1.3",
+        "schema_version": "1.4",
         "generated": datetime.now().isoformat(),
         "messages": messages
     }

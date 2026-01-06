@@ -9,6 +9,15 @@ import fitz  # PyMuPDF
 import requests
 
 
+@dataclass
+class ManualMetadata:
+    """Firmware and protocol version metadata extracted from manual front matter."""
+    firmware_version: str | None = None
+    protocol_version: str | None = None
+    version_identifier: str | None = None
+    extraction_method: str | None = None
+
+
 # Variant messages that need to map to their parent in the TOC
 # Format: variant_name -> parent_name_in_toc
 VARIANT_TO_PARENT = {
@@ -223,3 +232,86 @@ def extract_pages_as_images_cropped(
 
     doc.close()
     return images
+
+
+# Firmware type identifiers used in u-blox manuals
+_FIRMWARE_TYPES = r"HPG|SPG|HPS|LAP|DBD|ADR|MDR|HDG"
+
+
+def extract_manual_metadata(pdf_path: Path, search_pages: int = 30) -> ManualMetadata:
+    """Extract firmware and protocol version metadata from manual front matter.
+    
+    Searches the first N pages for the firmware/protocol version table that appears
+    in u-blox interface description manuals.
+    
+    Args:
+        pdf_path: Path to the PDF manual
+        search_pages: Number of pages to search (default 30)
+        
+    Returns:
+        ManualMetadata with extracted version information, or empty if not found
+    """
+    doc = fitz.open(str(pdf_path))
+    
+    # Extract text from first N pages
+    text_parts = []
+    actual_pages = min(search_pages, len(doc))
+    for page_num in range(actual_pages):
+        text_parts.append(doc[page_num].get_text())
+    text = "\n".join(text_parts)
+    doc.close()
+    
+    metadata = ManualMetadata()
+    
+    # Pattern 1: F9 format with EXT CORE
+    # "HPG 1.50" | "EXT CORE 1.00 (504a0d)" | "27.50"
+    # Also handles: "HPG L1L5 1.40", "HDG 1.12"
+    pattern1 = re.compile(
+        rf"((?:{_FIRMWARE_TYPES})(?:\s+L1L5)?\s+\d+\.\d+)\s+"
+        rf"(EXT\s+CORE\s+\d+\.\d+\s*\([^)]+\))\s+"
+        rf"(\d+\.\d+)",
+        re.IGNORECASE
+    )
+    match = pattern1.search(text)
+    if match:
+        metadata.firmware_version = match.group(1).strip()
+        metadata.version_identifier = match.group(2).strip()
+        metadata.protocol_version = match.group(3).strip()
+        metadata.extraction_method = "ext_core_table"
+        return metadata
+    
+    # Pattern 2: M10/F10 format with ROM prefix
+    # "SPG 5.10" | "ROM SPG 5.10 (7b202e)" | "34.10"
+    # Also handles F10 SPGL1L5 format
+    pattern2 = re.compile(
+        rf"((?:{_FIRMWARE_TYPES})\s+\d+\.\d+)\s+"
+        rf"((?:ROM|EXT)\s+(?:{_FIRMWARE_TYPES}|SPGL1L5|HPGL1L5)\s*\d+\.\d+\s*\([^)]+\))\s+"
+        rf"(\d+\.\d+)",
+        re.IGNORECASE
+    )
+    match = pattern2.search(text)
+    if match:
+        metadata.firmware_version = match.group(1).strip()
+        metadata.version_identifier = match.group(2).strip()
+        metadata.protocol_version = match.group(3).strip()
+        metadata.extraction_method = "rom_prefix_table"
+        return metadata
+    
+    # Pattern 3: X20 format - no ROM/EXT prefix
+    # "HPG 2.02" | "HPG 2.02 (43e74c)" | "50.10"
+    # Also handles B suffix: "HPG 2.00B02" | "HPG 2.00B002 (d5e4b7)" | "50.01"
+    pattern3 = re.compile(
+        rf"((?:{_FIRMWARE_TYPES})\s+\d+\.\d+(?:B\d+)?)\s+"
+        rf"((?:{_FIRMWARE_TYPES})\s+\d+\.\d+(?:B\d+)?\s*\([^)]+\))\s+"
+        rf"(\d+\.\d+)",
+        re.IGNORECASE
+    )
+    match = pattern3.search(text)
+    if match:
+        metadata.firmware_version = match.group(1).strip()
+        metadata.version_identifier = match.group(2).strip()
+        metadata.protocol_version = match.group(3).strip()
+        metadata.extraction_method = "simple_table"
+        return metadata
+    
+    return metadata

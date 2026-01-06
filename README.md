@@ -14,9 +14,10 @@ u-blox GNSS receivers use the proprietary UBX binary protocol. The protocol is d
 
 | File | Description |
 |------|-------------|
-| `data/messages/ubx_messages.json` | **208 message definitions** (schema v1.3) |
+| `data/messages/ubx_messages.json` | **208 message definitions** (schema v1.4) |
 | `data/messages/enumerations.json` | **24 enumeration definitions** |
 | `data/config_keys/unified_config_keys.json` | **1,063 configuration keys** |
+| `data/manual_metadata.json` | **Manual-to-protocol version mapping** |
 
 ## Quick Start
 
@@ -64,11 +65,11 @@ testing/                    # Validation framework
   external/                 # pyubx2 and ublox-rs adapters
 
 scripts/                    # Extraction and generation tools
-schema/                     # JSON Schema definitions (v1.3)
+schema/                     # JSON Schema definitions (v1.4)
 docs/                       # Technical documentation
 ```
 
-## Message Schema (v1.3)
+## Message Schema (v1.4)
 
 ```json
 {
@@ -76,6 +77,11 @@ docs/                       # Technical documentation
   "class_id": "0x01",
   "message_id": "0x07",
   "message_type": "periodic_polled",
+  "supported_versions": {
+    "protocol_versions": [1800, 2712, 2750, 3201, 3410, 5010],
+    "min_protocol_version": 1800,
+    "source_manuals": ["u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221", "..."]
+  },
   "payload": {
     "length": {"fixed": 92},
     "fields": [
@@ -86,6 +92,17 @@ docs/                       # Technical documentation
   }
 }
 ```
+
+### Protocol Version Format
+
+Protocol versions are stored as **integers** (version × 100) for easy comparison:
+
+| Version | Integer |
+|---------|--------|
+| 18.00 | 1800 |
+| 27.50 | 2750 |
+| 33.00 | 3300 |
+| 50.10 | 5010 |
 
 ### Field Types
 
@@ -104,6 +121,9 @@ The extraction uses Gemini models with multi-shot conversations:
 ```bash
 export GOOGLE_API_KEY=your_key
 
+# Stage 0: Extract manual metadata (firmware/protocol versions)
+uv run python scripts/extract_manual_metadata.py
+
 # Stage 1: Extract from PDFs (3 extractions per message)
 uv run python scripts/extract_messages_v2.py extract --all-messages
 
@@ -113,7 +133,7 @@ uv run python scripts/vote_preliminary_v2.py
 # Stage 3: LLM adjudication for conflicts
 uv run python scripts/extract_messages_v2.py adjudicate --model 3-flash
 
-# Stage 4: Generate final schema-validated output
+# Stage 4: Generate final schema-validated output (uses manual_metadata.json)
 uv run python scripts/generate_message_collection.py
 
 # Stage 5: Extract enumerations from field descriptions

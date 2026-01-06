@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.com/ubx-messages.schema.json",
   "title": "UBX Protocol Message Definitions",
-  "description": "Schema for defining u-blox UBX protocol messages to assist GNSS driver development. Supports u-blox 8/M8, F9, and later generations. Version 1.3 adds machine-readable dynamic base_offset format for repeated groups.",
+  "description": "Schema for defining u-blox UBX protocol messages to assist GNSS driver development. Supports u-blox 8/M8, F9, and later generations. Version 1.4 adds integer protocol version tracking (version * 100) and source manual traceability.",
   "type": "object",
   "properties": {
     "schema_version": {
@@ -192,16 +192,21 @@
       "properties": {
         "protocol_versions": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "List of supported protocol versions (e.g., ['15', '15.01', '16', '17'])"
+          "items": { "type": "integer" },
+          "description": "List of protocol versions where message was found, as integers (version * 100, e.g., 2750 for 27.50)"
         },
         "min_protocol_version": {
-          "type": "string",
-          "description": "Minimum protocol version required"
+          "type": "integer",
+          "description": "Minimum protocol version where message was found (version * 100, e.g., 1800 for 18.00)"
         },
         "max_protocol_version": {
-          "type": "string",
-          "description": "Maximum protocol version (if discontinued)"
+          "type": "integer",
+          "description": "Maximum protocol version (version * 100), only set if message was discontinued"
+        },
+        "source_manuals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of manual identifiers this message was extracted from"
         },
         "product_variants": {
           "type": "array",
