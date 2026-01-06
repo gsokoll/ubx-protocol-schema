@@ -237,7 +237,7 @@ MULTI_VARIANT_MESSAGES = {
     "UBX-LOG-FINDTIME": ["-INPUT", "-OUTPUT"],
     "UBX-RXM-RLM": ["-SHORT", "-LONG"],
     "UBX-RXM-PMREQ": ["-V0", "-V1"],
-    "UBX-TIM-VCOCAL": ["-SET", "-GET"],
+    "UBX-TIM-VCOCAL": ["-STOP", "-SET", "-GET"],
 }
 
 

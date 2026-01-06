@@ -1,0 +1,81 @@
+{
+  "message_name": "UBX-TIM-VCOCAL-SET",
+  "num_extractions": 1,
+  "adjudication": {
+    "canonical_structure": {
+      "name": "UBX-TIM-VCOCAL-STOP",
+      "class_id": "0x0D",
+      "message_id": "0x15",
+      "description": "Stop calibration",
+      "message_type": "command",
+      "payload": {
+        "length": {
+          "fixed": 1
+        },
+        "fields": [
+          {
+            "name": "type",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "fixed_value": 0,
+            "description": "Message type (0 for 'Stop calibration' variant)"
+          }
+        ]
+      }
+    },
+    "canonical_confidence": "high",
+    "extraction_verdicts": [
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      }
+    ],
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "name": "UBX-TIM-VCOCAL-SETUP",
+          "class_id": "0x0D",
+          "message_id": "0x15",
+          "description": "Calibration setup",
+          "payload": {
+            "length": {
+              "fixed": 12
+            },
+            "fields": [
+              {
+                "name": "type",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Message type (1 for this message)"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 1,
+                "data_type": "U1[3]",
+                "description": "Reserved"
+              },
+              {
+                "name": "vcoCal",
+                "byte_offset": 4,
+                "data_type": "U4",
+                "description": "VCO calibration"
+              },
+              {
+                "name": "vcoCalStep",
+                "byte_offset": 8,
+                "data_type": "U4",
+                "description": "VCO calibration step"
+              }
+            ]
+          }
+        },
+        "reason": "The UBX-TIM-VCOCAL message has two distinct payload structures determined by the value of the 'type' field (0 for Stop calibration, 1 for Calibration setup)."
+      }
+    ],
+    "reasoning": "The extraction correctly identifies the 'Stop calibration' subtype of the UBX-TIM-VCOCAL (0x0D 0x15) message. In u-blox 8 protocol documentation, this message has a polymorphic structure where a length of 1 byte (type=0) indicates a stop command, and a length of 12 bytes (type=1) indicates a setup command. The extraction accurately maps the class, ID, and specific fields for the 1-byte variant."
+  }
+}

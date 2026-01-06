@@ -1,8 +1,17 @@
 # UBX Message JSON Schema - Design Notes
 
-## Version 1.2
+## Version 1.4
 
-**Changes from v1.1:**
+**Changes from v1.3:**
+- Added `supported_versions.protocol_versions` as integer array (version × 100)
+- Added `supported_versions.min_protocol_version` as integer
+- Added `supported_versions.source_manuals` for traceability
+- Protocol versions range from 1800 (M8) to 5010 (X20)
+
+**Changes from v1.2 (in v1.3):**
+- Added machine-readable `base_offset` format for repeated groups
+
+**Changes from v1.1 (in v1.2):**
 - Added `version_specific` field overrides for protocol version differences
 
 **Changes from v1.0 (in v1.1):**
@@ -39,7 +48,11 @@ Some UBX messages have multiple payload formats sharing the same Class/Message I
 | `UBX-CFG-VALSET` | v0 simple, v1 with transaction | `version` field at byte 0 |
 | `UBX-AID-ALM` | Poll (0 bytes), Poll SV (1 byte), Data (8 or 40 bytes) | Payload length |
 | `UBX-MGA-GPS` | EPH, ALM, HEALTH, UTC, IONO | `type` field at byte 0 |
+| `UBX-MGA-INI` | POS-XYZ, POS-LLH, TIME-UTC, TIME-GNSS, CLKD, FREQ, EOP | `type` field at byte 0 |
+| `UBX-TIM-VCOCAL` | STOP (type=0), SET (type=2), GET (type=3) | `type` field at byte 0 |
 | `UBX-CFG-PRT` | UART, USB, SPI, I2C | `portId` field |
+
+> **Extraction Note**: Type-discriminated messages must be listed in `MULTI_VARIANT_MESSAGES` in `scripts/extract_messages_v2.py` to ensure all variants are extracted separately.
 
 **Solution**: The `variants` array with `discriminator` objects:
 
