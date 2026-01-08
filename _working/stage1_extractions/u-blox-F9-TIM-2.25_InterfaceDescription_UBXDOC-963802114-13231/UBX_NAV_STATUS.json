@@ -1,0 +1,207 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-STATUS",
+  "extraction_timestamp": "2026-01-08T04:30:13.014802+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 121,
+    "end": 123
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-STATUS\nExpected IDs: class_id=0x01, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-STATUS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-NAV-STATUS\",\n  \"message_id\": \"0x03\",\n  \"class_id\": \"0x01\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"Receiver navigation status\",\n  \"payload_length\": {\n    \"fixed\": 16\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"name\": \"gpsFix\",\n      \"description\": \"GPSfix Type, this value does not qualify a fix as valid and within the limits. See note on flag gpsFixOk below.\",\n      \"mapping\": {\n        \"0\": \"no fix\",\n        \"1\": \"dead reckoning only\",\n        \"2\": \"2D-fix\",\n        \"3\": \"3D-fix\",\n        \"4\": \"GPS + dead reckoning combined\",\n        \"5\": \"Time only fix\",\n        \"6-255\": \"reserved\"\n      }\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"description\": \"Navigation Status Flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"gpsFixOk\",\n          \"description\": \"1 = position and velocity valid and within DOP and ACC Masks.\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"diffSoln\",\n          \"description\": \"1 = differential corrections were applied\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"name\": \"wknSet\",\n          \"description\": \"1 = Week Number valid (for details, see section Time validity in the Integration manual)\"\n        },\n        {\n          \"bit_offset\": 3,\n          \"bit_length\": 1,\n          \"name\": \"towSet\",\n          \"description\": \"1 = Time of Week valid (for details, see section Time validity in the integration manual)\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 4,\n          \"name\": \"reserved_flags\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"X1\",\n      \"name\": \"fixStat\",\n      \"description\": \"Fix Status Information\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"diffCorr\",\n          \"description\": \"1 = differential corrections available\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"carrSolnValid\",\n          \"description\": \"1 = valid carrSoln\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 4,\n          \"name\": \"reserved_fixStat1\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 6,\n          \"bit_length\": 2,\n          \"name\": \"mapMatching\",\n          \"description\": \"map matching status\",\n          \"mapping\": {\n            \"0\": \"none\",\n            \"1\": \"valid but not used, i.e. map matching data was received, but was too old\",\n            \"2\": \"valid and used, map matching data was applied\",\n            \"3\": \"valid and used, map matching data was applied. In case of sensor unavailability map matching data enables dead reckoning. This requires map matched latitude/longitude or heading data.\"\n          }\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 7,\n      \"data_type\": \"X1\",\n      \"name\": \"flags2\",\n      \"description\": \"further information about navigation output\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 2,\n          \"name\": \"psmState\",\n          \"description\": \"power save mode state (not supported for protocol versions less than 13.01)\",\n          \"mapping\": {\n            \"0\": \"ACQUISITION [or when psm disabled]\",\n            \"1\": \"TRACKING\",\n            \"2\": \"POWER OPTIMIZED TRACKING\",\n            \"3\": \"INACTIVE\"\n          }\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"name\": \"reserved_flags2_1\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 3,\n          \"bit_length\": 2,\n          \"name\": \"spoofDetState\",\n          \"description\": \"Spoofing detection state (not supported for protocol versions less than 18.00)\",\n          \"mapping\": {\n            \"0\": \"Unknown or deactivated\",\n            \"1\": \"No spoofing indicated\",\n            \"2\": \"Spoofing indicated\",\n            \"3\": \"Multiple spoofing indications\"\n          }\n        },\n        {\n          \"bit_offset\": 5,\n          \"bit_length\": 1,\n          \"name\": \"reserved_flags2_2\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 6,\n          \"bit_length\": 2,\n          \"name\": \"carrSoln\",\n          \"description\": \"Carrier phase range solution status\",\n          \"mapping\": {\n            \"0\": \"no carrier phase range solution\",\n            \"1\": \"carrier phase range solution with floating ambiguities\",\n            \"2\": \"carrier phase range solution with fixed ambiguities\"\n          }\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U4\",\n      \"name\": \"ttff\",\n      \"unit\": \"ms\",\n      \"description\": \"Time to first fix (millisecond time tag)\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U4\",\n      \"name\": \"msss\",\n      \"unit\": \"ms\",\n      \"description\": \"Milliseconds since startup / reset\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-NAV-STATUS",
+    "message_id": "0x03",
+    "class_id": "0x01",
+    "message_type": "periodic_polled",
+    "description": "Receiver navigation status",
+    "payload_length": {
+      "fixed": 16
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "gpsFix",
+          "description": "GPSfix Type, this value does not qualify a fix as valid and within the limits. See note on flag gpsFixOk below.",
+          "mapping": {
+            "0": "no fix",
+            "1": "dead reckoning only",
+            "2": "2D-fix",
+            "3": "3D-fix",
+            "4": "GPS + dead reckoning combined",
+            "5": "Time only fix",
+            "6-255": "reserved"
+          }
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Navigation Status Flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "gpsFixOk",
+              "description": "1 = position and velocity valid and within DOP and ACC Masks."
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "diffSoln",
+              "description": "1 = differential corrections were applied"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "wknSet",
+              "description": "1 = Week Number valid (for details, see section Time validity in the Integration manual)"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "towSet",
+              "description": "1 = Time of Week valid (for details, see section Time validity in the integration manual)"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 4,
+              "name": "reserved_flags",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "X1",
+          "name": "fixStat",
+          "description": "Fix Status Information",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "diffCorr",
+              "description": "1 = differential corrections available"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "carrSolnValid",
+              "description": "1 = valid carrSoln"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 4,
+              "name": "reserved_fixStat1",
+              "reserved": true
+            },
+            {
+              "bit_offset": 6,
+              "bit_length": 2,
+              "name": "mapMatching",
+              "description": "map matching status",
+              "mapping": {
+                "0": "none",
+                "1": "valid but not used, i.e. map matching data was received, but was too old",
+                "2": "valid and used, map matching data was applied",
+                "3": "valid and used, map matching data was applied. In case of sensor unavailability map matching data enables dead reckoning. This requires map matched latitude/longitude or heading data."
+              }
+            }
+          ]
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "X1",
+          "name": "flags2",
+          "description": "further information about navigation output",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 2,
+              "name": "psmState",
+              "description": "power save mode state (not supported for protocol versions less than 13.01)",
+              "mapping": {
+                "0": "ACQUISITION [or when psm disabled]",
+                "1": "TRACKING",
+                "2": "POWER OPTIMIZED TRACKING",
+                "3": "INACTIVE"
+              }
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "reserved_flags2_1",
+              "reserved": true
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 2,
+              "name": "spoofDetState",
+              "description": "Spoofing detection state (not supported for protocol versions less than 18.00)",
+              "mapping": {
+                "0": "Unknown or deactivated",
+                "1": "No spoofing indicated",
+                "2": "Spoofing indicated",
+                "3": "Multiple spoofing indications"
+              }
+            },
+            {
+              "bit_offset": 5,
+              "bit_length": 1,
+              "name": "reserved_flags2_2",
+              "reserved": true
+            },
+            {
+              "bit_offset": 6,
+              "bit_length": 2,
+              "name": "carrSoln",
+              "description": "Carrier phase range solution status",
+              "mapping": {
+                "0": "no carrier phase range solution",
+                "1": "carrier phase range solution with floating ambiguities",
+                "2": "carrier phase range solution with fixed ambiguities"
+              }
+            }
+          ]
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U4",
+          "name": "ttff",
+          "unit": "ms",
+          "description": "Time to first fix (millisecond time tag)"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "msss",
+          "unit": "ms",
+          "description": "Milliseconds since startup / reset"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/aj6ele2gq032"
+}

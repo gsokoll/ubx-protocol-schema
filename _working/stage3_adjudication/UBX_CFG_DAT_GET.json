@@ -1,12 +1,12 @@
 {
   "message_name": "UBX-CFG-DAT-GET",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-DAT-GET",
       "class_id": "0x06",
       "message_id": "0x06",
-      "description": "Returns the parameters of the currently defined datum.",
+      "description": "Returns the parameters of the currently defined datum. If no user-defined datum has been set, this will default to WGS84.",
       "message_type": "output",
       "payload": {
         "length": {
@@ -17,7 +17,7 @@
             "name": "datumNum",
             "byte_offset": 0,
             "data_type": "U2",
-            "description": "Datum number: 0 = WGS84, 0xFFFF = user-defined"
+            "description": "Datum number: 0 = WGS84, 0xFFFF = user-defined (extra values are defined for protocol versions less than 13.00)"
           },
           {
             "name": "datumName",
@@ -26,69 +26,69 @@
               "array_of": "CH",
               "count": 6
             },
-            "description": "ASCII string: WGS84 or USER"
+            "description": "ASCII string: WGS84 or USER (extra values are defined for protocol versions less than 13.00)"
           },
           {
             "name": "majA",
             "byte_offset": 8,
             "data_type": "R8",
-            "description": "Semi-major axis",
-            "unit": "m"
+            "unit": "m",
+            "description": "Semi-major axis (accepted range = 6,300,000.0 to 6,500,000.0 meters)."
           },
           {
             "name": "flat",
             "byte_offset": 16,
             "data_type": "R8",
-            "description": "1.0/flattening"
+            "description": "1.0/flattening (accepted range is 0.0 to 500.0)."
           },
           {
             "name": "dx",
             "byte_offset": 24,
             "data_type": "R4",
-            "description": "X axis shift at the origin",
-            "unit": "m"
+            "unit": "m",
+            "description": "X axis shift at the origin (accepted range is +/- 5000.0 meters)."
           },
           {
             "name": "dy",
             "byte_offset": 28,
             "data_type": "R4",
-            "description": "Y axis shift at the origin",
-            "unit": "m"
+            "unit": "m",
+            "description": "Y axis shift at the origin (accepted range is +/- 5000.0 meters)."
           },
           {
             "name": "dz",
             "byte_offset": 32,
             "data_type": "R4",
-            "description": "Z axis shift at the origin",
-            "unit": "m"
+            "unit": "m",
+            "description": "Z axis shift at the origin (accepted range is +/- 5000.0 meters)."
           },
           {
             "name": "rotX",
             "byte_offset": 36,
             "data_type": "R4",
-            "description": "Rotation about the X axis",
-            "unit": "s"
+            "unit": "s",
+            "description": "Rotation about the X axis (accepted range is +/- 20.0 milli-arc seconds)."
           },
           {
             "name": "rotY",
             "byte_offset": 40,
             "data_type": "R4",
-            "description": "Rotation about the Y axis",
-            "unit": "s"
+            "unit": "s",
+            "description": "Rotation about the Y axis (accepted range is +/- 20.0 milli-arc seconds)."
           },
           {
             "name": "rotZ",
             "byte_offset": 44,
             "data_type": "R4",
-            "description": "Rotation about the Z axis",
-            "unit": "s"
+            "unit": "s",
+            "description": "Rotation about the Z axis (accepted range is +/- 20.0 milli-arc seconds)."
           },
           {
             "name": "scale",
             "byte_offset": 48,
             "data_type": "R4",
-            "description": "Scale change",
-            "unit": "ppm"
+            "unit": "ppm",
+            "description": "Scale change (accepted range is 0.0 to 50.0 parts per million)."
           }
         ]
       }
@@ -96,10 +96,36 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "valid_variation",
         "issues": [
-          "Field naming casing: Uses 'rotx'/'roty'/'rotZ' instead of standard camelCase"
+          "This extraction refers to the Poll form (UBX-CFG-DAT-POLL) of the message, which has a 0-byte payload, rather than the GET/SET 52-byte payload."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": [
+          "Minor inconsistent casing for rotx and roty (lowercase x/y)."
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": [
+          "Minor inconsistent casing for rotx and roty (lowercase x/y)."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": [
+          "Minor inconsistent casing for rotx and roty (lowercase x/y)."
         ]
       },
       {
@@ -108,75 +134,52 @@
         "issues": []
       },
       {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "Descriptions for datumNum and datumName lack mentions of protocol versions >= 13.00, which is correct for this older hardware generation."
+        ]
+      },
+      {
         "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": [
-          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'",
-          "Unit normalization: Uses full description 'milli-arc seconds' instead of symbol 's' found in other specs"
-        ]
-      },
-      {
-        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-        "verdict": "valid_variation",
-        "issues": [
-          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
         "verdict": "correct",
         "issues": [
-          "Unit capitalization: Uses 'S' instead of 's'"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "valid_variation",
-        "issues": [
-          "Field naming casing: Uses 'rotx'/'roty'/'rotZ'",
-          "Unit capitalization: Uses 'S' instead of 's'"
-        ]
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": [
-          "message_type 'get' is a valid functional description but 'output' is the standard direction"
+          "Unit symbol for rotation fields is expanded to 'milli-arc seconds' whereas other manuals use 's' or 'S'."
         ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598"
+        ],
+        "structure": {
+          "name": "UBX-CFG-DAT-POLL",
+          "payload_length": 0,
+          "fields": []
+        },
+        "reason": "UBX configuration messages often have a 'Poll' variant with the same Class and ID but a zero-length payload."
+      },
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
           "fields": [
             {
-              "name": "rotx",
-              "byte_offset": 36
-            },
-            {
-              "name": "roty",
-              "byte_offset": 40
-            },
-            {
-              "name": "rotZ",
-              "byte_offset": 44
+              "name": "datumNum",
+              "description": "Datum number: 0 = WGS84, 0xFFFF = user-defined"
             }
           ]
         },
-        "reason": "Source documentation inconsistent casing for rotation fields (mixed case 'rotx', 'roty', 'rotZ'). Binary layout is identical."
+        "reason": "Protocol versions earlier than 13.00 (e.g., u-blox 8) do not include backward compatibility notes regarding protocol version 13 change sets in their descriptions."
       }
     ],
-    "reasoning": "The binary structure of UBX-CFG-DAT is identical across all receiver generations (M8 through F9). All extractions agree on the payload length (52 bytes), data types, and offsets. The primary variation is in the textual naming of the rotation fields in the source PDF manuals: some use standard camelCase ('rotX', 'rotY', 'rotZ'), while others use mixed case ('rotx', 'roty', 'rotZ'). The canonical structure follows the standard camelCase convention. Unit discrepancies ('s' vs 'S' vs 'milli-arc seconds') are considered text extraction artifacts or inconsistencies in the unit column of the source PDFs; 's' is the standard abbreviation."
+    "reasoning": "The message UBX-CFG-DAT (0x06 0x06) has three forms: a Poll (0 bytes), a Set (52 bytes, Input), and a Get (52 bytes, Output). The extractions provided are mostly for the GET variant. Variations across extractions are primarily cosmetic, involving capitalization of field names (rotX vs rotx) and representation of units (s, S, or milli-arc seconds). Extraction 1 correctly identifies the Poll form, which is a valid protocol variation of the same Class/ID."
   }
 }

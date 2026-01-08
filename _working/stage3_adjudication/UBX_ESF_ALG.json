@@ -1,196 +1,213 @@
 {
   "message_name": "UBX-ESF-ALG",
   "num_extractions": 13,
-  "adjudication": {
-    "canonical_structure": {
-      "name": "UBX-ESF-ALG",
-      "class_id": "0x10",
-      "message_id": "0x14",
-      "description": "IMU alignment information",
-      "message_type": "output",
-      "payload": {
-        "length": {
-          "fixed": 16
+  "adjudication": [
+    {
+      "canonical_structure": {
+        "name": "UBX-ESF-ALG",
+        "class_id": "0x10",
+        "message_id": "0x14",
+        "description": "IMU alignment information",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "fixed": 16
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "autoMntAlgOn",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Automatic IMU-mount alignment on/off bit"
+                  },
+                  {
+                    "name": "status",
+                    "bit_start": 1,
+                    "bit_end": 3,
+                    "description": "Status of the IMU-mount alignment (0: fixed, 1-2: ongoing, 3: coarse, 4: fine)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "error",
+              "byte_offset": 6,
+              "data_type": "X1",
+              "description": "Error flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "tiltAlgError",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "IMU-mount tilt alignment error"
+                  },
+                  {
+                    "name": "yawAlgError",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "IMU-mount yaw alignment error"
+                  },
+                  {
+                    "name": "angleError",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "IMU-mount misalignment Euler angle singularity error"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "yaw",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "IMU-mount yaw angle [0, 360]",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-2",
+                "multiplier": 0.01
+              }
+            },
+            {
+              "name": "pitch",
+              "byte_offset": 12,
+              "data_type": "I2",
+              "description": "IMU-mount pitch angle [-90, 90]",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-2",
+                "multiplier": 0.01
+              }
+            },
+            {
+              "name": "roll",
+              "byte_offset": 14,
+              "data_type": "I2",
+              "description": "IMU-mount roll angle [-180, 180]",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-2",
+                "multiplier": 0.01
+              }
+            }
+          ]
+        }
+      },
+      "canonical_confidence": "high",
+      "extraction_verdicts": [
+        {
+          "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+          "verdict": "correct",
+          "issues": []
         },
-        "fields": [
-          {
-            "name": "iTOW",
-            "byte_offset": 0,
-            "data_type": "U4",
-            "unit": "ms",
-            "description": "GPS time of week of the navigation epoch."
+        {
+          "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+          "verdict": "correct",
+          "issues": [
+            "Minor casing variation: iTow"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+          "verdict": "extraction_error",
+          "issues": [
+            "Incorrect field mapping for flags/status: Misidentifies status bits as being in offset 6 instead of offset 5",
+            "Logical collision: Claims bits 1-3 are status AND bits 0-2 are errors in the same byte (offset 6)"
+          ]
+        },
+        {
+          "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "verdict": "extraction_error",
+          "issues": [
+            "Incorrect data type: yaw listed as I4 (signed) despite range [0, 360], should be U4"
+          ]
+        },
+        {
+          "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "LAP120_Interfacedescription_UBX-20046191",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+          "verdict": "correct",
+          "issues": []
+        }
+      ],
+      "valid_variations": [
+        {
+          "sources": [
+            "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+            "LAP120_Interfacedescription_UBX-20046191"
+          ],
+          "structure": {
+            "message_type": "periodic_polled"
           },
-          {
-            "name": "version",
-            "byte_offset": 4,
-            "data_type": "U1",
-            "description": "Message version (0x01 for this version)"
-          },
-          {
-            "name": "flags",
-            "byte_offset": 5,
-            "data_type": "X1",
-            "description": "Flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "autoMntAlgOn",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "Automatic IMU-mount alignment on/off bit"
-                },
-                {
-                  "name": "status",
-                  "bit_start": 1,
-                  "bit_end": 3,
-                  "description": "Status of the IMU-mount alignment"
-                }
-              ]
-            }
-          },
-          {
-            "name": "error",
-            "byte_offset": 6,
-            "data_type": "X1",
-            "description": "Error flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "tiltAlgError",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "IMU-mount tilt alignment error"
-                },
-                {
-                  "name": "yawAlgError",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "IMU-mount yaw alignment error"
-                },
-                {
-                  "name": "angleError",
-                  "bit_start": 2,
-                  "bit_end": 2,
-                  "description": "IMU-mount misalignment Euler angle singularity error"
-                }
-              ]
-            }
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 7,
-            "data_type": "U1",
-            "reserved": true
-          },
-          {
-            "name": "yaw",
-            "byte_offset": 8,
-            "data_type": "U4",
-            "unit": "deg",
-            "scale": {
-              "multiplier": 0.01
-            },
-            "description": "IMU-mount yaw angle [0, 360]"
-          },
-          {
-            "name": "pitch",
-            "byte_offset": 12,
-            "data_type": "I2",
-            "unit": "deg",
-            "scale": {
-              "multiplier": 0.01
-            },
-            "description": "IMU-mount pitch angle [-90, 90]"
-          },
-          {
-            "name": "roll",
-            "byte_offset": 14,
-            "data_type": "I2",
-            "unit": "deg",
-            "scale": {
-              "multiplier": 0.01
-            },
-            "description": "IMU-mount roll angle [-180, 180]"
-          }
-        ]
-      }
-    },
-    "canonical_confidence": "high",
-    "extraction_verdicts": [
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect bitfield mapping for 'flags' and 'error' fields.",
-          "Bits 1-3 of 'flags' (status) are missing.",
-          "Bits of 'error' byte are malformed and include a hallucinated 'statusBit3'.",
-          "Description text for status was merged into the wrong field."
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect data type for 'yaw': listed as I4, should be U4 based on consensus and range [0, 360]."
-        ]
-      },
-      {
-        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "LAP120_Interfacedescription_UBX-20046191",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
-      }
-    ],
-    "valid_variations": [],
-    "reasoning": "There is extremely high consensus (12 out of 13 sources) on the exact message structure. The message layout is consistent across M8, M9, and F9 generations (version 0x01). Extraction 2 is the only significant deviation, erroneously moving the alignment status bits into the error bitmask field, likely due to a PDF parsing failure of the bitfield description table. Extraction 3 has a minor type mismatch (I4 vs U4) for the Yaw field, but U4 is the consensus and semantically correct type for the [0, 360] range."
-  }
+          "reason": "Later documentation more accurately classifies ESF messages as 'periodic_polled' rather than just 'output'."
+        }
+      ],
+      "reasoning": "The UBX-ESF-ALG message is consistent across M8, M9, and F9 generations. It is a 16-byte message. The most common extraction errors involve bitfield mapping in bytes 5 and 6. Specifically, status bits (1-3) belong to byte 5, and error bits (0-2) belong to byte 6. Extraction 4 failed this mapping. Yaw is consistently defined with a range of 0-360 degrees, which fits an unsigned U4 (scaled 1e-2), whereas Extraction 6 incorrectly labeled it I4."
+    }
+  ]
 }

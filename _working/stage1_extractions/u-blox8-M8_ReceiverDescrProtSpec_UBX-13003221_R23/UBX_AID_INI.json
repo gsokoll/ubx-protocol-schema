@@ -1,0 +1,225 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-AID-INI",
+  "extraction_timestamp": "2026-01-08T05:30:55.363099+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 205,
+    "end": 208
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-AID-INI\nExpected IDs: class_id=0x0B, message_id=0x01\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-AID-INI\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"name\": \"UBX-AID-INI\",\n    \"description\": \"Aiding position, time, frequency, clock drift\",\n    \"message_class\": \"0x0B\",\n    \"message_id\": \"0x01\",\n    \"message_type\": \"input_output\",\n    \"payload_length\": {\n      \"fixed\": 48\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"ecefXOrLat\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"WGS84 ECEF X coordinate or latitude, depending on flags below (value is degrees * 1e-7 when flag 'lla' is set)\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"ecefYOrLon\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"WGS84 ECEF Y coordinate or longitude, depending on flags below (value is degrees * 1e-7 when flag 'lla' is set)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"ecefZOrAlt\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"WGS84 ECEF Z coordinate or altitude, depending on flags below\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"posAcc\",\n        \"data_type\": \"U4\",\n        \"unit\": \"cm\",\n        \"description\": \"Position accuracy (stddev)\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"tmCfg\",\n        \"data_type\": \"X2\",\n        \"description\": \"Time mark configuration\",\n        \"bitfield_members\": [\n          {\n            \"name\": \"fEdge\",\n            \"bit_offset\": 0,\n            \"size_bits\": 1,\n            \"description\": \"use falling edge (default rising)\"\n          },\n          {\n            \"name\": \"f1\",\n            \"bit_offset\": 1,\n            \"size_bits\": 1,\n            \"description\": \"frequency on extint 1 (default extint 0)\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"size_bits\": 2,\n            \"reserved\": true\n          },\n          {\n            \"name\": \"tm1\",\n            \"bit_offset\": 4,\n            \"size_bits\": 1,\n            \"description\": \"time mark on extint 1 (default extint 0)\"\n          },\n          {\n            \"bit_offset\": 5,\n            \"size_bits\": 11,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"wnoOrDate\",\n        \"data_type\": \"U2\",\n        \"unit\": \"week\",\n        \"description\": \"Actual week number or yearSince2000/Month (YYMM), depending on flags below\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"towOrTime\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"Actual time of week or DayOfMonth/Hour/Minute/Second (DDHHMMSS), depending on flags below\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"towNs\",\n        \"data_type\": \"I4\",\n        \"unit\": \"ns\",\n        \"description\": \"Fractional part of time of week\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"tAccMs\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"Milliseconds part of time accuracy\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"name\": \"tAccNs\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ns\",\n        \"description\": \"Nanoseconds part of time accuracy\"\n      },\n      {\n        \"byte_offset\": 36,\n        \"name\": \"clkDOrFreq\",\n        \"data_type\": \"I4\",\n        \"unit\": \"ns/s\",\n        \"description\": \"Clock drift or frequency, depending on flags below (value is Hz * 1e-2 when flag 'clockF' is set)\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"name\": \"clkDAccOrFreqAcc\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ns/s\",\n        \"description\": \"Accuracy of clock drift or frequency, depending on flags below (value is ppb when flag 'clockF' is set)\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"name\": \"flags\",\n        \"data_type\": \"X4\",\n        \"description\": \"Bitmask with various configuration flags\",\n        \"bitfield_members\": [\n          {\n            \"name\": \"pos\",\n            \"bit_offset\": 0,\n            \"size_bits\": 1,\n            \"description\": \"Position is valid\"\n          },\n          {\n            \"name\": \"time\",\n            \"bit_offset\": 1,\n            \"size_bits\": 1,\n            \"description\": \"Time is valid\"\n          },\n          {\n            \"name\": \"clockD\",\n            \"bit_offset\": 2,\n            \"size_bits\": 1,\n            \"description\": \"Clock drift data contains valid clock drift, must not be set together with clockF\"\n          },\n          {\n            \"name\": \"tp\",\n            \"bit_offset\": 3,\n            \"size_bits\": 1,\n            \"description\": \"Use time pulse\"\n          },\n          {\n            \"name\": \"clockF\",\n            \"bit_offset\": 4,\n            \"size_bits\": 1,\n            \"description\": \"Clock drift data contains valid frequency, must not be set together with clockD\"\n          },\n          {\n            \"name\": \"lla\",\n            \"bit_offset\": 5,\n            \"size_bits\": 1,\n            \"description\": \"Position is given in lat/long/alt (default is ECEF)\"\n          },\n          {\n            \"name\": \"altInv\",\n            \"bit_offset\": 6,\n            \"size_bits\": 1,\n            \"description\": \"Altitude is not valid, if lla was set\"\n          },\n          {\n            \"name\": \"prevTm\",\n            \"bit_offset\": 7,\n            \"size_bits\": 1,\n            \"description\": \"Use time mark received before AID-INI message (default uses mark received after message)\"\n          },\n          {\n            \"bit_offset\": 8,\n            \"size_bits\": 2,\n            \"reserved\": true\n          },\n          {\n            \"name\": \"utc\",\n            \"bit_offset\": 10,\n            \"size_bits\": 1,\n            \"description\": \"Time is given as UTC date/time (default is GPS wno/tow)\"\n          },\n          {\n            \"bit_offset\": 11,\n            \"size_bits\": 21,\n            \"reserved\": true\n          }\n        ]\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-AID-INI",
+    "description": "Aiding position, time, frequency, clock drift",
+    "message_class": "0x0B",
+    "message_id": "0x01",
+    "message_type": "input_output",
+    "payload_length": {
+      "fixed": 48
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "ecefXOrLat",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "WGS84 ECEF X coordinate or latitude, depending on flags below (value is degrees * 1e-7 when flag 'lla' is set)"
+        },
+        {
+          "byte_offset": 4,
+          "name": "ecefYOrLon",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "WGS84 ECEF Y coordinate or longitude, depending on flags below (value is degrees * 1e-7 when flag 'lla' is set)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "ecefZOrAlt",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "WGS84 ECEF Z coordinate or altitude, depending on flags below"
+        },
+        {
+          "byte_offset": 12,
+          "name": "posAcc",
+          "data_type": "U4",
+          "unit": "cm",
+          "description": "Position accuracy (stddev)"
+        },
+        {
+          "byte_offset": 16,
+          "name": "tmCfg",
+          "data_type": "X2",
+          "description": "Time mark configuration",
+          "bitfield_members": [
+            {
+              "name": "fEdge",
+              "bit_offset": 0,
+              "size_bits": 1,
+              "description": "use falling edge (default rising)"
+            },
+            {
+              "name": "f1",
+              "bit_offset": 1,
+              "size_bits": 1,
+              "description": "frequency on extint 1 (default extint 0)"
+            },
+            {
+              "bit_offset": 2,
+              "size_bits": 2,
+              "reserved": true
+            },
+            {
+              "name": "tm1",
+              "bit_offset": 4,
+              "size_bits": 1,
+              "description": "time mark on extint 1 (default extint 0)"
+            },
+            {
+              "bit_offset": 5,
+              "size_bits": 11,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 18,
+          "name": "wnoOrDate",
+          "data_type": "U2",
+          "unit": "week",
+          "description": "Actual week number or yearSince2000/Month (YYMM), depending on flags below"
+        },
+        {
+          "byte_offset": 20,
+          "name": "towOrTime",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Actual time of week or DayOfMonth/Hour/Minute/Second (DDHHMMSS), depending on flags below"
+        },
+        {
+          "byte_offset": 24,
+          "name": "towNs",
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fractional part of time of week"
+        },
+        {
+          "byte_offset": 28,
+          "name": "tAccMs",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Milliseconds part of time accuracy"
+        },
+        {
+          "byte_offset": 32,
+          "name": "tAccNs",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Nanoseconds part of time accuracy"
+        },
+        {
+          "byte_offset": 36,
+          "name": "clkDOrFreq",
+          "data_type": "I4",
+          "unit": "ns/s",
+          "description": "Clock drift or frequency, depending on flags below (value is Hz * 1e-2 when flag 'clockF' is set)"
+        },
+        {
+          "byte_offset": 40,
+          "name": "clkDAccOrFreqAcc",
+          "data_type": "U4",
+          "unit": "ns/s",
+          "description": "Accuracy of clock drift or frequency, depending on flags below (value is ppb when flag 'clockF' is set)"
+        },
+        {
+          "byte_offset": 44,
+          "name": "flags",
+          "data_type": "X4",
+          "description": "Bitmask with various configuration flags",
+          "bitfield_members": [
+            {
+              "name": "pos",
+              "bit_offset": 0,
+              "size_bits": 1,
+              "description": "Position is valid"
+            },
+            {
+              "name": "time",
+              "bit_offset": 1,
+              "size_bits": 1,
+              "description": "Time is valid"
+            },
+            {
+              "name": "clockD",
+              "bit_offset": 2,
+              "size_bits": 1,
+              "description": "Clock drift data contains valid clock drift, must not be set together with clockF"
+            },
+            {
+              "name": "tp",
+              "bit_offset": 3,
+              "size_bits": 1,
+              "description": "Use time pulse"
+            },
+            {
+              "name": "clockF",
+              "bit_offset": 4,
+              "size_bits": 1,
+              "description": "Clock drift data contains valid frequency, must not be set together with clockD"
+            },
+            {
+              "name": "lla",
+              "bit_offset": 5,
+              "size_bits": 1,
+              "description": "Position is given in lat/long/alt (default is ECEF)"
+            },
+            {
+              "name": "altInv",
+              "bit_offset": 6,
+              "size_bits": 1,
+              "description": "Altitude is not valid, if lla was set"
+            },
+            {
+              "name": "prevTm",
+              "bit_offset": 7,
+              "size_bits": 1,
+              "description": "Use time mark received before AID-INI message (default uses mark received after message)"
+            },
+            {
+              "bit_offset": 8,
+              "size_bits": 2,
+              "reserved": true
+            },
+            {
+              "name": "utc",
+              "bit_offset": 10,
+              "size_bits": 1,
+              "description": "Time is given as UTC date/time (default is GPS wno/tow)"
+            },
+            {
+              "bit_offset": 11,
+              "size_bits": 21,
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/dips9fazkw31"
+}

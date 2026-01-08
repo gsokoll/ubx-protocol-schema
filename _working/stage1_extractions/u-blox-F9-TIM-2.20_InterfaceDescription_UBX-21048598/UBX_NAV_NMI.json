@@ -1,0 +1,245 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-NAV-NMI",
+  "extraction_timestamp": "2026-01-08T03:52:50.725862+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 137,
+    "end": 138
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-NMI\nExpected IDs: class_id=0x01, message_id=0x28\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-NMI\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-NAV-NMI\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x28\",\n    \"description\": \"Navigation message cross-check information\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 16\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"fixed_value\": 1,\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 9,\n        \"name\": \"gpsNmiFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"GPS navigation message cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"wnoCheckedGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number check performed.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"wnoInvalidGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number invalid.\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"name\": \"UTCORefCheckedGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = GPS UTCO reference time check performed.\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"name\": \"UTCORefInvalidGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = GPS UTCO reference time invalid.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"gpsLsFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"GPS leap second cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"1sValGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Leap second value out of range.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"dnRangeGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Day number value out of range.\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"name\": \"totRangeGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Data reference TOW out of range.\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"name\": \"1sEventGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Unexpected leap second event.\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"name\": \"recNowGPS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Data received this epoch.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 11,\n        \"name\": \"galNmiFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"Galileo navigation message cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"wnoCheckedGAL\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number check performed.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"wnoInvalidGAL\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number invalid.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"galLsFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"Galileo leap second cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"1sValGAL\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Leap second value out of range.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 13,\n        \"name\": \"bdsNmiFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"BeiDou navigation message cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"wnoCheckedBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number check performed.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"wnoInvalidBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number invalid.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"bdsLsFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"BeiDou leap second cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"1sValBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Leap second value out of range.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"dnRangeBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Day number value out of range.\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"name\": \"totRangeBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Data reference TOW out of range.\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"name\": \"1sEventBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Unexpected leap second event.\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"name\": \"recNowBDS\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = Data received this epoch.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 15,\n        \"name\": \"gloNmiFlags\",\n        \"data_type\": \"X1\",\n        \"description\": \"GLONASS navigation message cross-check information flags.\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"name\": \"wnoCheckedGLO\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number check performed.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"name\": \"wnoInvalidGLO\",\n            \"data_type\": \"U1\",\n            \"description\": \"1 = week number invalid.\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-NAV-NMI",
+      "class_id": "0x01",
+      "message_id": "0x28",
+      "description": "Navigation message cross-check information",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 16
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 1,
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "reserved": true
+        },
+        {
+          "byte_offset": 9,
+          "name": "gpsNmiFlags",
+          "data_type": "X1",
+          "description": "GPS navigation message cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "wnoCheckedGPS",
+              "data_type": "U1",
+              "description": "1 = week number check performed."
+            },
+            {
+              "bit_offset": 1,
+              "name": "wnoInvalidGPS",
+              "data_type": "U1",
+              "description": "1 = week number invalid."
+            },
+            {
+              "bit_offset": 2,
+              "name": "UTCORefCheckedGPS",
+              "data_type": "U1",
+              "description": "1 = GPS UTCO reference time check performed."
+            },
+            {
+              "bit_offset": 3,
+              "name": "UTCORefInvalidGPS",
+              "data_type": "U1",
+              "description": "1 = GPS UTCO reference time invalid."
+            }
+          ]
+        },
+        {
+          "byte_offset": 10,
+          "name": "gpsLsFlags",
+          "data_type": "X1",
+          "description": "GPS leap second cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "1sValGPS",
+              "data_type": "U1",
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "bit_offset": 1,
+              "name": "dnRangeGPS",
+              "data_type": "U1",
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "bit_offset": 2,
+              "name": "totRangeGPS",
+              "data_type": "U1",
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "bit_offset": 3,
+              "name": "1sEventGPS",
+              "data_type": "U1",
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "bit_offset": 4,
+              "name": "recNowGPS",
+              "data_type": "U1",
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        },
+        {
+          "byte_offset": 11,
+          "name": "galNmiFlags",
+          "data_type": "X1",
+          "description": "Galileo navigation message cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "wnoCheckedGAL",
+              "data_type": "U1",
+              "description": "1 = week number check performed."
+            },
+            {
+              "bit_offset": 1,
+              "name": "wnoInvalidGAL",
+              "data_type": "U1",
+              "description": "1 = week number invalid."
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "name": "galLsFlags",
+          "data_type": "X1",
+          "description": "Galileo leap second cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "1sValGAL",
+              "data_type": "U1",
+              "description": "1 = Leap second value out of range."
+            }
+          ]
+        },
+        {
+          "byte_offset": 13,
+          "name": "bdsNmiFlags",
+          "data_type": "X1",
+          "description": "BeiDou navigation message cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "wnoCheckedBDS",
+              "data_type": "U1",
+              "description": "1 = week number check performed."
+            },
+            {
+              "bit_offset": 1,
+              "name": "wnoInvalidBDS",
+              "data_type": "U1",
+              "description": "1 = week number invalid."
+            }
+          ]
+        },
+        {
+          "byte_offset": 14,
+          "name": "bdsLsFlags",
+          "data_type": "X1",
+          "description": "BeiDou leap second cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "1sValBDS",
+              "data_type": "U1",
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "bit_offset": 1,
+              "name": "dnRangeBDS",
+              "data_type": "U1",
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "bit_offset": 2,
+              "name": "totRangeBDS",
+              "data_type": "U1",
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "bit_offset": 3,
+              "name": "1sEventBDS",
+              "data_type": "U1",
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "bit_offset": 4,
+              "name": "recNowBDS",
+              "data_type": "U1",
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        },
+        {
+          "byte_offset": 15,
+          "name": "gloNmiFlags",
+          "data_type": "X1",
+          "description": "GLONASS navigation message cross-check information flags.",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "wnoCheckedGLO",
+              "data_type": "U1",
+              "description": "1 = week number check performed."
+            },
+            {
+              "bit_offset": 1,
+              "name": "wnoInvalidGLO",
+              "data_type": "U1",
+              "description": "1 = week number invalid."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/cevdpwj2ri6d"
+}

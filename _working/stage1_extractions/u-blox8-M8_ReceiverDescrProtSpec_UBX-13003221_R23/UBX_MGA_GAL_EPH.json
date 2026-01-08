@@ -1,0 +1,348 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MGA-GAL-EPH",
+  "extraction_timestamp": "2026-01-08T06:13:24.251095+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 332,
+    "end": 336
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GAL-EPH\nExpected IDs: class_id=0x13, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GAL-EPH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-GAL-EPH\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x02\",\n  \"description\": \"Galileo ephemeris assistance\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 76\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"type\",\n      \"description\": \"Message type (0x01 for this type)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"svId\",\n      \"description\": \"Galileo Satellite identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U2\",\n      \"name\": \"iodNav\",\n      \"description\": \"Ephemeris and clock correction Issue of Data\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"I2\",\n      \"name\": \"deltaN\",\n      \"scale\": {\n        \"raw\": \"2^-43\",\n        \"multiplier\": 1.1368683772161603e-13\n      },\n      \"unit\": \"semi-circles/s\",\n      \"description\": \"Mean motion difference from computed value\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"m0\",\n      \"scale\": {\n        \"raw\": \"2^-31\",\n        \"multiplier\": 4.656612873077393e-10\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Mean anomaly at reference time\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U4\",\n      \"name\": \"e\",\n      \"scale\": {\n        \"raw\": \"2^-33\",\n        \"multiplier\": 1.164153218269348e-10\n      },\n      \"description\": \"Eccentricity\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"name\": \"sqrtA\",\n      \"scale\": {\n        \"raw\": \"2^-19\",\n        \"multiplier\": 1.9073486328125e-06\n      },\n      \"unit\": \"m^0.5\",\n      \"description\": \"Square root of the semi-major axis\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"I4\",\n      \"name\": \"omega0\",\n      \"scale\": {\n        \"raw\": \"2^-31\",\n        \"multiplier\": 4.656612873077393e-10\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Longitude of ascending node of orbital plane at weekly epoch\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"I4\",\n      \"name\": \"i0\",\n      \"scale\": {\n        \"raw\": \"2^-31\",\n        \"multiplier\": 4.656612873077393e-10\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Inclination angle at reference time\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"I4\",\n      \"name\": \"omega\",\n      \"scale\": {\n        \"raw\": \"2^-31\",\n        \"multiplier\": 4.656612873077393e-10\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Argument of perigee\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": \"I4\",\n      \"name\": \"omegaDot\",\n      \"scale\": {\n        \"raw\": \"2^-43\",\n        \"multiplier\": 1.1368683772161603e-13\n      },\n      \"unit\": \"semi-circles/s\",\n      \"description\": \"Rate of change of right ascension\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"data_type\": \"I2\",\n      \"name\": \"iDot\",\n      \"scale\": {\n        \"raw\": \"2^-43\",\n        \"multiplier\": 1.1368683772161603e-13\n      },\n      \"unit\": \"semi-circles/s\",\n      \"description\": \"Rate of change of inclination angle\"\n    },\n    {\n      \"byte_offset\": 38,\n      \"data_type\": \"I2\",\n      \"name\": \"cuc\",\n      \"scale\": {\n        \"raw\": \"2^-29\",\n        \"multiplier\": 1.862645149230957e-09\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the cosine harmonic correction term to the argument of latitude\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"data_type\": \"I2\",\n      \"name\": \"cus\",\n      \"scale\": {\n        \"raw\": \"2^-29\",\n        \"multiplier\": 1.862645149230957e-09\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the sine harmonic correction term to the argument of latitude\"\n    },\n    {\n      \"byte_offset\": 42,\n      \"data_type\": \"I2\",\n      \"name\": \"crc\",\n      \"scale\": {\n        \"raw\": \"2^-5\",\n        \"multiplier\": 0.03125\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the cosine harmonic correction term to the orbit radius\"\n    },\n    {\n      \"byte_offset\": 44,\n      \"data_type\": \"I2\",\n      \"name\": \"crs\",\n      \"scale\": {\n        \"raw\": \"2^-5\",\n        \"multiplier\": 0.03125\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the sine harmonic correction term to the orbit radius\"\n    },\n    {\n      \"byte_offset\": 46,\n      \"data_type\": \"I2\",\n      \"name\": \"cic\",\n      \"scale\": {\n        \"raw\": \"2^-29\",\n        \"multiplier\": 1.862645149230957e-09\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the cosine harmonic correction term to the angle of inclination\"\n    },\n    {\n      \"byte_offset\": 48,\n      \"data_type\": \"I2\",\n      \"name\": \"cis\",\n      \"scale\": {\n        \"raw\": \"2^-29\",\n        \"multiplier\": 1.862645149230957e-09\n      },\n      \"unit\": \"radian\",\n      \"description\": \"Amplitude of the sine harmonic correction term to the angle of inclination\"\n    },\n    {\n      \"byte_offset\": 50,\n      \"data_type\": \"U2\",\n      \"name\": \"toe\",\n      \"scale\": {\n        \"raw\": \"60\",\n        \"multiplier\": 60\n      },\n      \"unit\": \"s\",\n      \"description\": \"Ephemeris reference time\"\n    },\n    {\n      \"byte_offset\": 52,\n      \"data_type\": \"I4\",\n      \"name\": \"af0\",\n      \"scale\": {\n        \"raw\": \"2^-34\",\n        \"multiplier\": 5.82076609134674e-11\n      },\n      \"unit\": \"s\",\n      \"description\": \"SV clock bias correction coefficient\"\n    },\n    {\n      \"byte_offset\": 56,\n      \"data_type\": \"I4\",\n      \"name\": \"af1\",\n      \"scale\": {\n        \"raw\": \"2^-46\",\n        \"multiplier\": 1.4210854715202004e-14\n      },\n      \"unit\": \"s/s\",\n      \"description\": \"SV clock drift correction coefficient\"\n    },\n    {\n      \"byte_offset\": 60,\n      \"data_type\": \"I1\",\n      \"name\": \"af2\",\n      \"scale\": {\n        \"raw\": \"2^-59\",\n        \"multiplier\": 1.734723475976807e-18\n      },\n      \"unit\": \"s/s^2\",\n      \"description\": \"SV clock drift rate correction coefficient\"\n    },\n    {\n      \"byte_offset\": 61,\n      \"data_type\": \"U1\",\n      \"name\": \"sisaIndexE1E5b\",\n      \"description\": \"Signal-In-Space Accuracy index for dual frequency E1-E5b\"\n    },\n    {\n      \"byte_offset\": 62,\n      \"data_type\": \"U2\",\n      \"name\": \"toc\",\n      \"scale\": {\n        \"raw\": \"60\",\n        \"multiplier\": 60\n      },\n      \"unit\": \"s\",\n      \"description\": \"Clock correction data reference Time of Week\"\n    },\n    {\n      \"byte_offset\": 64,\n      \"data_type\": \"I2\",\n      \"name\": \"bgdE1E5b\",\n      \"description\": \"E1-E5b Broadcast Group Delay\"\n    },\n    {\n      \"byte_offset\": 66,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved2\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 68,\n      \"data_type\": \"U1\",\n      \"name\": \"healthE1B\",\n      \"description\": \"E1-B Signal Health Status\"\n    },\n    {\n      \"byte_offset\": 69,\n      \"data_type\": \"U1\",\n      \"name\": \"dataValidityE1B\",\n      \"description\": \"E1-B Data Validity Status\"\n    },\n    {\n      \"byte_offset\": 70,\n      \"data_type\": \"U1\",\n      \"name\": \"healthE5b\",\n      \"description\": \"E5b Signal Health Status\"\n    },\n    {\n      \"byte_offset\": 71,\n      \"data_type\": \"U1\",\n      \"name\": \"dataValidityE5b\",\n      \"description\": \"E5b Data Validity Status\"\n    },\n    {\n      \"byte_offset\": 72,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved3\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-GAL-EPH",
+    "class_id": "0x13",
+    "message_id": "0x02",
+    "description": "Galileo ephemeris assistance",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 76
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "type",
+          "description": "Message type (0x01 for this type)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U1",
+          "name": "svId",
+          "description": "Galileo Satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "U1",
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U2",
+          "name": "iodNav",
+          "description": "Ephemeris and clock correction Issue of Data"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "I2",
+          "name": "deltaN",
+          "scale": {
+            "raw": "2^-43",
+            "multiplier": 1.1368683772161603e-13
+          },
+          "unit": "semi-circles/s",
+          "description": "Mean motion difference from computed value"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "m0",
+          "scale": {
+            "raw": "2^-31",
+            "multiplier": 4.656612873077393e-10
+          },
+          "unit": "semi-circles",
+          "description": "Mean anomaly at reference time"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "e",
+          "scale": {
+            "raw": "2^-33",
+            "multiplier": 1.164153218269348e-10
+          },
+          "description": "Eccentricity"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "sqrtA",
+          "scale": {
+            "raw": "2^-19",
+            "multiplier": 1.9073486328125e-06
+          },
+          "unit": "m^0.5",
+          "description": "Square root of the semi-major axis"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "I4",
+          "name": "omega0",
+          "scale": {
+            "raw": "2^-31",
+            "multiplier": 4.656612873077393e-10
+          },
+          "unit": "semi-circles",
+          "description": "Longitude of ascending node of orbital plane at weekly epoch"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "I4",
+          "name": "i0",
+          "scale": {
+            "raw": "2^-31",
+            "multiplier": 4.656612873077393e-10
+          },
+          "unit": "semi-circles",
+          "description": "Inclination angle at reference time"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "I4",
+          "name": "omega",
+          "scale": {
+            "raw": "2^-31",
+            "multiplier": 4.656612873077393e-10
+          },
+          "unit": "semi-circles",
+          "description": "Argument of perigee"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "I4",
+          "name": "omegaDot",
+          "scale": {
+            "raw": "2^-43",
+            "multiplier": 1.1368683772161603e-13
+          },
+          "unit": "semi-circles/s",
+          "description": "Rate of change of right ascension"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "I2",
+          "name": "iDot",
+          "scale": {
+            "raw": "2^-43",
+            "multiplier": 1.1368683772161603e-13
+          },
+          "unit": "semi-circles/s",
+          "description": "Rate of change of inclination angle"
+        },
+        {
+          "byte_offset": 38,
+          "data_type": "I2",
+          "name": "cuc",
+          "scale": {
+            "raw": "2^-29",
+            "multiplier": 1.862645149230957e-09
+          },
+          "unit": "radian",
+          "description": "Amplitude of the cosine harmonic correction term to the argument of latitude"
+        },
+        {
+          "byte_offset": 40,
+          "data_type": "I2",
+          "name": "cus",
+          "scale": {
+            "raw": "2^-29",
+            "multiplier": 1.862645149230957e-09
+          },
+          "unit": "radian",
+          "description": "Amplitude of the sine harmonic correction term to the argument of latitude"
+        },
+        {
+          "byte_offset": 42,
+          "data_type": "I2",
+          "name": "crc",
+          "scale": {
+            "raw": "2^-5",
+            "multiplier": 0.03125
+          },
+          "unit": "radian",
+          "description": "Amplitude of the cosine harmonic correction term to the orbit radius"
+        },
+        {
+          "byte_offset": 44,
+          "data_type": "I2",
+          "name": "crs",
+          "scale": {
+            "raw": "2^-5",
+            "multiplier": 0.03125
+          },
+          "unit": "radian",
+          "description": "Amplitude of the sine harmonic correction term to the orbit radius"
+        },
+        {
+          "byte_offset": 46,
+          "data_type": "I2",
+          "name": "cic",
+          "scale": {
+            "raw": "2^-29",
+            "multiplier": 1.862645149230957e-09
+          },
+          "unit": "radian",
+          "description": "Amplitude of the cosine harmonic correction term to the angle of inclination"
+        },
+        {
+          "byte_offset": 48,
+          "data_type": "I2",
+          "name": "cis",
+          "scale": {
+            "raw": "2^-29",
+            "multiplier": 1.862645149230957e-09
+          },
+          "unit": "radian",
+          "description": "Amplitude of the sine harmonic correction term to the angle of inclination"
+        },
+        {
+          "byte_offset": 50,
+          "data_type": "U2",
+          "name": "toe",
+          "scale": {
+            "raw": "60",
+            "multiplier": 60
+          },
+          "unit": "s",
+          "description": "Ephemeris reference time"
+        },
+        {
+          "byte_offset": 52,
+          "data_type": "I4",
+          "name": "af0",
+          "scale": {
+            "raw": "2^-34",
+            "multiplier": 5.82076609134674e-11
+          },
+          "unit": "s",
+          "description": "SV clock bias correction coefficient"
+        },
+        {
+          "byte_offset": 56,
+          "data_type": "I4",
+          "name": "af1",
+          "scale": {
+            "raw": "2^-46",
+            "multiplier": 1.4210854715202004e-14
+          },
+          "unit": "s/s",
+          "description": "SV clock drift correction coefficient"
+        },
+        {
+          "byte_offset": 60,
+          "data_type": "I1",
+          "name": "af2",
+          "scale": {
+            "raw": "2^-59",
+            "multiplier": 1.734723475976807e-18
+          },
+          "unit": "s/s^2",
+          "description": "SV clock drift rate correction coefficient"
+        },
+        {
+          "byte_offset": 61,
+          "data_type": "U1",
+          "name": "sisaIndexE1E5b",
+          "description": "Signal-In-Space Accuracy index for dual frequency E1-E5b"
+        },
+        {
+          "byte_offset": 62,
+          "data_type": "U2",
+          "name": "toc",
+          "scale": {
+            "raw": "60",
+            "multiplier": 60
+          },
+          "unit": "s",
+          "description": "Clock correction data reference Time of Week"
+        },
+        {
+          "byte_offset": 64,
+          "data_type": "I2",
+          "name": "bgdE1E5b",
+          "description": "E1-E5b Broadcast Group Delay"
+        },
+        {
+          "byte_offset": 66,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved2",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 68,
+          "data_type": "U1",
+          "name": "healthE1B",
+          "description": "E1-B Signal Health Status"
+        },
+        {
+          "byte_offset": 69,
+          "data_type": "U1",
+          "name": "dataValidityE1B",
+          "description": "E1-B Data Validity Status"
+        },
+        {
+          "byte_offset": 70,
+          "data_type": "U1",
+          "name": "healthE5b",
+          "description": "E5b Signal Health Status"
+        },
+        {
+          "byte_offset": 71,
+          "data_type": "U1",
+          "name": "dataValidityE5b",
+          "description": "E5b Data Validity Status"
+        },
+        {
+          "byte_offset": 72,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved3",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ebmgo8s0bq02"
+}

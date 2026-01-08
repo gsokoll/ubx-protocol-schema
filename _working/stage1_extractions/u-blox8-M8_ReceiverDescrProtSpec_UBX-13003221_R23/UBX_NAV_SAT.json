@@ -1,0 +1,269 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-SAT",
+  "extraction_timestamp": "2026-01-08T06:38:55.715278+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 396,
+    "end": 398
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SAT\nExpected IDs: class_id=0x01, message_id=0x35\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SAT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-NAV-SAT\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x35\",\n  \"description\": \"Satellite information\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + N*12\",\n      \"N_field\": \"numSvs\"\n    }\n  },\n  \"payload_fields\": [\n    {\n      \"name\": \"iTOW\",\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"name\": \"version\",\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"fixed_value\": 1,\n      \"description\": \"Message version (0x01 for this version)\"\n    },\n    {\n      \"name\": \"numSvs\",\n      \"byte_offset\": 5,\n      \"data_type\": \"U1\",\n      \"description\": \"Number of satellites\"\n    },\n    {\n      \"name\": \"reserved1\",\n      \"byte_offset\": 6,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"name\": \"satellites_data\",\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of\": {\n          \"fields\": [\n            {\n              \"name\": \"gnssId\",\n              \"byte_offset\": 0,\n              \"data_type\": \"U1\",\n              \"description\": \"GNSS identifier (see Satellite Numbering) for assignment\"\n            },\n            {\n              \"name\": \"svId\",\n              \"byte_offset\": 1,\n              \"data_type\": \"U1\",\n              \"description\": \"Satellite identifier (see Satellite Numbering) for assignment\"\n            },\n            {\n              \"name\": \"cno\",\n              \"byte_offset\": 2,\n              \"data_type\": \"U1\",\n              \"unit\": \"dBHz\",\n              \"description\": \"Carrier to noise ratio (signal strength)\"\n            },\n            {\n              \"name\": \"elev\",\n              \"byte_offset\": 3,\n              \"data_type\": \"I1\",\n              \"unit\": \"deg\",\n              \"description\": \"Elevation (range: +/-90), unknown if out of range\"\n            },\n            {\n              \"name\": \"azim\",\n              \"byte_offset\": 4,\n              \"data_type\": \"I2\",\n              \"unit\": \"deg\",\n              \"description\": \"Azimuth (range 0-360), unknown if elevation is out of range\"\n            },\n            {\n              \"name\": \"prRes\",\n              \"byte_offset\": 6,\n              \"data_type\": \"I2\",\n              \"scale\": {\n                \"raw\": \"0.1\",\n                \"multiplier\": 0.1\n              },\n              \"unit\": \"m\",\n              \"description\": \"Pseudorange residual\"\n            },\n            {\n              \"name\": \"flags\",\n              \"byte_offset\": 8,\n              \"data_type\": \"X4\",\n              \"description\": \"Bitmask (see graphic below)\",\n              \"bitfields\": [\n                {\n                  \"name\": \"qualityInd\",\n                  \"lsb\": 0,\n                  \"bits\": 3,\n                  \"data_type\": \"U1\",\n                  \"description\": \"Signal quality indicator: 0: no signal, 1: searching signal, 2: signal acquired, 3: signal detected but unusable, 4: code locked and time synchronized, 5, 6, 7: code and carrier locked and time synchronized\"\n                },\n                {\n                  \"name\": \"svUsed\",\n                  \"lsb\": 3,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = Signal in the subset specified in Signal Identifiers is currently being used for navigation\"\n                },\n                {\n                  \"name\": \"health\",\n                  \"lsb\": 4,\n                  \"bits\": 2,\n                  \"data_type\": \"U1\",\n                  \"description\": \"Signal health flag: 0: unknown, 1: healthy, 2: unhealthy\"\n                },\n                {\n                  \"name\": \"diffCorr\",\n                  \"lsb\": 6,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = differential correction data is available for this SV\"\n                },\n                {\n                  \"name\": \"smoothed\",\n                  \"lsb\": 7,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = carrier smoothed pseudorange used\"\n                },\n                {\n                  \"name\": \"orbitSource\",\n                  \"lsb\": 8,\n                  \"bits\": 3,\n                  \"data_type\": \"U1\",\n                  \"description\": \"Orbit source: 0: no orbit information is available for this SV, 1: ephemeris is used, 2: almanac is used, 3: AssistNow Offline orbit is used, 4: AssistNow Autonomous orbit is used, 5, 6, 7: other orbit information is used\"\n                },\n                {\n                  \"name\": \"ephAvail\",\n                  \"lsb\": 11,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = ephemeris is available for this SV\"\n                },\n                {\n                  \"name\": \"almAvail\",\n                  \"lsb\": 12,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = almanac is available for this SV\"\n                },\n                {\n                  \"name\": \"anoAvail\",\n                  \"lsb\": 13,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = AssistNow Offline data is available for this SV\"\n                },\n                {\n                  \"name\": \"aopAvail\",\n                  \"lsb\": 14,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = AssistNow Autonomous data is available for this SV\"\n                },\n                {\n                  \"name\": \"reserved_15\",\n                  \"lsb\": 15,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"reserved\": true\n                },\n                {\n                  \"name\": \"sbasCorrUsed\",\n                  \"lsb\": 16,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = SBAS corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"rtcmCorrUsed\",\n                  \"lsb\": 17,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = RTCM corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"slasCorrUsed\",\n                  \"lsb\": 18,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = QZSS SLAS corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"spartnCorrUsed\",\n                  \"lsb\": 19,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = SPARTN corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"prCorrUsed\",\n                  \"lsb\": 20,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = Pseudorange corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"crCorrUsed\",\n                  \"lsb\": 21,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = Carrier range corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"doCorrUsed\",\n                  \"lsb\": 22,\n                  \"bits\": 1,\n                  \"data_type\": \"U1\",\n                  \"description\": \"1 = Range rate (Doppler) corrections have been used for a signal in the subset specified in Signal Identifiers\"\n                },\n                {\n                  \"name\": \"reserved_23_31\",\n                  \"lsb\": 23,\n                  \"bits\": 9,\n                  \"data_type\": \"U1\",\n                  \"reserved\": true\n                }\n              ]\n            }\n          ]\n        },\n        \"count_field\": \"numSvs\"\n      },\n      \"description\": \"Start of repeated block (numSvs times)\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-NAV-SAT",
+    "class_id": "0x01",
+    "message_id": "0x35",
+    "description": "Satellite information",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + N*12",
+        "N_field": "numSvs"
+      }
+    },
+    "payload_fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "numSvs",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "Number of satellites"
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 6,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "satellites_data",
+        "byte_offset": 8,
+        "data_type": {
+          "array_of": {
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "GNSS identifier (see Satellite Numbering) for assignment"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Satellite identifier (see Satellite Numbering) for assignment"
+              },
+              {
+                "name": "cno",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "unit": "dBHz",
+                "description": "Carrier to noise ratio (signal strength)"
+              },
+              {
+                "name": "elev",
+                "byte_offset": 3,
+                "data_type": "I1",
+                "unit": "deg",
+                "description": "Elevation (range: +/-90), unknown if out of range"
+              },
+              {
+                "name": "azim",
+                "byte_offset": 4,
+                "data_type": "I2",
+                "unit": "deg",
+                "description": "Azimuth (range 0-360), unknown if elevation is out of range"
+              },
+              {
+                "name": "prRes",
+                "byte_offset": 6,
+                "data_type": "I2",
+                "scale": {
+                  "raw": "0.1",
+                  "multiplier": 0.1
+                },
+                "unit": "m",
+                "description": "Pseudorange residual"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 8,
+                "data_type": "X4",
+                "description": "Bitmask (see graphic below)",
+                "bitfields": [
+                  {
+                    "name": "qualityInd",
+                    "lsb": 0,
+                    "bits": 3,
+                    "data_type": "U1",
+                    "description": "Signal quality indicator: 0: no signal, 1: searching signal, 2: signal acquired, 3: signal detected but unusable, 4: code locked and time synchronized, 5, 6, 7: code and carrier locked and time synchronized"
+                  },
+                  {
+                    "name": "svUsed",
+                    "lsb": 3,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = Signal in the subset specified in Signal Identifiers is currently being used for navigation"
+                  },
+                  {
+                    "name": "health",
+                    "lsb": 4,
+                    "bits": 2,
+                    "data_type": "U1",
+                    "description": "Signal health flag: 0: unknown, 1: healthy, 2: unhealthy"
+                  },
+                  {
+                    "name": "diffCorr",
+                    "lsb": 6,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = differential correction data is available for this SV"
+                  },
+                  {
+                    "name": "smoothed",
+                    "lsb": 7,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = carrier smoothed pseudorange used"
+                  },
+                  {
+                    "name": "orbitSource",
+                    "lsb": 8,
+                    "bits": 3,
+                    "data_type": "U1",
+                    "description": "Orbit source: 0: no orbit information is available for this SV, 1: ephemeris is used, 2: almanac is used, 3: AssistNow Offline orbit is used, 4: AssistNow Autonomous orbit is used, 5, 6, 7: other orbit information is used"
+                  },
+                  {
+                    "name": "ephAvail",
+                    "lsb": 11,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = ephemeris is available for this SV"
+                  },
+                  {
+                    "name": "almAvail",
+                    "lsb": 12,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = almanac is available for this SV"
+                  },
+                  {
+                    "name": "anoAvail",
+                    "lsb": 13,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = AssistNow Offline data is available for this SV"
+                  },
+                  {
+                    "name": "aopAvail",
+                    "lsb": 14,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = AssistNow Autonomous data is available for this SV"
+                  },
+                  {
+                    "name": "reserved_15",
+                    "lsb": 15,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "reserved": true
+                  },
+                  {
+                    "name": "sbasCorrUsed",
+                    "lsb": 16,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = SBAS corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "rtcmCorrUsed",
+                    "lsb": 17,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = RTCM corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "slasCorrUsed",
+                    "lsb": 18,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = QZSS SLAS corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "spartnCorrUsed",
+                    "lsb": 19,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = SPARTN corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "prCorrUsed",
+                    "lsb": 20,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = Pseudorange corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "crCorrUsed",
+                    "lsb": 21,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = Carrier range corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "doCorrUsed",
+                    "lsb": 22,
+                    "bits": 1,
+                    "data_type": "U1",
+                    "description": "1 = Range rate (Doppler) corrections have been used for a signal in the subset specified in Signal Identifiers"
+                  },
+                  {
+                    "name": "reserved_23_31",
+                    "lsb": 23,
+                    "bits": 9,
+                    "data_type": "U1",
+                    "reserved": true
+                  }
+                ]
+              }
+            ]
+          },
+          "count_field": "numSvs"
+        },
+        "description": "Start of repeated block (numSvs times)"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/f1fpgbooyjcl"
+}

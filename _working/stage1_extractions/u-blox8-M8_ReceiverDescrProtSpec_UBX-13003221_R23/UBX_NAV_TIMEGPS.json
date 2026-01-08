@@ -1,0 +1,115 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-TIMEGPS",
+  "extraction_timestamp": "2026-01-08T06:43:38.420850+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 412,
+    "end": 413
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMEGPS\nExpected IDs: class_id=0x01, message_id=0x20\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMEGPS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": {\n    \"name\": \"UBX-NAV-TIMEGPS\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x20\",\n    \"description\": \"GPS time solution\",\n    \"message_type\": \"periodic_polled\",\n    \"comment\": \"This message reports the precise GPS time of the most recent navigation solution including validity flags and an accuracy estimate.\",\n    \"firmware_supported\": [\n      \"u-blox 8/u-blox M8 protocol versions 15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ],\n    \"payload_length\": {\n      \"fixed\": 16\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"fTOW\",\n        \"data_type\": \"I4\",\n        \"unit\": \"ns\",\n        \"description\": \"Fractional part of iTOW (range: +/- 500000). The precise GPS time of week in seconds is: (iTOW * 1e-3) + (fTOW * 1e-9)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"week\",\n        \"data_type\": \"I2\",\n        \"unit\": \"week\",\n        \"description\": \"GPS week number of the navigation epoch\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"leaps\",\n        \"data_type\": \"I1\",\n        \"unit\": \"s\",\n        \"description\": \"GPS leap seconds (GPS-UTC)\"\n      },\n      {\n        \"byte_offset\": 11,\n        \"name\": \"valid\",\n        \"data_type\": \"X1\",\n        \"description\": \"Validity Flags (see graphic below)\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"todValid\",\n            \"description\": \"1 = Valid TOD and fTOD (see Time Validity section for details)\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"dateValid\",\n            \"description\": \"1 = Valid N4 and Nt (see Time Validity section for details)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"tAcc\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ns\",\n        \"description\": \"Time Accuracy Estimate\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-NAV-TIMEGPS",
+      "class_id": "0x01",
+      "message_id": "0x20",
+      "description": "GPS time solution",
+      "message_type": "periodic_polled",
+      "comment": "This message reports the precise GPS time of the most recent navigation solution including validity flags and an accuracy estimate.",
+      "firmware_supported": [
+        "u-blox 8/u-blox M8 protocol versions 15",
+        "15.01",
+        "16",
+        "17",
+        "18",
+        "19",
+        "19.1",
+        "19.2",
+        "20",
+        "20.01",
+        "20.1",
+        "20.2",
+        "20.3",
+        "22",
+        "22.01",
+        "23",
+        "23.01"
+      ],
+      "payload_length": {
+        "fixed": 16
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "fTOW",
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fractional part of iTOW (range: +/- 500000). The precise GPS time of week in seconds is: (iTOW * 1e-3) + (fTOW * 1e-9)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "week",
+          "data_type": "I2",
+          "unit": "week",
+          "description": "GPS week number of the navigation epoch"
+        },
+        {
+          "byte_offset": 10,
+          "name": "leaps",
+          "data_type": "I1",
+          "unit": "s",
+          "description": "GPS leap seconds (GPS-UTC)"
+        },
+        {
+          "byte_offset": 11,
+          "name": "valid",
+          "data_type": "X1",
+          "description": "Validity Flags (see graphic below)",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "todValid",
+              "description": "1 = Valid TOD and fTOD (see Time Validity section for details)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "dateValid",
+              "description": "1 = Valid N4 and Nt (see Time Validity section for details)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "name": "tAcc",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Time Accuracy Estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/jj18lw8qlkzp"
+}

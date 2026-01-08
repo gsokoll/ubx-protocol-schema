@@ -1,13 +1,13 @@
 {
   "message_name": "UBX-NAV-TIMENAVIC",
   "protocol_version": 0,
-  "status": "unanimous",
-  "agreement_ratio": 1.0,
+  "status": "majority",
+  "agreement_ratio": 0.8,
   "winning_structure": {
     "name": "UBX-NAV-TIMENAVIC",
     "class_id": "0x01",
     "message_id": "0x63",
-    "description": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+    "description": "NavIC time solution. This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
     "message_type": "output",
     "payload": {
       "length": {
@@ -33,11 +33,7 @@
           "byte_offset": 8,
           "data_type": "I4",
           "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9",
-          "unit": "ns",
-          "scale": {
-            "raw": "1e-9",
-            "multiplier": 1e-09
-          }
+          "unit": "ns"
         },
         {
           "name": "NavICWno",
@@ -92,19 +88,70 @@
   },
   "winning_fingerprint": "ff7dc4ff5db54249",
   "agreeing_sources": [
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052"
   ],
-  "disagreeing_sources": [],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598"
+  ],
   "all_extractions": [
     {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
       "structure": {
         "name": "UBX-NAV-TIMENAVIC",
         "class_id": "0x01",
         "message_id": "0x63",
-        "description": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+        "message_type": "periodic_polled",
+        "comment": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+        "payload_length": {
+          "fixed": 20
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "iTOW",
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+            },
+            {
+              "byte_offset": 4,
+              "name": "NavICTow",
+              "data_type": "U4",
+              "unit": "s",
+              "description": "NavIC time of week (rounded to seconds)"
+            },
+            {
+              "byte_offset": 8,
+              "name": "fNavICTow",
+              "data_type": "I4",
+              "unit": "ns",
+              "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9"
+            },
+            {
+              "byte_offset": 12,
+              "name": "reserved0",
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "c017e342443588b4"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-NAV-TIMENAVIC",
+        "class_id": "0x01",
+        "message_id": "0x63",
+        "description": "NavIC time solution. This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
         "message_type": "output",
         "payload": {
           "length": {
@@ -130,11 +177,7 @@
               "byte_offset": 8,
               "data_type": "I4",
               "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9",
-              "unit": "ns",
-              "scale": {
-                "raw": "1e-9",
-                "multiplier": 1e-09
-              }
+              "unit": "ns"
             },
             {
               "name": "NavICWno",
@@ -183,6 +226,97 @@
               "data_type": "U4",
               "description": "Time Accuracy Estimate",
               "unit": "ns"
+            }
+          ]
+        }
+      },
+      "fingerprint": "ff7dc4ff5db54249"
+    },
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_class": "NAV",
+        "ubx_id": "TIMENAVIC",
+        "name": "UBX-NAV-TIMENAVIC",
+        "message_type": "periodic_polled",
+        "description": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+        "payload_length": {
+          "fixed": 20
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "examples": [
+                {
+                  "value": 0,
+                  "description": "start of week"
+                }
+              ]
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U4",
+              "name": "NavICTow",
+              "unit": "s",
+              "description": "NavIC time of week (rounded to seconds)"
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "I4",
+              "name": "fNavICTow",
+              "unit": "ns",
+              "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9"
+            },
+            {
+              "byte_offset": 12,
+              "data_type": "I2",
+              "name": "NavICWno",
+              "description": "NavIC week number"
+            },
+            {
+              "byte_offset": 14,
+              "data_type": "I1",
+              "name": "leaps",
+              "unit": "s",
+              "description": "NavIC leap seconds (NavIC-UTC)"
+            },
+            {
+              "byte_offset": 15,
+              "data_type": "X1",
+              "name": "valid",
+              "description": "Validity Flags",
+              "bitfield_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "name": "NavICTowValid",
+                  "description": "1 = Valid NavICTow and fNavICTow (see section Time validity in the integration manual for details)"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "name": "NavICWnoValid",
+                  "description": "1 = Valid NavICWno (see section Time validity in the integration manual for details)"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 1,
+                  "name": "leapSValid",
+                  "description": "1 = Valid leapS"
+                }
+              ]
+            },
+            {
+              "byte_offset": 16,
+              "data_type": "U4",
+              "name": "tAcc",
+              "unit": "ns",
+              "description": "Time Accuracy Estimate"
             }
           ]
         }
@@ -281,12 +415,12 @@
       "fingerprint": "ff7dc4ff5db54249"
     },
     {
-      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-NAV-TIMENAVIC",
         "class_id": "0x01",
         "message_id": "0x63",
-        "description": "NavIC time solution. This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+        "description": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
         "message_type": "output",
         "payload": {
           "length": {
@@ -312,7 +446,11 @@
               "byte_offset": 8,
               "data_type": "I4",
               "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9",
-              "unit": "ns"
+              "unit": "ns",
+              "scale": {
+                "raw": "1e-9",
+                "multiplier": 1e-09
+              }
             },
             {
               "name": "NavICWno",

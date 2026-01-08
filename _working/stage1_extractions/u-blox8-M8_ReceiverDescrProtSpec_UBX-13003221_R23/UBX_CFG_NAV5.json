@@ -1,0 +1,208 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-NAV5",
+  "extraction_timestamp": "2026-01-08T05:40:47.945806+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 233,
+    "end": 236
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-NAV5\nExpected IDs: class_id=0x06, message_id=0x24\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-NAV5\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-CFG-NAV5\",\n    \"description\": \"Navigation engine settings\",\n    \"message_type\": \"get_set\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x24\",\n    \"payload_length\": {\n      \"fixed\": 36\n    },\n    \"firmware_support\": [\n      \"15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ],\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"mask\",\n        \"data_type\": \"X2\",\n        \"description\": \"Parameters bitmask. Only the masked parameters will be applied. (see graphic below)\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"dynModel\",\n        \"data_type\": \"U1\",\n        \"description\": \"Dynamic platform model: 0: portable, 2: stationary, 3: pedestrian, 4: automotive, 5: sea, 6: airborne with <1g acceleration, 7: airborne with <2g acceleration, 8: airborne with <4g acceleration, 9: wrist-worn watch (not supported in protocol versions less than 18), 10: bike (supported in protocol versions 19.2)\"\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"fixMode\",\n        \"data_type\": \"U1\",\n        \"description\": \"Position fixing mode: 1: 2D only, 2: 3D only, 3: auto 2D/3D\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"fixedAlt\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"0.01\",\n          \"multiplier\": 0.01\n        },\n        \"unit\": \"m\",\n        \"description\": \"Fixed altitude (mean sea level) for 2D fix mode\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"fixedAltVar\",\n        \"data_type\": \"U4\",\n        \"scale\": {\n          \"raw\": \"0.0001\",\n          \"multiplier\": 0.0001\n        },\n        \"unit\": \"m^2\",\n        \"description\": \"Fixed altitude variance for 2D mode\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"minElev\",\n        \"data_type\": \"I1\",\n        \"unit\": \"deg\",\n        \"description\": \"Minimum elevation for a GNSS satellite to be used in NAV\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"name\": \"drLimit\",\n        \"data_type\": \"U1\",\n        \"unit\": \"s\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"pDop\",\n        \"data_type\": \"U2\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"description\": \"Position DOP mask to use\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"tDop\",\n        \"data_type\": \"U2\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"description\": \"Time DOP mask to use\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"pAcc\",\n        \"data_type\": \"U2\",\n        \"unit\": \"m\",\n        \"description\": \"Position accuracy mask\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"tAcc\",\n        \"data_type\": \"U2\",\n        \"unit\": \"m\",\n        \"description\": \"Time accuracy mask\"\n      },\n      {\n        \"byte_offset\": 22,\n        \"name\": \"staticHoldThresh\",\n        \"data_type\": \"U1\",\n        \"unit\": \"cm/s\",\n        \"description\": \"Static hold threshold\"\n      },\n      {\n        \"byte_offset\": 23,\n        \"name\": \"dgnssTimeout\",\n        \"data_type\": \"U1\",\n        \"unit\": \"S\",\n        \"description\": \"DGNSS timeout\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"cnoThreshNumSVs\",\n        \"data_type\": \"U1\",\n        \"description\": \"Number of satellites required to have C/NO above cnoThresh for a fix to be attempted\"\n      },\n      {\n        \"byte_offset\": 25,\n        \"name\": \"cnoThresh\",\n        \"data_type\": \"U1\",\n        \"unit\": \"dBHz\",\n        \"description\": \"C/NO threshold for deciding whether to attempt a fix\"\n      },\n      {\n        \"byte_offset\": 26,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"staticHoldMaxDist\",\n        \"data_type\": \"U2\",\n        \"unit\": \"m\",\n        \"description\": \"Static hold distance threshold (before quitting static hold)\"\n      },\n      {\n        \"byte_offset\": 30,\n        \"name\": \"utcStandard\",\n        \"data_type\": \"U1\",\n        \"description\": \"UTC standard to be used (see GNSS time bases): 0: Automatic; receiver selects based on GNSS configuration, 3: UTC as operated by the U.S. Naval Observatory (USNO); derived from GPS time, 5: UTC as combined from multiple European laboratories; derived from Galileo time, 6: UTC as operated by the former Soviet Union (SU); derived from GLONASS time, 7: UTC as operated by the National Time Service Center (NTSC), China; derived from BeiDou time (not supported in protocol versions less than 16).\"\n      },\n      {\n        \"byte_offset\": 31,\n        \"name\": \"reserved2\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 5\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-CFG-NAV5",
+      "description": "Navigation engine settings",
+      "message_type": "get_set",
+      "class_id": "0x06",
+      "message_id": "0x24",
+      "payload_length": {
+        "fixed": 36
+      },
+      "firmware_support": [
+        "15",
+        "15.01",
+        "16",
+        "17",
+        "18",
+        "19",
+        "19.1",
+        "19.2",
+        "20",
+        "20.01",
+        "20.1",
+        "20.2",
+        "20.3",
+        "22",
+        "22.01",
+        "23",
+        "23.01"
+      ],
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "mask",
+          "data_type": "X2",
+          "description": "Parameters bitmask. Only the masked parameters will be applied. (see graphic below)"
+        },
+        {
+          "byte_offset": 2,
+          "name": "dynModel",
+          "data_type": "U1",
+          "description": "Dynamic platform model: 0: portable, 2: stationary, 3: pedestrian, 4: automotive, 5: sea, 6: airborne with <1g acceleration, 7: airborne with <2g acceleration, 8: airborne with <4g acceleration, 9: wrist-worn watch (not supported in protocol versions less than 18), 10: bike (supported in protocol versions 19.2)"
+        },
+        {
+          "byte_offset": 3,
+          "name": "fixMode",
+          "data_type": "U1",
+          "description": "Position fixing mode: 1: 2D only, 2: 3D only, 3: auto 2D/3D"
+        },
+        {
+          "byte_offset": 4,
+          "name": "fixedAlt",
+          "data_type": "I4",
+          "scale": {
+            "raw": "0.01",
+            "multiplier": 0.01
+          },
+          "unit": "m",
+          "description": "Fixed altitude (mean sea level) for 2D fix mode"
+        },
+        {
+          "byte_offset": 8,
+          "name": "fixedAltVar",
+          "data_type": "U4",
+          "scale": {
+            "raw": "0.0001",
+            "multiplier": 0.0001
+          },
+          "unit": "m^2",
+          "description": "Fixed altitude variance for 2D mode"
+        },
+        {
+          "byte_offset": 12,
+          "name": "minElev",
+          "data_type": "I1",
+          "unit": "deg",
+          "description": "Minimum elevation for a GNSS satellite to be used in NAV"
+        },
+        {
+          "byte_offset": 13,
+          "name": "drLimit",
+          "data_type": "U1",
+          "unit": "s",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 14,
+          "name": "pDop",
+          "data_type": "U2",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "description": "Position DOP mask to use"
+        },
+        {
+          "byte_offset": 16,
+          "name": "tDop",
+          "data_type": "U2",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "description": "Time DOP mask to use"
+        },
+        {
+          "byte_offset": 18,
+          "name": "pAcc",
+          "data_type": "U2",
+          "unit": "m",
+          "description": "Position accuracy mask"
+        },
+        {
+          "byte_offset": 20,
+          "name": "tAcc",
+          "data_type": "U2",
+          "unit": "m",
+          "description": "Time accuracy mask"
+        },
+        {
+          "byte_offset": 22,
+          "name": "staticHoldThresh",
+          "data_type": "U1",
+          "unit": "cm/s",
+          "description": "Static hold threshold"
+        },
+        {
+          "byte_offset": 23,
+          "name": "dgnssTimeout",
+          "data_type": "U1",
+          "unit": "S",
+          "description": "DGNSS timeout"
+        },
+        {
+          "byte_offset": 24,
+          "name": "cnoThreshNumSVs",
+          "data_type": "U1",
+          "description": "Number of satellites required to have C/NO above cnoThresh for a fix to be attempted"
+        },
+        {
+          "byte_offset": 25,
+          "name": "cnoThresh",
+          "data_type": "U1",
+          "unit": "dBHz",
+          "description": "C/NO threshold for deciding whether to attempt a fix"
+        },
+        {
+          "byte_offset": 26,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 28,
+          "name": "staticHoldMaxDist",
+          "data_type": "U2",
+          "unit": "m",
+          "description": "Static hold distance threshold (before quitting static hold)"
+        },
+        {
+          "byte_offset": 30,
+          "name": "utcStandard",
+          "data_type": "U1",
+          "description": "UTC standard to be used (see GNSS time bases): 0: Automatic; receiver selects based on GNSS configuration, 3: UTC as operated by the U.S. Naval Observatory (USNO); derived from GPS time, 5: UTC as combined from multiple European laboratories; derived from Galileo time, 6: UTC as operated by the former Soviet Union (SU); derived from GLONASS time, 7: UTC as operated by the National Time Service Center (NTSC), China; derived from BeiDou time (not supported in protocol versions less than 16)."
+        },
+        {
+          "byte_offset": 31,
+          "name": "reserved2",
+          "data_type": {
+            "array_of": "U1",
+            "count": 5
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/30oqqz1ivlhz"
+}

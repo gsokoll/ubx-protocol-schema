@@ -1,0 +1,195 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-TIM-SMEAS",
+  "extraction_timestamp": "2026-01-08T06:55:37.320462+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 441,
+    "end": 443
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-SMEAS\nExpected IDs: class_id=0x0D, message_id=0x13\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-SMEAS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_class\": \"0x0D\",\n  \"message_id\": \"0x13\",\n  \"message_name\": \"UBX-TIM-SMEAS\",\n  \"description\": \"Source measurement\",\n  \"message_type\": \"input_output\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 12,\n      \"formula\": \"12 + numMeas * 24\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"numMeas\",\n      \"description\": \"Number of measurements in repeated block\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"iTow\",\n      \"unit\": \"ms\",\n      \"description\": \"Time of the week\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved2\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U1\",\n      \"name\": \"sourceId\",\n      \"description\": \"Index of source. SMEAS can provide six measurement sources. The first four sourceld values represent measurements made by the receiver and sent to the host. The first of these with a sourceld value of O is a measurement of the internal oscillator against the current receiver time-and-frequency estimate. The internal oscillator is being disciplined against that estimate and this result represents the current offset between the actual and desired internal oscillator states. The next three sourceld values represent frequency and time measurements made by the receiver against the internal oscillator. sourceld 1 represents the GNSS-derived frequency and time compared with the internal oscillator frequency and time. sourceld2 give measurements of a signal coming in on EXTINTO. sourceld 3 corresponds to a similar measurement on EXTINT1. The remaining two of these measurements (sourceld 4 and 5) are made by the host and sent to the receiver. A measurement with sourceld 4 is a measurement by the host of the internal oscillator and sourceld 5 indicates a host measurement of the external oscillator.\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 13,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"description\": \"Flags\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\",\n      \"bitfields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"freqValid\",\n          \"description\": \"1 = frequency measurement is valid\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"phaseValid\",\n          \"description\": \"1 = phase measurement is valid\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"I1\",\n      \"name\": \"phaseOffsetFrac\",\n      \"scale\": {\n        \"raw\": \"2^-8\",\n        \"multiplier\": 0.00390625\n      },\n      \"unit\": \"ns\",\n      \"description\": \"Sub-nanosecond phase offset; the total offset is the sum of phaseOffset and phaseOffsetFrac\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": \"U1\",\n      \"name\": \"phaseUncFrac\",\n      \"scale\": {\n        \"raw\": \"2^-8\",\n        \"multiplier\": 0.00390625\n      },\n      \"unit\": \"ns\",\n      \"description\": \"Sub-nanosecond phase uncertainty\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"I4\",\n      \"name\": \"phaseOffset\",\n      \"unit\": \"ns\",\n      \"description\": \"Phase offset, positive if the source lags accurate phase and negative if the source is early\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U4\",\n      \"name\": \"phaseUnc\",\n      \"unit\": \"ns\",\n      \"description\": \"Phase uncertainty (one standard deviation)\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved3\",\n      \"description\": \"Reserved\",\n      \"reserved\": true,\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"I4\",\n      \"name\": \"freqOffset\",\n      \"scale\": {\n        \"raw\": \"2^-8\",\n        \"multiplier\": 0.00390625\n      },\n      \"unit\": \"ppb\",\n      \"description\": \"Frequency offset, positive if the source frequency is too high, negative if the frequency is too low.\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": \"U4\",\n      \"name\": \"freqUnc\",\n      \"scale\": {\n        \"raw\": \"2^-8\",\n        \"multiplier\": 0.00390625\n      },\n      \"unit\": \"ppb\",\n      \"description\": \"Frequency uncertainty (one standard deviation)\",\n      \"is_repeated\": true,\n      \"repeats_condition\": \"numMeas\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_class": "0x0D",
+    "message_id": "0x13",
+    "message_name": "UBX-TIM-SMEAS",
+    "description": "Source measurement",
+    "message_type": "input_output",
+    "payload_length": {
+      "variable": {
+        "base": 12,
+        "formula": "12 + numMeas * 24"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "numMeas",
+          "description": "Number of measurements in repeated block"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "iTow",
+          "unit": "ms",
+          "description": "Time of the week"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved2",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U1",
+          "name": "sourceId",
+          "description": "Index of source. SMEAS can provide six measurement sources. The first four sourceld values represent measurements made by the receiver and sent to the host. The first of these with a sourceld value of O is a measurement of the internal oscillator against the current receiver time-and-frequency estimate. The internal oscillator is being disciplined against that estimate and this result represents the current offset between the actual and desired internal oscillator states. The next three sourceld values represent frequency and time measurements made by the receiver against the internal oscillator. sourceld 1 represents the GNSS-derived frequency and time compared with the internal oscillator frequency and time. sourceld2 give measurements of a signal coming in on EXTINTO. sourceld 3 corresponds to a similar measurement on EXTINT1. The remaining two of these measurements (sourceld 4 and 5) are made by the host and sent to the receiver. A measurement with sourceld 4 is a measurement by the host of the internal oscillator and sourceld 5 indicates a host measurement of the external oscillator.",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Flags",
+          "is_repeated": true,
+          "repeats_condition": "numMeas",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "freqValid",
+              "description": "1 = frequency measurement is valid"
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "phaseValid",
+              "description": "1 = phase measurement is valid"
+            }
+          ]
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "I1",
+          "name": "phaseOffsetFrac",
+          "scale": {
+            "raw": "2^-8",
+            "multiplier": 0.00390625
+          },
+          "unit": "ns",
+          "description": "Sub-nanosecond phase offset; the total offset is the sum of phaseOffset and phaseOffsetFrac",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "U1",
+          "name": "phaseUncFrac",
+          "scale": {
+            "raw": "2^-8",
+            "multiplier": 0.00390625
+          },
+          "unit": "ns",
+          "description": "Sub-nanosecond phase uncertainty",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "I4",
+          "name": "phaseOffset",
+          "unit": "ns",
+          "description": "Phase offset, positive if the source lags accurate phase and negative if the source is early",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "phaseUnc",
+          "unit": "ns",
+          "description": "Phase uncertainty (one standard deviation)",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved3",
+          "description": "Reserved",
+          "reserved": true,
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "I4",
+          "name": "freqOffset",
+          "scale": {
+            "raw": "2^-8",
+            "multiplier": 0.00390625
+          },
+          "unit": "ppb",
+          "description": "Frequency offset, positive if the source frequency is too high, negative if the frequency is too low.",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "U4",
+          "name": "freqUnc",
+          "scale": {
+            "raw": "2^-8",
+            "multiplier": 0.00390625
+          },
+          "unit": "ppb",
+          "description": "Frequency uncertainty (one standard deviation)",
+          "is_repeated": true,
+          "repeats_condition": "numMeas"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/qw3a8q1aw3ov"
+}

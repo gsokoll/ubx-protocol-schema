@@ -25,7 +25,8 @@
               "array_of": "U1",
               "count": 3
             },
-            "description": "Reserved"
+            "description": "Reserved",
+            "reserved": true
           },
           {
             "name": "iTOW",
@@ -66,39 +67,40 @@
             "name": "meanXHP",
             "byte_offset": 24,
             "data_type": "I1",
-            "unit": "0.1 mm",
+            "unit": "mm",
             "scale": 0.1,
-            "description": "Current high-precision survey-in mean position ECEF X coordinate"
+            "description": "Current high-precision survey-in mean position ECEF X coordinate (0.1 mm units)"
           },
           {
             "name": "meanYHP",
             "byte_offset": 25,
             "data_type": "I1",
-            "unit": "0.1 mm",
+            "unit": "mm",
             "scale": 0.1,
-            "description": "Current high-precision survey-in mean position ECEF Y coordinate"
+            "description": "Current high-precision survey-in mean position ECEF Y coordinate (0.1 mm units)"
           },
           {
             "name": "meanZHP",
             "byte_offset": 26,
             "data_type": "I1",
-            "unit": "0.1 mm",
+            "unit": "mm",
             "scale": 0.1,
-            "description": "Current high-precision survey-in mean position ECEF Z coordinate"
+            "description": "Current high-precision survey-in mean position ECEF Z coordinate (0.1 mm units)"
           },
           {
             "name": "reserved1",
             "byte_offset": 27,
             "data_type": "U1",
-            "description": "Reserved"
+            "description": "Reserved",
+            "reserved": true
           },
           {
             "name": "meanAcc",
             "byte_offset": 28,
             "data_type": "U4",
-            "unit": "0.1 mm",
+            "unit": "mm",
             "scale": 0.1,
-            "description": "Current survey-in mean position accuracy"
+            "description": "Current survey-in mean position accuracy (0.1 mm units)"
           },
           {
             "name": "obs",
@@ -125,7 +127,8 @@
               "array_of": "U1",
               "count": 2
             },
-            "description": "Reserved"
+            "description": "Reserved",
+            "reserved": true
           }
         ]
       }
@@ -140,27 +143,31 @@
       {
         "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
-        "issues": []
+        "issues": [
+          "Adds bitfield metadata for valid/active flags which is helpful but not present in the raw data type definition."
+        ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": [
-          "Uses older naming convention for reserved fields (reserved1/2/3 instead of 0/1/2)"
+          "Uses '0.1 mm' as a unit string rather than a numeric scale, which is consistent with older documentation styles."
         ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect scale multiplier 0.01 for High Precision (HP) and MeanAcc fields. While 0.01 cm equals 0.1 mm, the industry standard for these UBX messages is typically expressed as 0.1 mm units."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "All five extractions describe an identical binary structure (40 bytes, identical offsets, and data types). Variations are limited to documentation metadata: 1) older manuals (M8) number reserved fields 1-3 while newer manuals (HPG) number them 0-2; 2) 'valid' and 'active' flags are described as 'X1' (bitfield) in some extractions and 'U1' in others, but represent the same boolean data; 3) scale factors are represented differently in JSON but mathematically equivalent (e.g., unit 'mm' with scale 0.1 vs unit '0.1 mm')."
+    "reasoning": "The UBX-NAV-SVIN message is highly stable across u-blox M8 and F9 generations. All extractions agree on the 40-byte length and field offsets. The primary discrepancy lies in the representation of the High Precision (HP) and Accuracy fields. The HP fields represent 0.1 mm offsets to the 1 cm ECEF coordinates. Extractions 1, 2, 3, and 5 correctly represent this as either a unit of '0.1 mm' or a multiplier of 0.1 against a 'mm' unit. Extraction 4 uses 0.01, which is mathematically correct only if the base unit is centimeters, but inconsistent with standard UBX scaling nomenclature."
   }
 }

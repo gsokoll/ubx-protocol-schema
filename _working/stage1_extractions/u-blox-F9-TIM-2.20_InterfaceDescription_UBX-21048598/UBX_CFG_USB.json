@@ -1,0 +1,126 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-USB",
+  "extraction_timestamp": "2026-01-08T03:29:33.027092+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 89,
+    "end": 90
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-USB\nExpected IDs: class_id=0x06, message_id=0x1b\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-USB\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-CFG-USB\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x1b\",\n    \"description\": \"USB configuration\",\n    \"message_type\": \"get_set\",\n    \"payload_length\": {\n      \"fixed\": 108\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U2\",\n        \"name\": \"vendorID\",\n        \"description\": \"Vendor ID. This field shall only be set to registered Vendor IDs. Changing this field requires special Host drivers.\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"U2\",\n        \"name\": \"productID\",\n        \"description\": \"Product ID. Changing this field requires special Host drivers.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved0\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved1\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U2\",\n        \"name\": \"powerConsumption\",\n        \"unit\": \"mA\",\n        \"description\": \"Power consumed by the device\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"data_type\": \"X2\",\n        \"name\": \"flags\",\n        \"description\": \"various configuration flags\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"reEnum\",\n            \"description\": \"force re-enumeration\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"powerMode\",\n            \"description\": \"self-powered (1), bus-powered (0)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 32\n        },\n        \"name\": \"vendorString\",\n        \"description\": \"String containing the vendor name. 32 ASCII bytes including 0-termination.\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 32\n        },\n        \"name\": \"productString\",\n        \"description\": \"String containing the product name. 32 ASCII bytes including 0-termination.\"\n      },\n      {\n        \"byte_offset\": 76,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 32\n        },\n        \"name\": \"serialNumber\",\n        \"description\": \"String containing the serial number. 32 ASCII bytes including 0-termination. Changing the String fields requires special Host drivers.\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-CFG-USB",
+      "class_id": "0x06",
+      "message_id": "0x1b",
+      "description": "USB configuration",
+      "message_type": "get_set",
+      "payload_length": {
+        "fixed": 108
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U2",
+          "name": "vendorID",
+          "description": "Vendor ID. This field shall only be set to registered Vendor IDs. Changing this field requires special Host drivers."
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U2",
+          "name": "productID",
+          "description": "Product ID. Changing this field requires special Host drivers."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved0",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U2",
+          "name": "powerConsumption",
+          "unit": "mA",
+          "description": "Power consumed by the device"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "X2",
+          "name": "flags",
+          "description": "various configuration flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "reEnum",
+              "description": "force re-enumeration"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "powerMode",
+              "description": "self-powered (1), bus-powered (0)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "data_type": {
+            "array_of": "CH",
+            "count": 32
+          },
+          "name": "vendorString",
+          "description": "String containing the vendor name. 32 ASCII bytes including 0-termination."
+        },
+        {
+          "byte_offset": 44,
+          "data_type": {
+            "array_of": "CH",
+            "count": 32
+          },
+          "name": "productString",
+          "description": "String containing the product name. 32 ASCII bytes including 0-termination."
+        },
+        {
+          "byte_offset": 76,
+          "data_type": {
+            "array_of": "CH",
+            "count": 32
+          },
+          "name": "serialNumber",
+          "description": "String containing the serial number. 32 ASCII bytes including 0-termination. Changing the String fields requires special Host drivers."
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/salhq9pu1hnf"
+}

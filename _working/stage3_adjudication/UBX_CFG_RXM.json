@@ -14,7 +14,7 @@
         },
         "fields": [
           {
-            "name": "reserved0",
+            "name": "reserved1",
             "byte_offset": 0,
             "data_type": "U1",
             "description": "Reserved",
@@ -24,7 +24,7 @@
             "name": "lpMode",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Low power mode"
+            "description": "Low power mode: 0: Continuous mode, 1: Power save mode, 4: Continuous mode"
           }
         ]
       }
@@ -34,13 +34,15 @@
       {
         "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "valid_variation",
-        "issues": []
+        "issues": [
+          "Represents the deprecated/simplified version for M9 where the functional field lpMode is treated as reserved (U2)."
+        ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
+        "verdict": "valid_variation",
         "issues": [
-          "Field name typo '1pMode' should be 'lpMode' (likely OCR/parsing error of 'l' vs '1')"
+          "Field name '1pMode' is a likely OCR error for 'lpMode' (Low Power Mode)."
         ]
       }
     ],
@@ -50,11 +52,6 @@
           "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
         ],
         "structure": {
-          "name": "UBX-CFG-RXM",
-          "class_id": "0x06",
-          "message_id": "0x11",
-          "description": "RXM configuration (Reserved)",
-          "message_type": "get_set",
           "payload": {
             "length": {
               "fixed": 2
@@ -64,48 +61,14 @@
                 "name": "reserved0",
                 "byte_offset": 0,
                 "data_type": "U2",
-                "description": "Reserved",
                 "reserved": true
               }
             ]
           }
         },
-        "reason": "In u-blox M9 generation and later, the functionality previously controlled by UBX-CFG-RXM (specifically low power mode selection) has been deprecated or moved to other configuration messages (like UBX-CFG-PMS or configuration items). Consequently, the manual defines the entire 2-byte payload as reserved."
-      },
-      {
-        "sources": [
-          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
-        ],
-        "structure": {
-          "name": "UBX-CFG-RXM",
-          "class_id": "0x06",
-          "message_id": "0x11",
-          "description": "RXM configuration",
-          "message_type": "get_set",
-          "payload": {
-            "length": {
-              "fixed": 2
-            },
-            "fields": [
-              {
-                "name": "reserved1",
-                "byte_offset": 0,
-                "data_type": "U1",
-                "description": "Reserved",
-                "reserved": true
-              },
-              {
-                "name": "lpMode",
-                "byte_offset": 1,
-                "data_type": "U1",
-                "description": "Low power mode"
-              }
-            ]
-          }
-        },
-        "reason": "Legacy definition for u-blox 8/M8 receivers where this message was used to configure Continuous vs Power Save mode."
+        "reason": "In newer protocol versions (M9), the specific RXM power mode settings are deprecated or handled via UBX-CFG-VALSET, reducing the payload to a reserved U2 field for backward compatibility."
       }
     ],
-    "reasoning": "The two extractions represent the evolution of the UBX-CFG-RXM message across receiver generations. In the M8 generation (Extraction 2), the message is functional and contains a Low Power Mode configuration field at offset 1. In the M9 generation (Extraction 1), this specific configuration method is deprecated, and the documentation lists the entire payload as reserved. The M8 definition is chosen as the canonical structure because it describes the actual data layout of the message ID, whereas the M9 definition effectively masks it. Extraction 2 contains a minor typo ('1pMode' instead of 'lpMode')."
+    "reasoning": "The UBX-CFG-RXM message is a legacy configuration message. In the u-blox 8 generation (Extraction 2), it specifically controls the Low Power Mode (lpMode) at byte offset 1. In the M9 generation (Extraction 1), this functionality has been abstracted or deprecated, and the manual documentation simply lists the entire 2-byte payload as reserved. Both extractions are correct for their respective hardware generations, though Extraction 2 contains a minor OCR typo ('1pMode' instead of 'lpMode')."
   }
 }

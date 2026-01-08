@@ -1,0 +1,321 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-NMEA",
+  "extraction_timestamp": "2026-01-08T03:25:44.103725+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 74,
+    "end": 76
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-CFG-NMEA from u-blox PDF manual pages.\n\n**CRITICAL for talker ID fields:**\n- `bdsTalkerId` is type CH (single character), NOT CH[2]\n- `gpsTalkerId` is type CH (single character), NOT CH[2]\n\nThe CH type in UBX represents a single ASCII character (1 byte).\nWhen the manual shows \"2 bytes\" for a talker ID, it means 2 separate CH fields, not an array.\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-CFG-NMEA\",\n    \"class\": \"0x06\",\n    \"id\": \"0x17\",\n    \"length\": 20,\n    \"type\": \"Get/set\",\n    \"comment\": \"This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. Get/set the NMEA protocol configuration. See section NMEA Protocol Configuration for a detailed description of the configuration effects on NMEA output. See the Legacy UBX Message Fields Reference for the corresponding configuration item.\",\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"filter\",\n        \"type\": \"X1\",\n        \"description\": \"filter flags\",\n        \"bits\": [\n          {\n            \"bit_offset\": 0,\n            \"length\": 1,\n            \"name\": \"posFilt\",\n            \"type\": \"U1\",\n            \"description\": \"Enable position output for failed or invalid fixes\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"length\": 1,\n            \"name\": \"mskPosFilt\",\n            \"type\": \"U1\",\n            \"description\": \"Enable position output for invalid fixes\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"length\": 1,\n            \"name\": \"timeFilt\",\n            \"type\": \"U1\",\n            \"description\": \"Enable time output for invalid times\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"length\": 1,\n            \"name\": \"dateFilt\",\n            \"type\": \"U1\",\n            \"description\": \"Enable date output for invalid dates\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"length\": 1,\n            \"name\": \"gpsOnlyFilter\",\n            \"type\": \"U1\",\n            \"description\": \"Restrict output to GPS satellites only\"\n          },\n          {\n            \"bit_offset\": 5,\n            \"length\": 1,\n            \"name\": \"trackFilt\",\n            \"type\": \"U1\",\n            \"description\": \"Enable COG output even if COG is frozen\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"nmeaVersion\",\n        \"type\": \"U1\",\n        \"description\": \"NMEA protocol version\",\n        \"values\": [\n          {\n            \"value\": \"0x4b\",\n            \"description\": \"NMEA version 4.11 (not available in all products)\"\n          },\n          {\n            \"value\": \"0x41\",\n            \"description\": \"NMEA version 4.10 (not available in all products)\"\n          },\n          {\n            \"value\": \"0x40\",\n            \"description\": \"NMEA version 4.0 (not available in all products)\"\n          },\n          {\n            \"value\": \"0x23\",\n            \"description\": \"NMEA version 2.3\"\n          },\n          {\n            \"value\": \"0x21\",\n            \"description\": \"NMEA version 2.1\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"numSV\",\n        \"type\": \"U1\",\n        \"description\": \"Maximum number of SVs to report per TalkerId.\",\n        \"values\": [\n          {\n            \"value\": \"0\",\n            \"description\": \"unlimited\"\n          },\n          {\n            \"value\": \"8\",\n            \"description\": \"8 SVs\"\n          },\n          {\n            \"value\": \"12\",\n            \"description\": \"12 SVs\"\n          },\n          {\n            \"value\": \"16\",\n            \"description\": \"16 SVs\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"flags\",\n        \"type\": \"X1\",\n        \"description\": \"flags\",\n        \"bits\": [\n          {\n            \"bit_offset\": 0,\n            \"length\": 1,\n            \"name\": \"compat\",\n            \"type\": \"U1\",\n            \"description\": \"enable compatibility mode. This might be needed for certain applications when customer's NMEA parser expects a fixed number of digits in position coordinates.\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"length\": 1,\n            \"name\": \"consider\",\n            \"type\": \"U1\",\n            \"description\": \"enable considering mode.\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"length\": 1,\n            \"name\": \"limit82\",\n            \"type\": \"U1\",\n            \"description\": \"enable strict limit to 82 characters maximum.\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"length\": 1,\n            \"name\": \"highPrec\",\n            \"type\": \"U1\",\n            \"description\": \"enable high precision mode. This flag cannot be set in conjunction with either compatibility mode or Limit82 mode (not supported for protocol versions less than 20.01).\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"gnssToFilter\",\n        \"type\": \"X4\",\n        \"description\": \"Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.\",\n        \"bits\": [\n          {\n            \"bit_offset\": 0,\n            \"length\": 1,\n            \"name\": \"gps\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of GPS satellites\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"length\": 1,\n            \"name\": \"sbas\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of SBAS satellites\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"length\": 1,\n            \"name\": \"galileo\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of Galileo satellites\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"length\": 1,\n            \"name\": \"qzss\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of QZSS satellites\"\n          },\n          {\n            \"bit_offset\": 5,\n            \"length\": 1,\n            \"name\": \"glonass\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of GLONASS satellites\"\n          },\n          {\n            \"bit_offset\": 6,\n            \"length\": 1,\n            \"name\": \"beidou\",\n            \"type\": \"U1\",\n            \"description\": \"Disable reporting of BeiDou satellites\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"svNumbering\",\n        \"type\": \"U1\",\n        \"description\": \"Configures the display of satellites that do not have an NMEA-defined value. Note: this does not apply to satellites with an unknown ID.\",\n        \"values\": [\n          {\n            \"value\": \"0\",\n            \"description\": \"Strict - Satellites are not output\"\n          },\n          {\n            \"value\": \"1\",\n            \"description\": \"Extended - Use proprietary numbering (see Satellite Numbering)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 9,\n        \"name\": \"mainTalkerId\",\n        \"type\": \"U1\",\n        \"description\": \"Main Talker ID override. By default the main Talker ID (i.e. the Talker ID used for all messages other than GSV) is determined by the GNSS assignment of the receiver's channels (see UBX-CFG-GNSS).\",\n        \"values\": [\n          {\n            \"value\": \"0\",\n            \"description\": \"Main Talker ID is not overridden\"\n          },\n          {\n            \"value\": \"1\",\n            \"description\": \"Set main Talker ID to 'GP'\"\n          },\n          {\n            \"value\": \"2\",\n            \"description\": \"Set main Talker ID to 'GL'\"\n          },\n          {\n            \"value\": \"3\",\n            \"description\": \"Set main Talker ID to 'GN'\"\n          },\n          {\n            \"value\": \"4\",\n            \"description\": \"Set main Talker ID to 'GA' (not supported for protocol versions less than 15.00)\"\n          },\n          {\n            \"value\": \"5\",\n            \"description\": \"Set main Talker ID to 'GB' (not supported for protocol versions less than 15.00)\"\n          },\n          {\n            \"value\": \"6\",\n            \"description\": \"Set main Talker ID to 'GQ' (available in NMEA 4.11 and later)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"gsvTalkerId\",\n        \"type\": \"U1\",\n        \"description\": \"GSV Talker ID override. By default the Talker ID for GSV messages is GNSS-specific (as defined by NMEA).\",\n        \"values\": [\n          {\n            \"value\": \"0\",\n            \"description\": \"Use GNSS-specific Talker ID (as defined by NMEA)\"\n          },\n          {\n            \"value\": \"1\",\n            \"description\": \"Use the main Talker ID\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 11,\n        \"name\": \"version\",\n        \"type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"bdsTalkerId_char1\",\n        \"type\": \"CH\",\n        \"size\": 1,\n        \"description\": \"First character of BeiDou Talker ID. Sets the two characters that should be used for the BeiDou Talker ID. If these are set to zero, then the default BeiDou Talker ID will be used.\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"name\": \"bdsTalkerId_char2\",\n        \"type\": \"CH\",\n        \"size\": 1,\n        \"description\": \"Second character of BeiDou Talker ID. Sets the two characters that should be used for the BeiDou Talker ID. If these are set to zero, then the default BeiDou Talker ID will be used.\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"reserved0\",\n        \"type\": \"U1\",\n        \"array_length\": 6,\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-CFG-NMEA",
+      "class": "0x06",
+      "id": "0x17",
+      "length": 20,
+      "type": "Get/set",
+      "comment": "This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. Get/set the NMEA protocol configuration. See section NMEA Protocol Configuration for a detailed description of the configuration effects on NMEA output. See the Legacy UBX Message Fields Reference for the corresponding configuration item.",
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "filter",
+          "type": "X1",
+          "description": "filter flags",
+          "bits": [
+            {
+              "bit_offset": 0,
+              "length": 1,
+              "name": "posFilt",
+              "type": "U1",
+              "description": "Enable position output for failed or invalid fixes"
+            },
+            {
+              "bit_offset": 1,
+              "length": 1,
+              "name": "mskPosFilt",
+              "type": "U1",
+              "description": "Enable position output for invalid fixes"
+            },
+            {
+              "bit_offset": 2,
+              "length": 1,
+              "name": "timeFilt",
+              "type": "U1",
+              "description": "Enable time output for invalid times"
+            },
+            {
+              "bit_offset": 3,
+              "length": 1,
+              "name": "dateFilt",
+              "type": "U1",
+              "description": "Enable date output for invalid dates"
+            },
+            {
+              "bit_offset": 4,
+              "length": 1,
+              "name": "gpsOnlyFilter",
+              "type": "U1",
+              "description": "Restrict output to GPS satellites only"
+            },
+            {
+              "bit_offset": 5,
+              "length": 1,
+              "name": "trackFilt",
+              "type": "U1",
+              "description": "Enable COG output even if COG is frozen"
+            }
+          ]
+        },
+        {
+          "byte_offset": 1,
+          "name": "nmeaVersion",
+          "type": "U1",
+          "description": "NMEA protocol version",
+          "values": [
+            {
+              "value": "0x4b",
+              "description": "NMEA version 4.11 (not available in all products)"
+            },
+            {
+              "value": "0x41",
+              "description": "NMEA version 4.10 (not available in all products)"
+            },
+            {
+              "value": "0x40",
+              "description": "NMEA version 4.0 (not available in all products)"
+            },
+            {
+              "value": "0x23",
+              "description": "NMEA version 2.3"
+            },
+            {
+              "value": "0x21",
+              "description": "NMEA version 2.1"
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "name": "numSV",
+          "type": "U1",
+          "description": "Maximum number of SVs to report per TalkerId.",
+          "values": [
+            {
+              "value": "0",
+              "description": "unlimited"
+            },
+            {
+              "value": "8",
+              "description": "8 SVs"
+            },
+            {
+              "value": "12",
+              "description": "12 SVs"
+            },
+            {
+              "value": "16",
+              "description": "16 SVs"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "name": "flags",
+          "type": "X1",
+          "description": "flags",
+          "bits": [
+            {
+              "bit_offset": 0,
+              "length": 1,
+              "name": "compat",
+              "type": "U1",
+              "description": "enable compatibility mode. This might be needed for certain applications when customer's NMEA parser expects a fixed number of digits in position coordinates."
+            },
+            {
+              "bit_offset": 1,
+              "length": 1,
+              "name": "consider",
+              "type": "U1",
+              "description": "enable considering mode."
+            },
+            {
+              "bit_offset": 2,
+              "length": 1,
+              "name": "limit82",
+              "type": "U1",
+              "description": "enable strict limit to 82 characters maximum."
+            },
+            {
+              "bit_offset": 3,
+              "length": 1,
+              "name": "highPrec",
+              "type": "U1",
+              "description": "enable high precision mode. This flag cannot be set in conjunction with either compatibility mode or Limit82 mode (not supported for protocol versions less than 20.01)."
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "name": "gnssToFilter",
+          "type": "X4",
+          "description": "Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.",
+          "bits": [
+            {
+              "bit_offset": 0,
+              "length": 1,
+              "name": "gps",
+              "type": "U1",
+              "description": "Disable reporting of GPS satellites"
+            },
+            {
+              "bit_offset": 1,
+              "length": 1,
+              "name": "sbas",
+              "type": "U1",
+              "description": "Disable reporting of SBAS satellites"
+            },
+            {
+              "bit_offset": 2,
+              "length": 1,
+              "name": "galileo",
+              "type": "U1",
+              "description": "Disable reporting of Galileo satellites"
+            },
+            {
+              "bit_offset": 4,
+              "length": 1,
+              "name": "qzss",
+              "type": "U1",
+              "description": "Disable reporting of QZSS satellites"
+            },
+            {
+              "bit_offset": 5,
+              "length": 1,
+              "name": "glonass",
+              "type": "U1",
+              "description": "Disable reporting of GLONASS satellites"
+            },
+            {
+              "bit_offset": 6,
+              "length": 1,
+              "name": "beidou",
+              "type": "U1",
+              "description": "Disable reporting of BeiDou satellites"
+            }
+          ]
+        },
+        {
+          "byte_offset": 8,
+          "name": "svNumbering",
+          "type": "U1",
+          "description": "Configures the display of satellites that do not have an NMEA-defined value. Note: this does not apply to satellites with an unknown ID.",
+          "values": [
+            {
+              "value": "0",
+              "description": "Strict - Satellites are not output"
+            },
+            {
+              "value": "1",
+              "description": "Extended - Use proprietary numbering (see Satellite Numbering)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 9,
+          "name": "mainTalkerId",
+          "type": "U1",
+          "description": "Main Talker ID override. By default the main Talker ID (i.e. the Talker ID used for all messages other than GSV) is determined by the GNSS assignment of the receiver's channels (see UBX-CFG-GNSS).",
+          "values": [
+            {
+              "value": "0",
+              "description": "Main Talker ID is not overridden"
+            },
+            {
+              "value": "1",
+              "description": "Set main Talker ID to 'GP'"
+            },
+            {
+              "value": "2",
+              "description": "Set main Talker ID to 'GL'"
+            },
+            {
+              "value": "3",
+              "description": "Set main Talker ID to 'GN'"
+            },
+            {
+              "value": "4",
+              "description": "Set main Talker ID to 'GA' (not supported for protocol versions less than 15.00)"
+            },
+            {
+              "value": "5",
+              "description": "Set main Talker ID to 'GB' (not supported for protocol versions less than 15.00)"
+            },
+            {
+              "value": "6",
+              "description": "Set main Talker ID to 'GQ' (available in NMEA 4.11 and later)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 10,
+          "name": "gsvTalkerId",
+          "type": "U1",
+          "description": "GSV Talker ID override. By default the Talker ID for GSV messages is GNSS-specific (as defined by NMEA).",
+          "values": [
+            {
+              "value": "0",
+              "description": "Use GNSS-specific Talker ID (as defined by NMEA)"
+            },
+            {
+              "value": "1",
+              "description": "Use the main Talker ID"
+            }
+          ]
+        },
+        {
+          "byte_offset": 11,
+          "name": "version",
+          "type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 12,
+          "name": "bdsTalkerId_char1",
+          "type": "CH",
+          "size": 1,
+          "description": "First character of BeiDou Talker ID. Sets the two characters that should be used for the BeiDou Talker ID. If these are set to zero, then the default BeiDou Talker ID will be used."
+        },
+        {
+          "byte_offset": 13,
+          "name": "bdsTalkerId_char2",
+          "type": "CH",
+          "size": 1,
+          "description": "Second character of BeiDou Talker ID. Sets the two characters that should be used for the BeiDou Talker ID. If these are set to zero, then the default BeiDou Talker ID will be used."
+        },
+        {
+          "byte_offset": 14,
+          "name": "reserved0",
+          "type": "U1",
+          "array_length": 6,
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/kzr8ctk8g97e"
+}

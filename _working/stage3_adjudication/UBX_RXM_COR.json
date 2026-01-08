@@ -1,6 +1,6 @@
 {
   "message_name": "UBX-RXM-COR",
-  "num_extractions": 7,
+  "num_extractions": 8,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-RXM-COR",
@@ -26,7 +26,6 @@
             "description": "Energy per bit to noise power spectral density ratio (Eb/NO). 0: unknown.",
             "unit": "dB",
             "scale": {
-              "raw": "2^-3",
               "multiplier": 0.125
             }
           },
@@ -66,7 +65,7 @@
                   "name": "correctionId",
                   "bit_start": 9,
                   "bit_end": 24,
-                  "description": "Identifier for the correction stream (e.g., RTCM Station ID)"
+                  "description": "Identifier for the correction stream (e.g., RTCM Reference station ID)"
                 },
                 {
                   "name": "msgTypeValid",
@@ -84,19 +83,19 @@
                   "name": "msgInputHandle",
                   "bit_start": 27,
                   "bit_end": 27,
-                  "description": "Input handling support of the input message"
+                  "description": "Receiver has input handling support for this message"
                 },
                 {
                   "name": "msgEncrypted",
                   "bit_start": 28,
                   "bit_end": 29,
-                  "description": "Encryption status"
+                  "description": "Encryption status: 0: Unknown, 1: Not encrypted, 2: Encrypted"
                 },
                 {
                   "name": "msgDecrypted",
                   "bit_start": 30,
                   "bit_end": 31,
-                  "description": "Decryption status"
+                  "description": "Decryption status: 0: Unknown, 1: Not decrypted, 2: Decrypted"
                 }
               ]
             }
@@ -119,24 +118,34 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incomplete bitfield extraction for statusInfo. Missing bits 9 through 31."
-        ]
-      },
-      {
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "valid_variation",
+        "issues": [
+          "Incomplete bitfield description compared to High Precision (HPG/F9) models"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -147,39 +156,23 @@
       },
       {
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
+        "verdict": "extraction_error",
         "issues": [
-          "Represents a stub definition where the payload structure is not exposed beyond the version byte."
+          "Failed to extract payload fields; simplified 11 bytes as reserved despite being Version 1"
         ]
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395"
         ],
         "structure": {
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 1,
-              "data_type": "U1[11]"
-            }
-          ]
+          "statusInfo_bits": "0-8"
         },
-        "reason": "Specific product manuals occasionally redact or stub out message payloads if the information is considered internal or irrelevant for that specific firmware variant, despite the message being part of the protocol."
+        "reason": "Standard Precision (SPG) firmware manuals often omit bitfield flags relevant only to High Precision or Encryption features (like SPARTN decryption flags)."
       }
     ],
-    "reasoning": "The UBX-RXM-COR message is consistently 12 bytes across all extractions. Most extractions (2, 3, 4, 5, 7) agree on the full 32-bit bitfield for 'statusInfo'. Extraction 1 missed the latter part of this bitfield despite the field being defined as X4 (4 bytes), constituting an extraction error. Extraction 6 is a standard u-blox 'stub' documentation variant. The scaling for Eb/N0 is consistently 0.125 (2^-3)."
+    "reasoning": "The UBX-RXM-COR message is a fixed 12-byte message. Extractions 1, 3, 4, 5, 6, and 7 are consistent in documenting the full bitfield. Extraction 2 (M10) represents a common documentation choice for lower-tier receivers where advanced features are not available. Extraction 8 is considered an error because Version 1 of this message is well-defined in the F9 HPG ecosystem, and collapsing it into 'Reserved' suggests a failure to parse the manual's table correctly."
   }
 }

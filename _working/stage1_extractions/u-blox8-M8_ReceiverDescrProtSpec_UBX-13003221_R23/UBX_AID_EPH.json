@@ -1,0 +1,78 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-AID-EPH",
+  "extraction_timestamp": "2026-01-08T05:29:25.648620+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 201,
+    "end": 203
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-AID-EPH\nExpected IDs: class_id=0x0B, message_id=0x31\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-AID-EPH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_class\": \"0x0B\",\n  \"message_id\": \"0x31\",\n  \"name\": \"UBX-AID-EPH\",\n  \"description\": \"GPS aiding ephemeris input/output message\",\n  \"message_type\": \"input_output\",\n  \"notes\": \"All UBX-AID messages are deprecated; use UBX-MGA messages instead. SF1D0 to SF3D7 is only sent if ephemeris is available for this SV. If not, the payload may be reduced to 8 Bytes (if how = 0), or all bytes are set to zero, indicating that this SV Number does not have valid ephemeris. This can happen even if NAV-SVINFO and RXM-SVSI indicate ephemeris availability, as internal data may not represent the original broadcast ephemeris (or only parts thereof). SF1D0 to SF3D7 contain the 24 words following the Hand-Over Word (HOW) from the GPS navigation message, subframes 1 to 3. The Truncated TOW Count is not valid and cannot be used. See IS-GPS-200 for a full description of the contents of the Subframes. In SF1D0 to SF3D7, the parity bits have been removed, and the 24 bits of data are located in Bits 0 to 23. Bits 24 to 31 shall be ignored. When polled, the data contained in this message does not represent the full original ephemeris broadcast. Some fields that are irrelevant to u-blox receivers may be missing. The week number in Subframe 1 has already been modified to match the Time Of Ephemeris (TOE).\",\n  \"payload_length\": {\n    \"fixed\": 104\n  },\n  \"payload_contents\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"svid\",\n      \"description\": \"SV ID for which this ephemeris data is (Valid Range: 1 .. 32).\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"how\",\n      \"description\": \"Hand-Over Word of first Subframe. This is required if data is sent to the receiver. 0 indicates that no Ephemeris Data is following.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of\": \"U4\",\n        \"count\": 8\n      },\n      \"name\": \"sf1d\",\n      \"description\": \"Subframe 1 Words 3..10 (SF1D0..SF1D7)\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"data_type\": {\n        \"array_of\": \"U4\",\n        \"count\": 8\n      },\n      \"name\": \"sf2d\",\n      \"description\": \"Subframe 2 Words 3..10 (SF2D0..SF2D7)\"\n    },\n    {\n      \"byte_offset\": 72,\n      \"data_type\": {\n        \"array_of\": \"U4\",\n        \"count\": 8\n      },\n      \"name\": \"sf3d\",\n      \"description\": \"Subframe 3 Words 3..10 (SF3D0..SF3D7)\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_class": "0x0B",
+    "message_id": "0x31",
+    "name": "UBX-AID-EPH",
+    "description": "GPS aiding ephemeris input/output message",
+    "message_type": "input_output",
+    "notes": "All UBX-AID messages are deprecated; use UBX-MGA messages instead. SF1D0 to SF3D7 is only sent if ephemeris is available for this SV. If not, the payload may be reduced to 8 Bytes (if how = 0), or all bytes are set to zero, indicating that this SV Number does not have valid ephemeris. This can happen even if NAV-SVINFO and RXM-SVSI indicate ephemeris availability, as internal data may not represent the original broadcast ephemeris (or only parts thereof). SF1D0 to SF3D7 contain the 24 words following the Hand-Over Word (HOW) from the GPS navigation message, subframes 1 to 3. The Truncated TOW Count is not valid and cannot be used. See IS-GPS-200 for a full description of the contents of the Subframes. In SF1D0 to SF3D7, the parity bits have been removed, and the 24 bits of data are located in Bits 0 to 23. Bits 24 to 31 shall be ignored. When polled, the data contained in this message does not represent the full original ephemeris broadcast. Some fields that are irrelevant to u-blox receivers may be missing. The week number in Subframe 1 has already been modified to match the Time Of Ephemeris (TOE).",
+    "payload_length": {
+      "fixed": 104
+    },
+    "payload_contents": [
+      {
+        "byte_offset": 0,
+        "data_type": "U4",
+        "name": "svid",
+        "description": "SV ID for which this ephemeris data is (Valid Range: 1 .. 32)."
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "U4",
+        "name": "how",
+        "description": "Hand-Over Word of first Subframe. This is required if data is sent to the receiver. 0 indicates that no Ephemeris Data is following."
+      },
+      {
+        "byte_offset": 8,
+        "data_type": {
+          "array_of": "U4",
+          "count": 8
+        },
+        "name": "sf1d",
+        "description": "Subframe 1 Words 3..10 (SF1D0..SF1D7)"
+      },
+      {
+        "byte_offset": 40,
+        "data_type": {
+          "array_of": "U4",
+          "count": 8
+        },
+        "name": "sf2d",
+        "description": "Subframe 2 Words 3..10 (SF2D0..SF2D7)"
+      },
+      {
+        "byte_offset": 72,
+        "data_type": {
+          "array_of": "U4",
+          "count": 8
+        },
+        "name": "sf3d",
+        "description": "Subframe 3 Words 3..10 (SF3D0..SF3D7)"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/gpj0vtz1j7n1"
+}

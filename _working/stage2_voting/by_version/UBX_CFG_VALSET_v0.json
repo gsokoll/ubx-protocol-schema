@@ -1,19 +1,19 @@
 {
   "message_name": "UBX-CFG-VALSET",
   "protocol_version": 0,
-  "status": "unanimous",
-  "agreement_ratio": 1.0,
+  "status": "majority",
+  "agreement_ratio": 0.75,
   "winning_structure": {
     "name": "UBX-CFG-VALSET",
     "class_id": "0x06",
     "message_id": "0x8a",
-    "description": "Set configuration item values",
-    "message_type": "get_set",
+    "description": "This message is used to set a configuration by providing configuration data (a list of key and value pairs), which identify the configuration items to change, and their new values. This message is limited to containing a maximum of 64 key-value pairs. This message can be used multiple times and every time the result will be applied immediately.",
+    "message_type": "input",
     "payload": {
       "length": {
         "variable": {
           "base": 4,
-          "formula": "4 + N_cfgData_bytes",
+          "formula": "4 + n",
           "min": 4
         }
       },
@@ -69,22 +69,163 @@
             "array_of": "U1",
             "count": "N"
           },
-          "description": "Configuration data as a sequence of bytes. These bytes collectively form key and value pairs."
+          "description": "Configuration data (key and value pairs)"
         }
       ]
     }
   },
   "winning_fingerprint": "2a3b793a541186cc",
   "agreeing_sources": [
-    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-    "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
     "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
     "LAP120_Interfacedescription_UBX-20046191"
   ],
-  "disagreeing_sources": [],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231"
+  ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "name": "UBX-CFG-VALSET (Set configuration item values)",
+        "class": "0x06",
+        "id": "0x8a",
+        "description": "Set configuration item values",
+        "payload": [
+          {
+            "name": "version",
+            "offset": 0,
+            "type": "U1",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "name": "layers",
+            "offset": 1,
+            "type": "X1",
+            "description": "The layers where the configuration should be applied",
+            "fields": [
+              {
+                "name": "ram",
+                "bit_offset": 0,
+                "bit_length": 1,
+                "type": "U:1",
+                "description": "Update configuration in the RAM layer"
+              },
+              {
+                "name": "bbr",
+                "bit_offset": 1,
+                "bit_length": 1,
+                "type": "U:1",
+                "description": "Update configuration in the BBR layer"
+              },
+              {
+                "name": "flash",
+                "bit_offset": 2,
+                "bit_length": 1,
+                "type": "U:1",
+                "description": "Update configuration in the Flash layer"
+              }
+            ]
+          },
+          {
+            "name": "reserved0",
+            "offset": 2,
+            "type": "U1[2]",
+            "description": "Reserved"
+          },
+          {
+            "name": "cfgData",
+            "offset": 4,
+            "type": "U1[]",
+            "description": "Configuration data (key and value pairs)",
+            "is_repeated": true,
+            "item_type": "U1",
+            "item_size": 1,
+            "length_expression": "n"
+          }
+        ]
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-CFG-VALSET",
+        "class_id": "0x06",
+        "message_id": "0x8a",
+        "description": "This message is used to set a configuration by providing configuration data (a list of key and value pairs), which identify the configuration items to change, and their new values. This message is limited to containing a maximum of 64 key-value pairs. This message can be used multiple times and every time the result will be applied immediately.",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + n",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be applied",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "ram",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Update configuration in the RAM layer"
+                  },
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Update configuration in the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Update configuration in the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "2a3b793a541186cc"
+    },
     {
       "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
       "structure": {
@@ -161,7 +302,66 @@
       "fingerprint": "2a3b793a541186cc"
     },
     {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_class": "CFG",
+        "ubx_id": "VALSET",
+        "ubx_class_id": "0x06",
+        "ubx_message_id": "0x8a",
+        "name": "UBX-CFG-VALSET",
+        "description": "Set configuration item values",
+        "payload_structure": [
+          {
+            "byte_offset": "0",
+            "type": "U1",
+            "name": "version",
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "byte_offset": "1",
+            "type": "X1",
+            "name": "layers",
+            "description": "The layers where the configuration should be applied",
+            "bit_fields": [
+              {
+                "bit_offset": "0",
+                "type": "U:1",
+                "name": "ram",
+                "description": "Update configuration in the RAM layer"
+              },
+              {
+                "bit_offset": "1",
+                "type": "U:1",
+                "name": "bbr",
+                "description": "Update configuration in the BBR layer"
+              },
+              {
+                "bit_offset": "2",
+                "type": "U:1",
+                "name": "flash",
+                "description": "Update configuration in the Flash layer"
+              }
+            ]
+          },
+          {
+            "byte_offset": "2",
+            "type": "U1[2]",
+            "name": "reserved0",
+            "description": "Reserved"
+          },
+          {
+            "byte_offset": "4+n",
+            "type": "U1",
+            "name": "cfgData",
+            "description": "Configuration data (key and value pairs)",
+            "is_repeated_group": true
+          }
+        ]
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
       "structure": {
         "name": "UBX-CFG-VALSET",
         "class_id": "0x06",
@@ -171,10 +371,8 @@
         "payload": {
           "length": {
             "variable": {
-              "base": 4,
               "formula": "4 + N",
-              "min": 4,
-              "description": "Total length is 4 bytes plus the variable length of cfgData."
+              "min": 4
             }
           },
           "fields": [
@@ -312,7 +510,7 @@
       "fingerprint": "2a3b793a541186cc"
     },
     {
-      "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-CFG-VALSET",
         "class_id": "0x06",
@@ -322,83 +520,10 @@
         "payload": {
           "length": {
             "variable": {
-              "formula": "4 + N",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "layers",
-              "byte_offset": 1,
-              "data_type": "X1",
-              "description": "The layers where the configuration should be applied",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "ram",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Update configuration in the RAM layer"
-                  },
-                  {
-                    "name": "bbr",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Update configuration in the BBR layer"
-                  },
-                  {
-                    "name": "flash",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Update configuration in the Flash layer"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 2,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 4,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "2a3b793a541186cc"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-      "structure": {
-        "name": "UBX-CFG-VALSET",
-        "class_id": "0x06",
-        "message_id": "0x8a",
-        "description": "This message is used to set a configuration by providing configuration data (a list of key and value pairs), which identify the configuration items to change, and their new values. This message is limited to containing a maximum of 64 key-value pairs. This message can be used multiple times and every time the result will be applied immediately.",
-        "message_type": "input",
-        "payload": {
-          "length": {
-            "variable": {
               "base": 4,
-              "formula": "4 + n",
-              "min": 4
+              "formula": "4 + N",
+              "min": 4,
+              "description": "Total length is 4 bytes plus the variable length of cfgData."
             }
           },
           "fields": [

@@ -1,7 +1,7 @@
 {
   "message_name": "UBX-MON-PATCH",
   "protocol_version": 0,
-  "status": "single_source",
+  "status": "unanimous",
   "agreement_ratio": 1.0,
   "winning_structure": {
     "name": "UBX-MON-PATCH",
@@ -18,7 +18,8 @@
   },
   "winning_fingerprint": "empty_4bf483e4838f",
   "agreeing_sources": [
-    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
   ],
   "disagreeing_sources": [],
   "all_extractions": [
@@ -35,6 +36,90 @@
             "fixed": 0
           },
           "fields": []
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message_extraction": {
+          "name": "UBX-MON-PATCH",
+          "class_id": "0x0a",
+          "message_id": "0x27",
+          "message_type": "polled",
+          "comment": "This message reports information about patches installed and currently enabled on the receiver. It does not report on patches installed and then disabled. An enabled patch is considered active when the receiver executes from the code space where the patch resides on. For example, a ROM patch is reported active only when the system runs from ROM.",
+          "payload_length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + nEntries * 16"
+            }
+          },
+          "payload_fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U2",
+              "name": "version",
+              "description": "Message version (0x0001 for this version)",
+              "fixed_value": 1
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "U2",
+              "name": "nEntries",
+              "description": "Total number of reported patches"
+            },
+            {
+              "byte_offset": 4,
+              "data_type": {
+                "repeated_group": {
+                  "name": "patchEntry",
+                  "count_field": "nEntries",
+                  "group_length": 16,
+                  "fields": [
+                    {
+                      "byte_offset": 0,
+                      "data_type": "X4",
+                      "name": "patchInfo",
+                      "description": "Status information about the reported patch",
+                      "bitfields": [
+                        {
+                          "name": "activated",
+                          "bit_offset": 0,
+                          "num_bits": 1,
+                          "description": "1: the patch is active, 0: otherwise"
+                        },
+                        {
+                          "name": "location",
+                          "bit_offset": 1,
+                          "num_bits": 2,
+                          "description": "Indicates where the patch is stored. 0: eFuse, 1: ROM, 2: BBR, 3: file system"
+                        }
+                      ]
+                    },
+                    {
+                      "byte_offset": 4,
+                      "data_type": "U4",
+                      "name": "comparatorNumber",
+                      "description": "The number of the comparator"
+                    },
+                    {
+                      "byte_offset": 8,
+                      "data_type": "U4",
+                      "name": "patchAddress",
+                      "description": "The address that is targeted by the patch"
+                    },
+                    {
+                      "byte_offset": 12,
+                      "data_type": "U4",
+                      "name": "patchData",
+                      "description": "The data that is inserted at the patchAddress"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         }
       },
       "fingerprint": "empty_4bf483e4838f"

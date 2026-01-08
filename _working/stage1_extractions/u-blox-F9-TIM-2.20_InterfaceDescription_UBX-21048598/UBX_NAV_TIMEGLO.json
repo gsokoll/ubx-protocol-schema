@@ -1,0 +1,103 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-NAV-TIMEGLO",
+  "extraction_timestamp": "2026-01-08T03:57:17.931982+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 150,
+    "end": 151
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMEGLO\nExpected IDs: class_id=0x01, message_id=0x23\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMEGLO\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"message_name\": \"UBX-NAV-TIMEGLO\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x23\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"This message reports the precise GLO time of the most recent navigation solution including validity flags and an accuracy estimate.\",\n    \"payload_length\": {\n      \"fixed\": 20\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"TOD\",\n        \"data_type\": \"U4\",\n        \"unit\": \"s\",\n        \"description\": \"GLONASS time of day (rounded to integer seconds)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"fTOD\",\n        \"data_type\": \"I4\",\n        \"unit\": \"ns\",\n        \"description\": \"Fractional part of TOD (range: +/-500000000). The precise GLONASS time of day in seconds is: TOD + fTOD * 1e-9\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"Nt\",\n        \"data_type\": \"U2\",\n        \"unit\": \"days\",\n        \"description\": \"Current date (range: 1-1461), starting at 1 from the 1st Jan of the year indicated by N4 and ending at 1461 at the 31st Dec of the third year after that indicated by N4\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"N4\",\n        \"data_type\": \"U1\",\n        \"description\": \"Four-year interval number starting from 1996 (1=1996, 2=2000, 3=2004...)\"\n      },\n      {\n        \"byte_offset\": 15,\n        \"name\": \"valid\",\n        \"data_type\": \"X1\",\n        \"description\": \"Validity flags\",\n        \"bit_fields\": [\n          {\n            \"byte_offset\": 15,\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"todValid\",\n            \"description\": \"1 = Valid TOD and fTOD (see section Time validity in the integration manual for details)\"\n          },\n          {\n            \"byte_offset\": 15,\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"dateValid\",\n            \"description\": \"1 = Valid N4 and Nt (see section Time validity in the integration manual for details)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"tAcc\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ns\",\n        \"description\": \"Time Accuracy Estimate\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "message_name": "UBX-NAV-TIMEGLO",
+      "class_id": "0x01",
+      "message_id": "0x23",
+      "message_type": "periodic_polled",
+      "description": "This message reports the precise GLO time of the most recent navigation solution including validity flags and an accuracy estimate.",
+      "payload_length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "TOD",
+          "data_type": "U4",
+          "unit": "s",
+          "description": "GLONASS time of day (rounded to integer seconds)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "fTOD",
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fractional part of TOD (range: +/-500000000). The precise GLONASS time of day in seconds is: TOD + fTOD * 1e-9"
+        },
+        {
+          "byte_offset": 12,
+          "name": "Nt",
+          "data_type": "U2",
+          "unit": "days",
+          "description": "Current date (range: 1-1461), starting at 1 from the 1st Jan of the year indicated by N4 and ending at 1461 at the 31st Dec of the third year after that indicated by N4"
+        },
+        {
+          "byte_offset": 14,
+          "name": "N4",
+          "data_type": "U1",
+          "description": "Four-year interval number starting from 1996 (1=1996, 2=2000, 3=2004...)"
+        },
+        {
+          "byte_offset": 15,
+          "name": "valid",
+          "data_type": "X1",
+          "description": "Validity flags",
+          "bit_fields": [
+            {
+              "byte_offset": 15,
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "todValid",
+              "description": "1 = Valid TOD and fTOD (see section Time validity in the integration manual for details)"
+            },
+            {
+              "byte_offset": 15,
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "dateValid",
+              "description": "1 = Valid N4 and Nt (see section Time validity in the integration manual for details)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 16,
+          "name": "tAcc",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Time Accuracy Estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/qngx5ob9rdhq"
+}

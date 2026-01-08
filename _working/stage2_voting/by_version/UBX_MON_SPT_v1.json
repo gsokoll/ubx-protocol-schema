@@ -8,12 +8,13 @@
     "class_id": "0x0a",
     "message_id": "0x2f",
     "description": "Sensor production test",
-    "message_type": "polled",
+    "message_type": "output",
     "payload": {
       "length": {
         "variable": {
           "base": 4,
-          "formula": "4 + numSensor*4 + numRes*12"
+          "formula": "4 + (numSensor * 4) + (numRes * 12)",
+          "min": 4
         }
       },
       "fields": [
@@ -39,23 +40,23 @@
           "name": "reserved0",
           "byte_offset": 3,
           "data_type": "U1",
-          "description": "Reserved",
-          "reserved": true
+          "reserved": true,
+          "description": "Reserved"
         }
       ],
       "repeated_groups": [
         {
-          "name": "sensor_info",
+          "name": "sensorInfo",
           "repetition_type": "count_field",
           "count_field": "numSensor",
-          "base_offset": 4,
           "group_size_bytes": 4,
+          "base_offset": 4,
           "fields": [
             {
               "name": "sensorId",
               "byte_offset": 0,
               "data_type": "U1",
-              "description": "Sensor ID"
+              "description": "Sensor ID\nThe following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ICM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI320, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST\nNot all sensors are supported in any released firmware.\nRefer to the release notes to find out which sensor is supported by a certain firmware."
             },
             {
               "name": "drvVer",
@@ -83,7 +84,7 @@
               "name": "testState",
               "byte_offset": 2,
               "data_type": "U1",
-              "description": "State of one sensor's test"
+              "description": "State of one sensor's test, it can be\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
             },
             {
               "name": "drvFileName",
@@ -94,11 +95,11 @@
           ]
         },
         {
-          "name": "sensor_results",
+          "name": "testResults",
           "repetition_type": "count_field",
           "count_field": "numRes",
-          "base_offset": "4 + numSensor*4",
           "group_size_bytes": 12,
+          "base_offset": "4 + (numSensor * 4)",
           "fields": [
             {
               "name": "sensorIdRes",
@@ -110,13 +111,13 @@
               "name": "sensorType",
               "byte_offset": 2,
               "data_type": "U2",
-              "description": "Sensor type and axis (if applicable) to which the result refers"
+              "description": "Sensor type and axis (if applicable) to which the result refers\nThe following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
             },
             {
               "name": "resType",
               "byte_offset": 4,
               "data_type": "U2",
-              "description": "The type of result stored in the value field"
+              "description": "The type of result stored in the value field\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
             },
             {
               "name": "reserved1",
@@ -125,8 +126,8 @@
                 "array_of": "U1",
                 "count": 2
               },
-              "description": "Reserved",
-              "reserved": true
+              "reserved": true,
+              "description": "Reserved"
             },
             {
               "name": "value",
@@ -141,29 +142,171 @@
   },
   "winning_fingerprint": "3e0e9f60d1c19ebb",
   "agreeing_sources": [
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
     "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
     "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
     "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
   ],
   "disagreeing_sources": [],
   "all_extractions": [
     {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
       "structure": {
         "name": "UBX-MON-SPT",
         "class_id": "0x0a",
         "message_id": "0x2f",
         "description": "Sensor production test",
-        "message_type": "polled",
+        "message_type": "output",
         "payload": {
           "length": {
             "variable": {
               "base": 4,
-              "formula": "4 + numSensor*4 + numRes*12"
+              "formula": "4 + (numSensor * 4) + (numRes * 12)",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numSensor",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "number of sensors reported in this message"
+            },
+            {
+              "name": "numRes",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "number of result items reported in this message"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "reserved": true,
+              "description": "Reserved"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sensorInfo",
+              "repetition_type": "count_field",
+              "count_field": "numSensor",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "sensorId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Sensor ID\nThe following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ICM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI320, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST\nNot all sensors are supported in any released firmware.\nRefer to the release notes to find out which sensor is supported by a certain firmware."
+                },
+                {
+                  "name": "drvVer",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Version information",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "drvVerMaj",
+                        "bit_start": 0,
+                        "bit_end": 3,
+                        "description": "Driver major version"
+                      },
+                      {
+                        "name": "drvVerMin",
+                        "bit_start": 4,
+                        "bit_end": 7,
+                        "description": "Driver minor version"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "testState",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "State of one sensor's test, it can be\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
+                },
+                {
+                  "name": "drvFileName",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "0 if the active driver is loaded from image, last character of the file name if it is loaded from separate file."
+                }
+              ]
+            },
+            {
+              "name": "testResults",
+              "repetition_type": "count_field",
+              "count_field": "numRes",
+              "group_size_bytes": 12,
+              "base_offset": "4 + (numSensor * 4)",
+              "fields": [
+                {
+                  "name": "sensorIdRes",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Sensor ID; eligible values are the same as in sensorIdState field"
+                },
+                {
+                  "name": "sensorType",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "Sensor type and axis (if applicable) to which the result refers\nThe following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
+                },
+                {
+                  "name": "resType",
+                  "byte_offset": 4,
+                  "data_type": "U2",
+                  "description": "The type of result stored in the value field\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 6,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 2
+                  },
+                  "reserved": true,
+                  "description": "Reserved"
+                },
+                {
+                  "name": "value",
+                  "byte_offset": 8,
+                  "data_type": "I4",
+                  "description": "value of the specific test result"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "3e0e9f60d1c19ebb"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-MON-SPT",
+        "class_id": "0x0a",
+        "message_id": "0x2f",
+        "description": "Sensor production test",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numSensor*4 + numRes*12",
+              "min": 4
             }
           },
           "fields": [
@@ -195,17 +338,17 @@
           ],
           "repeated_groups": [
             {
-              "name": "sensor_info",
+              "name": "sensors",
               "repetition_type": "count_field",
               "count_field": "numSensor",
-              "base_offset": 4,
               "group_size_bytes": 4,
+              "base_offset": 4,
               "fields": [
                 {
                   "name": "sensorId",
                   "byte_offset": 0,
                   "data_type": "U1",
-                  "description": "Sensor ID"
+                  "description": "Sensor ID. The following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ISM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST/ISM330DHCX, 6-axis IMU with 105 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI32X, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST"
                 },
                 {
                   "name": "drvVer",
@@ -233,7 +376,7 @@
                   "name": "testState",
                   "byte_offset": 2,
                   "data_type": "U1",
-                  "description": "State of one sensor's test"
+                  "description": "State of one sensor's test, it can be:\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
                 },
                 {
                   "name": "drvFileName",
@@ -244,29 +387,29 @@
               ]
             },
             {
-              "name": "sensor_results",
+              "name": "results",
               "repetition_type": "count_field",
               "count_field": "numRes",
-              "base_offset": "4 + numSensor*4",
               "group_size_bytes": 12,
+              "base_offset": "4 + numSensor*4",
               "fields": [
                 {
                   "name": "sensorIdRes",
                   "byte_offset": 0,
                   "data_type": "U2",
-                  "description": "Sensor ID; eligible values are the same as in sensorIdState field"
+                  "description": "Sensor ID; eligible values are the same as in sensorId field"
                 },
                 {
                   "name": "sensorType",
                   "byte_offset": 2,
                   "data_type": "U2",
-                  "description": "Sensor type and axis (if applicable) to which the result refers"
+                  "description": "Sensor type and axis (if applicable) to which the result refers. The following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
                 },
                 {
                   "name": "resType",
                   "byte_offset": 4,
                   "data_type": "U2",
-                  "description": "The type of result stored in the value field"
+                  "description": "The type of result stored in the value field:\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
                 },
                 {
                   "name": "reserved1",
@@ -433,147 +576,6 @@
       "fingerprint": "3e0e9f60d1c19ebb"
     },
     {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-MON-SPT",
-        "class_id": "0x0a",
-        "message_id": "0x2f",
-        "description": "Sensor production test",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + (numSensor * 4) + (numRes * 12)",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x01 for this version)"
-            },
-            {
-              "name": "numSensor",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "number of sensors reported in this message"
-            },
-            {
-              "name": "numRes",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "number of result items reported in this message"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 3,
-              "data_type": "U1",
-              "reserved": true,
-              "description": "Reserved"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "sensorInfo",
-              "repetition_type": "count_field",
-              "count_field": "numSensor",
-              "group_size_bytes": 4,
-              "base_offset": 4,
-              "fields": [
-                {
-                  "name": "sensorId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "Sensor ID\nThe following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ICM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI320, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST\nNot all sensors are supported in any released firmware.\nRefer to the release notes to find out which sensor is supported by a certain firmware."
-                },
-                {
-                  "name": "drvVer",
-                  "byte_offset": 1,
-                  "data_type": "X1",
-                  "description": "Version information",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "drvVerMaj",
-                        "bit_start": 0,
-                        "bit_end": 3,
-                        "description": "Driver major version"
-                      },
-                      {
-                        "name": "drvVerMin",
-                        "bit_start": 4,
-                        "bit_end": 7,
-                        "description": "Driver minor version"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "testState",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "State of one sensor's test, it can be\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
-                },
-                {
-                  "name": "drvFileName",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "0 if the active driver is loaded from image, last character of the file name if it is loaded from separate file."
-                }
-              ]
-            },
-            {
-              "name": "testResults",
-              "repetition_type": "count_field",
-              "count_field": "numRes",
-              "group_size_bytes": 12,
-              "base_offset": "4 + (numSensor * 4)",
-              "fields": [
-                {
-                  "name": "sensorIdRes",
-                  "byte_offset": 0,
-                  "data_type": "U2",
-                  "description": "Sensor ID; eligible values are the same as in sensorIdState field"
-                },
-                {
-                  "name": "sensorType",
-                  "byte_offset": 2,
-                  "data_type": "U2",
-                  "description": "Sensor type and axis (if applicable) to which the result refers\nThe following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
-                },
-                {
-                  "name": "resType",
-                  "byte_offset": 4,
-                  "data_type": "U2",
-                  "description": "The type of result stored in the value field\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 6,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 2
-                  },
-                  "reserved": true,
-                  "description": "Reserved"
-                },
-                {
-                  "name": "value",
-                  "byte_offset": 8,
-                  "data_type": "I4",
-                  "description": "value of the specific test result"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "3e0e9f60d1c19ebb"
-    },
-    {
       "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
       "structure": {
         "name": "UBX-MON-SPT",
@@ -715,19 +717,18 @@
       "fingerprint": "3e0e9f60d1c19ebb"
     },
     {
-      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-MON-SPT",
         "class_id": "0x0a",
         "message_id": "0x2f",
         "description": "Sensor production test",
-        "message_type": "output",
+        "message_type": "polled",
         "payload": {
           "length": {
             "variable": {
               "base": 4,
-              "formula": "4 + numSensor*4 + numRes*12",
-              "min": 4
+              "formula": "4 + numSensor*4 + numRes*12"
             }
           },
           "fields": [
@@ -759,11 +760,11 @@
           ],
           "repeated_groups": [
             {
-              "name": "sensor_status",
+              "name": "sensor_info",
               "repetition_type": "count_field",
               "count_field": "numSensor",
-              "group_size_bytes": 4,
               "base_offset": 4,
+              "group_size_bytes": 4,
               "fields": [
                 {
                   "name": "sensorId",
@@ -808,11 +809,11 @@
               ]
             },
             {
-              "name": "result_items",
+              "name": "sensor_results",
               "repetition_type": "count_field",
               "count_field": "numRes",
+              "base_offset": "4 + numSensor*4",
               "group_size_bytes": 12,
-              "base_offset": 4,
               "fields": [
                 {
                   "name": "sensorIdRes",
@@ -997,7 +998,7 @@
       "fingerprint": "3e0e9f60d1c19ebb"
     },
     {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
       "structure": {
         "name": "UBX-MON-SPT",
         "class_id": "0x0a",
@@ -1041,7 +1042,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "sensors",
+              "name": "sensor_status",
               "repetition_type": "count_field",
               "count_field": "numSensor",
               "group_size_bytes": 4,
@@ -1051,7 +1052,7 @@
                   "name": "sensorId",
                   "byte_offset": 0,
                   "data_type": "U1",
-                  "description": "Sensor ID. The following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ISM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST/ISM330DHCX, 6-axis IMU with 105 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI32X, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST"
+                  "description": "Sensor ID"
                 },
                 {
                   "name": "drvVer",
@@ -1079,7 +1080,7 @@
                   "name": "testState",
                   "byte_offset": 2,
                   "data_type": "U1",
-                  "description": "State of one sensor's test, it can be:\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
+                  "description": "State of one sensor's test"
                 },
                 {
                   "name": "drvFileName",
@@ -1090,29 +1091,29 @@
               ]
             },
             {
-              "name": "results",
+              "name": "result_items",
               "repetition_type": "count_field",
               "count_field": "numRes",
               "group_size_bytes": 12,
-              "base_offset": "4 + numSensor*4",
+              "base_offset": 4,
               "fields": [
                 {
                   "name": "sensorIdRes",
                   "byte_offset": 0,
                   "data_type": "U2",
-                  "description": "Sensor ID; eligible values are the same as in sensorId field"
+                  "description": "Sensor ID; eligible values are the same as in sensorIdState field"
                 },
                 {
                   "name": "sensorType",
                   "byte_offset": 2,
                   "data_type": "U2",
-                  "description": "Sensor type and axis (if applicable) to which the result refers. The following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
+                  "description": "Sensor type and axis (if applicable) to which the result refers"
                 },
                 {
                   "name": "resType",
                   "byte_offset": 4,
                   "data_type": "U2",
-                  "description": "The type of result stored in the value field:\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
+                  "description": "The type of result stored in the value field"
                 },
                 {
                   "name": "reserved1",

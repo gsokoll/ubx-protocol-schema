@@ -1,0 +1,110 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-MGA-INI-FREQ",
+  "extraction_timestamp": "2026-01-08T02:40:44.375300+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 106,
+    "end": 110
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-INI-FREQ\nExpected IDs: class_id=0x13, message_id=0x40\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-INI-FREQ\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nBITFIELD TYPE DETECTION (CRITICAL):\n- Use X1/X2/X4 (NOT U1/U2/U4) when:\n  - Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n  - Description mentions \"bitfield\" or lists bit meanings\n  - Sub-table shows bit positions\n- Extract bitfield structure for ALL X-type fields\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-INI-FREQ\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x40\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 12\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"type\",\n      \"fixed_value\": 33\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"bitfields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 4,\n          \"name\": \"source\",\n          \"lookup_table\": {\n            \"0\": \"frequency available on EXTINT0\",\n            \"1\": \"frequency available on EXTINT1\",\n            \"2\": \"reserved\",\n            \"3\": \"reserved\",\n            \"4\": \"reserved\",\n            \"5\": \"reserved\",\n            \"6\": \"reserved\",\n            \"7\": \"reserved\",\n            \"8\": \"reserved\",\n            \"9\": \"reserved\",\n            \"10\": \"reserved\",\n            \"11\": \"reserved\",\n            \"12\": \"reserved\",\n            \"13\": \"reserved\",\n            \"14\": \"reserved\",\n            \"15\": \"reserved\"\n          }\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 1,\n          \"name\": \"fall\",\n          \"description\": \"use falling edge of EXTINT pulse (default rising)\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"I4\",\n      \"name\": \"freq\",\n      \"scale\": {\n        \"multiplier\": 0.01\n      },\n      \"unit\": \"Hz\",\n      \"description\": \"Frequency\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U4\",\n      \"name\": \"freqAcc\",\n      \"unit\": \"ppb\",\n      \"description\": \"Frequency accuracy\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-INI-FREQ",
+    "class_id": "0x13",
+    "message_id": "0x40",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 12
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "type",
+          "fixed_value": 33
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "version",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U1",
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "X1",
+          "name": "flags",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 4,
+              "name": "source",
+              "lookup_table": {
+                "0": "frequency available on EXTINT0",
+                "1": "frequency available on EXTINT1",
+                "2": "reserved",
+                "3": "reserved",
+                "4": "reserved",
+                "5": "reserved",
+                "6": "reserved",
+                "7": "reserved",
+                "8": "reserved",
+                "9": "reserved",
+                "10": "reserved",
+                "11": "reserved",
+                "12": "reserved",
+                "13": "reserved",
+                "14": "reserved",
+                "15": "reserved"
+              }
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "fall",
+              "description": "use falling edge of EXTINT pulse (default rising)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "I4",
+          "name": "freq",
+          "scale": {
+            "multiplier": 0.01
+          },
+          "unit": "Hz",
+          "description": "Frequency"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U4",
+          "name": "freqAcc",
+          "unit": "ppb",
+          "description": "Frequency accuracy"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/vgfgsqupcn23"
+}

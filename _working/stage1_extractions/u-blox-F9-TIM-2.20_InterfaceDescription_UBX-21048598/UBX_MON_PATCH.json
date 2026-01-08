@@ -1,0 +1,105 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MON-PATCH",
+  "extraction_timestamp": "2026-01-08T03:48:58.518053+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 129,
+    "end": 129
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-PATCH\nExpected IDs: class_id=0x0a, message_id=0x27\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-PATCH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_id\": \"0x27\",\n  \"class_id\": \"0x0a\",\n  \"name\": \"UBX-MON-PATCH\",\n  \"message_type\": \"polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 4,\n      \"formula\": \"4 + nEntries*16\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"version\",\n      \"data_type\": \"U2\",\n      \"description\": \"Message version (0x0001 for this version)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"nEntries\",\n      \"data_type\": \"U2\",\n      \"description\": \"Total number of reported patches\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"patches\",\n      \"array_of\": {\n        \"byte_length\": 16,\n        \"fields\": [\n          {\n            \"byte_offset\": 0,\n            \"name\": \"patchInfo\",\n            \"data_type\": \"X4\",\n            \"description\": \"Status information about the reported patch\",\n            \"bitfields\": [\n              {\n                \"name\": \"activated\",\n                \"data_type\": \"U1\",\n                \"bit_offset\": 0,\n                \"bit_length\": 1,\n                \"description\": \"1: the patch is active, 0: otherwise\"\n              },\n              {\n                \"name\": \"location\",\n                \"data_type\": \"U1\",\n                \"bit_offset\": 1,\n                \"bit_length\": 2,\n                \"description\": \"Indicates where the patch is stored. 0: eFuse, 1: ROM, 2: BBR, 3: file system\"\n              }\n            ]\n          },\n          {\n            \"byte_offset\": 4,\n            \"name\": \"comparatorNumber\",\n            \"data_type\": \"U4\",\n            \"description\": \"The number of the comparator\"\n          },\n          {\n            \"byte_offset\": 8,\n            \"name\": \"patchAddress\",\n            \"data_type\": \"U4\",\n            \"description\": \"The address that is targeted by the patch\"\n          },\n          {\n            \"byte_offset\": 12,\n            \"name\": \"patchData\",\n            \"data_type\": \"U4\",\n            \"description\": \"The data that is inserted at the patchAddress\"\n          }\n        ]\n      },\n      \"count_field\": \"nEntries\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_id": "0x27",
+    "class_id": "0x0a",
+    "name": "UBX-MON-PATCH",
+    "message_type": "polled",
+    "payload_length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + nEntries*16"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U2",
+          "description": "Message version (0x0001 for this version)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 2,
+          "name": "nEntries",
+          "data_type": "U2",
+          "description": "Total number of reported patches"
+        },
+        {
+          "byte_offset": 4,
+          "name": "patches",
+          "array_of": {
+            "byte_length": 16,
+            "fields": [
+              {
+                "byte_offset": 0,
+                "name": "patchInfo",
+                "data_type": "X4",
+                "description": "Status information about the reported patch",
+                "bitfields": [
+                  {
+                    "name": "activated",
+                    "data_type": "U1",
+                    "bit_offset": 0,
+                    "bit_length": 1,
+                    "description": "1: the patch is active, 0: otherwise"
+                  },
+                  {
+                    "name": "location",
+                    "data_type": "U1",
+                    "bit_offset": 1,
+                    "bit_length": 2,
+                    "description": "Indicates where the patch is stored. 0: eFuse, 1: ROM, 2: BBR, 3: file system"
+                  }
+                ]
+              },
+              {
+                "byte_offset": 4,
+                "name": "comparatorNumber",
+                "data_type": "U4",
+                "description": "The number of the comparator"
+              },
+              {
+                "byte_offset": 8,
+                "name": "patchAddress",
+                "data_type": "U4",
+                "description": "The address that is targeted by the patch"
+              },
+              {
+                "byte_offset": 12,
+                "name": "patchData",
+                "data_type": "U4",
+                "description": "The data that is inserted at the patchAddress"
+              }
+            ]
+          },
+          "count_field": "nEntries"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/5qj20tk1ivrk"
+}

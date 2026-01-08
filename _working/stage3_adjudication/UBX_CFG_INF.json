@@ -1,33 +1,32 @@
 {
   "message_name": "UBX-CFG-INF",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-INF",
       "class_id": "0x06",
       "message_id": "0x02",
-      "description": "Information message configuration",
+      "description": "Information message configuration. This message allows the user to enable or disable INFO messages on various protocols and I/O ports.",
       "message_type": "get_set",
       "payload": {
         "length": {
           "variable": {
             "formula": "N * 10",
             "min": 0,
-            "description": "Payload length is a multiple of 10 bytes (N blocks)."
+            "description": "N is the number of configuration blocks."
           }
         },
         "repeated_groups": [
           {
-            "name": "configurationBlock",
-            "repetition_type": "implied_by_length",
+            "name": "configBlocks",
+            "repetition_type": "derived_from_length",
             "group_size_bytes": 10,
-            "base_offset": 0,
             "fields": [
               {
                 "name": "protocolID",
                 "byte_offset": 0,
                 "data_type": "U1",
-                "description": "Protocol identifier (0: UBX, 1: NMEA, etc.)"
+                "description": "Protocol identifier: 0: UBX, 1: NMEA, 2-255: Reserved"
               },
               {
                 "name": "reserved0",
@@ -36,7 +35,6 @@
                   "array_of": "U1",
                   "count": 3
                 },
-                "description": "Reserved",
                 "reserved": true
               },
               {
@@ -46,38 +44,38 @@
                   "array_of": "X1",
                   "count": 6
                 },
-                "description": "Bit mask enabling information messages on each I/O port (1 byte per port).",
+                "description": "A bit mask array where each byte corresponds to an I/O port (0: I2C, 1: UART1, 2: UART2, 3: USB, 4: SPI, 5: Reserved).",
                 "bitfield": {
                   "bits": [
                     {
                       "name": "ERROR",
                       "bit_start": 0,
                       "bit_end": 0,
-                      "description": "Enable ERROR messages"
+                      "description": "Enable INFO-ERROR"
                     },
                     {
                       "name": "WARNING",
                       "bit_start": 1,
                       "bit_end": 1,
-                      "description": "Enable WARNING messages"
+                      "description": "Enable INFO-WARNING"
                     },
                     {
                       "name": "NOTICE",
                       "bit_start": 2,
                       "bit_end": 2,
-                      "description": "Enable NOTICE messages"
+                      "description": "Enable INFO-NOTICE"
                     },
                     {
                       "name": "TEST",
                       "bit_start": 3,
                       "bit_end": 3,
-                      "description": "Enable TEST messages"
+                      "description": "Enable INFO-TEST"
                     },
                     {
                       "name": "DEBUG",
                       "bit_start": 4,
                       "bit_end": 4,
-                      "description": "Enable DEBUG messages"
+                      "description": "Enable INFO-DEBUG"
                     }
                   ]
                 }
@@ -90,27 +88,14 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "valid_variation",
         "issues": [
-          "Extracted the 'Poll Request' definition (length 1) instead of the primary configuration structure (variable length)."
+          "This is the poll request form of the message, not the full configuration."
         ]
       },
       {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrectly identified payload as fixed length (10 bytes).",
-          "Missed the variable repetition (N blocks) characteristic of this message."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -125,12 +110,31 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
         "issues": []
       },
       {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "This is the poll request form of the message."
+        ]
+      },
+      {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identified payload as fixed length 10; the message protocol allows N configuration blocks."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -138,25 +142,24 @@
     "valid_variations": [
       {
         "sources": [
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
           "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318"
         ],
         "structure": {
-          "message_type": "poll_request",
-          "payload": {
-            "length": {
-              "fixed": 1
-            },
-            "fields": [
-              {
-                "name": "protocolID",
-                "data_type": "U1"
-              }
-            ]
-          }
+          "message_type": "poll",
+          "payload_length": 1,
+          "fields": [
+            {
+              "name": "protocolID",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Protocol identifier for which configuration is being polled."
+            }
+          ]
         },
-        "reason": "The UBX protocol allows polling the configuration for a specific protocol by sending a 1-byte payload containing the protocolID. This is a valid usage subset of the message, though less complete than the full configuration definition."
+        "reason": "UBX protocol commonly uses a 1-byte payload version of configuration messages to poll the current settings for a specific protocol."
       }
     ],
-    "reasoning": "The canonical structure of UBX-CFG-INF allows for N blocks of 10 bytes to configure multiple protocols in a single message (or N=1 for output). Most extractions (1, 4, 5, 6, 7, 8) correctly identified this variable length repeated structure. Extraction 2 represents the 'Poll by Protocol' variant (length 1), which is valid but distinct from the full configuration message. Extraction 3 failed to identify the variable nature of the message, restricting it to a fixed 10 bytes (one block), which is a definition error as the manual supports multiple blocks."
+    "reasoning": "UBX-CFG-INF exists in two primary forms: a Poll request (1-byte payload containing only the Protocol ID) and a Get/Set configuration (multiples of 10 bytes). Extractions 1 and 6 correctly identify the poll variant. Extractions 2-5, 7, and 9 correctly identify the repeated block structure of the configuration variant. Extraction 8 fails to recognize the variable nature of the configuration payload, treating a single-block instance as a fixed-length structure."
   }
 }

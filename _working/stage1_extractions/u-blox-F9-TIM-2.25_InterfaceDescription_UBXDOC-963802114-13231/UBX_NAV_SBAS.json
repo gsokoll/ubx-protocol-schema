@@ -1,0 +1,284 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-SBAS",
+  "extraction_timestamp": "2026-01-08T04:29:15.683224+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 118,
+    "end": 120
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SBAS\nExpected IDs: class_id=0x01, message_id=0x32\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SBAS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-NAV-SBAS\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x32\",\n  \"message_type\": \"periodic_polled\",\n  \"comment\": \"This message outputs the status of the SBAS sub system\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 12,\n      \"formula\": \"12 + cnt * 12\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"name\": \"geo\",\n      \"description\": \"PRN Number of the GEO where correction and integrity data is used from\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"U1\",\n      \"name\": \"mode\",\n      \"description\": \"SBAS Mode\",\n      \"value_description\": [\n        {\n          \"value\": 0,\n          \"description\": \"Disabled\"\n        },\n        {\n          \"value\": 1,\n          \"description\": \"Enabled integrity\"\n        },\n        {\n          \"value\": 3,\n          \"description\": \"Enabled test mode\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"I1\",\n      \"name\": \"sys\",\n      \"description\": \"SBAS System (WAAS/EGNOS/...)\",\n      \"value_description\": [\n        {\n          \"value\": -1,\n          \"description\": \"Unknown\"\n        },\n        {\n          \"value\": 0,\n          \"description\": \"WAAS\"\n        },\n        {\n          \"value\": 1,\n          \"description\": \"EGNOS\"\n        },\n        {\n          \"value\": 2,\n          \"description\": \"MSAS\"\n        },\n        {\n          \"value\": 3,\n          \"description\": \"GAGAN\"\n        },\n        {\n          \"value\": 16,\n          \"description\": \"GPS\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 7,\n      \"data_type\": \"X1\",\n      \"name\": \"service\",\n      \"description\": \"SBAS Services available\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"ranging\",\n          \"description\": \"GEO may be used as ranging source\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"corrections\",\n          \"description\": \"GEO is providing correction data\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"num_bits\": 1,\n          \"name\": \"integrity\",\n          \"description\": \"GEO is providing integrity\"\n        },\n        {\n          \"bit_offset\": 3,\n          \"num_bits\": 1,\n          \"name\": \"testmode\",\n          \"description\": \"GEO is in test mode\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"num_bits\": 1,\n          \"name\": \"bad\",\n          \"description\": \"Problem with signal or broadcast data indicated\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U1\",\n      \"name\": \"cnt\",\n      \"description\": \"Number of SV data following\"\n    },\n    {\n      \"byte_offset\": 9,\n      \"data_type\": \"X1\",\n      \"name\": \"statusFlags\",\n      \"description\": \"SBAS status flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 2,\n          \"name\": \"integrityUsed\",\n          \"description\": \"SBAS integrity used\",\n          \"value_description\": [\n            {\n              \"value\": 0,\n              \"description\": \"Unknown\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Integrity information is not available or SBAS integrity is not enabled\"\n            },\n            {\n              \"value\": 2,\n              \"description\": \"Receiver uses only GPS satellites for which integrity information is available\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U1\",\n      \"name\": \"svid\",\n      \"description\": \"SV ID\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 13,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"reserved\": true,\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"U1\",\n      \"name\": \"udre\",\n      \"description\": \"Monitoring status\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": \"U1\",\n      \"name\": \"svSys\",\n      \"description\": \"System (WAAS/EGNOS/...) same as SYS\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U1\",\n      \"name\": \"svService\",\n      \"description\": \"Services available same as SERVICE\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 17,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved2\",\n      \"reserved\": true,\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": \"I2\",\n      \"name\": \"prc\",\n      \"unit\": \"cm\",\n      \"description\": \"Pseudo Range correction in [cm]\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved3\",\n      \"reserved\": true,\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    },\n    {\n      \"byte_offset\": 22,\n      \"data_type\": \"I2\",\n      \"name\": \"ic\",\n      \"unit\": \"cm\",\n      \"description\": \"Ionosphere correction in [cm]\",\n      \"repeating_fields\": {\n        \"count_field\": \"cnt\",\n        \"block_size\": 12\n      }\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-NAV-SBAS",
+    "class_id": "0x01",
+    "message_id": "0x32",
+    "message_type": "periodic_polled",
+    "comment": "This message outputs the status of the SBAS sub system",
+    "payload_length": {
+      "variable": {
+        "base": 12,
+        "formula": "12 + cnt * 12"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "geo",
+          "description": "PRN Number of the GEO where correction and integrity data is used from"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "U1",
+          "name": "mode",
+          "description": "SBAS Mode",
+          "value_description": [
+            {
+              "value": 0,
+              "description": "Disabled"
+            },
+            {
+              "value": 1,
+              "description": "Enabled integrity"
+            },
+            {
+              "value": 3,
+              "description": "Enabled test mode"
+            }
+          ]
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "I1",
+          "name": "sys",
+          "description": "SBAS System (WAAS/EGNOS/...)",
+          "value_description": [
+            {
+              "value": -1,
+              "description": "Unknown"
+            },
+            {
+              "value": 0,
+              "description": "WAAS"
+            },
+            {
+              "value": 1,
+              "description": "EGNOS"
+            },
+            {
+              "value": 2,
+              "description": "MSAS"
+            },
+            {
+              "value": 3,
+              "description": "GAGAN"
+            },
+            {
+              "value": 16,
+              "description": "GPS"
+            }
+          ]
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "X1",
+          "name": "service",
+          "description": "SBAS Services available",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "ranging",
+              "description": "GEO may be used as ranging source"
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "corrections",
+              "description": "GEO is providing correction data"
+            },
+            {
+              "bit_offset": 2,
+              "num_bits": 1,
+              "name": "integrity",
+              "description": "GEO is providing integrity"
+            },
+            {
+              "bit_offset": 3,
+              "num_bits": 1,
+              "name": "testmode",
+              "description": "GEO is in test mode"
+            },
+            {
+              "bit_offset": 4,
+              "num_bits": 1,
+              "name": "bad",
+              "description": "Problem with signal or broadcast data indicated"
+            }
+          ]
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U1",
+          "name": "cnt",
+          "description": "Number of SV data following"
+        },
+        {
+          "byte_offset": 9,
+          "data_type": "X1",
+          "name": "statusFlags",
+          "description": "SBAS status flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 2,
+              "name": "integrityUsed",
+              "description": "SBAS integrity used",
+              "value_description": [
+                {
+                  "value": 0,
+                  "description": "Unknown"
+                },
+                {
+                  "value": 1,
+                  "description": "Integrity information is not available or SBAS integrity is not enabled"
+                },
+                {
+                  "value": 2,
+                  "description": "Receiver uses only GPS satellites for which integrity information is available"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "byte_offset": 10,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U1",
+          "name": "svid",
+          "description": "SV ID",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "U1",
+          "name": "reserved1",
+          "reserved": true,
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "U1",
+          "name": "udre",
+          "description": "Monitoring status",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "U1",
+          "name": "svSys",
+          "description": "System (WAAS/EGNOS/...) same as SYS",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U1",
+          "name": "svService",
+          "description": "Services available same as SERVICE",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 17,
+          "data_type": "U1",
+          "name": "reserved2",
+          "reserved": true,
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "I2",
+          "name": "prc",
+          "unit": "cm",
+          "description": "Pseudo Range correction in [cm]",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 20,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved3",
+          "reserved": true,
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        },
+        {
+          "byte_offset": 22,
+          "data_type": "I2",
+          "name": "ic",
+          "unit": "cm",
+          "description": "Ionosphere correction in [cm]",
+          "repeating_fields": {
+            "count_field": "cnt",
+            "block_size": 12
+          }
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/mu3y9r9ppwbn"
+}

@@ -1,0 +1,196 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-DOSC",
+  "extraction_timestamp": "2026-01-08T05:34:23.366891+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 214,
+    "end": 216
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-DOSC\nExpected IDs: class_id=0x06, message_id=0x61\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-DOSC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x61\",\n  \"name\": \"UBX-CFG-DOSC\",\n  \"description\": \"Disciplined oscillator configuration\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 4,\n      \"formula\": \"4 + numOsc * 32\"\n    }\n  },\n  \"payload\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"numOsc\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of oscillators to configure (affects length of this message)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"repeated_block\",\n      \"description\": \"Oscillator configuration block, repeated numOsc times\",\n      \"repeats\": {\n        \"count_field\": \"numOsc\",\n        \"block_length\": 32\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"name\": \"oscId\",\n          \"data_type\": \"U1\",\n          \"description\": \"Id of oscillator. 0 - internal oscillator, 1 - external oscillator\"\n        },\n        {\n          \"byte_offset\": 1,\n          \"name\": \"reserved2\",\n          \"data_type\": \"U1\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"byte_offset\": 2,\n          \"name\": \"flags\",\n          \"data_type\": \"X2\",\n          \"description\": \"flags\",\n          \"bitfield\": [\n            {\n              \"name\": \"isCalibrated\",\n              \"bits\": 1,\n              \"description\": \"1 if the oscillator gain is calibrated, 0 if not\",\n              \"bit_offset\": 0\n            },\n            {\n              \"name\": \"controlIf\",\n              \"bits\": 4,\n              \"description\": \"Communication interface for oscillator control: 0: Custom DAC attached to receiver's I2C, 1: Microchip MCP4726 (12 bit DAC) attached to receiver's I2C, 2: TI DAC8571 (16 bit DAC) attached to receiver's I2C, 13: 12 bit DAC attached to host, 14: 14 bit DAC attached to host, 15: 16 bit DAC attached to host\",\n              \"bit_offset\": 1\n            }\n          ]\n        },\n        {\n          \"byte_offset\": 4,\n          \"name\": \"freq\",\n          \"data_type\": \"U4\",\n          \"description\": \"Nominal frequency of source\",\n          \"scale\": {\n            \"raw\": \"2^-2\",\n            \"multiplier\": 0.25\n          },\n          \"unit\": \"Hz\"\n        },\n        {\n          \"byte_offset\": 8,\n          \"name\": \"phaseOffset\",\n          \"data_type\": \"I4\",\n          \"description\": \"Intended phase offset of the oscillator relative to the leading edge of the time pulse\",\n          \"unit\": \"ps\"\n        },\n        {\n          \"byte_offset\": 12,\n          \"name\": \"withTemp\",\n          \"data_type\": \"U4\",\n          \"description\": \"Oscillator stability limit over operating temperature range (must be > 0)\",\n          \"scale\": {\n            \"raw\": \"2^-8\",\n            \"multiplier\": 0.00390625\n          },\n          \"unit\": \"ppb\"\n        },\n        {\n          \"byte_offset\": 16,\n          \"name\": \"withAge\",\n          \"data_type\": \"U4\",\n          \"description\": \"Oscillator stability with age (must be > 0)\",\n          \"scale\": {\n            \"raw\": \"2^-8\",\n            \"multiplier\": 0.00390625\n          },\n          \"unit\": \"ppb/year\"\n        },\n        {\n          \"byte_offset\": 20,\n          \"name\": \"timeToTemp\",\n          \"data_type\": \"U2\",\n          \"description\": \"The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0)\",\n          \"unit\": \"s\"\n        },\n        {\n          \"byte_offset\": 22,\n          \"name\": \"reserved3\",\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 2\n          },\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"byte_offset\": 24,\n          \"name\": \"gainVco\",\n          \"data_type\": \"I4\",\n          \"description\": \"Oscillator control gain/slope; change of frequency per unit change in raw control change\",\n          \"scale\": {\n            \"raw\": \"2^-16\",\n            \"multiplier\": 0.0000152587890625\n          },\n          \"unit\": \"ppb/raw LSB\"\n        },\n        {\n          \"byte_offset\": 28,\n          \"name\": \"gainUncertainty\",\n          \"data_type\": \"U1\",\n          \"description\": \"Relative uncertainty (1 standard deviation) of oscillator control gain/slope\",\n          \"scale\": {\n            \"raw\": \"2^-8\",\n            \"multiplier\": 0.00390625\n          }\n        },\n        {\n          \"byte_offset\": 29,\n          \"name\": \"reserved4\",\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x06",
+    "message_id": "0x61",
+    "name": "UBX-CFG-DOSC",
+    "description": "Disciplined oscillator configuration",
+    "message_type": "get_set",
+    "payload_length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + numOsc * 32"
+      }
+    },
+    "payload": [
+      {
+        "byte_offset": 0,
+        "name": "version",
+        "data_type": "U1",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "byte_offset": 1,
+        "name": "numOsc",
+        "data_type": "U1",
+        "description": "Number of oscillators to configure (affects length of this message)"
+      },
+      {
+        "byte_offset": 2,
+        "name": "reserved1",
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "name": "repeated_block",
+        "description": "Oscillator configuration block, repeated numOsc times",
+        "repeats": {
+          "count_field": "numOsc",
+          "block_length": 32
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "name": "oscId",
+            "data_type": "U1",
+            "description": "Id of oscillator. 0 - internal oscillator, 1 - external oscillator"
+          },
+          {
+            "byte_offset": 1,
+            "name": "reserved2",
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "byte_offset": 2,
+            "name": "flags",
+            "data_type": "X2",
+            "description": "flags",
+            "bitfield": [
+              {
+                "name": "isCalibrated",
+                "bits": 1,
+                "description": "1 if the oscillator gain is calibrated, 0 if not",
+                "bit_offset": 0
+              },
+              {
+                "name": "controlIf",
+                "bits": 4,
+                "description": "Communication interface for oscillator control: 0: Custom DAC attached to receiver's I2C, 1: Microchip MCP4726 (12 bit DAC) attached to receiver's I2C, 2: TI DAC8571 (16 bit DAC) attached to receiver's I2C, 13: 12 bit DAC attached to host, 14: 14 bit DAC attached to host, 15: 16 bit DAC attached to host",
+                "bit_offset": 1
+              }
+            ]
+          },
+          {
+            "byte_offset": 4,
+            "name": "freq",
+            "data_type": "U4",
+            "description": "Nominal frequency of source",
+            "scale": {
+              "raw": "2^-2",
+              "multiplier": 0.25
+            },
+            "unit": "Hz"
+          },
+          {
+            "byte_offset": 8,
+            "name": "phaseOffset",
+            "data_type": "I4",
+            "description": "Intended phase offset of the oscillator relative to the leading edge of the time pulse",
+            "unit": "ps"
+          },
+          {
+            "byte_offset": 12,
+            "name": "withTemp",
+            "data_type": "U4",
+            "description": "Oscillator stability limit over operating temperature range (must be > 0)",
+            "scale": {
+              "raw": "2^-8",
+              "multiplier": 0.00390625
+            },
+            "unit": "ppb"
+          },
+          {
+            "byte_offset": 16,
+            "name": "withAge",
+            "data_type": "U4",
+            "description": "Oscillator stability with age (must be > 0)",
+            "scale": {
+              "raw": "2^-8",
+              "multiplier": 0.00390625
+            },
+            "unit": "ppb/year"
+          },
+          {
+            "byte_offset": 20,
+            "name": "timeToTemp",
+            "data_type": "U2",
+            "description": "The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0)",
+            "unit": "s"
+          },
+          {
+            "byte_offset": 22,
+            "name": "reserved3",
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "byte_offset": 24,
+            "name": "gainVco",
+            "data_type": "I4",
+            "description": "Oscillator control gain/slope; change of frequency per unit change in raw control change",
+            "scale": {
+              "raw": "2^-16",
+              "multiplier": 1.52587890625e-05
+            },
+            "unit": "ppb/raw LSB"
+          },
+          {
+            "byte_offset": 28,
+            "name": "gainUncertainty",
+            "data_type": "U1",
+            "description": "Relative uncertainty (1 standard deviation) of oscillator control gain/slope",
+            "scale": {
+              "raw": "2^-8",
+              "multiplier": 0.00390625
+            }
+          },
+          {
+            "byte_offset": 29,
+            "name": "reserved4",
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/2blop2s6bdg7"
+}

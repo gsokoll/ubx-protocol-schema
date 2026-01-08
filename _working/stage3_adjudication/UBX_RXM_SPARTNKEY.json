@@ -6,13 +6,15 @@
       "name": "UBX-RXM-SPARTNKEY",
       "class_id": "0x02",
       "message_id": "0x36",
-      "description": "Transfer dynamic SPARTN keys. Used to load keys to the receiver or poll current key states.",
-      "message_type": "input/output",
+      "description": "Transfer dynamic SPARTN keys. This message is used to load keys to the receiver, query the receiver's key state, or output the currently stored keys.",
+      "message_type": "input_output",
       "payload": {
         "length": {
           "variable": {
+            "base": 4,
             "formula": "4 + (numKeys * 8) + sum(keyLengthBytes)",
-            "min": 4
+            "min": 0,
+            "notes": "A length of 0 bytes indicates a poll request. For payload-bearing messages, minimum length is 4 bytes (header with 0 keys)."
           }
         },
         "fields": [
@@ -20,13 +22,13 @@
             "name": "version",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Message version (0x01)"
+            "description": "Message version (0x01 for this version)"
           },
           {
             "name": "numKeys",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Number of keys the message contains (0, 1, or 2)."
+            "description": "Number of keys the message contains (typically 0, 1 or 2)."
           },
           {
             "name": "reserved0",
@@ -45,6 +47,7 @@
             "repetition_type": "count_field",
             "count_field": "numKeys",
             "group_size_bytes": 8,
+            "base_offset": 4,
             "fields": [
               {
                 "name": "reserved1",
@@ -63,30 +66,27 @@
                 "name": "validFromWno",
                 "byte_offset": 2,
                 "data_type": "U2",
-                "description": "GPS week number the key is valid from",
-                "unit": "week"
+                "unit": "week",
+                "description": "GPS week number the key is valid from"
               },
               {
                 "name": "validFromTow",
                 "byte_offset": 4,
                 "data_type": "U4",
-                "description": "GPS time of week the key is valid from",
-                "unit": "sec"
+                "unit": "sec",
+                "description": "GPS time of week the key is valid from"
               }
             ]
-          },
+          }
+        ],
+        "post_repeated_fields": [
           {
             "name": "keyData",
-            "repetition_type": "fill_remaining",
-            "description": "Concatenated key payload. Total length is the sum of all keyLengthBytes.",
-            "fields": [
-              {
-                "name": "key_byte",
-                "byte_offset": 0,
-                "data_type": "U1",
-                "description": "Raw bytes of the key data"
-              }
-            ]
+            "description": "Concatenated key(s) payload. Total length is the sum of all keyLengthBytes fields.",
+            "data_type": {
+              "array_of": "U1",
+              "count": "sum(keyLengthBytes)"
+            }
           }
         ]
       }
@@ -97,11 +97,11 @@
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
         "verdict": "extraction_error",
         "issues": [
-          "JSON parse error (Unterminated string)"
+          "Unterminated string/JSON syntax error"
         ]
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -109,8 +109,13 @@
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "extraction_error",
         "issues": [
-          "Missed the trailing variable-length key data field/group, despite mentioning it in the length formula."
+          "Failed to extract the trailing key payload field, though it is referenced in the length formula"
         ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
@@ -120,25 +125,24 @@
       {
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
+        "issues": [
+          "Explicitly handles the Poll Request variant, which is helpful context"
+        ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
         ],
         "structure": {
-          "poll_request": "Length = 0"
+          "message_type": "poll_request",
+          "payload_length": 0
         },
-        "reason": "Standard UBX behavior where sending the Class/ID with no payload acts as a poll request for that message."
+        "reason": "UBX messages often allow a zero-length payload version of an Input/Output message to act as a 'Poll Request' to query current status."
       }
     ],
-    "reasoning": "The UBX-RXM-SPARTNKEY message has a complex dynamic structure where a set of metadata entries (8 bytes each) is followed by a contiguous block of raw key data. Extractions 2, 4, 5, and 6 correctly identified this two-part dynamic payload. Extraction 3 failed to capture the actual key data, and Extraction 1 was corrupted. The structure is consistent across different firmware versions (HPG, LAP, HPS)."
+    "reasoning": "The message structure is highly consistent across F9 series documentation. The primary complexity is the 'double-variable' nature of the payload: first, a repeated group of 8-byte metadata blocks based on numKeys, followed by a raw byte array whose length depends on the values contained within those metadata blocks. Extraction 2, 4, 5, and 6 successfully modeled this. Extraction 3 missed the trailing data blob, and Extraction 1 failed due to a JSON formatting error. The message can also be sent as a zero-length Poll Request."
   }
 }

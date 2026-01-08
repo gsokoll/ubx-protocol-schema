@@ -1,0 +1,141 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MON-SPT",
+  "extraction_timestamp": "2026-01-08T06:30:20.193051+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 366,
+    "end": 370
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-SPT\nExpected IDs: class_id=0x0A, message_id=0x2F\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-SPT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-SPT\",\n  \"class_id\": \"0x0A\",\n  \"message_id\": \"0x2F\",\n  \"message_type\": \"polled\",\n  \"description\": \"Sensor production test\",\n  \"firmware_support\": \"u-blox 8 / u-blox M8 protocol versions 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with ADR or UDR products)\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 4,\n      \"formula\": \"4 + (numSensor * 4) + (numRes * 12)\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x01 for this version)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"numSensor\",\n      \"description\": \"number of sensors reported in this message\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"numRes\",\n      \"description\": \"number of result items reported in this message\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"sensor_info\",\n      \"repeating_group_key\": \"numSensor\",\n      \"fields\": [\n        {\n          \"byte_offset_relative\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"sensorId\",\n          \"description\": \"Sensor ID\\nThe following IDs are defined, others are reserved:\\n1: ST LSM6DS0 6-axis IMU with temperature sensor\\n2: Invensense MPU6500 6-axis IMU with temperature sensor\\n3: Bosch BMI160 6-axis IMU with temperature sensor\\n7: ST LSM6DS3 6-axis IMU with temperature sensor\\n9: Bosch SMI130 6-axis IMU with temperature sensor\\n12: MPU6515, 6-axis inertial sensor from Invensense\\n13: ST LSM6DSL 6-axis IMU with temperature sensor\\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\\n17: ICM330DLC, 6-axis IMU with temperature sensor from ST\\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST\\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\\n21: BMI320, 6-axis IMU with 85 deg temperature sensor from Bosch\\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST\\nNot all sensors are supported in any released firmware. Refer to the release notes to find out which sensor is supported by a certain firmware.\"\n        },\n        {\n          \"byte_offset_relative\": 1,\n          \"data_type\": \"X1\",\n          \"name\": \"drvVer\",\n          \"description\": \"Version information (see graphic below)\"\n        },\n        {\n          \"byte_offset_relative\": 2,\n          \"data_type\": \"U1\",\n          \"name\": \"testState\",\n          \"description\": \"State of one sensor's test, it can be\\n0: test not yet started\\n1: test started but not yet finished\\n2: test did not finish due to error during execution\\n3: test finished normally, test data is available\"\n        },\n        {\n          \"byte_offset_relative\": 3,\n          \"data_type\": \"U1\",\n          \"name\": \"drvFileName\",\n          \"description\": \"0 if the active driver is loaded from image, last character of the file name if it is loaded from separate file.\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": \"4 + (numSensor * 4)\",\n      \"name\": \"result_info\",\n      \"repeating_group_key\": \"numRes\",\n      \"fields\": [\n        {\n          \"byte_offset_relative\": 0,\n          \"data_type\": \"U2\",\n          \"name\": \"sensorIdRes\",\n          \"description\": \"Sensor ID; eligible values are the same as in sensorIdState field\"\n        },\n        {\n          \"byte_offset_relative\": 2,\n          \"data_type\": \"U2\",\n          \"name\": \"sensorType\",\n          \"description\": \"Sensor type and axis (if applicable) to which the result refers\\nThe following values are defined, others are reserved:\\n5: Gyroscope z axis\\n12: Gyroscope temperature\\n13: Gyroscope y axis\\n14: Gyroscope x axis\\n16: Accelerometer x axis\\n17: Accelerometer y axis\\n18: Accelerometer z axis\\n19: Barometer\\n22: Magnetometer x axis\\n23: Magnetometer y axis\\n24: Magnetometer z axis\\n25: Barometer temperature\"\n        },\n        {\n          \"byte_offset_relative\": 4,\n          \"data_type\": \"U2\",\n          \"name\": \"resType\",\n          \"description\": \"The type of result stored in the value field\\n1: Measurement without self-test offset (raw and unscaled digital value)\\n2: Measurement with positive self-test offset (raw and unscaled digital value)\\n3: Measurement with negative self-test offset (raw and unscaled digital value)\\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself.\"\n        },\n        {\n          \"byte_offset_relative\": 6,\n          \"data_type\": \"U1\",\n          \"name\": \"reserved2\",\n          \"array_of\": \"U1\",\n          \"count\": 2,\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"byte_offset_relative\": 8,\n          \"data_type\": \"I4\",\n          \"name\": \"value\",\n          \"description\": \"value of the specific test result\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-SPT",
+    "class_id": "0x0A",
+    "message_id": "0x2F",
+    "message_type": "polled",
+    "description": "Sensor production test",
+    "firmware_support": "u-blox 8 / u-blox M8 protocol versions 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with ADR or UDR products)",
+    "payload_length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + (numSensor * 4) + (numRes * 12)"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x01 for this version)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "numSensor",
+          "description": "number of sensors reported in this message"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U1",
+          "name": "numRes",
+          "description": "number of result items reported in this message"
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "U1",
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "name": "sensor_info",
+          "repeating_group_key": "numSensor",
+          "fields": [
+            {
+              "byte_offset_relative": 0,
+              "data_type": "U1",
+              "name": "sensorId",
+              "description": "Sensor ID\nThe following IDs are defined, others are reserved:\n1: ST LSM6DS0 6-axis IMU with temperature sensor\n2: Invensense MPU6500 6-axis IMU with temperature sensor\n3: Bosch BMI160 6-axis IMU with temperature sensor\n7: ST LSM6DS3 6-axis IMU with temperature sensor\n9: Bosch SMI130 6-axis IMU with temperature sensor\n12: MPU6515, 6-axis inertial sensor from Invensense\n13: ST LSM6DSL 6-axis IMU with temperature sensor\n14: SMG130, 3-axis gyroscope with temperature sensor from Bosch\n15: SMI230, 6-axis IMU with temperature sensor from Bosch\n16: BMI260, 6-axis IMU with temperature sensor from Bosch\n17: ICM330DLC, 6-axis IMU with temperature sensor from ST\n18: LSM6DSR, 6-axis IMU with 85 deg temperature sensor from ST\n19: ICM42605, 6-axis IMU with 85 deg temperature sensor from InvenSense TDK\n20: IIM42652, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n21: BMI320, 6-axis IMU with 85 deg temperature sensor from Bosch\n22: IAM20680HT, 6-axis IMU with 105 deg temperature sensor from InvenSense TDK\n23: LSM6DSOW, 6-axis IMU with 85 deg temperature sensor from ST\nNot all sensors are supported in any released firmware. Refer to the release notes to find out which sensor is supported by a certain firmware."
+            },
+            {
+              "byte_offset_relative": 1,
+              "data_type": "X1",
+              "name": "drvVer",
+              "description": "Version information (see graphic below)"
+            },
+            {
+              "byte_offset_relative": 2,
+              "data_type": "U1",
+              "name": "testState",
+              "description": "State of one sensor's test, it can be\n0: test not yet started\n1: test started but not yet finished\n2: test did not finish due to error during execution\n3: test finished normally, test data is available"
+            },
+            {
+              "byte_offset_relative": 3,
+              "data_type": "U1",
+              "name": "drvFileName",
+              "description": "0 if the active driver is loaded from image, last character of the file name if it is loaded from separate file."
+            }
+          ]
+        },
+        {
+          "byte_offset": "4 + (numSensor * 4)",
+          "name": "result_info",
+          "repeating_group_key": "numRes",
+          "fields": [
+            {
+              "byte_offset_relative": 0,
+              "data_type": "U2",
+              "name": "sensorIdRes",
+              "description": "Sensor ID; eligible values are the same as in sensorIdState field"
+            },
+            {
+              "byte_offset_relative": 2,
+              "data_type": "U2",
+              "name": "sensorType",
+              "description": "Sensor type and axis (if applicable) to which the result refers\nThe following values are defined, others are reserved:\n5: Gyroscope z axis\n12: Gyroscope temperature\n13: Gyroscope y axis\n14: Gyroscope x axis\n16: Accelerometer x axis\n17: Accelerometer y axis\n18: Accelerometer z axis\n19: Barometer\n22: Magnetometer x axis\n23: Magnetometer y axis\n24: Magnetometer z axis\n25: Barometer temperature"
+            },
+            {
+              "byte_offset_relative": 4,
+              "data_type": "U2",
+              "name": "resType",
+              "description": "The type of result stored in the value field\n1: Measurement without self-test offset (raw and unscaled digital value)\n2: Measurement with positive self-test offset (raw and unscaled digital value)\n3: Measurement with negative self-test offset (raw and unscaled digital value)\n4: Minimum off-to-positive to pass self-test, as deduced from on-chip trimming information\n5: Maximum off-to-positive to pass self-test, as deduced from on-chip trimming information\n6: Minimum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n7: Maximum negative-to-positive to pass self-test, as deduced from on-chip trimming information\n8: Self-test passed; test passed if value = 1 and failed if 0. Used if the decision is read out from the sensor itself."
+            },
+            {
+              "byte_offset_relative": 6,
+              "data_type": "U1",
+              "name": "reserved2",
+              "array_of": "U1",
+              "count": 2,
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "byte_offset_relative": 8,
+              "data_type": "I4",
+              "name": "value",
+              "description": "value of the specific test result"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/tc88e97tcjxv"
+}

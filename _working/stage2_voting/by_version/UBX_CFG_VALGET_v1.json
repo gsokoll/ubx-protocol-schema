@@ -7,15 +7,14 @@
     "name": "UBX-CFG-VALGET",
     "class_id": "0x06",
     "message_id": "0x8b",
-    "description": "Get configuration items response. This message is output by the receiver to return requested configuration data (key and value pairs).",
+    "description": "Configuration items",
     "message_type": "output",
     "payload": {
       "length": {
         "variable": {
           "base": 4,
           "formula": "4 + N",
-          "min": 4,
-          "description": "Total payload length is 4 bytes plus N bytes for the variable-length cfgData field."
+          "min": 4
         }
       },
       "fields": [
@@ -29,7 +28,7 @@
           "name": "layer",
           "byte_offset": 1,
           "data_type": "U1",
-          "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1 - BBR, 2 - Flash, 7 - Default"
+          "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1-BBR, 2 - Flash, 7 - Default"
         },
         {
           "name": "position",
@@ -44,24 +43,73 @@
             "array_of": "U1",
             "count": "N"
           },
-          "description": "Configuration data (key and value pairs). This field contains a sequence of U4 Key IDs followed by values of varying sizes (U1, U2, U4, or U8) depending on the Key ID. Due to its variable internal structure, it is represented as a raw byte array filling the remaining payload."
+          "description": "Configuration data (key and value pairs)"
         }
       ]
     }
   },
   "winning_fingerprint": "432616a368f93c46",
   "agreeing_sources": [
-    "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
     "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+    "F9-HPS-1.21_InterfaceDescription_UBX-21019746"
   ],
   "disagreeing_sources": [
     "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
     "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-    "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
-    "M9-MDR-2.10_InterfaceDescription_UBX-21036678"
+    "M9-ADR-5.15_InterfaceDescription_UBX-22037101"
   ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-CFG-VALGET",
+        "class_id": "0x06",
+        "message_id": "0x8b",
+        "description": "Configuration items",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layer",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1-BBR, 2 - Flash, 7 - Default"
+            },
+            {
+              "name": "position",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of configuration items skipped in the result set before constructing this message (mirrors the equivalent field in the request message)"
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "432616a368f93c46"
+    },
     {
       "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
       "structure": {
@@ -152,6 +200,114 @@
         }
       },
       "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "structure": {
+        "name": "UBX-CFG-VALGET",
+        "class_id": "0x06",
+        "message_id": "0x8b",
+        "description": "Poll request to get configuration values by providing a list of configuration key IDs.",
+        "message_type": "poll_request",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + (num_keys * 4)",
+              "min": 4,
+              "max": 260,
+              "description": "Payload length is 4 bytes (for version, layer, position) plus 4 bytes for each Configuration Key ID. The number of keys (num_keys) can range from 0 to 64."
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layer",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The layer from which the configuration items should be retrieved: 0 - RAM layer, 1 - BBR layer, 2 - Flash layer, 7 - Default layer"
+            },
+            {
+              "name": "position",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Skip this many key values before constructing output message"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "variable_count_from_length",
+              "count_formula": "(payload_length - 4) / 4",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyID",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be retrieved"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "397be3c5161242a8"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "structure": {
+        "name": "UBX-CFG-VALGET",
+        "class_id": "0x06",
+        "message_id": "0x8b",
+        "description": "This message is output by the receiver to return requested configuration data (key and value pairs).",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layer",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1 - BBR, 2 - Flash, 7 - Default"
+            },
+            {
+              "name": "position",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "Number of configuration items skipped in the result set before constructing this message (mirrors the equivalent field in the request message)"
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "432616a368f93c46"
     },
     {
       "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
@@ -316,163 +472,6 @@
         }
       },
       "fingerprint": "ced983108c59484a"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-      "structure": {
-        "name": "UBX-CFG-VALGET",
-        "class_id": "0x06",
-        "message_id": "0x8b",
-        "description": "This message is output by the receiver to return requested configuration data (key and value pairs).",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + N",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x01 for this version)"
-            },
-            {
-              "name": "layer",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1 - BBR, 2 - Flash, 7 - Default"
-            },
-            {
-              "name": "position",
-              "byte_offset": 2,
-              "data_type": "U2",
-              "description": "Number of configuration items skipped in the result set before constructing this message (mirrors the equivalent field in the request message)"
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 4,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "432616a368f93c46"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-      "structure": {
-        "name": "UBX-CFG-VALGET",
-        "class_id": "0x06",
-        "message_id": "0x8b",
-        "description": "Configuration items",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + N",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x01 for this version)"
-            },
-            {
-              "name": "layer",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "The layer from which the configuration item was retrieved: 0 - RAM layer, 1-BBR, 2 - Flash, 7 - Default"
-            },
-            {
-              "name": "position",
-              "byte_offset": 2,
-              "data_type": "U2",
-              "description": "Number of configuration items skipped in the result set before constructing this message (mirrors the equivalent field in the request message)"
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 4,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "432616a368f93c46"
-    },
-    {
-      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
-      "structure": {
-        "name": "UBX-CFG-VALGET",
-        "class_id": "0x06",
-        "message_id": "0x8b",
-        "description": "Poll request to get configuration values by providing a list of configuration key IDs.",
-        "message_type": "poll_request",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + (num_keys * 4)",
-              "min": 4,
-              "max": 260,
-              "description": "Payload length is 4 bytes (for version, layer, position) plus 4 bytes for each Configuration Key ID. The number of keys (num_keys) can range from 0 to 64."
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x01 for this version)"
-            },
-            {
-              "name": "layer",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "The layer from which the configuration items should be retrieved: 0 - RAM layer, 1 - BBR layer, 2 - Flash layer, 7 - Default layer"
-            },
-            {
-              "name": "position",
-              "byte_offset": 2,
-              "data_type": "U2",
-              "description": "Skip this many key values before constructing output message"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "keys",
-              "repetition_type": "variable_count_from_length",
-              "count_formula": "(payload_length - 4) / 4",
-              "group_size_bytes": 4,
-              "base_offset": 4,
-              "fields": [
-                {
-                  "name": "keyID",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Configuration key IDs of the configuration items to be retrieved"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "397be3c5161242a8"
     }
   ]
 }

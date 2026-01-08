@@ -1,0 +1,116 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-TIMEQZSS",
+  "extraction_timestamp": "2026-01-08T04:32:08.649148+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 127,
+    "end": 128
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMEQZSS\nExpected IDs: class_id=0x01, message_id=0x27\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMEQZSS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-NAV-TIMEQZSS\",\n  \"message_class\": \"0x01\",\n  \"message_id\": \"0x27\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"QZSS time solution\\nThis message reports the precise QZSS time of the most recent navigation solution including validity flags and an accuracy estimate.\\nSee the Clocks and time section in the integration manual for details.\",\n  \"payload_length\": {\n    \"fixed\": 20\n  },\n  \"fields\": [\n    {\n      \"name\": \"iTOW\",\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch.\"\n    },\n    {\n      \"name\": \"qzssTow\",\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"unit\": \"S\",\n      \"description\": \"QZSS time of week (rounded to seconds)\"\n    },\n    {\n      \"name\": \"fQzssTow\",\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"unit\": \"ns\",\n      \"description\": \"Fractional part of QZSS time of week (range: +/-500000000).\\nThe precise QZSS time of week in seconds is:\\nqzssTow + (fQzssTow * 1e-9)\"\n    },\n    {\n      \"name\": \"qzssWno\",\n      \"byte_offset\": 12,\n      \"data_type\": \"I2\",\n      \"description\": \"QZSS week number of the navigation epoch\"\n    },\n    {\n      \"name\": \"leaps\",\n      \"byte_offset\": 14,\n      \"data_type\": \"I1\",\n      \"unit\": \"S\",\n      \"description\": \"QZSS leap seconds (QZSS-UTC)\"\n    },\n    {\n      \"name\": \"valid\",\n      \"byte_offset\": 15,\n      \"data_type\": \"X1\",\n      \"description\": \"Validity Flags\",\n      \"sub_fields\": [\n        {\n          \"name\": \"qzssTowValid\",\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid QZSS time of week (qzssTow and fQzssTow)\"\n        },\n        {\n          \"name\": \"qzssWnoValid\",\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid QZSS week number\"\n        },\n        {\n          \"name\": \"leapSValid\",\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid QZSS leap seconds\"\n        },\n        {\n          \"name\": \"reserved\",\n          \"bit_offset\": 3,\n          \"bit_length\": 5,\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"name\": \"tAcc\",\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Time Accuracy Estimate\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-NAV-TIMEQZSS",
+    "message_class": "0x01",
+    "message_id": "0x27",
+    "message_type": "periodic_polled",
+    "description": "QZSS time solution\nThis message reports the precise QZSS time of the most recent navigation solution including validity flags and an accuracy estimate.\nSee the Clocks and time section in the integration manual for details.",
+    "payload_length": {
+      "fixed": 20
+    },
+    "payload": {
+      "fields": [
+        {
+          "name": "iTOW",
+          "byte_offset": 0,
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch."
+        },
+        {
+          "name": "qzssTow",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "unit": "S",
+          "description": "QZSS time of week (rounded to seconds)"
+        },
+        {
+          "name": "fQzssTow",
+          "byte_offset": 8,
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fractional part of QZSS time of week (range: +/-500000000).\nThe precise QZSS time of week in seconds is:\nqzssTow + (fQzssTow * 1e-9)"
+        },
+        {
+          "name": "qzssWno",
+          "byte_offset": 12,
+          "data_type": "I2",
+          "description": "QZSS week number of the navigation epoch"
+        },
+        {
+          "name": "leaps",
+          "byte_offset": 14,
+          "data_type": "I1",
+          "unit": "S",
+          "description": "QZSS leap seconds (QZSS-UTC)"
+        },
+        {
+          "name": "valid",
+          "byte_offset": 15,
+          "data_type": "X1",
+          "description": "Validity Flags",
+          "sub_fields": [
+            {
+              "name": "qzssTowValid",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid QZSS time of week (qzssTow and fQzssTow)"
+            },
+            {
+              "name": "qzssWnoValid",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid QZSS week number"
+            },
+            {
+              "name": "leapSValid",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid QZSS leap seconds"
+            },
+            {
+              "name": "reserved",
+              "bit_offset": 3,
+              "bit_length": 5,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "name": "tAcc",
+          "byte_offset": 16,
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Time Accuracy Estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/r30k2ker6xbb"
+}

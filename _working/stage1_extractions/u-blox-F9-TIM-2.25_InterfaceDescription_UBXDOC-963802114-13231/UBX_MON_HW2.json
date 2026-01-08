@@ -1,0 +1,113 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MON-HW2",
+  "extraction_timestamp": "2026-01-08T04:21:13.997441+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 99,
+    "end": 100
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-HW2\nExpected IDs: class_id=0x0a, message_id=0x0b\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-HW2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"message_class\": \"0x0a\",\n    \"message_id\": \"0x0b\",\n    \"message_name\": \"UBX-MON-HW2\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"Extended hardware status\",\n    \"comment\": \"This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead. Status of different aspects of the hardware such as Imbalance, Low-Level Configuration and POST Results. The first four parameters of this message represent the complex signal from the RF front end. The following rules of thumb apply: \u2022 The smaller the absolute value of the variable ofsI and ofsQ, the better. \u2022 Ideally, the magnitude of the I-part (magI) and the Q-part (magQ) of the complex signal should be the same.\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"ofsI\",\n        \"data_type\": \"I1\",\n        \"description\": \"Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"magI\",\n        \"data_type\": \"U1\",\n        \"description\": \"Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"ofsQ\",\n        \"data_type\": \"I1\",\n        \"description\": \"Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)\"\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"magQ\",\n        \"data_type\": \"U1\",\n        \"description\": \"Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"cfgSource\",\n        \"data_type\": \"U1\",\n        \"description\": \"Source of low-level configuration (114 = ROM, 111 = OTP, 112 = config pins, 102 = flash image)\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"lowLevCfg\",\n        \"data_type\": \"U4\",\n        \"description\": \"Low-level configuration (obsolete for protocol versions greater than 15.00)\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 8\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"postStatus\",\n        \"data_type\": \"U4\",\n        \"description\": \"POST status word\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"reserved2\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "message_class": "0x0a",
+      "message_id": "0x0b",
+      "message_name": "UBX-MON-HW2",
+      "message_type": "periodic_polled",
+      "description": "Extended hardware status",
+      "comment": "This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead. Status of different aspects of the hardware such as Imbalance, Low-Level Configuration and POST Results. The first four parameters of this message represent the complex signal from the RF front end. The following rules of thumb apply: \u2022 The smaller the absolute value of the variable ofsI and ofsQ, the better. \u2022 Ideally, the magnitude of the I-part (magI) and the Q-part (magQ) of the complex signal should be the same.",
+      "payload_length": {
+        "fixed": 28
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "ofsI",
+          "data_type": "I1",
+          "description": "Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "magI",
+          "data_type": "U1",
+          "description": "Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)"
+        },
+        {
+          "byte_offset": 2,
+          "name": "ofsQ",
+          "data_type": "I1",
+          "description": "Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)"
+        },
+        {
+          "byte_offset": 3,
+          "name": "magQ",
+          "data_type": "U1",
+          "description": "Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)"
+        },
+        {
+          "byte_offset": 4,
+          "name": "cfgSource",
+          "data_type": "U1",
+          "description": "Source of low-level configuration (114 = ROM, 111 = OTP, 112 = config pins, 102 = flash image)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 8,
+          "name": "lowLevCfg",
+          "data_type": "U4",
+          "description": "Low-level configuration (obsolete for protocol versions greater than 15.00)"
+        },
+        {
+          "byte_offset": 12,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 8
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 20,
+          "name": "postStatus",
+          "data_type": "U4",
+          "description": "POST status word"
+        },
+        {
+          "byte_offset": 24,
+          "name": "reserved2",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ffcydmggmg3r"
+}

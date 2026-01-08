@@ -1,0 +1,172 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-NAV-SLAS",
+  "extraction_timestamp": "2026-01-08T02:53:59.318684+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 136,
+    "end": 137
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SLAS\nExpected IDs: class_id=0x01, message_id=0x42\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SLAS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-SLAS\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x42\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 20,\n      \"formula\": \"20 + cnt * 8\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"reserved0\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"gmsLon\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.001,\n        \"raw_string\": \"1e-3\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Longitude of the used ground monitoring station\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"gmsLat\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.001,\n        \"raw_string\": \"1e-3\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Latitude of the used ground monitoring station\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"gmsCode\",\n      \"data_type\": \"U1\",\n      \"description\": \"Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/\"\n    },\n    {\n      \"byte_offset\": 17,\n      \"name\": \"qzssSvId\",\n      \"data_type\": \"U1\",\n      \"description\": \"Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"name\": \"serviceFlags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Flags regarding SLAS service\",\n      \"flags\": [\n        {\n          \"name\": \"gmsAvailable\",\n          \"bits\": 0,\n          \"description\": \"1 = Ground monitoring station available\"\n        },\n        {\n          \"name\": \"qzssSvAvailable\",\n          \"bits\": 1,\n          \"description\": \"1 = Correction providing QZSS SV available\"\n        },\n        {\n          \"name\": \"testMode\",\n          \"bits\": 2,\n          \"description\": \"1 = Currently used QZSS SV in test mode\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 19,\n      \"name\": \"cnt\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of pseudorange corrections following\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"repeated_group\",\n      \"num_repeats_field\": \"cnt\",\n      \"repeating_fields\": [\n        {\n          \"byte_offset\": 0,\n          \"name\": \"gnssId\",\n          \"data_type\": \"U1\",\n          \"description\": \"GNSS identifier (see Satellite Numbering)\"\n        },\n        {\n          \"byte_offset\": 1,\n          \"name\": \"svId\",\n          \"data_type\": \"U1\",\n          \"description\": \"Satellite identifier (see Satellite Numbering)\"\n        },\n        {\n          \"byte_offset\": 2,\n          \"name\": \"reserved1\",\n          \"data_type\": \"U1\",\n          \"reserved\": true,\n          \"description\": \"Reserved\"\n        },\n        {\n          \"byte_offset\": 3,\n          \"name\": \"reserved2\",\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"reserved\": true,\n          \"description\": \"Reserved\"\n        },\n        {\n          \"byte_offset\": 6,\n          \"name\": \"prc\",\n          \"data_type\": \"I2\",\n          \"unit\": \"cm\",\n          \"description\": \"Pseudorange correction\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-SLAS",
+    "class_id": "0x01",
+    "message_id": "0x42",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 20,
+        "formula": "20 + cnt * 8"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 0,
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "name": "gmsLon",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.001,
+            "raw_string": "1e-3"
+          },
+          "unit": "deg",
+          "description": "Longitude of the used ground monitoring station"
+        },
+        {
+          "byte_offset": 12,
+          "name": "gmsLat",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.001,
+            "raw_string": "1e-3"
+          },
+          "unit": "deg",
+          "description": "Latitude of the used ground monitoring station"
+        },
+        {
+          "byte_offset": 16,
+          "name": "gmsCode",
+          "data_type": "U1",
+          "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+        },
+        {
+          "byte_offset": 17,
+          "name": "qzssSvId",
+          "data_type": "U1",
+          "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 18,
+          "name": "serviceFlags",
+          "data_type": "X1",
+          "description": "Flags regarding SLAS service",
+          "flags": [
+            {
+              "name": "gmsAvailable",
+              "bits": 0,
+              "description": "1 = Ground monitoring station available"
+            },
+            {
+              "name": "qzssSvAvailable",
+              "bits": 1,
+              "description": "1 = Correction providing QZSS SV available"
+            },
+            {
+              "name": "testMode",
+              "bits": 2,
+              "description": "1 = Currently used QZSS SV in test mode"
+            }
+          ]
+        },
+        {
+          "byte_offset": 19,
+          "name": "cnt",
+          "data_type": "U1",
+          "description": "Number of pseudorange corrections following"
+        },
+        {
+          "byte_offset": 20,
+          "name": "repeated_group",
+          "num_repeats_field": "cnt",
+          "repeating_fields": [
+            {
+              "byte_offset": 0,
+              "name": "gnssId",
+              "data_type": "U1",
+              "description": "GNSS identifier (see Satellite Numbering)"
+            },
+            {
+              "byte_offset": 1,
+              "name": "svId",
+              "data_type": "U1",
+              "description": "Satellite identifier (see Satellite Numbering)"
+            },
+            {
+              "byte_offset": 2,
+              "name": "reserved1",
+              "data_type": "U1",
+              "reserved": true,
+              "description": "Reserved"
+            },
+            {
+              "byte_offset": 3,
+              "name": "reserved2",
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "reserved": true,
+              "description": "Reserved"
+            },
+            {
+              "byte_offset": 6,
+              "name": "prc",
+              "data_type": "I2",
+              "unit": "cm",
+              "description": "Pseudorange correction"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ke4zgug7d3ob"
+}

@@ -2,7 +2,7 @@
   "message_name": "UBX-MON-VER",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.6666666666666666,
+  "agreement_ratio": 0.5555555555555556,
   "winning_structure": {
     "name": "UBX-MON-VER",
     "class_id": "0x0a",
@@ -13,8 +13,7 @@
       "length": {
         "variable": {
           "base": 40,
-          "formula": "40 + N * 30",
-          "min": 40
+          "formula": "40 + N * 30"
         }
       },
       "fields": [
@@ -39,11 +38,10 @@
       ],
       "repeated_groups": [
         {
-          "name": "extensions",
-          "repetition_type": "count_derived_from_length",
-          "count_field_formula": "(payload_length - 40) / 30",
-          "group_size_bytes": 30,
+          "name": "extension",
+          "repetition_type": "fill_remaining",
           "base_offset": 40,
+          "group_size_bytes": 30,
           "fields": [
             {
               "name": "extension",
@@ -52,7 +50,7 @@
                 "array_of": "CH",
                 "count": 30
               },
-              "description": "Extended software information string."
+              "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details."
             }
           ]
         }
@@ -61,45 +59,57 @@
   },
   "winning_fingerprint": "0d9b2810c3b69601",
   "agreeing_sources": [
-    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
     "F9-HPS120_Interfacedescription_UBX-19056845",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
     "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
   ],
   "all_extractions": [
     {
-      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
       "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
+        "message_name": "UBX-MON-VER",
+        "message_class_id": 10,
+        "message_id": 4,
+        "message_type": "polled",
         "description": "Receiver and software version",
-        "message_type": "output",
+        "payload_length": {
+          "variable": {
+            "base": 40,
+            "formula": "40 + N*30"
+          }
+        },
+        "repeated_fields": [
+          {
+            "name": "extension",
+            "data_type": {
+              "array_of": "CH",
+              "count": 30
+            },
+            "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details."
+          }
+        ],
         "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + N * 30",
-              "min": 40
-            }
-          },
           "fields": [
             {
-              "name": "swVersion",
               "byte_offset": 0,
+              "name": "swVersion",
               "data_type": {
                 "array_of": "CH",
                 "count": 30
@@ -107,41 +117,21 @@
               "description": "Nul-terminated software version string."
             },
             {
-              "name": "hwVersion",
               "byte_offset": 30,
+              "name": "hwVersion",
               "data_type": {
                 "array_of": "CH",
                 "count": 10
               },
               "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extensions",
-              "repetition_type": "count_derived_from_length",
-              "count_field_formula": "(payload_length - 40) / 30",
-              "group_size_bytes": 30,
-              "base_offset": 40,
-              "fields": [
-                {
-                  "name": "extension",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information string."
-                }
-              ]
             }
           ]
         }
       },
-      "fingerprint": "0d9b2810c3b69601"
+      "fingerprint": "43193c198a77aaed"
     },
     {
-      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
       "structure": {
         "name": "UBX-MON-VER",
         "class_id": "0x0a",
@@ -152,8 +142,7 @@
           "length": {
             "variable": {
               "base": 40,
-              "formula": "40 + N * 30",
-              "min": 40
+              "formula": "40 + N * 30"
             }
           },
           "fields": [
@@ -178,10 +167,10 @@
           ],
           "repeated_groups": [
             {
-              "name": "extension_fields",
+              "name": "extension",
               "repetition_type": "fill_remaining",
-              "group_size_bytes": 30,
               "base_offset": 40,
+              "group_size_bytes": 30,
               "fields": [
                 {
                   "name": "extension",
@@ -259,66 +248,7 @@
       "fingerprint": "0d9b2810c3b69601"
     },
     {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + N*30",
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extension_strings",
-              "repetition_type": "fill_remaining",
-              "group_size_bytes": 30,
-              "base_offset": 40,
-              "fields": [
-                {
-                  "name": "extension",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "0d9b2810c3b69601"
-    },
-    {
-      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
         "name": "UBX-MON-VER",
         "class_id": "0x0a",
@@ -356,364 +286,13 @@
           "repeated_groups": [
             {
               "name": "extensions",
-              "repetition_type": "fill_remaining",
-              "group_size_bytes": 30,
-              "base_offset": 40,
-              "fields": [
-                {
-                  "name": "extension_string",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information strings."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "31a0d46530f14df2"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + numExtensions * 30",
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extensions",
-              "repetition_type": "count_field",
-              "count_field": "numExtensions",
-              "group_size_bytes": 30,
-              "base_offset": 40,
-              "fields": [
-                {
-                  "name": "extension_string",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information string. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "31a0d46530f14df2"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + n*30",
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extensions",
-              "repetition_type": "fill_remaining",
+              "repetition_type": "count_derived_from_length",
+              "count_field_formula": "(payload_length - 40) / 30",
               "group_size_bytes": 30,
               "base_offset": 40,
               "fields": [
                 {
                   "name": "extension",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information string (nul-terminated)."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "0d9b2810c3b69601"
-    },
-    {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + N * 30"
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extension",
-              "repetition_type": "fill_remaining",
-              "base_offset": 40,
-              "group_size_bytes": 30,
-              "fields": [
-                {
-                  "name": "extension",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "0d9b2810c3b69601"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + N * 30",
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extensions",
-              "repetition_type": "fill_remaining_multiple_of_size",
-              "group_size_bytes": 30,
-              "base_offset": 40,
-              "fields": [
-                {
-                  "name": "extension",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information strings."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "0d9b2810c3b69601"
-    },
-    {
-      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 40,
-              "formula": "40 + N*30",
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extensionFields",
-              "repetition_type": "calculated_from_length",
-              "base_offset": 40,
-              "group_size_bytes": 30,
-              "fields": [
-                {
-                  "name": "extensionString",
-                  "byte_offset": 0,
-                  "data_type": {
-                    "array_of": "CH",
-                    "count": 30
-                  },
-                  "description": "Extended software information string (30 characters)."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e41d389aa30ea860"
-    },
-    {
-      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-      "structure": {
-        "name": "UBX-MON-VER",
-        "class_id": "0x0a",
-        "message_id": "0x04",
-        "description": "Receiver and software version",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "min": 40
-            }
-          },
-          "fields": [
-            {
-              "name": "swVersion",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "CH",
-                "count": 30
-              },
-              "description": "Nul-terminated software version string."
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 30,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Nul-terminated hardware version string"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "extension_strings",
-              "repetition_type": "fill_remaining",
-              "base_offset": 40,
-              "group_size_bytes": 30,
-              "fields": [
-                {
-                  "name": "extension_string",
                   "byte_offset": 0,
                   "data_type": {
                     "array_of": "CH",
@@ -726,7 +305,125 @@
           ]
         }
       },
-      "fingerprint": "31a0d46530f14df2"
+      "fingerprint": "0d9b2810c3b69601"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "message_type": "polled",
+        "description": "Receiver and software version",
+        "payload_length": {
+          "variable": {
+            "base": 40,
+            "formula": "40 + n_extensions * 30"
+          }
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "name": "swVersion",
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "name": "hwVersion",
+              "description": "Nul-terminated hardware version string"
+            },
+            {
+              "byte_offset": 40,
+              "data_type": "repeated_group",
+              "name": "extensions",
+              "num_repetitions": {
+                "variable": "n_extensions"
+              },
+              "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details.",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "name": "extension_string",
+                  "description": "An extended software information string (30 characters long)."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "60c509fa6b9d1696"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N*30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extensionStrings",
+              "repetition_type": "variable_count_per_message_length",
+              "block_size_bytes": 30,
+              "base_offset": 40,
+              "fields": [
+                {
+                  "name": "extension",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information string. Nul-terminated."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "0d9b2810c3b69601"
     },
     {
       "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
@@ -789,10 +486,78 @@
       "fingerprint": "a0a51c9ec13aafea"
     },
     {
-      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-MON-VER",
+          "class_id": "0x0a",
+          "message_id": "0x04",
+          "message_type": "polled",
+          "description": "Poll receiver and software version / Receiver and software version",
+          "request_payload": {
+            "payload_length": {
+              "fixed": 0
+            },
+            "fields": []
+          },
+          "response_payload": {
+            "payload_length": {
+              "variable": {
+                "base": 40,
+                "formula": "40 + N * 30"
+              }
+            },
+            "fields": [
+              {
+                "byte_offset": 0,
+                "name": "swVersion",
+                "data_type": {
+                  "array_of": "CH",
+                  "count": 30
+                },
+                "description": "Nul-terminated software version string."
+              },
+              {
+                "byte_offset": 30,
+                "name": "hwVersion",
+                "data_type": {
+                  "array_of": "CH",
+                  "count": 10
+                },
+                "description": "Nul-terminated hardware version string"
+              },
+              {
+                "byte_offset": 40,
+                "name": "extension_group",
+                "repeated_group": {
+                  "id": "extension_fields",
+                  "name": "extension",
+                  "count_field": "N",
+                  "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long. 'N' is the number of extension strings, implicitly derived from the total message length: N = (payload_length - 40) / 30.",
+                  "fields": [
+                    {
+                      "byte_offset": 0,
+                      "name": "extension_string",
+                      "data_type": {
+                        "array_of": "CH",
+                        "count": 30
+                      },
+                      "description": "Extended software information string."
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
       "structure": {
         "name": "UBX-MON-VER",
-        "class_id": "0x0A",
+        "class_id": "0x0a",
         "message_id": "0x04",
         "description": "Receiver and software version",
         "message_type": "output",
@@ -800,7 +565,126 @@
           "length": {
             "variable": {
               "base": 40,
-              "formula": "40 + N*30"
+              "formula": "40 + N * 30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extensions",
+              "repetition_type": "fill_remaining",
+              "group_size_bytes": 30,
+              "base_offset": 40,
+              "fields": [
+                {
+                  "name": "extension_string",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information strings."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "31a0d46530f14df2"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N*30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extensionFields",
+              "repetition_type": "calculated_from_length",
+              "base_offset": 40,
+              "group_size_bytes": 30,
+              "fields": [
+                {
+                  "name": "extensionString",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information string (30 characters)."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e41d389aa30ea860"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N * 30",
+              "min": 40
             }
           },
           "fields": [
@@ -827,8 +711,8 @@
             {
               "name": "extension_fields",
               "repetition_type": "fill_remaining",
-              "base_offset": 40,
               "group_size_bytes": 30,
+              "base_offset": 40,
               "fields": [
                 {
                   "name": "extension",
@@ -838,6 +722,125 @@
                     "count": 30
                   },
                   "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "0d9b2810c3b69601"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + numExtensions * 30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extensions",
+              "repetition_type": "count_field",
+              "count_field": "numExtensions",
+              "group_size_bytes": 30,
+              "base_offset": 40,
+              "fields": [
+                {
+                  "name": "extension_string",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information string. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "31a0d46530f14df2"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N*30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extension_strings",
+              "repetition_type": "fill_remaining",
+              "group_size_bytes": 30,
+              "base_offset": 40,
+              "fields": [
+                {
+                  "name": "extension",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear."
                 }
               ]
             }
@@ -906,7 +909,65 @@
       "fingerprint": "0d9b2810c3b69601"
     },
     {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0A",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N*30"
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extension_fields",
+              "repetition_type": "fill_remaining",
+              "base_offset": 40,
+              "group_size_bytes": 30,
+              "fields": [
+                {
+                  "name": "extension",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "0d9b2810c3b69601"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
       "structure": {
         "name": "UBX-MON-VER",
         "class_id": "0x0a",
@@ -917,7 +978,7 @@
           "length": {
             "variable": {
               "base": 40,
-              "formula": "40 + N*30",
+              "formula": "40 + n*30",
               "min": 40
             }
           },
@@ -943,9 +1004,9 @@
           ],
           "repeated_groups": [
             {
-              "name": "extensionStrings",
-              "repetition_type": "variable_count_per_message_length",
-              "block_size_bytes": 30,
+              "name": "extensions",
+              "repetition_type": "fill_remaining",
+              "group_size_bytes": 30,
               "base_offset": 40,
               "fields": [
                 {
@@ -955,7 +1016,123 @@
                     "array_of": "CH",
                     "count": 30
                   },
-                  "description": "Extended software information string. Nul-terminated."
+                  "description": "Extended software information string (nul-terminated)."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "0d9b2810c3b69601"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extension_strings",
+              "repetition_type": "fill_remaining",
+              "base_offset": 40,
+              "group_size_bytes": 30,
+              "fields": [
+                {
+                  "name": "extension_string",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information string."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "31a0d46530f14df2"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-MON-VER",
+        "class_id": "0x0a",
+        "message_id": "0x04",
+        "description": "Receiver and software version",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 40,
+              "formula": "40 + N * 30",
+              "min": 40
+            }
+          },
+          "fields": [
+            {
+              "name": "swVersion",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "CH",
+                "count": 30
+              },
+              "description": "Nul-terminated software version string."
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 30,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Nul-terminated hardware version string"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "extensions",
+              "repetition_type": "fill_remaining_multiple_of_size",
+              "group_size_bytes": 30,
+              "base_offset": 40,
+              "fields": [
+                {
+                  "name": "extension",
+                  "byte_offset": 0,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information strings."
                 }
               ]
             }

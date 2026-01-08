@@ -1,6 +1,6 @@
 {
   "message_name": "UBX-CFG-GNSS",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-GNSS",
@@ -21,19 +21,19 @@
             "name": "msgVer",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Message version"
+            "description": "Message version (0x00 for this version)"
           },
           {
             "name": "numTrkChHw",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Number of tracking channels available in hardware"
+            "description": "Number of tracking channels available in hardware (read only)"
           },
           {
             "name": "numTrkChUse",
             "byte_offset": 2,
             "data_type": "U1",
-            "description": "Number of tracking channels to use"
+            "description": "Number of tracking channels to use. Read only for protocol versions > 23.00. 0xFF = set to max."
           },
           {
             "name": "numConfigBlocks",
@@ -47,8 +47,8 @@
             "name": "configBlock",
             "repetition_type": "count_field",
             "count_field": "numConfigBlocks",
-            "base_offset": 4,
             "group_size_bytes": 8,
+            "base_offset": 4,
             "fields": [
               {
                 "name": "gnssId",
@@ -60,13 +60,13 @@
                 "name": "resTrkCh",
                 "byte_offset": 1,
                 "data_type": "U1",
-                "description": "Number of reserved (minimum) tracking channels for this system"
+                "description": "Number of reserved tracking channels. Read only for protocol versions > 23.00."
               },
               {
                 "name": "maxTrkCh",
                 "byte_offset": 2,
                 "data_type": "U1",
-                "description": "Maximum number of tracking channels used for this system"
+                "description": "Maximum number of tracking channels used. Read only for protocol versions > 23.00."
               },
               {
                 "name": "reserved0",
@@ -92,7 +92,7 @@
                       "name": "sigCfgMask",
                       "bit_start": 16,
                       "bit_end": 23,
-                      "description": "Signal configuration mask"
+                      "description": "Signal configuration mask (dependent on gnssId)"
                     }
                   ]
                 }
@@ -105,22 +105,12 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -135,17 +125,55 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": [
+          "Minimal bitfield detail but structurally accurate"
+        ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "The UBX-CFG-GNSS message structure is highly stable across u-blox receiver generations (M8, M9, F9). All 8 extractions correctly identified the fixed 4-byte header and the variable-length repeated block structure (8 bytes per block). All extractions correctly identified the fields within the block and the bit positions in the 'flags' bitfield. Differences in the description text (e.g., specific signals listed in 'sigCfgMask' or read-only version constraints) accurately reflect the differences in the source hardware manuals and are not extraction errors. Minor naming differences (e.g., 'reserved0' vs 'reserved1' or 'gnssConfigBlock' vs 'configBlock') are valid aliases."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
+        ],
+        "structure": {
+          "flags_bitfield_reserved": "Includes explicit bits 1-15 and 24-31 as reserved"
+        },
+        "reason": "Detailed documentation that explicitly labels all reserved bit ranges within the 4-byte flags field."
+      },
+      {
+        "sources": [
+          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
+        ],
+        "structure": {
+          "sigCfgMask_content": "Lists different supported signals (e.g., L2C, L5, B2A) depending on the specific receiver's capabilities"
+        },
+        "reason": "The message structure is constant, but the valid bits within sigCfgMask vary depending on whether the receiver is single-band (L1) or multi-band (L1/L2/L5)."
+      }
+    ],
+    "reasoning": "All extractions represent the same message structure (UBX-CFG-GNSS). The primary differences are in the level of detail provided for the bitfield 'sigCfgMask' and whether certain bits are explicitly labeled as 'reserved'. There is also a protocol-level variation where fields numTrkChUse, resTrkCh, and maxTrkCh became Read Only in Protocol Version 23.00, though the binary format of the message remains unchanged across all generations from M8 through M9 and F9."
   }
 }

@@ -1,0 +1,399 @@
+{
+  "message_name": "UBX-NAV-ORB",
+  "protocol_version": 0,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-NAV-ORB",
+      "class_id": "0x01",
+      "message_id": "0x34",
+      "description": "GNSS orbit database info",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numSv * 6"
+        }
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "version",
+          "fixed_value": 1,
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "U1",
+          "name": "numSv",
+          "description": "Number of SVs in the database"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved0",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "name": "repeated_group",
+          "count_field": "numSv",
+          "description": "Information for each satellite",
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "gnssId",
+              "description": "GNSS ID"
+            },
+            {
+              "byte_offset": 1,
+              "data_type": "U1",
+              "name": "svId",
+              "description": "Satellite ID"
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "X1",
+              "name": "svFlag",
+              "description": "Information Flags",
+              "sub_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 2,
+                  "name": "health",
+                  "description": "SV health",
+                  "value_mapping": {
+                    "0": "unknown",
+                    "1": "healthy",
+                    "2": "not healty"
+                  }
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 2,
+                  "name": "visibility",
+                  "description": "SV visibility",
+                  "value_mapping": {
+                    "0": "unknown",
+                    "1": "below horizon",
+                    "2": "above horizon",
+                    "3": "above elevation mask"
+                  }
+                }
+              ]
+            },
+            {
+              "byte_offset": 3,
+              "data_type": "X1",
+              "name": "eph",
+              "description": "Ephemeris data. In products supporting L5 signals, the receiver may store multiple ephemeris data sets per satellite. ephUsability and ephSource fields show information on one of the data sets. It is not possible to choose which data set's status is shown.",
+              "sub_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 5,
+                  "name": "ephUsability",
+                  "description": "How long the receiver will be able to use the stored ephemeris data from now on",
+                  "value_mapping": {
+                    "31": "The usability period is unknown",
+                    "30": "The usability period is more than 450 minutes",
+                    "range(1, 29)": "The usability period is between (n-1)*15 and n*15 minutes",
+                    "0": "Ephemeris can no longer be used"
+                  }
+                },
+                {
+                  "bit_offset": 5,
+                  "bit_length": 3,
+                  "name": "ephSource",
+                  "description": "Source of ephemeris data",
+                  "value_mapping": {
+                    "0": "not available",
+                    "1": "GNSS transmission",
+                    "2": "external aiding",
+                    "range(3, 7)": "other"
+                  }
+                }
+              ]
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "X1",
+              "name": "alm",
+              "description": "Almanac data",
+              "sub_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 5,
+                  "name": "almUsability",
+                  "description": "How long the receiver will be able to use the stored almanac data from now on",
+                  "value_mapping": {
+                    "31": "The usability period is unknown",
+                    "30": "The usability period is more than 30 days",
+                    "range(1, 29)": "The usability period is between n-1 and n days",
+                    "0": "Almanac can no longer be used"
+                  }
+                },
+                {
+                  "bit_offset": 5,
+                  "bit_length": 3,
+                  "name": "almSource",
+                  "description": "Source of almanac data",
+                  "value_mapping": {
+                    "0": "not available"
+                  }
+                }
+              ]
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "X1",
+              "name": "otherOrb",
+              "description": "Other orbit data available",
+              "sub_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 5,
+                  "name": "anoAopUsability",
+                  "description": "How long the receiver will be able to use the orbit data from now on",
+                  "value_mapping": {
+                    "31": "The usability period is unknown",
+                    "30": "The usability period is more than 30 days",
+                    "range(1, 29)": "The usability period is between n-1 and n days",
+                    "0": "Data can no longer be used"
+                  }
+                },
+                {
+                  "bit_offset": 5,
+                  "bit_length": 3,
+                  "name": "type",
+                  "description": "Type of orbit data",
+                  "value_mapping": {
+                    "0": "No orbit data available",
+                    "1": "AssistNow Offline data",
+                    "2": "AssistNow Autonomous data",
+                    "range(3, 7)": "Other orbit data"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "empty_4bf483e4838f",
+  "agreeing_sources": [
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_message_extraction": {
+          "name": "UBX-NAV-ORB",
+          "class_id": "0x01",
+          "message_id": "0x34",
+          "description": "GNSS orbit database info",
+          "message_type": "periodic_polled",
+          "payload_length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSv * 6"
+            }
+          },
+          "payload_fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "version",
+              "fixed_value": 1,
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "U1",
+              "name": "numSv",
+              "description": "Number of SVs in the database"
+            },
+            {
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "name": "reserved0",
+              "reserved": true,
+              "description": "Reserved"
+            },
+            {
+              "byte_offset": 8,
+              "name": "repeated_group",
+              "count_field": "numSv",
+              "description": "Information for each satellite",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "name": "gnssId",
+                  "description": "GNSS ID"
+                },
+                {
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "name": "svId",
+                  "description": "Satellite ID"
+                },
+                {
+                  "byte_offset": 2,
+                  "data_type": "X1",
+                  "name": "svFlag",
+                  "description": "Information Flags",
+                  "sub_fields": [
+                    {
+                      "bit_offset": 0,
+                      "bit_length": 2,
+                      "name": "health",
+                      "description": "SV health",
+                      "value_mapping": {
+                        "0": "unknown",
+                        "1": "healthy",
+                        "2": "not healty"
+                      }
+                    },
+                    {
+                      "bit_offset": 2,
+                      "bit_length": 2,
+                      "name": "visibility",
+                      "description": "SV visibility",
+                      "value_mapping": {
+                        "0": "unknown",
+                        "1": "below horizon",
+                        "2": "above horizon",
+                        "3": "above elevation mask"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 3,
+                  "data_type": "X1",
+                  "name": "eph",
+                  "description": "Ephemeris data. In products supporting L5 signals, the receiver may store multiple ephemeris data sets per satellite. ephUsability and ephSource fields show information on one of the data sets. It is not possible to choose which data set's status is shown.",
+                  "sub_fields": [
+                    {
+                      "bit_offset": 0,
+                      "bit_length": 5,
+                      "name": "ephUsability",
+                      "description": "How long the receiver will be able to use the stored ephemeris data from now on",
+                      "value_mapping": {
+                        "31": "The usability period is unknown",
+                        "30": "The usability period is more than 450 minutes",
+                        "range(1, 29)": "The usability period is between (n-1)*15 and n*15 minutes",
+                        "0": "Ephemeris can no longer be used"
+                      }
+                    },
+                    {
+                      "bit_offset": 5,
+                      "bit_length": 3,
+                      "name": "ephSource",
+                      "description": "Source of ephemeris data",
+                      "value_mapping": {
+                        "0": "not available",
+                        "1": "GNSS transmission",
+                        "2": "external aiding",
+                        "range(3, 7)": "other"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 4,
+                  "data_type": "X1",
+                  "name": "alm",
+                  "description": "Almanac data",
+                  "sub_fields": [
+                    {
+                      "bit_offset": 0,
+                      "bit_length": 5,
+                      "name": "almUsability",
+                      "description": "How long the receiver will be able to use the stored almanac data from now on",
+                      "value_mapping": {
+                        "31": "The usability period is unknown",
+                        "30": "The usability period is more than 30 days",
+                        "range(1, 29)": "The usability period is between n-1 and n days",
+                        "0": "Almanac can no longer be used"
+                      }
+                    },
+                    {
+                      "bit_offset": 5,
+                      "bit_length": 3,
+                      "name": "almSource",
+                      "description": "Source of almanac data",
+                      "value_mapping": {
+                        "0": "not available"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 5,
+                  "data_type": "X1",
+                  "name": "otherOrb",
+                  "description": "Other orbit data available",
+                  "sub_fields": [
+                    {
+                      "bit_offset": 0,
+                      "bit_length": 5,
+                      "name": "anoAopUsability",
+                      "description": "How long the receiver will be able to use the orbit data from now on",
+                      "value_mapping": {
+                        "31": "The usability period is unknown",
+                        "30": "The usability period is more than 30 days",
+                        "range(1, 29)": "The usability period is between n-1 and n days",
+                        "0": "Data can no longer be used"
+                      }
+                    },
+                    {
+                      "bit_offset": 5,
+                      "bit_length": 3,
+                      "name": "type",
+                      "description": "Type of orbit data",
+                      "value_mapping": {
+                        "0": "No orbit data available",
+                        "1": "AssistNow Offline data",
+                        "2": "AssistNow Autonomous data",
+                        "range(3, 7)": "Other orbit data"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    }
+  ]
+}

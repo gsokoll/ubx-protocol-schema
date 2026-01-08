@@ -1,0 +1,178 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-TIM-TP",
+  "extraction_timestamp": "2026-01-08T07:00:10.496130+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 447,
+    "end": 449
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TP\nExpected IDs: class_id=0x0D, message_id=0x01\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TP\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x0D\",\n  \"message_id\": \"0x01\",\n  \"name\": \"UBX-TIM-TP\",\n  \"description\": \"Time pulse time data\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 16\n  },\n  \"firmware_support\": [\n    \"u-blox 8/u-blox M8 protocol versions 15\",\n    \"15.01\",\n    \"16\",\n    \"17\",\n    \"18\",\n    \"19\",\n    \"19.1\",\n    \"19.2\",\n    \"20\",\n    \"20.01\",\n    \"20.1\",\n    \"20.2\",\n    \"20.3\",\n    \"22\"\n  ],\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"towMS\",\n      \"description\": \"Time pulse time of week according to time base\",\n      \"unit\": \"ms\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"towSubMS\",\n      \"description\": \"Submillisecond part of towMS\",\n      \"scale\": {\n        \"raw\": \"2^-32\",\n        \"multiplier\": 0.0000000002328306436538696\n      },\n      \"unit\": \"ms\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"qErr\",\n      \"description\": \"Quantization error of time pulse\",\n      \"unit\": \"ps\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U2\",\n      \"name\": \"week\",\n      \"description\": \"Time pulse week number according to time base\",\n      \"unit\": \"weeks\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"description\": \"Flags\",\n      \"bitfield\": [\n        {\n          \"name\": \"timeBase\",\n          \"bits\": \"0\",\n          \"description\": \"Time base type\",\n          \"values\": {\n            \"0\": \"Time base is GNSS\",\n            \"1\": \"Time base is UTC\"\n          }\n        },\n        {\n          \"name\": \"utc\",\n          \"bits\": \"1\",\n          \"description\": \"UTC availability\",\n          \"values\": {\n            \"0\": \"UTC not available\",\n            \"1\": \"UTC available\"\n          }\n        },\n        {\n          \"name\": \"raim\",\n          \"bits\": \"2\",\n          \"description\": \"(T)RAIM information (0 = RAIM not active or information not available, 1 = RAIM active)\",\n          \"values\": {\n            \"0\": \"RAIM not active or information not available\",\n            \"1\": \"RAIM active\"\n          }\n        },\n        {\n          \"name\": \"reserved\",\n          \"bits\": \"3\",\n          \"reserved\": true\n        },\n        {\n          \"name\": \"qErrInvalid\",\n          \"bits\": \"4\",\n          \"description\": \"Quantization error validity\",\n          \"values\": {\n            \"0\": \"Quantization error valid\",\n            \"1\": \"Quantization error invalid\"\n          }\n        },\n        {\n          \"name\": \"reserved\",\n          \"bits\": \"5-7\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": \"X1\",\n      \"name\": \"refInfo\",\n      \"description\": \"Time reference information\",\n      \"bitfield\": [\n        {\n          \"name\": \"timeRefGnss\",\n          \"bits\": \"0-3\",\n          \"description\": \"GNSS reference information. Only valid if time base is GNSS (timeBase=0).\",\n          \"values\": {\n            \"0\": \"GPS\",\n            \"1\": \"GLONASS\",\n            \"2\": \"BeiDou\",\n            \"3\": \"Galileo\",\n            \"15\": \"Unknown\"\n          }\n        },\n        {\n          \"name\": \"utcStandard\",\n          \"bits\": \"4-7\",\n          \"description\": \"UTC standard identifier. Only valid if time base is UTC (timeBase=1).\",\n          \"values\": {\n            \"0\": \"Information not available\",\n            \"1\": \"Communications Research Laboratory (CRL), Tokyo, Japan\",\n            \"2\": \"National Institute of Standards and Technology (NIST)\",\n            \"3\": \"U.S. Naval Observatory (USNO)\",\n            \"4\": \"International Bureau of Weights and Measures (BIPM)\",\n            \"5\": \"European laboratories\",\n            \"6\": \"Former Soviet Union (SU)\",\n            \"7\": \"National Time Service Center (NTSC), China\",\n            \"15\": \"Unknown\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x0D",
+    "message_id": "0x01",
+    "name": "UBX-TIM-TP",
+    "description": "Time pulse time data",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 16
+    },
+    "firmware_support": [
+      "u-blox 8/u-blox M8 protocol versions 15",
+      "15.01",
+      "16",
+      "17",
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22"
+    ],
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "towMS",
+          "description": "Time pulse time of week according to time base",
+          "unit": "ms"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "towSubMS",
+          "description": "Submillisecond part of towMS",
+          "scale": {
+            "raw": "2^-32",
+            "multiplier": 2.328306436538696e-10
+          },
+          "unit": "ms"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "qErr",
+          "description": "Quantization error of time pulse",
+          "unit": "ps"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U2",
+          "name": "week",
+          "description": "Time pulse week number according to time base",
+          "unit": "weeks"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Flags",
+          "bitfield": [
+            {
+              "name": "timeBase",
+              "bits": "0",
+              "description": "Time base type",
+              "values": {
+                "0": "Time base is GNSS",
+                "1": "Time base is UTC"
+              }
+            },
+            {
+              "name": "utc",
+              "bits": "1",
+              "description": "UTC availability",
+              "values": {
+                "0": "UTC not available",
+                "1": "UTC available"
+              }
+            },
+            {
+              "name": "raim",
+              "bits": "2",
+              "description": "(T)RAIM information (0 = RAIM not active or information not available, 1 = RAIM active)",
+              "values": {
+                "0": "RAIM not active or information not available",
+                "1": "RAIM active"
+              }
+            },
+            {
+              "name": "reserved",
+              "bits": "3",
+              "reserved": true
+            },
+            {
+              "name": "qErrInvalid",
+              "bits": "4",
+              "description": "Quantization error validity",
+              "values": {
+                "0": "Quantization error valid",
+                "1": "Quantization error invalid"
+              }
+            },
+            {
+              "name": "reserved",
+              "bits": "5-7",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "X1",
+          "name": "refInfo",
+          "description": "Time reference information",
+          "bitfield": [
+            {
+              "name": "timeRefGnss",
+              "bits": "0-3",
+              "description": "GNSS reference information. Only valid if time base is GNSS (timeBase=0).",
+              "values": {
+                "0": "GPS",
+                "1": "GLONASS",
+                "2": "BeiDou",
+                "3": "Galileo",
+                "15": "Unknown"
+              }
+            },
+            {
+              "name": "utcStandard",
+              "bits": "4-7",
+              "description": "UTC standard identifier. Only valid if time base is UTC (timeBase=1).",
+              "values": {
+                "0": "Information not available",
+                "1": "Communications Research Laboratory (CRL), Tokyo, Japan",
+                "2": "National Institute of Standards and Technology (NIST)",
+                "3": "U.S. Naval Observatory (USNO)",
+                "4": "International Bureau of Weights and Measures (BIPM)",
+                "5": "European laboratories",
+                "6": "Former Soviet Union (SU)",
+                "7": "National Time Service Center (NTSC), China",
+                "15": "Unknown"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/upa7aestvpwl"
+}

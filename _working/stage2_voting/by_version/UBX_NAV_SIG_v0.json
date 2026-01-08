@@ -2,18 +2,18 @@
   "message_name": "UBX-NAV-SIG",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.7142857142857143,
+  "agreement_ratio": 0.5882352941176471,
   "winning_structure": {
     "name": "UBX-NAV-SIG",
     "class_id": "0x01",
     "message_id": "0x43",
-    "description": "Signal information",
+    "description": "This message displays information about signals currently tracked by the receiver.",
     "message_type": "output",
     "payload": {
       "length": {
         "variable": {
           "base": 8,
-          "formula": "8 + numSigs * 16",
+          "formula": "8 + numSigs*16",
           "min": 8
         }
       },
@@ -22,7 +22,7 @@
           "name": "iTOW",
           "byte_offset": 0,
           "data_type": "U4",
-          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
           "unit": "ms"
         },
         {
@@ -50,7 +50,7 @@
       ],
       "repeated_groups": [
         {
-          "name": "signals",
+          "name": "signal_info",
           "repetition_type": "count_field",
           "count_field": "numSigs",
           "group_size_bytes": 16,
@@ -85,11 +85,11 @@
               "byte_offset": 4,
               "data_type": "I2",
               "description": "Pseudorange residual",
-              "unit": "m",
               "scale": {
                 "raw": "0.1",
                 "multiplier": 0.1
-              }
+              },
+              "unit": "m"
             },
             {
               "name": "cno",
@@ -108,13 +108,13 @@
               "name": "corrSource",
               "byte_offset": 8,
               "data_type": "U1",
-              "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 9 = CLAS corrections, 10 = LPP OSR corrections, 11 = LPP SSR corrections, 12 = GAL HAS corrections"
+              "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections"
             },
             {
               "name": "ionoModel",
               "byte_offset": 9,
               "data_type": "U1",
-              "description": "Ionospheric model used: 0 = Default delay values, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 4 = NTCM model transmitted by Galileo, 8 = Iono delay derived from dual frequency observations"
+              "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
             },
             {
               "name": "sigFlags",
@@ -170,12 +170,6 @@
                     "bit_start": 8,
                     "bit_end": 8,
                     "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                  },
-                  {
-                    "name": "authStatus",
-                    "bit_start": 9,
-                    "bit_end": 9,
-                    "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
                   }
                 ]
               }
@@ -197,228 +191,208 @@
   },
   "winning_fingerprint": "f088352c80b9387d",
   "agreeing_sources": [
-    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "F9-HPS120_Interfacedescription_UBX-19056845",
-    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
     "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
   ],
   "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "all_extractions": [
     {
-      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
       "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
+        "class_id": 1,
+        "message_id": 67,
+        "message_name": "UBX-NAV-SIG",
+        "message_type": "periodic_polled",
         "description": "Signal information",
-        "message_type": "output",
+        "payload_length": {
+          "variable": {
+            "base": 8,
+            "formula": "8 + N*16",
+            "parameter": "numSigs"
+          }
+        },
         "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs * 16",
-              "min": 8
-            }
-          },
           "fields": [
             {
-              "name": "iTOW",
               "byte_offset": 0,
               "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
-              "unit": "ms"
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
             },
             {
-              "name": "version",
               "byte_offset": 4,
               "data_type": "U1",
+              "name": "version",
+              "fixed_value": 0,
               "description": "Message version (0x00 for this version)"
             },
             {
-              "name": "numSigs",
               "byte_offset": 5,
               "data_type": "U1",
+              "name": "numSigs",
               "description": "Number of signals"
             },
             {
-              "name": "reserved0",
               "byte_offset": 6,
               "data_type": {
                 "array_of": "U1",
                 "count": 2
               },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
+              "name": "reserved0",
+              "reserved": true,
+              "description": "Reserved"
+            },
             {
-              "name": "signals",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "unit": "m",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  }
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 9 = CLAS corrections, 10 = LPP OSR corrections, 11 = LPP SSR corrections, 12 = GAL HAS corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = Default delay values, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 4 = NTCM model transmitted by Galileo, 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": {
+                  "fields": [
+                    {
+                      "byte_offset": 0,
+                      "data_type": "U1",
+                      "name": "gnssId",
+                      "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                    },
+                    {
+                      "byte_offset": 1,
+                      "data_type": "U1",
+                      "name": "svId",
+                      "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                    },
+                    {
+                      "byte_offset": 2,
+                      "data_type": "U1",
+                      "name": "sigId",
+                      "description": "New style signal identifier (see Signal Identifiers)"
+                    },
+                    {
+                      "byte_offset": 3,
+                      "data_type": "U1",
+                      "name": "freqId",
+                      "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                    },
+                    {
+                      "byte_offset": 4,
+                      "data_type": "I2",
+                      "name": "prRes",
+                      "scale": {
+                        "multiplier": 0.1,
+                        "raw_string": "0.1"
                       },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
+                      "unit": "m",
+                      "description": "Pseudorange residual"
+                    },
+                    {
+                      "byte_offset": 6,
+                      "data_type": "U1",
+                      "name": "cno",
+                      "unit": "dBHz",
+                      "description": "Carrier-to-noise density ratio (signal strength)"
+                    },
+                    {
+                      "byte_offset": 7,
+                      "data_type": "U1",
+                      "name": "qualityInd",
+                      "description": "Signal quality indicator: \u2022 0 = no signal \u2022 1 = searching signal \u2022 2 = signal acquired \u2022 3 = signal detected but unusable \u2022 4 = code locked and time synchronized \u2022 5, 6, 7 = code and carrier locked and time synchronized"
+                    },
+                    {
+                      "byte_offset": 8,
+                      "data_type": "U1",
+                      "name": "corrSource",
+                      "description": "Correction source: \u2022 0 = no corrections \u2022 1 = SBAS corrections \u2022 2 = BeiDou corrections \u2022 3 = RTCM2 corrections \u2022 4 = RTCM3 OSR corrections \u2022 5 = RTCM3 SSR corrections \u2022 6 = QZSS SLAS corrections \u2022 7 = SPARTN corrections \u2022 8 = CLAS corrections"
+                    },
+                    {
+                      "byte_offset": 9,
+                      "data_type": "U1",
+                      "name": "ionoModel",
+                      "description": "Ionospheric model used: \u2022 0 = no model \u2022 1 = Klobuchar model transmitted by GPS \u2022 2 = SBAS model \u2022 3 = Klobuchar model transmitted by BeiDou \u2022 8 = Iono delay derived from dual frequency observations"
+                    },
+                    {
+                      "byte_offset": 10,
+                      "data_type": "X2",
+                      "name": "sigFlags",
+                      "description": "Signal related flags",
+                      "bitfields": [
+                        {
+                          "bit_offset": 0,
+                          "num_bits": 2,
+                          "name": "health",
+                          "description": "Signal health flag: \u2022 0 = unknown \u2022 1 = healthy \u2022 2 = unhealthy"
+                        },
+                        {
+                          "bit_offset": 2,
+                          "num_bits": 1,
+                          "name": "prSmoothed",
+                          "description": "1 = Pseudorange has been smoothed"
+                        },
+                        {
+                          "bit_offset": 3,
+                          "num_bits": 1,
+                          "name": "prUsed",
+                          "description": "1 = Pseudorange has been used for this signal"
+                        },
+                        {
+                          "bit_offset": 4,
+                          "num_bits": 1,
+                          "name": "crUsed",
+                          "description": "1 = Carrier range has been used for this signal"
+                        },
+                        {
+                          "bit_offset": 5,
+                          "num_bits": 1,
+                          "name": "doUsed",
+                          "description": "1 = Range rate (Doppler) has been used for this signal"
+                        }
+                      ]
+                    },
+                    {
+                      "byte_offset": 12,
+                      "data_type": {
+                        "array_of": "U1",
+                        "count": 4
                       },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "authStatus",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
-                      }
-                    ]
-                  }
+                      "name": "reserved1",
+                      "reserved": true,
+                      "description": "Reserved"
+                    }
+                  ],
+                  "byte_length": 16
                 },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
+                "count": "numSigs"
+              },
+              "name": "repeated_signals",
+              "description": "Information for each tracked signal"
             }
           ]
         }
       },
-      "fingerprint": "f088352c80b9387d"
+      "fingerprint": "8dbc158542f3b88b"
     },
     {
-      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
       "structure": {
         "name": "UBX-NAV-SIG",
         "class_id": "0x01",
         "message_id": "0x43",
-        "description": "This message displays information about signals currently tracked or searched by the receiver.",
-        "message_type": "periodic_polled",
+        "description": "This message displays information about signals currently tracked by the receiver.",
+        "message_type": "output",
         "payload": {
           "length": {
             "variable": {
@@ -432,7 +406,7 @@
               "name": "iTOW",
               "byte_offset": 0,
               "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
               "unit": "ms"
             },
             {
@@ -460,7 +434,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "signals",
+              "name": "signal_info",
               "repetition_type": "count_field",
               "count_field": "numSigs",
               "group_size_bytes": 16,
@@ -495,11 +469,11 @@
                   "byte_offset": 4,
                   "data_type": "I2",
                   "description": "Pseudorange residual",
-                  "unit": "m",
                   "scale": {
                     "raw": "0.1",
                     "multiplier": 0.1
-                  }
+                  },
+                  "unit": "m"
                 },
                 {
                   "name": "cno",
@@ -518,7 +492,7 @@
                   "name": "corrSource",
                   "byte_offset": 8,
                   "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections"
                 },
                 {
                   "name": "ionoModel",
@@ -580,12 +554,6 @@
                         "bit_start": 8,
                         "bit_end": 8,
                         "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "authStatus",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
                       }
                     ]
                   }
@@ -818,6 +786,1784 @@
       "fingerprint": "f088352c80b9387d"
     },
     {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "Signal information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signals",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "unit": "m",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  }
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 9 = CLAS corrections, 10 = LPP OSR corrections, 11 = LPP SSR corrections, 12 = GAL HAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used: 0 = Default delay values, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 4 = NTCM model transmitted by Galileo, 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-NAV-SIG",
+          "class_id": "0x01",
+          "message_id": "0x43",
+          "message_type": "periodic_polled",
+          "description": "This message displays information about signals currently tracked by the receiver. On the F9 platform the maximum number of signals is 120.",
+          "payload_length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16"
+            }
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "version",
+              "fixed_value": 0,
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "U1",
+              "name": "numSigs",
+              "description": "Number of signals"
+            },
+            {
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "repeated_group",
+              "name": "signals",
+              "count_field": "numSigs",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "name": "gnssId",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "name": "svId",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "name": "sigId",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "name": "freqId",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "name": "prRes",
+                  "scale": {
+                    "multiplier": 0.1,
+                    "raw": "0.1"
+                  },
+                  "unit": "m",
+                  "description": "Pseudorange residual"
+                },
+                {
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "name": "cno",
+                  "unit": "dBHz",
+                  "description": "Carrier-to-noise density ratio (signal strength)"
+                },
+                {
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "name": "qualityInd",
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "name": "corrSource",
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections"
+                },
+                {
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "name": "ionoModel",
+                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "name": "sigFlags",
+                  "description": "Signal related flags",
+                  "bit_fields": [
+                    {
+                      "bit_offset": 0,
+                      "num_bits": 2,
+                      "name": "health",
+                      "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+                    },
+                    {
+                      "bit_offset": 2,
+                      "num_bits": 1,
+                      "name": "prSmoothed",
+                      "description": "1 = Pseudorange has been smoothed"
+                    },
+                    {
+                      "bit_offset": 3,
+                      "num_bits": 1,
+                      "name": "prUsed",
+                      "description": "1 = Pseudorange has been used for this signal"
+                    },
+                    {
+                      "bit_offset": 4,
+                      "num_bits": 1,
+                      "name": "crUsed",
+                      "description": "1 = Carrier range has been used for this signal"
+                    },
+                    {
+                      "bit_offset": 5,
+                      "num_bits": 1,
+                      "name": "doUsed",
+                      "description": "1 = Range rate (Doppler) has been used for this signal"
+                    },
+                    {
+                      "bit_offset": 6,
+                      "num_bits": 1,
+                      "name": "prCorrUsed",
+                      "description": "1 = Pseudorange corrections have been used for this signal"
+                    },
+                    {
+                      "bit_offset": 7,
+                      "num_bits": 1,
+                      "name": "crCorrUsed",
+                      "description": "1 = Carrier range corrections have been used for this signal"
+                    },
+                    {
+                      "bit_offset": 8,
+                      "num_bits": 1,
+                      "name": "doCorrUsed",
+                      "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "name": "reserved1",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "7f5193856b190d61"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "This message displays information about signals currently tracked or searched by the receiver.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signals",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  },
+                  "unit": "m"
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator:\n0 = no signal\n1 = searching signal\n2 = signal acquired\n3 = signal detected but unusable\n4 = code locked and time synchronized\n5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source:\n0 = no corrections\n1 = SBAS corrections\n2 = BeiDou corrections\n3 = RTCM2 corrections\n4 = RTCM3 OSR corrections\n5 = RTCM3 SSR corrections\n6 = QZSS SLAS corrections\n7 = SPARTN corrections\n8 = CLAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used:\n0 = no model\n1 = Klobuchar model transmitted by GPS\n2 = SBAS model\n3 = Klobuchar model transmitted by BeiDou\n8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag:\n0 = unknown\n1 = healthy\n2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\n0 = Unknown\n1 = Authenticated\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "Signal information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signals",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "unit": "m",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  }
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "reserved_bit_9_15",
+                        "bit_start": 9,
+                        "bit_end": 15,
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved_after_sigFlags",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_message": {
+          "class_id": "0x01",
+          "message_id": "0x43",
+          "message_name": "UBX-NAV-SIG",
+          "message_type": "periodic_polled",
+          "description": "This message displays information about signals currently tracked or searched by the receiver.",
+          "payload_length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16"
+            }
+          },
+          "payload": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "U1",
+              "name": "numSigs",
+              "description": "Number of signals"
+            },
+            {
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 8,
+              "data_type": {
+                "repeated": {
+                  "count_field": "numSigs",
+                  "group_length": 16
+                }
+              },
+              "name": "signal_info",
+              "elements": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "name": "gnssId",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "name": "svId",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "name": "sigId",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "name": "freqId",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "name": "prRes",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  },
+                  "unit": "m",
+                  "description": "Pseudorange residual"
+                },
+                {
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "name": "cno",
+                  "unit": "dBHz",
+                  "description": "Carrier-to-noise density ratio (signal strength)"
+                },
+                {
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "name": "qualityInd",
+                  "description": "Signal quality indicator:",
+                  "values": {
+                    "0": "no signal",
+                    "1": "searching signal",
+                    "2": "signal acquired",
+                    "3": "signal detected but unusable",
+                    "4": "code locked and time synchronized",
+                    "5,6,7": "code and carrier locked and time synchronized"
+                  }
+                },
+                {
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "name": "corrSource",
+                  "description": "Correction source:",
+                  "values": {
+                    "0": "no corrections",
+                    "1": "SBAS corrections",
+                    "2": "BeiDou corrections",
+                    "3": "RTCM2 corrections",
+                    "4": "RTCM3 OSR corrections",
+                    "5": "RTCM3 SSR corrections",
+                    "6": "QZSS SLAS corrections",
+                    "7": "SPARTN corrections",
+                    "8": "CLAS corrections"
+                  }
+                },
+                {
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "name": "ionoModel",
+                  "description": "Ionospheric model used:",
+                  "values": {
+                    "0": "no model",
+                    "1": "Klobuchar model transmitted by GPS",
+                    "2": "SBAS model",
+                    "3": "Klobuchar model transmitted by BeiDou",
+                    "8": "Iono delay derived from dual frequency observations"
+                  }
+                },
+                {
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "name": "sigFlags",
+                  "description": "Signal related flags",
+                  "bitfield_members": [
+                    {
+                      "name": "health",
+                      "position": 0,
+                      "length": 2,
+                      "description": "Signal health flag:",
+                      "values": {
+                        "0": "unknown",
+                        "1": "healthy",
+                        "2": "unhealthy"
+                      }
+                    },
+                    {
+                      "name": "prSmoothed",
+                      "position": 2,
+                      "length": 1,
+                      "description": "1 = Pseudorange has been smoothed"
+                    },
+                    {
+                      "name": "prUsed",
+                      "position": 3,
+                      "length": 1,
+                      "description": "1 = Pseudorange has been used for this signal"
+                    },
+                    {
+                      "name": "crUsed",
+                      "position": 4,
+                      "length": 1,
+                      "description": "1 = Carrier range has been used for this signal"
+                    },
+                    {
+                      "name": "doUsed",
+                      "position": 5,
+                      "length": 1,
+                      "description": "1 = Range rate (Doppler) has been used for this signal"
+                    },
+                    {
+                      "name": "prCorrUsed",
+                      "position": 6,
+                      "length": 1,
+                      "description": "1 = Pseudorange corrections have been used for this signal"
+                    },
+                    {
+                      "name": "crCorrUsed",
+                      "position": 7,
+                      "length": 1,
+                      "description": "1 = Carrier range corrections have been used for this signal"
+                    },
+                    {
+                      "name": "doCorrUsed",
+                      "position": 8,
+                      "length": 1,
+                      "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                    },
+                    {
+                      "name": "authStatus",
+                      "position": 9,
+                      "length": 1,
+                      "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:",
+                      "values": {
+                        "0": "Unknown",
+                        "1": "Authenticated"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "name": "reserved1",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "Signal information. This message displays information about signals currently tracked or searched by the receiver.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": "U1[2]",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signals",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  },
+                  "unit": "m"
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": "U1[4]",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "9f30e51f535671e3"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "Signal information",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs * 16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signal_info",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  },
+                  "unit": "m"
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator:\n0 = no signal\n1 = searching signal\n2 = signal acquired\n3 = signal detected but unusable\n4 = code locked and time synchronized\n5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source:\n0 = no corrections\n1 = SBAS corrections\n2 = BeiDou corrections\n3 = RTCM2 corrections\n4 = RTCM3 OSR corrections\n5 = RTCM3 SSR corrections\n6 = QZSS SLAS corrections\n7 = SPARTN corrections\n9 = CLAS corrections\n10 = LPP OSR corrections\n11 = LPP SSR corrections\n12 = GAL HAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used:\n0 = Default delay values\n1 = Klobuchar model transmitted by GPS\n2 = SBAS model\n3 = Klobuchar model transmitted by BeiDou\n4 = NTCM model transmitted by Galileo\n8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag:\n0 = unknown\n1 = healthy\n2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\n0 = Unknown\n1 = Authenticated\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "This message displays information about signals currently tracked or searched by the receiver.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numSigs*16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signals",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "unit": "m",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  }
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "authStatus",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-NAV-SIG",
+        "class_id": "0x01",
+        "message_id": "0x43",
+        "description": "This message displays information about signals currently tracked by the receiver.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + N*16",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numSigs",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Number of signals"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "sig_info",
+              "repetition_type": "count_field",
+              "count_field": "numSigs",
+              "group_size_bytes": 16,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
+                },
+                {
+                  "name": "sigId",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers)"
+                },
+                {
+                  "name": "freqId",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "name": "prRes",
+                  "byte_offset": 4,
+                  "data_type": "I2",
+                  "description": "Pseudorange residual",
+                  "scale": {
+                    "raw": "0.1",
+                    "multiplier": 0.1
+                  },
+                  "unit": "m"
+                },
+                {
+                  "name": "cno",
+                  "byte_offset": 6,
+                  "data_type": "U1",
+                  "description": "Carrier-to-noise density ratio (signal strength)",
+                  "unit": "dBHz"
+                },
+                {
+                  "name": "qualityInd",
+                  "byte_offset": 7,
+                  "data_type": "U1",
+                  "description": "Signal quality indicator: 0 = no signal 1 = searching signal 2 = signal acquired 3 = signal detected but unusable 4 = code locked and time synchronized 5, 6, 7 = code and carrier locked and time synchronized"
+                },
+                {
+                  "name": "corrSource",
+                  "byte_offset": 8,
+                  "data_type": "U1",
+                  "description": "Correction source: 0 = no corrections 1 = SBAS corrections 2 = BeiDou corrections 3 = RTCM2 corrections 4 = RTCM3 OSR corrections 5 = RTCM3 SSR corrections 6 = QZSS SLAS corrections 7 = SPARTN corrections"
+                },
+                {
+                  "name": "ionoModel",
+                  "byte_offset": 9,
+                  "data_type": "U1",
+                  "description": "Ionospheric model used: 0 = no model 1 = Klobuchar model transmitted by GPS 2 = SBAS model 3 = Klobuchar model transmitted by BeiDou 8 = Iono delay derived from dual frequency observations"
+                },
+                {
+                  "name": "sigFlags",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "Signal related flags",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "health",
+                        "bit_start": 0,
+                        "bit_end": 1,
+                        "description": "Signal health flag: 0 = unknown 1 = healthy 2 = unhealthy"
+                      },
+                      {
+                        "name": "prSmoothed",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "1 = Pseudorange has been smoothed"
+                      },
+                      {
+                        "name": "prUsed",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "1 = Pseudorange has been used for this signal"
+                      },
+                      {
+                        "name": "crUsed",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "1 = Carrier range has been used for this signal"
+                      },
+                      {
+                        "name": "doUsed",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "1 = Range rate (Doppler) has been used for this signal"
+                      },
+                      {
+                        "name": "prCorrUsed",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "1 = Pseudorange corrections have been used for this signal"
+                      },
+                      {
+                        "name": "crCorrUsed",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "1 = Carrier range corrections have been used for this signal"
+                      },
+                      {
+                        "name": "doCorrUsed",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
+                      },
+                      {
+                        "name": "reserved_bits",
+                        "bit_start": 9,
+                        "bit_end": 15,
+                        "description": "Reserved",
+                        "reserved": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f088352c80b9387d"
+    },
+    {
       "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-NAV-SIG",
@@ -1014,13 +2760,13 @@
       "fingerprint": "f088352c80b9387d"
     },
     {
-      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
       "structure": {
         "name": "UBX-NAV-SIG",
         "class_id": "0x01",
         "message_id": "0x43",
-        "description": "Signal information. This message displays information about signals currently tracked or searched by the receiver.",
-        "message_type": "periodic_polled",
+        "description": "This message displays information about signals currently tracked or searched by the receiver.",
+        "message_type": "output",
         "payload": {
           "length": {
             "variable": {
@@ -1052,14 +2798,17 @@
             {
               "name": "reserved0",
               "byte_offset": 6,
-              "data_type": "U1[2]",
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
               "description": "Reserved",
               "reserved": true
             }
           ],
           "repeated_groups": [
             {
-              "name": "signals",
+              "name": "signal_data",
               "repetition_type": "count_field",
               "count_field": "numSigs",
               "group_size_bytes": 16,
@@ -1094,11 +2843,11 @@
                   "byte_offset": 4,
                   "data_type": "I2",
                   "description": "Pseudorange residual",
+                  "unit": "m",
                   "scale": {
                     "raw": "0.1",
                     "multiplier": 0.1
-                  },
-                  "unit": "m"
+                  }
                 },
                 {
                   "name": "cno",
@@ -1184,201 +2933,7 @@
                         "name": "authStatus",
                         "bit_start": 9,
                         "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": "U1[4]",
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "9f30e51f535671e3"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "This message displays information about signals currently tracked by the receiver.",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + N*16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "sig_info",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  },
-                  "unit": "m"
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal 1 = searching signal 2 = signal acquired 3 = signal detected but unusable 4 = code locked and time synchronized 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections 1 = SBAS corrections 2 = BeiDou corrections 3 = RTCM2 corrections 4 = RTCM3 OSR corrections 5 = RTCM3 SSR corrections 6 = QZSS SLAS corrections 7 = SPARTN corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = no model 1 = Klobuchar model transmitted by GPS 2 = SBAS model 3 = Klobuchar model transmitted by BeiDou 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown 1 = healthy 2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "reserved_bits",
-                        "bit_start": 9,
-                        "bit_end": 15,
-                        "description": "Reserved",
-                        "reserved": true
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
                       }
                     ]
                   }
@@ -1598,582 +3153,6 @@
       "fingerprint": "5359d4fb1f1d8afa"
     },
     {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "This message displays information about signals currently tracked by the receiver.",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs*16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "signal_info",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  },
-                  "unit": "m"
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f088352c80b9387d"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "This message displays information about signals currently tracked or searched by the receiver.",
-        "message_type": "periodic_polled",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs * 16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": "U1[2]",
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "signals",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  },
-                  "unit": "m"
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "authStatus",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": "U4",
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "60b8bdedb7ffb2e4"
-    },
-    {
-      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "Signal information",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs * 16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "signal_info",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  },
-                  "unit": "m"
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator:\n0 = no signal\n1 = searching signal\n2 = signal acquired\n3 = signal detected but unusable\n4 = code locked and time synchronized\n5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source:\n0 = no corrections\n1 = SBAS corrections\n2 = BeiDou corrections\n3 = RTCM2 corrections\n4 = RTCM3 OSR corrections\n5 = RTCM3 SSR corrections\n6 = QZSS SLAS corrections\n7 = SPARTN corrections\n9 = CLAS corrections\n10 = LPP OSR corrections\n11 = LPP SSR corrections\n12 = GAL HAS corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used:\n0 = Default delay values\n1 = Klobuchar model transmitted by GPS\n2 = SBAS model\n3 = Klobuchar model transmitted by BeiDou\n4 = NTCM model transmitted by Galileo\n8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag:\n0 = unknown\n1 = healthy\n2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "authStatus",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\n0 = Unknown\n1 = Authenticated\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f088352c80b9387d"
-    },
-    {
       "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
       "structure": {
         "name": "UBX-NAV-SIG",
@@ -2364,210 +3343,13 @@
       "fingerprint": "5359d4fb1f1d8afa"
     },
     {
-      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "Signal information",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs * 16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "signals",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "unit": "m",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  }
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "reserved_bit_9_15",
-                        "bit_start": 9,
-                        "bit_end": 15,
-                        "description": "Reserved",
-                        "reserved": true
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved_after_sigFlags",
-                  "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f088352c80b9387d"
-    },
-    {
-      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
       "structure": {
         "name": "UBX-NAV-SIG",
         "class_id": "0x01",
         "message_id": "0x43",
         "description": "This message displays information about signals currently tracked or searched by the receiver.",
-        "message_type": "output",
+        "message_type": "periodic_polled",
         "payload": {
           "length": {
             "variable": {
@@ -2599,206 +3381,7 @@
             {
               "name": "reserved0",
               "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "signal_data",
-              "repetition_type": "count_field",
-              "count_field": "numSigs",
-              "group_size_bytes": 16,
-              "base_offset": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering) for assignment"
-                },
-                {
-                  "name": "sigId",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "New style signal identifier (see Signal Identifiers)"
-                },
-                {
-                  "name": "freqId",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
-                },
-                {
-                  "name": "prRes",
-                  "byte_offset": 4,
-                  "data_type": "I2",
-                  "description": "Pseudorange residual",
-                  "unit": "m",
-                  "scale": {
-                    "raw": "0.1",
-                    "multiplier": 0.1
-                  }
-                },
-                {
-                  "name": "cno",
-                  "byte_offset": 6,
-                  "data_type": "U1",
-                  "description": "Carrier-to-noise density ratio (signal strength)",
-                  "unit": "dBHz"
-                },
-                {
-                  "name": "qualityInd",
-                  "byte_offset": 7,
-                  "data_type": "U1",
-                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
-                },
-                {
-                  "name": "corrSource",
-                  "byte_offset": 8,
-                  "data_type": "U1",
-                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
-                },
-                {
-                  "name": "ionoModel",
-                  "byte_offset": 9,
-                  "data_type": "U1",
-                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
-                },
-                {
-                  "name": "sigFlags",
-                  "byte_offset": 10,
-                  "data_type": "X2",
-                  "description": "Signal related flags",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "health",
-                        "bit_start": 0,
-                        "bit_end": 1,
-                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
-                      },
-                      {
-                        "name": "prSmoothed",
-                        "bit_start": 2,
-                        "bit_end": 2,
-                        "description": "1 = Pseudorange has been smoothed"
-                      },
-                      {
-                        "name": "prUsed",
-                        "bit_start": 3,
-                        "bit_end": 3,
-                        "description": "1 = Pseudorange has been used for this signal"
-                      },
-                      {
-                        "name": "crUsed",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "1 = Carrier range has been used for this signal"
-                      },
-                      {
-                        "name": "doUsed",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "1 = Range rate (Doppler) has been used for this signal"
-                      },
-                      {
-                        "name": "prCorrUsed",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "1 = Pseudorange corrections have been used for this signal"
-                      },
-                      {
-                        "name": "crCorrUsed",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "1 = Carrier range corrections have been used for this signal"
-                      },
-                      {
-                        "name": "doCorrUsed",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "1 = Range rate (Doppler) corrections have been used for this signal"
-                      },
-                      {
-                        "name": "authStatus",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated. Note that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f088352c80b9387d"
-    },
-    {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-      "structure": {
-        "name": "UBX-NAV-SIG",
-        "class_id": "0x01",
-        "message_id": "0x43",
-        "description": "This message displays information about signals currently tracked or searched by the receiver.",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 8,
-              "formula": "8 + numSigs * 16",
-              "min": 8
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numSigs",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Number of signals"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
+              "data_type": "U1[2]",
               "description": "Reserved",
               "reserved": true
             }
@@ -2857,19 +3440,19 @@
                   "name": "qualityInd",
                   "byte_offset": 7,
                   "data_type": "U1",
-                  "description": "Signal quality indicator:\n0 = no signal\n1 = searching signal\n2 = signal acquired\n3 = signal detected but unusable\n4 = code locked and time synchronized\n5, 6, 7 = code and carrier locked and time synchronized"
+                  "description": "Signal quality indicator: 0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
                 },
                 {
                   "name": "corrSource",
                   "byte_offset": 8,
                   "data_type": "U1",
-                  "description": "Correction source:\n0 = no corrections\n1 = SBAS corrections\n2 = BeiDou corrections\n3 = RTCM2 corrections\n4 = RTCM3 OSR corrections\n5 = RTCM3 SSR corrections\n6 = QZSS SLAS corrections\n7 = SPARTN corrections\n8 = CLAS corrections"
+                  "description": "Correction source: 0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections, 7 = SPARTN corrections, 8 = CLAS corrections"
                 },
                 {
                   "name": "ionoModel",
                   "byte_offset": 9,
                   "data_type": "U1",
-                  "description": "Ionospheric model used:\n0 = no model\n1 = Klobuchar model transmitted by GPS\n2 = SBAS model\n3 = Klobuchar model transmitted by BeiDou\n8 = Iono delay derived from dual frequency observations"
+                  "description": "Ionospheric model used: 0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
                 },
                 {
                   "name": "sigFlags",
@@ -2882,7 +3465,7 @@
                         "name": "health",
                         "bit_start": 0,
                         "bit_end": 1,
-                        "description": "Signal health flag:\n0 = unknown\n1 = healthy\n2 = unhealthy"
+                        "description": "Signal health flag: 0 = unknown, 1 = healthy, 2 = unhealthy"
                       },
                       {
                         "name": "prSmoothed",
@@ -2930,7 +3513,7 @@
                         "name": "authStatus",
                         "bit_start": 9,
                         "bit_end": 9,
-                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data is not used so the authentication status in this message can take only two values:\n0 = Unknown\n1 = Authenticated\nNote that currently the only data authentication function is provided by Galileo Open Service Navigation Message Authentication (OSNMA) protocol for E1 I/NAV message."
+                        "description": "Authentication status of the navigation data used to compute the satellite's position in current navigation epoch. If the authentication fails, the navigation data will not be used so the authentication status in this message can only take two values: 0 = Unknown, 1 = Authenticated"
                       }
                     ]
                   }
@@ -2938,10 +3521,7 @@
                 {
                   "name": "reserved1",
                   "byte_offset": 12,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
+                  "data_type": "U4",
                   "description": "Reserved",
                   "reserved": true
                 }
@@ -2950,7 +3530,7 @@
           ]
         }
       },
-      "fingerprint": "f088352c80b9387d"
+      "fingerprint": "60b8bdedb7ffb2e4"
     }
   ]
 }

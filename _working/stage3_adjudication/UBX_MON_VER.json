@@ -1,56 +1,47 @@
 {
   "message_name": "UBX-MON-VER",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-MON-VER",
+      "message_name": "UBX-MON-VER",
       "class_id": "0x0a",
       "message_id": "0x04",
+      "message_type": "polled/output",
       "description": "Receiver and software version",
-      "message_type": "output",
       "payload": {
         "length": {
           "variable": {
             "base": 40,
             "formula": "40 + N * 30",
-            "min": 40
+            "unit": "bytes"
           }
         },
         "fields": [
           {
-            "name": "swVersion",
             "byte_offset": 0,
-            "data_type": {
-              "array_of": "CH",
-              "count": 30
-            },
+            "name": "swVersion",
+            "data_type": "CH[30]",
             "description": "Nul-terminated software version string."
           },
           {
-            "name": "hwVersion",
             "byte_offset": 30,
-            "data_type": {
-              "array_of": "CH",
-              "count": 10
-            },
-            "description": "Nul-terminated hardware version string"
+            "name": "hwVersion",
+            "data_type": "CH[10]",
+            "description": "Nul-terminated hardware version string."
           }
         ],
         "repeated_groups": [
           {
-            "name": "extensions",
+            "name": "extensionStrings",
             "repetition_type": "fill_remaining",
-            "group_size_bytes": 30,
             "base_offset": 40,
+            "group_size_bytes": 30,
             "fields": [
               {
                 "name": "extension",
                 "byte_offset": 0,
-                "data_type": {
-                  "array_of": "CH",
-                  "count": 30
-                },
-                "description": "Extended software information strings."
+                "data_type": "CH[30]",
+                "description": "Extended software information string (nul-terminated)."
               }
             ]
           }
@@ -60,39 +51,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrectly identifies a 'count_field' mechanism referencing a non-existent field 'numExtensions'. The message uses implicit length derivation (fill_remaining)."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -102,17 +61,24 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": [
+          "Uses 'n_extensions' as a variable name not present in the byte-stream, though conceptually correct."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -122,7 +88,36 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": [
+          "More descriptive than literal, explicitly defining the empty request payload for polling."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identifies the repetition type as 'count_field' referencing 'numExtensions'. There is no such field in the UBX-MON-VER message; the count is derived solely from the message length."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -132,12 +127,29 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete length specification; missing base length and formula for the variable payload."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "The UBX-MON-VER message structure is consistent across all provided generations (M8 through F10). It consists of two static fixed-length strings (swVersion, hwVersion) totaling 40 bytes, followed by a repeating block of 30-byte extension strings that fill the remaining payload. Most extractions correctly identified this 'fill remaining' pattern using various synonyms (e.g., 'fill_remaining', 'count_derived_from_length', 'calculated_from_length'). Extraction 6 contains a hallucination, claiming the repetition is controlled by an explicit field named 'numExtensions' which does not exist in the defined fields list."
+    "reasoning": "The UBX-MON-VER message is exceptionally stable across u-blox generations (M8 through F10). It consists of two fixed character arrays (30 bytes for software version, 10 bytes for hardware version) followed by an arbitrary number of 30-byte extension strings. The number of extension strings is never explicitly stated in a payload field, but is always derived from the total message length (N = (PayloadLength - 40) / 30). Extraction 12 incorrectly implied a dedicated count field. Extraction 17 failed to provide the mathematical relationship for payload length."
   }
 }

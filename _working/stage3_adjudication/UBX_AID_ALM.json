@@ -6,16 +6,19 @@
       "name": "UBX-AID-ALM",
       "class_id": "0x0B",
       "message_id": "0x30",
+      "description": "GPS aiding almanac input/output message. This message can be used to send almanac data to the receiver or to poll for it. The message length can be either 8 bytes (containing 'svid' and 'week' only) or 40 bytes (including the 'dwrd' block).",
+      "message_type": "input_output",
       "payload": {
-        "length": {
-          "fixed": 40
-        },
+        "length": [
+          8,
+          40
+        ],
         "fields": [
           {
             "name": "svid",
             "byte_offset": 0,
             "data_type": "U4",
-            "description": "SV ID for which this Almanac Data is (Valid Range: 1 .. 32 or 51, 56, 63)",
+            "description": "SV ID for which this Almanac Data is (Valid Range: 1 .. 32 or 51, 56, 63).",
             "unit": null,
             "scale": null,
             "reserved": false
@@ -24,7 +27,7 @@
             "name": "week",
             "byte_offset": 4,
             "data_type": "U4",
-            "description": "Issue Date of Almanac (GPS week number)",
+            "description": "Issue Date of Almanac (GPS week number). If this value is 0, the 'dwrd' block (Almanac Words) is typically not sent by the receiver, resulting in an 8-byte message.",
             "unit": null,
             "scale": null,
             "reserved": false
@@ -32,11 +35,8 @@
           {
             "name": "dwrd",
             "byte_offset": 8,
-            "data_type": {
-              "array_of": "U4",
-              "count": 8
-            },
-            "description": "Almanac Words",
+            "data_type": "U4[8]",
+            "description": "Almanac Words. Optional block dependent on 'week' field and message length.",
             "unit": null,
             "scale": null,
             "reserved": false
@@ -53,6 +53,6 @@
       }
     ],
     "valid_variations": [],
-    "reasoning": "The extraction correctly represents the legacy UBX-AID-ALM message structure found in u-blox M8 documentation. The message consists of a 4-byte SV ID, a 4-byte Week number, and 8 words (32 bytes) of almanac data, totaling 40 bytes. The description accurately notes that the message may be truncated to 8 bytes if no data is present, but the schema definition correctly models the full payload."
+    "reasoning": "The extraction accurately captures the structure of the UBX-AID-ALM message for the u-blox 8 generation. It correctly identifies the Class (0x0B) and Message ID (0x30) and provides a clear description of the variable-length nature of the payload (8 vs 40 bytes). The field definitions for 'svid', 'week', and the 'dwrd' array are consistent with official documentation."
   }
 }

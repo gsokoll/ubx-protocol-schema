@@ -7,7 +7,7 @@
     "name": "UBX-CFG-TMODE3",
     "class_id": "0x06",
     "message_id": "0x71",
-    "description": "Configures the receiver to be in Time Mode. The position referred to in this message is that of the Antenna Reference Point (ARP).",
+    "description": "Time mode settings 3",
     "message_type": "get_set",
     "payload": {
       "length": {
@@ -39,6 +39,19 @@
                 "bit_start": 0,
                 "bit_end": 7,
                 "description": "Receiver Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true ARP position information required), 3-255 Reserved"
+              },
+              {
+                "name": "lla",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "Position is given in LAT/LON/ALT (default is ECEF)"
+              },
+              {
+                "name": "reserved_bits_9_15",
+                "bit_start": 9,
+                "bit_end": 15,
+                "description": "Reserved",
+                "reserved": true
               }
             ]
           }
@@ -48,22 +61,14 @@
           "byte_offset": 4,
           "data_type": "I4",
           "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above",
-          "unit": "cm_or_deg",
-          "scale": {
-            "raw": "1e-7",
-            "multiplier": 1e-07
-          }
+          "unit": "cm_or_deg*1e-7"
         },
         {
           "name": "ecefYOrLon",
           "byte_offset": 8,
           "data_type": "I4",
           "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above",
-          "unit": "cm_or_deg",
-          "scale": {
-            "raw": "1e-7",
-            "multiplier": 1e-07
-          }
+          "unit": "cm_or_deg*1e-7"
         },
         {
           "name": "ecefZOrAlt",
@@ -77,33 +82,21 @@
           "byte_offset": 16,
           "data_type": "I1",
           "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)",
-          "unit": "0.1_mm_or_deg",
-          "scale": {
-            "raw": "1e-9",
-            "multiplier": 1e-09
-          }
+          "unit": "0.1_mm_or_deg*1e-9"
         },
         {
           "name": "ecefYOrLonHP",
           "byte_offset": 17,
           "data_type": "I1",
           "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)",
-          "unit": "0.1_mm_or_deg",
-          "scale": {
-            "raw": "1e-9",
-            "multiplier": 1e-09
-          }
+          "unit": "0.1_mm_or_deg*1e-9"
         },
         {
           "name": "ecefZOrAltHP",
           "byte_offset": 18,
           "data_type": "I1",
           "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)",
-          "unit": "0.1_mm",
-          "scale": {
-            "raw": "1e-4",
-            "multiplier": 0.0001
-          }
+          "unit": "0.1_mm"
         },
         {
           "name": "reserved1",
@@ -117,10 +110,10 @@
           "byte_offset": 20,
           "data_type": "U4",
           "description": "Fixed position 3D accuracy",
-          "unit": "0.1_mm",
+          "unit": "mm",
           "scale": {
-            "raw": "1e-4",
-            "multiplier": 0.0001
+            "raw": "0.1_mm",
+            "multiplier": 0.1
           }
         },
         {
@@ -135,10 +128,10 @@
           "byte_offset": 28,
           "data_type": "U4",
           "description": "Survey-in position accuracy limit",
-          "unit": "0.1_mm",
+          "unit": "mm",
           "scale": {
-            "raw": "1e-4",
-            "multiplier": 0.0001
+            "raw": "0.1_mm",
+            "multiplier": 0.1
           }
         },
         {
@@ -156,173 +149,18 @@
   },
   "winning_fingerprint": "563ce3b29e71afae",
   "agreeing_sources": [
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
     "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+    "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
   ],
   "all_extractions": [
     {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-      "structure": {
-        "name": "UBX-CFG-TMODE3",
-        "class_id": "0x06",
-        "message_id": "0x71",
-        "description": "Configures the receiver to be in Time Mode. The position referred to in this message is that of the Antenna Reference Point (ARP).",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 40
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "flags",
-              "byte_offset": 2,
-              "data_type": "X2",
-              "description": "Receiver mode flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "mode",
-                    "bit_start": 0,
-                    "bit_end": 7,
-                    "description": "Receiver Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true ARP position information required), 3-255 Reserved"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "ecefXOrLat",
-              "byte_offset": 4,
-              "data_type": "I4",
-              "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above",
-              "unit": "cm_or_deg",
-              "scale": {
-                "raw": "1e-7",
-                "multiplier": 1e-07
-              }
-            },
-            {
-              "name": "ecefYOrLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above",
-              "unit": "cm_or_deg",
-              "scale": {
-                "raw": "1e-7",
-                "multiplier": 1e-07
-              }
-            },
-            {
-              "name": "ecefZOrAlt",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above",
-              "unit": "cm"
-            },
-            {
-              "name": "ecefXOrLatHP",
-              "byte_offset": 16,
-              "data_type": "I1",
-              "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)",
-              "unit": "0.1_mm_or_deg",
-              "scale": {
-                "raw": "1e-9",
-                "multiplier": 1e-09
-              }
-            },
-            {
-              "name": "ecefYOrLonHP",
-              "byte_offset": 17,
-              "data_type": "I1",
-              "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)",
-              "unit": "0.1_mm_or_deg",
-              "scale": {
-                "raw": "1e-9",
-                "multiplier": 1e-09
-              }
-            },
-            {
-              "name": "ecefZOrAltHP",
-              "byte_offset": 18,
-              "data_type": "I1",
-              "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)",
-              "unit": "0.1_mm",
-              "scale": {
-                "raw": "1e-4",
-                "multiplier": 0.0001
-              }
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 19,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "fixedPosAcc",
-              "byte_offset": 20,
-              "data_type": "U4",
-              "description": "Fixed position 3D accuracy",
-              "unit": "0.1_mm",
-              "scale": {
-                "raw": "1e-4",
-                "multiplier": 0.0001
-              }
-            },
-            {
-              "name": "svinMinDur",
-              "byte_offset": 24,
-              "data_type": "U4",
-              "description": "Survey-in minimum duration",
-              "unit": "s"
-            },
-            {
-              "name": "svinAccLimit",
-              "byte_offset": 28,
-              "data_type": "U4",
-              "description": "Survey-in position accuracy limit",
-              "unit": "0.1_mm",
-              "scale": {
-                "raw": "1e-4",
-                "multiplier": 0.0001
-              }
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 32,
-              "data_type": {
-                "array_of": "U1",
-                "count": 8
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "563ce3b29e71afae"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
       "structure": {
         "name": "UBX-CFG-TMODE3",
         "class_id": "0x06",
@@ -359,59 +197,19 @@
                     "bit_start": 0,
                     "bit_end": 7,
                     "description": "Receiver Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true ARP position information required), 3-255 Reserved"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "fingerprint": "eef358f0644aa79f"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-CFG-TMODE3",
-        "class_id": "0x06",
-        "message_id": "0x71",
-        "description": "Time mode settings 3: Configures the receiver to be in Time Mode. The position referred to in this message is that of the Antenna Reference Point (ARP).",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 40
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "flags",
-              "byte_offset": 2,
-              "data_type": "X2",
-              "description": "Receiver mode flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "mode",
-                    "bit_start": 0,
-                    "bit_end": 7,
-                    "description": "Receiver Mode: 0=Disabled, 1=Survey In, 2=Fixed Mode (true ARP position information required), 3-255=Reserved"
                   },
                   {
                     "name": "lla",
                     "bit_start": 8,
                     "bit_end": 8,
                     "description": "Position is given in LAT/LON/ALT (default is ECEF)"
+                  },
+                  {
+                    "name": "reserved_bits_9_15",
+                    "bit_start": 9,
+                    "bit_end": 15,
+                    "description": "Reserved",
+                    "reserved": true
                   }
                 ]
               }
@@ -421,59 +219,42 @@
               "byte_offset": 4,
               "data_type": "I4",
               "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above",
-              "scale": {
-                "raw": "cm_or_deg*1e-7",
-                "multiplier": 1e-07
-              }
+              "unit": "cm_or_deg*1e-7"
             },
             {
               "name": "ecefYOrLon",
               "byte_offset": 8,
               "data_type": "I4",
               "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above",
-              "scale": {
-                "raw": "cm_or_deg*1e-7",
-                "multiplier": 1e-07
-              }
+              "unit": "cm_or_deg*1e-7"
             },
             {
               "name": "ecefZOrAlt",
               "byte_offset": 12,
               "data_type": "I4",
               "description": "WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above",
-              "unit": "cm",
-              "scale": {
-                "raw": "cm",
-                "multiplier": 1.0
-              }
+              "unit": "cm"
             },
             {
               "name": "ecefXOrLatHP",
               "byte_offset": 16,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)",
-              "scale": {
-                "raw": "0.1_mm_or_deg*1e-9"
-              }
+              "unit": "0.1_mm_or_deg*1e-9"
             },
             {
               "name": "ecefYOrLonHP",
               "byte_offset": 17,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)",
-              "scale": {
-                "raw": "0.1_mm_or_deg*1e-9"
-              }
+              "unit": "0.1_mm_or_deg*1e-9"
             },
             {
               "name": "ecefZOrAltHP",
               "byte_offset": 18,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)",
-              "scale": {
-                "raw": "0.1_mm",
-                "multiplier": 0.1
-              }
+              "unit": "0.1_mm"
             },
             {
               "name": "reserved1",
@@ -688,12 +469,12 @@
       "fingerprint": "563ce3b29e71afae"
     },
     {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
       "structure": {
         "name": "UBX-CFG-TMODE3",
         "class_id": "0x06",
         "message_id": "0x71",
-        "description": "Time mode settings 3",
+        "description": "Configures the receiver to be in Time Mode. The position referred to in this message is that of the Antenna Reference Point (ARP).",
         "message_type": "get_set",
         "payload": {
           "length": {
@@ -725,19 +506,6 @@
                     "bit_start": 0,
                     "bit_end": 7,
                     "description": "Receiver Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true ARP position information required), 3-255 Reserved"
-                  },
-                  {
-                    "name": "lla",
-                    "bit_start": 8,
-                    "bit_end": 8,
-                    "description": "Position is given in LAT/LON/ALT (default is ECEF)"
-                  },
-                  {
-                    "name": "reserved_bits_9_15",
-                    "bit_start": 9,
-                    "bit_end": 15,
-                    "description": "Reserved",
-                    "reserved": true
                   }
                 ]
               }
@@ -747,14 +515,22 @@
               "byte_offset": 4,
               "data_type": "I4",
               "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above",
-              "unit": "cm_or_deg*1e-7"
+              "unit": "cm_or_deg",
+              "scale": {
+                "raw": "1e-7",
+                "multiplier": 1e-07
+              }
             },
             {
               "name": "ecefYOrLon",
               "byte_offset": 8,
               "data_type": "I4",
               "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above",
-              "unit": "cm_or_deg*1e-7"
+              "unit": "cm_or_deg",
+              "scale": {
+                "raw": "1e-7",
+                "multiplier": 1e-07
+              }
             },
             {
               "name": "ecefZOrAlt",
@@ -768,21 +544,33 @@
               "byte_offset": 16,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)",
-              "unit": "0.1_mm_or_deg*1e-9"
+              "unit": "0.1_mm_or_deg",
+              "scale": {
+                "raw": "1e-9",
+                "multiplier": 1e-09
+              }
             },
             {
               "name": "ecefYOrLonHP",
               "byte_offset": 17,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)",
-              "unit": "0.1_mm_or_deg*1e-9"
+              "unit": "0.1_mm_or_deg",
+              "scale": {
+                "raw": "1e-9",
+                "multiplier": 1e-09
+              }
             },
             {
               "name": "ecefZOrAltHP",
               "byte_offset": 18,
               "data_type": "I1",
               "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)",
-              "unit": "0.1_mm"
+              "unit": "0.1_mm",
+              "scale": {
+                "raw": "1e-4",
+                "multiplier": 0.0001
+              }
             },
             {
               "name": "reserved1",
@@ -796,10 +584,10 @@
               "byte_offset": 20,
               "data_type": "U4",
               "description": "Fixed position 3D accuracy",
-              "unit": "mm",
+              "unit": "0.1_mm",
               "scale": {
-                "raw": "0.1_mm",
-                "multiplier": 0.1
+                "raw": "1e-4",
+                "multiplier": 0.0001
               }
             },
             {
@@ -814,10 +602,10 @@
               "byte_offset": 28,
               "data_type": "U4",
               "description": "Survey-in position accuracy limit",
-              "unit": "mm",
+              "unit": "0.1_mm",
               "scale": {
-                "raw": "0.1_mm",
-                "multiplier": 0.1
+                "raw": "1e-4",
+                "multiplier": 0.0001
               }
             },
             {
@@ -975,6 +763,211 @@
             },
             {
               "name": "reserved3",
+              "byte_offset": 32,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "563ce3b29e71afae"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-CFG-TMODE3",
+        "class_id": "0x06",
+        "message_id": "0x71",
+        "description": "Time mode settings 3",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 40
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "Receiver mode flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mode",
+                    "bit_start": 0,
+                    "bit_end": 7,
+                    "description": "Receiver Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true ARP position information required), 3-255 Reserved"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "eef358f0644aa79f"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-CFG-TMODE3",
+        "class_id": "0x06",
+        "message_id": "0x71",
+        "description": "Time mode settings 3: Configures the receiver to be in Time Mode. The position referred to in this message is that of the Antenna Reference Point (ARP).",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 40
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "Receiver mode flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "mode",
+                    "bit_start": 0,
+                    "bit_end": 7,
+                    "description": "Receiver Mode: 0=Disabled, 1=Survey In, 2=Fixed Mode (true ARP position information required), 3-255=Reserved"
+                  },
+                  {
+                    "name": "lla",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": "Position is given in LAT/LON/ALT (default is ECEF)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ecefXOrLat",
+              "byte_offset": 4,
+              "data_type": "I4",
+              "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above",
+              "scale": {
+                "raw": "cm_or_deg*1e-7",
+                "multiplier": 1e-07
+              }
+            },
+            {
+              "name": "ecefYOrLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above",
+              "scale": {
+                "raw": "cm_or_deg*1e-7",
+                "multiplier": 1e-07
+              }
+            },
+            {
+              "name": "ecefZOrAlt",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above",
+              "unit": "cm",
+              "scale": {
+                "raw": "cm",
+                "multiplier": 1.0
+              }
+            },
+            {
+              "name": "ecefXOrLatHP",
+              "byte_offset": 16,
+              "data_type": "I1",
+              "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)",
+              "scale": {
+                "raw": "0.1_mm_or_deg*1e-9"
+              }
+            },
+            {
+              "name": "ecefYOrLonHP",
+              "byte_offset": 17,
+              "data_type": "I1",
+              "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)",
+              "scale": {
+                "raw": "0.1_mm_or_deg*1e-9"
+              }
+            },
+            {
+              "name": "ecefZOrAltHP",
+              "byte_offset": 18,
+              "data_type": "I1",
+              "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)",
+              "scale": {
+                "raw": "0.1_mm",
+                "multiplier": 0.1
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "fixedPosAcc",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "Fixed position 3D accuracy",
+              "unit": "mm",
+              "scale": {
+                "raw": "0.1_mm",
+                "multiplier": 0.1
+              }
+            },
+            {
+              "name": "svinMinDur",
+              "byte_offset": 24,
+              "data_type": "U4",
+              "description": "Survey-in minimum duration",
+              "unit": "s"
+            },
+            {
+              "name": "svinAccLimit",
+              "byte_offset": 28,
+              "data_type": "U4",
+              "description": "Survey-in position accuracy limit",
+              "unit": "mm",
+              "scale": {
+                "raw": "0.1_mm",
+                "multiplier": 0.1
+              }
+            },
+            {
+              "name": "reserved2",
               "byte_offset": 32,
               "data_type": {
                 "array_of": "U1",

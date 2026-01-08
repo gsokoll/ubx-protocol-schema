@@ -1,0 +1,354 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-LOG-BATCH",
+  "extraction_timestamp": "2026-01-08T05:59:53.954797+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 310,
+    "end": 313
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-LOG-BATCH\nExpected IDs: class_id=0x21, message_id=0x11\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-LOG-BATCH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-LOG-BATCH\",\n    \"class_id\": \"0x21\",\n    \"message_id\": \"0x11\",\n    \"message_type\": \"polled\",\n    \"description\": \"Batched data\",\n    \"firmware_versions\": [\n      \"u-blox 8 / u-blox M8 with protocol version 23.01\"\n    ],\n    \"payload_length\": {\n      \"fixed\": 100\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"version\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"name\": \"contentValid\",\n        \"description\": \"Content validity flags\",\n        \"bitfield_members\": [\n          {\n            \"name\": \"extraPvt\",\n            \"description\": \"Extra PVT information is valid\",\n            \"position\": 0,\n            \"length\": 1\n          },\n          {\n            \"name\": \"extraOdo\",\n            \"description\": \"Odometer data is valid\",\n            \"position\": 1,\n            \"length\": 1\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"U2\",\n        \"name\": \"msgCnt\",\n        \"description\": \"Message counter; increments for each sent UBX-LOG-BATCH message.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"name\": \"iTOW\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details. Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U2\",\n        \"name\": \"year\",\n        \"unit\": \"y\",\n        \"description\": \"Year (UTC)\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"data_type\": \"U1\",\n        \"name\": \"month\",\n        \"unit\": \"month\",\n        \"description\": \"Month, range 1..12 (UTC)\"\n      },\n      {\n        \"byte_offset\": 11,\n        \"data_type\": \"U1\",\n        \"name\": \"day\",\n        \"unit\": \"d\",\n        \"description\": \"Day of month, range 1..31 (UTC)\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"U1\",\n        \"name\": \"hour\",\n        \"unit\": \"h\",\n        \"description\": \"Hour of day, range 0..23 (UTC)\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"data_type\": \"U1\",\n        \"name\": \"min\",\n        \"unit\": \"min\",\n        \"description\": \"Minute of hour, range 0..59 (UTC)\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"data_type\": \"U1\",\n        \"name\": \"sec\",\n        \"unit\": \"s\",\n        \"description\": \"Seconds of minute, range 0..60 (UTC)\"\n      },\n      {\n        \"byte_offset\": 15,\n        \"data_type\": \"X1\",\n        \"name\": \"valid\",\n        \"description\": \"Validity flags\",\n        \"bitfield_members\": [\n          {\n            \"name\": \"validTime\",\n            \"description\": \"1 = valid UTC Time of Day\",\n            \"position\": 0,\n            \"length\": 1\n          },\n          {\n            \"name\": \"validDate\",\n            \"description\": \"1 = valid UTC Date\",\n            \"position\": 1,\n            \"length\": 1\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U4\",\n        \"name\": \"tAcc\",\n        \"unit\": \"ns\",\n        \"description\": \"Time accuracy estimate (UTC) Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"I4\",\n        \"name\": \"fracSec\",\n        \"unit\": \"ns\",\n        \"description\": \"Fraction of second, range -1e9 .. 1e9 (UTC)\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": \"U1\",\n        \"name\": \"fixType\",\n        \"description\": \"GNSSfix Type: 0: no fix, 2: 2D-fix, 3: 3D-fix\"\n      },\n      {\n        \"byte_offset\": 25,\n        \"data_type\": \"X1\",\n        \"name\": \"flags\",\n        \"description\": \"Fix status flags\",\n        \"bitfield_members\": [\n          {\n            \"name\": \"gnssFixOK\",\n            \"description\": \"1 = valid fix (i.e within DOP & accuracy masks)\",\n            \"position\": 0,\n            \"length\": 1\n          },\n          {\n            \"name\": \"diffSoln\",\n            \"description\": \"1 = differential corrections were applied\",\n            \"position\": 1,\n            \"length\": 1\n          },\n          {\n            \"name\": \"psmState\",\n            \"description\": \"Power save mode state (0: PSM is not active, 1: Enabled, 2: Acquisition, 3: Tracking, 4: Power optimized tracking, 5: Inactive)\",\n            \"position\": 2,\n            \"length\": 3\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 26,\n        \"data_type\": \"X1\",\n        \"name\": \"flags2\",\n        \"description\": \"Additional flags\"\n      },\n      {\n        \"byte_offset\": 27,\n        \"data_type\": \"U1\",\n        \"name\": \"numSV\",\n        \"description\": \"Number of satellites used in Nav Solution Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"data_type\": \"I4\",\n        \"name\": \"lon\",\n        \"scale\": {\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Longitude\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"data_type\": \"I4\",\n        \"name\": \"lat\",\n        \"scale\": {\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Latitude\"\n      },\n      {\n        \"byte_offset\": 36,\n        \"data_type\": \"I4\",\n        \"name\": \"height\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above ellipsoid\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"data_type\": \"I4\",\n        \"name\": \"hMSL\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above mean sea level Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"data_type\": \"U4\",\n        \"name\": \"hAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Horizontal accuracy estimate\"\n      },\n      {\n        \"byte_offset\": 48,\n        \"data_type\": \"U4\",\n        \"name\": \"vAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Vertical accuracy estimate Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 52,\n        \"data_type\": \"I4\",\n        \"name\": \"velN\",\n        \"unit\": \"mm/s\",\n        \"description\": \"NED north velocity Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 56,\n        \"data_type\": \"I4\",\n        \"name\": \"velE\",\n        \"unit\": \"mm/s\",\n        \"description\": \"NED east velocity Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 60,\n        \"data_type\": \"I4\",\n        \"name\": \"velD\",\n        \"unit\": \"mm/s\",\n        \"description\": \"NED down velocity Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 64,\n        \"data_type\": \"I4\",\n        \"name\": \"gSpeed\",\n        \"unit\": \"mm/s\",\n        \"description\": \"Ground Speed (2-D)\"\n      },\n      {\n        \"byte_offset\": 68,\n        \"data_type\": \"I4\",\n        \"name\": \"headMot\",\n        \"scale\": {\n          \"multiplier\": 1e-5\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Heading of motion (2-D)\"\n      },\n      {\n        \"byte_offset\": 72,\n        \"data_type\": \"U4\",\n        \"name\": \"sAcc\",\n        \"unit\": \"mm/s\",\n        \"description\": \"Speed accuracy estimate Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 76,\n        \"data_type\": \"U4\",\n        \"name\": \"headAcc\",\n        \"scale\": {\n          \"multiplier\": 1e-5\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Heading accuracy estimate Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 80,\n        \"data_type\": \"U2\",\n        \"name\": \"pDOP\",\n        \"scale\": {\n          \"multiplier\": 0.01\n        },\n        \"description\": \"Position DOP Only valid if extraPvt is set.\"\n      },\n      {\n        \"byte_offset\": 82,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved1\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 84,\n        \"data_type\": \"U4\",\n        \"name\": \"distance\",\n        \"unit\": \"m\",\n        \"description\": \"Ground distance since last reset Only valid if extraOdo is set.\"\n      },\n      {\n        \"byte_offset\": 88,\n        \"data_type\": \"U4\",\n        \"name\": \"totalDistance\",\n        \"unit\": \"m\",\n        \"description\": \"Total cumulative ground distance Only valid if extraOdo is set.\"\n      },\n      {\n        \"byte_offset\": 92,\n        \"data_type\": \"U4\",\n        \"name\": \"distanceStd\",\n        \"unit\": \"m\",\n        \"description\": \"Ground distance accuracy (1-sigma) Only valid if extraOdo is set.\"\n      },\n      {\n        \"byte_offset\": 96,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"name\": \"reserved2\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-LOG-BATCH",
+      "class_id": "0x21",
+      "message_id": "0x11",
+      "message_type": "polled",
+      "description": "Batched data",
+      "firmware_versions": [
+        "u-blox 8 / u-blox M8 with protocol version 23.01"
+      ],
+      "payload_length": {
+        "fixed": 100
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "X1",
+          "name": "contentValid",
+          "description": "Content validity flags",
+          "bitfield_members": [
+            {
+              "name": "extraPvt",
+              "description": "Extra PVT information is valid",
+              "position": 0,
+              "length": 1
+            },
+            {
+              "name": "extraOdo",
+              "description": "Odometer data is valid",
+              "position": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U2",
+          "name": "msgCnt",
+          "description": "Message counter; increments for each sent UBX-LOG-BATCH message."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details. Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U2",
+          "name": "year",
+          "unit": "y",
+          "description": "Year (UTC)"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U1",
+          "name": "month",
+          "unit": "month",
+          "description": "Month, range 1..12 (UTC)"
+        },
+        {
+          "byte_offset": 11,
+          "data_type": "U1",
+          "name": "day",
+          "unit": "d",
+          "description": "Day of month, range 1..31 (UTC)"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U1",
+          "name": "hour",
+          "unit": "h",
+          "description": "Hour of day, range 0..23 (UTC)"
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "U1",
+          "name": "min",
+          "unit": "min",
+          "description": "Minute of hour, range 0..59 (UTC)"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "U1",
+          "name": "sec",
+          "unit": "s",
+          "description": "Seconds of minute, range 0..60 (UTC)"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "X1",
+          "name": "valid",
+          "description": "Validity flags",
+          "bitfield_members": [
+            {
+              "name": "validTime",
+              "description": "1 = valid UTC Time of Day",
+              "position": 0,
+              "length": 1
+            },
+            {
+              "name": "validDate",
+              "description": "1 = valid UTC Date",
+              "position": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "tAcc",
+          "unit": "ns",
+          "description": "Time accuracy estimate (UTC) Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "I4",
+          "name": "fracSec",
+          "unit": "ns",
+          "description": "Fraction of second, range -1e9 .. 1e9 (UTC)"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U1",
+          "name": "fixType",
+          "description": "GNSSfix Type: 0: no fix, 2: 2D-fix, 3: 3D-fix"
+        },
+        {
+          "byte_offset": 25,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Fix status flags",
+          "bitfield_members": [
+            {
+              "name": "gnssFixOK",
+              "description": "1 = valid fix (i.e within DOP & accuracy masks)",
+              "position": 0,
+              "length": 1
+            },
+            {
+              "name": "diffSoln",
+              "description": "1 = differential corrections were applied",
+              "position": 1,
+              "length": 1
+            },
+            {
+              "name": "psmState",
+              "description": "Power save mode state (0: PSM is not active, 1: Enabled, 2: Acquisition, 3: Tracking, 4: Power optimized tracking, 5: Inactive)",
+              "position": 2,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "byte_offset": 26,
+          "data_type": "X1",
+          "name": "flags2",
+          "description": "Additional flags"
+        },
+        {
+          "byte_offset": 27,
+          "data_type": "U1",
+          "name": "numSV",
+          "description": "Number of satellites used in Nav Solution Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "I4",
+          "name": "lon",
+          "scale": {
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "I4",
+          "name": "lat",
+          "scale": {
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "I4",
+          "name": "height",
+          "unit": "mm",
+          "description": "Height above ellipsoid"
+        },
+        {
+          "byte_offset": 40,
+          "data_type": "I4",
+          "name": "hMSL",
+          "unit": "mm",
+          "description": "Height above mean sea level Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 44,
+          "data_type": "U4",
+          "name": "hAcc",
+          "unit": "mm",
+          "description": "Horizontal accuracy estimate"
+        },
+        {
+          "byte_offset": 48,
+          "data_type": "U4",
+          "name": "vAcc",
+          "unit": "mm",
+          "description": "Vertical accuracy estimate Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 52,
+          "data_type": "I4",
+          "name": "velN",
+          "unit": "mm/s",
+          "description": "NED north velocity Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 56,
+          "data_type": "I4",
+          "name": "velE",
+          "unit": "mm/s",
+          "description": "NED east velocity Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 60,
+          "data_type": "I4",
+          "name": "velD",
+          "unit": "mm/s",
+          "description": "NED down velocity Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 64,
+          "data_type": "I4",
+          "name": "gSpeed",
+          "unit": "mm/s",
+          "description": "Ground Speed (2-D)"
+        },
+        {
+          "byte_offset": 68,
+          "data_type": "I4",
+          "name": "headMot",
+          "scale": {
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading of motion (2-D)"
+        },
+        {
+          "byte_offset": 72,
+          "data_type": "U4",
+          "name": "sAcc",
+          "unit": "mm/s",
+          "description": "Speed accuracy estimate Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 76,
+          "data_type": "U4",
+          "name": "headAcc",
+          "scale": {
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading accuracy estimate Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 80,
+          "data_type": "U2",
+          "name": "pDOP",
+          "scale": {
+            "multiplier": 0.01
+          },
+          "description": "Position DOP Only valid if extraPvt is set."
+        },
+        {
+          "byte_offset": 82,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 84,
+          "data_type": "U4",
+          "name": "distance",
+          "unit": "m",
+          "description": "Ground distance since last reset Only valid if extraOdo is set."
+        },
+        {
+          "byte_offset": 88,
+          "data_type": "U4",
+          "name": "totalDistance",
+          "unit": "m",
+          "description": "Total cumulative ground distance Only valid if extraOdo is set."
+        },
+        {
+          "byte_offset": 92,
+          "data_type": "U4",
+          "name": "distanceStd",
+          "unit": "m",
+          "description": "Ground distance accuracy (1-sigma) Only valid if extraOdo is set."
+        },
+        {
+          "byte_offset": 96,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved2",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/itvlblg2vzc1"
+}

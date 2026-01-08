@@ -1,169 +1,155 @@
 {
   "message_name": "UBX-MON-HW",
-  "num_extractions": 11,
+  "num_extractions": 14,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-MON-HW",
-      "class_id": "0x0a",
+      "message_class": "0x0a",
       "message_id": "0x09",
-      "description": "Hardware status",
-      "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "fixed": 60
+      "description": "Hardware status. Includes status of antenna, PIO pins, noise level, and AGC.",
+      "payload_length": {
+        "fixed": 60
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "name": "pinSel",
+          "data_type": "X4",
+          "description": "Mask of pins set as peripheral/PIO"
         },
-        "fields": [
-          {
-            "name": "pinSel",
-            "byte_offset": 0,
-            "data_type": "X4",
-            "description": "Mask of pins set as peripheral/PIO"
+        {
+          "byte_offset": 4,
+          "name": "pinBank",
+          "data_type": "X4",
+          "description": "Mask of pins set as bank A/B"
+        },
+        {
+          "byte_offset": 8,
+          "name": "pinDir",
+          "data_type": "X4",
+          "description": "Mask of pins set as input/output"
+        },
+        {
+          "byte_offset": 12,
+          "name": "pinVal",
+          "data_type": "X4",
+          "description": "Mask of pins value low/high"
+        },
+        {
+          "byte_offset": 16,
+          "name": "noisePerMS",
+          "data_type": "U2",
+          "description": "Noise level as measured by the core"
+        },
+        {
+          "byte_offset": 18,
+          "name": "agcCnt",
+          "data_type": "U2",
+          "description": "AGC monitor (range 0 to 8191)"
+        },
+        {
+          "byte_offset": 20,
+          "name": "aStatus",
+          "data_type": "U1",
+          "description": "Status of antenna supervisor state machine"
+        },
+        {
+          "byte_offset": 21,
+          "name": "aPower",
+          "data_type": "U1",
+          "description": "Current power status of antenna"
+        },
+        {
+          "byte_offset": 22,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Status flags (rtcCalib, safeBoot, jammingState, xtalAbsent)"
+        },
+        {
+          "byte_offset": 23,
+          "name": "reserved0",
+          "data_type": "U1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 24,
+          "name": "usedMask",
+          "data_type": "X4",
+          "description": "Mask of pins used by virtual pin manager"
+        },
+        {
+          "byte_offset": 28,
+          "name": "VP",
+          "data_type": {
+            "array_of": "U1",
+            "count": 17
           },
-          {
-            "name": "pinBank",
-            "byte_offset": 4,
-            "data_type": "X4",
-            "description": "Mask of pins set as bank A/B"
+          "description": "Array of pin mappings"
+        },
+        {
+          "byte_offset": 45,
+          "name": "jamInd",
+          "data_type": "U1",
+          "description": "CW jamming indicator/suppression level"
+        },
+        {
+          "byte_offset": 46,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
           },
-          {
-            "name": "pinDir",
-            "byte_offset": 8,
-            "data_type": "X4",
-            "description": "Mask of pins set as input/output"
-          },
-          {
-            "name": "pinVal",
-            "byte_offset": 12,
-            "data_type": "X4",
-            "description": "Mask of pins value low/high"
-          },
-          {
-            "name": "noisePerMS",
-            "byte_offset": 16,
-            "data_type": "U2",
-            "description": "Noise level as measured by the GPS core"
-          },
-          {
-            "name": "agcCnt",
-            "byte_offset": 18,
-            "data_type": "U2",
-            "description": "AGC Monitor, range 0 to 8191"
-          },
-          {
-            "name": "aStatus",
-            "byte_offset": 20,
-            "data_type": "U1",
-            "description": "Status of the antenna supervisor state machine"
-          },
-          {
-            "name": "aPower",
-            "byte_offset": 21,
-            "data_type": "U1",
-            "description": "Current power status of antenna"
-          },
-          {
-            "name": "flags",
-            "byte_offset": 22,
-            "data_type": "X1",
-            "description": "Flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "rtcCalib",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "RTC is calibrated"
-                },
-                {
-                  "name": "safeBoot",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Safeboot mode"
-                },
-                {
-                  "name": "jammingState",
-                  "bit_start": 2,
-                  "bit_end": 3,
-                  "description": "Output from jamming/interference monitor"
-                },
-                {
-                  "name": "xtalAbsent",
-                  "bit_start": 4,
-                  "bit_end": 4,
-                  "description": "RTC xtal absent"
-                }
-              ]
-            }
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 23,
-            "data_type": "U1",
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "usedMask",
-            "byte_offset": 24,
-            "data_type": "X4",
-            "description": "Mask of pins that are used by the virtual pin manager"
-          },
-          {
-            "name": "VP",
-            "byte_offset": 28,
-            "data_type": {
-              "array_of": "U1",
-              "count": 17
-            },
-            "description": "Array of pin mappings for each of the 17 physical pins"
-          },
-          {
-            "name": "cwSuppression",
-            "byte_offset": 45,
-            "data_type": "U1",
-            "description": "CW interference suppression level (also named jamInd)"
-          },
-          {
-            "name": "reserved1",
-            "byte_offset": 46,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "pinIrq",
-            "byte_offset": 48,
-            "data_type": "X4",
-            "description": "Mask of pins value using the PIO Irq"
-          },
-          {
-            "name": "pullH",
-            "byte_offset": 52,
-            "data_type": "X4",
-            "description": "Mask of pins value using the PIO pull high resistor"
-          },
-          {
-            "name": "pullL",
-            "byte_offset": 56,
-            "data_type": "X4",
-            "description": "Mask of pins value using the PIO pull low resistor"
-          }
-        ]
-      }
+          "reserved": true
+        },
+        {
+          "byte_offset": 48,
+          "name": "pinIrq",
+          "data_type": "X4",
+          "description": "Mask of pins using PIO Irq"
+        },
+        {
+          "byte_offset": 52,
+          "name": "pullH",
+          "data_type": "X4",
+          "description": "Mask of pins using pull high resistor"
+        },
+        {
+          "byte_offset": 56,
+          "name": "pullL",
+          "data_type": "X4",
+          "description": "Mask of pins using pull low resistor"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "valid_variation",
+        "issues": [
+          "Uses a versioned header (bytes 0-7) specific to ZED-F9H protocol versions"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete extraction; payload truncated at byte 22 despite a 60-byte fixed length"
+        ]
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
         "issues": []
       },
       {
@@ -172,39 +158,27 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": [
-          "Field 'cwSuppression' named 'jamInd' (valid alias)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": [
-          "Field 'cwSuppression' named 'jamInd' (valid alias)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
         "verdict": "valid_variation",
+        "issues": [
+          "Reserved block variant: pins details hidden/deprecated after byte 22"
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "valid_variation",
         "issues": [
-          "Field 'cwSuppression' named 'jamInd' (valid alias)"
+          "Highly truncated variant: pins details reserved after byte 19"
         ]
       },
       {
@@ -213,59 +187,52 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "extraction_error",
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
         "issues": [
-          "Fields define only 23 bytes, but payload length is fixed 60. Missing 37 bytes of reserved data."
+          "Reserved block variant: pins details hidden/deprecated after byte 22"
         ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360"
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
         ],
         "structure": {
-          "length": {
-            "fixed": 60
-          },
-          "fields": [
-            "pinSel(0)",
-            "pinBank(4)",
-            "pinDir(8)",
-            "pinVal(12)",
-            "noisePerMS(16)",
-            "agcCnt(18)",
-            "aStatus(20)",
-            "aPower(21)",
-            "flags(22)",
-            "reserved(23, array 37)"
-          ]
+          "header_fields": [
+            "version",
+            "supported_gnss_mask",
+            "default_gnss_mask",
+            "enabled_gnss_mask",
+            "simultaneous_gnss_count"
+          ],
+          "offset_shift": "Core fields (pinSel, etc) start at byte 8 instead of byte 0"
         },
-        "reason": "Documentation deprecation: Fields after 'flags' are masked as reserved."
+        "reason": "Specific high-precision GNSS modules (like ZED-F9H) use a versioned MON-HW message that includes GNSS support status in the first 8 bytes."
       },
       {
         "sources": [
+          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
           "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052"
         ],
         "structure": {
-          "length": {
-            "fixed": 60
-          },
-          "fields": [
-            "pinSel(0)",
-            "pinBank(4)",
-            "pinDir(8)",
-            "pinVal(12)",
-            "noisePerMS(16)",
-            "agcCnt(18)",
-            "reserved(20, array 40)"
-          ]
+          "reserved_block": "Bytes 23-59 (or 20-59) are reserved"
         },
-        "reason": "Documentation deprecation: Fields after 'agcCnt' are masked as reserved."
+        "reason": "In newer firmware versions where UBX-MON-HW is deprecated in favor of UBX-MON-HW3 and UBX-MON-RF, the pin-specific details in the latter half of the payload are often marked as reserved or omitted."
       }
     ],
-    "reasoning": "The UBX-MON-HW message is consistent in size (60 bytes) across M8, M9, and F9 generations. However, in newer F9 protocols, the message is deprecated in favor of UBX-MON-RF/HW3, leading to documentation variations where tail fields are replaced with 'Reserved' arrays. Two levels of redaction exist: masking after offset 23 (F9-HPG-L1L5, F9-DBD) and masking after offset 20 (F9-LAP 1.50). The full structure is correctly extracted in most M9 and older F9/M8 manuals. A naming alias exists for byte 45 (`cwSuppression` vs `jamInd`), which are functionally identical. Extraction 11 is erroneous because it respects the 60-byte length but fails to list the reserved fields to account for the remaining 37 bytes."
+    "reasoning": "The message UBX-MON-HW has a consistent length of 60 bytes across all platforms. The primary variation is between a 'Detailed' version (containing full PIO pin masks and virtual pin arrays) and a 'Reserved' version (where bytes 20/23 to 59 are opaque). The Detailed version is considered canonical as it is the historical standard for u-blox 8, M9, and early F9 firmware. Extraction 3 is a legitimate protocol variation for the ZED-F9H which adds a message version and GNSS capabilities to the header."
   }
 }

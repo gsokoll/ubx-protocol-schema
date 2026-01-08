@@ -1,31 +1,39 @@
 {
   "message_name": "UBX-NAV-HPPOSECEF",
-  "num_extractions": 9,
+  "num_extractions": 10,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-NAV-HPPOSECEF",
       "class_id": "0x01",
       "message_id": "0x13",
+      "description": "High precision position solution in ECEF",
+      "message_type": "output",
       "payload": {
-        "length": 28,
+        "length": {
+          "fixed": 28
+        },
         "fields": [
           {
             "name": "version",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Message version (0x00)"
+            "description": "Message version (0x00 for this version)"
           },
           {
             "name": "reserved0",
             "byte_offset": 1,
-            "data_type": "U1[3]",
-            "description": "Reserved"
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "description": "Reserved",
+            "reserved": true
           },
           {
             "name": "iTOW",
             "byte_offset": 4,
             "data_type": "U4",
-            "description": "GPS time of week",
+            "description": "GPS time of week of the navigation epoch.",
             "unit": "ms"
           },
           {
@@ -53,25 +61,34 @@
             "name": "ecefXHp",
             "byte_offset": 20,
             "data_type": "I1",
-            "description": "High precision component of ECEF X coordinate",
+            "description": "High precision component of ECEF X coordinate. Precise coordinate in cm = ecefX + (ecefXHp * 1e-2).",
             "unit": "mm",
-            "scale": 0.1
+            "scale": {
+              "raw": "0.1",
+              "multiplier": 0.1
+            }
           },
           {
             "name": "ecefYHp",
             "byte_offset": 21,
             "data_type": "I1",
-            "description": "High precision component of ECEF Y coordinate",
+            "description": "High precision component of ECEF Y coordinate. Precise coordinate in cm = ecefY + (ecefYHp * 1e-2).",
             "unit": "mm",
-            "scale": 0.1
+            "scale": {
+              "raw": "0.1",
+              "multiplier": 0.1
+            }
           },
           {
             "name": "ecefZHp",
             "byte_offset": 22,
             "data_type": "I1",
-            "description": "High precision component of ECEF Z coordinate",
+            "description": "High precision component of ECEF Z coordinate. Precise coordinate in cm = ecefZ + (ecefZHp * 1e-2).",
             "unit": "mm",
-            "scale": 0.1
+            "scale": {
+              "raw": "0.1",
+              "multiplier": 0.1
+            }
           },
           {
             "name": "flags",
@@ -79,10 +96,14 @@
             "data_type": "X1",
             "description": "Additional flags",
             "bitfield": {
-              "invalidEcef": {
-                "bit": 0,
-                "description": "1 = Invalid ecefX, ecefY, ecefZ, ecefXHp, ecefYHp and ecefZHp"
-              }
+              "bits": [
+                {
+                  "name": "invalidEcef",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "1 = Invalid ecefX, ecefY, ecefZ, ecefXHp, ecefYHp and ecefZHp"
+                }
+              ]
             }
           },
           {
@@ -91,7 +112,10 @@
             "data_type": "U4",
             "description": "Position Accuracy Estimate",
             "unit": "mm",
-            "scale": 0.1
+            "scale": {
+              "raw": "0.1",
+              "multiplier": 0.1
+            }
           }
         ]
       }
@@ -99,14 +123,28 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "valid_variation",
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "extraction_error",
+        "issues": [
+          "Bytes 24-27 incorrectly identified as reserved1; they represent pAcc in this protocol version."
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses the 32-byte variant specific to newer F9 HPS firmware."
+        ]
       },
       {
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
@@ -119,17 +157,7 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -139,26 +167,94 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect message structure (32 bytes vs 28 bytes)",
-          "Incorrect byte offsets (iTOW at 0 instead of 4, version at 4 instead of 0)",
-          "Hallucinated field 'reserved1' containing the description string for the 'flags' bitfield"
-        ]
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
         ],
         "structure": {
-          "diff": "Offset 24 contains a 4-byte 'reserved' block instead of 'pAcc'."
+          "payload_length": 32,
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": "U1[3]"
+            },
+            {
+              "name": "ecefX",
+              "byte_offset": 8,
+              "data_type": "I4"
+            },
+            {
+              "name": "ecefY",
+              "byte_offset": 12,
+              "data_type": "I4"
+            },
+            {
+              "name": "ecefZ",
+              "byte_offset": 16,
+              "data_type": "I4"
+            },
+            {
+              "name": "ecefXHp",
+              "byte_offset": 20,
+              "data_type": "I1"
+            },
+            {
+              "name": "ecefYHp",
+              "byte_offset": 21,
+              "data_type": "I1"
+            },
+            {
+              "name": "ecefZHp",
+              "byte_offset": 22,
+              "data_type": "I1"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 23,
+              "data_type": "X1"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 24,
+              "data_type": "U1"
+            },
+            {
+              "name": "reserved_padding",
+              "byte_offset": 25,
+              "data_type": "U1[3]"
+            },
+            {
+              "name": "pAcc",
+              "byte_offset": 28,
+              "data_type": "U4"
+            }
+          ]
         },
-        "reason": "The X20 module is an older/specific automotive dead reckoning implementation that does not provide the Position Accuracy Estimate in this message version."
+        "reason": "Newer u-blox High Precision Sensor Fusion (HPS) firmware (v1.30+) reorganized several NAV messages to align iTOW to offset 0 and increased the payload size for better alignment/reserved space."
       }
     ],
-    "reasoning": "The vast majority of extractions (7 out of 9, covering M8 and most F9 variants) agree on a 28-byte structure containing version at offset 0, iTOW at offset 4, and pAcc at offset 24. Extraction 1 (X20) is a valid legacy variation where pAcc is reserved. Extraction 9 is a clear parsing error: it displaces the header fields and creates a fake 'reserved1' field populated with the text description of the flags bitfield, resulting in an incorrect 32-byte length."
+    "reasoning": "The message UBX-NAV-HPPOSECEF is consistently 28 bytes across most u-blox generations (M8, F9 HPG, F9 LAP). Extraction 2 failed to identify the 'pAcc' field, which is standard for this class of message. Extraction 4 represents a legitimate variation found in the F9-HPS (Sensor Fusion) product line where the payload was expanded to 32 bytes and fields were shifted. The high precision components (ecefXHp etc.) always represent 0.1mm increments (10^-2 cm), which is correctly scaled in most extractions."
   }
 }

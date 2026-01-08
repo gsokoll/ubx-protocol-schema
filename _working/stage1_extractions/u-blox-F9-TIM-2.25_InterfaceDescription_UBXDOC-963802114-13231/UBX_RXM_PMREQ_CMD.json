@@ -1,0 +1,58 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-RXM-PMREQ-CMD",
+  "extraction_timestamp": "2026-01-08T04:34:40.525067+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 153,
+    "end": 154
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-RXM-PMREQ from u-blox PDF manual pages.\n\nThis message has TWO payload structures based on firmware version:\n\n**UBX-RXM-PMREQ-V0 (8 bytes, older firmware):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U4 | duration | Duration of power save mode (ms) |\n| 4 | X4 | flags | Task flags |\n\n**UBX-RXM-PMREQ-V1 (16 bytes, newer firmware):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x00) |\n| 1 | U1[3] | reserved0 | Reserved |\n| 4 | U4 | duration | Duration of power save mode (ms) |\n| 8 | X4 | flags | Task flags |\n| 12 | X4 | wakeupSources | Wakeup sources |\n\nCRITICAL: V0 has NO version field - it starts with duration!\nCRITICAL: flags is X4 (bitfield), NOT U4!\n\nExtract based on message name suffix or payload length:\n- \"UBX-RXM-PMREQ-V0\" or 8-byte payload \u2192 V0 structure\n- \"UBX-RXM-PMREQ-V1\" or 16-byte payload \u2192 V1 structure\n\nDo NOT merge both structures. Return using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"class\": \"0x02\",\n    \"id\": \"0x41\",\n    \"name\": \"UBX-RXM-PMREQ-V0\",\n    \"description\": \"Power management request (older firmware)\",\n    \"payload_length\": 8,\n    \"fields\": [\n      {\n        \"name\": \"duration\",\n        \"type\": \"U4\",\n        \"offset\": 0,\n        \"units\": \"ms\",\n        \"description\": \"Duration of the requested task. The maximum supported value is 12 days. Set to 0 to wait for a wakeup signal on a pin\"\n      },\n      {\n        \"name\": \"flags\",\n        \"type\": \"X4\",\n        \"offset\": 4,\n        \"description\": \"Task flags\",\n        \"bit_fields\": [\n          {\n            \"name\": \"backup\",\n            \"bit_start\": 1,\n            \"bit_len\": 1,\n            \"description\": \"The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"class\": \"0x02\",\n    \"id\": \"0x41\",\n    \"name\": \"UBX-RXM-PMREQ-V1\",\n    \"description\": \"Power management request (newer firmware)\",\n    \"payload_length\": 16,\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"type\": \"U1\",\n        \"offset\": 0,\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"type\": \"U1\",\n        \"array_len\": 3,\n        \"offset\": 1,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"name\": \"duration\",\n        \"type\": \"U4\",\n        \"offset\": 4,\n        \"units\": \"ms\",\n        \"description\": \"Duration of the requested task. The maximum supported value is 12 days. Set to 0 to wait for a wakeup signal on a pin\"\n      },\n      {\n        \"name\": \"flags\",\n        \"type\": \"X4\",\n        \"offset\": 8,\n        \"description\": \"Task flags\"\n      },\n      {\n        \"name\": \"wakeupSources\",\n        \"type\": \"X4\",\n        \"offset\": 12,\n        \"description\": \"Configure pins to wake up the receiver. The receiver wakes up if there is either a falling or a rising edge on one of the configured pins.\",\n        \"bit_fields\": [\n          {\n            \"name\": \"backup\",\n            \"bit_start\": 1,\n            \"bit_len\": 1,\n            \"description\": \"The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB\"\n          },\n          {\n            \"name\": \"force\",\n            \"bit_start\": 2,\n            \"bit_len\": 1,\n            \"description\": \"Force receiver backup while USB is connected. USB interface will be disabled.\"\n          },\n          {\n            \"name\": \"uartrx\",\n            \"bit_start\": 3,\n            \"bit_len\": 1,\n            \"description\": \"Wake up the receiver if there is an edge on the UART RX pin\"\n          },\n          {\n            \"name\": \"extint0\",\n            \"bit_start\": 5,\n            \"bit_len\": 1,\n            \"description\": \"Wake up the receiver if there is an edge on the EXTINTO pin\"\n          },\n          {\n            \"name\": \"extint1\",\n            \"bit_start\": 6,\n            \"bit_len\": 1,\n            \"description\": \"Wake up the receiver if there is an edge on the EXTINT1 pin\"\n          },\n          {\n            \"name\": \"spics\",\n            \"bit_start\": 7,\n            \"bit_len\": 1,\n            \"description\": \"Wake up the receiver if there is an edge on the SPI CS pin\"\n          }\n        ]\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class": "0x02",
+    "id": "0x41",
+    "name": "UBX-RXM-PMREQ-V0",
+    "description": "Power management request (older firmware)",
+    "payload_length": 8,
+    "payload": {
+      "fields": [
+        {
+          "name": "duration",
+          "type": "U4",
+          "offset": 0,
+          "units": "ms",
+          "description": "Duration of the requested task. The maximum supported value is 12 days. Set to 0 to wait for a wakeup signal on a pin"
+        },
+        {
+          "name": "flags",
+          "type": "X4",
+          "offset": 4,
+          "description": "Task flags",
+          "bit_fields": [
+            {
+              "name": "backup",
+              "bit_start": 1,
+              "bit_len": 1,
+              "description": "The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ravk9ip2rn0k"
+}

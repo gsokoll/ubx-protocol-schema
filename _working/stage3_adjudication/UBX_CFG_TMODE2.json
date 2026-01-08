@@ -1,118 +1,96 @@
 {
   "message_name": "UBX-CFG-TMODE2",
-  "num_extractions": 1,
+  "num_extractions": 2,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-CFG-TMODE2",
+      "ubx_message": "UBX-CFG-TMODE2",
       "class_id": "0x06",
       "message_id": "0x3D",
-      "description": "Time mode settings 2",
-      "message_type": "get_set",
-      "payload": {
-        "length": {
-          "fixed": 28
+      "payload_length": 28,
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "timeMode",
+          "data_type": "U1",
+          "description": "Time Transfer Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode"
         },
-        "fields": [
-          {
-            "name": "timeMode",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Time Transfer Mode: 0=Disabled, 1=Survey In, 2=Fixed Mode",
-            "unit": null,
-            "scale": null
-          },
-          {
-            "name": "reserved1",
-            "byte_offset": 1,
-            "data_type": "U1",
-            "description": "Reserved",
-            "unit": null,
-            "scale": null,
-            "reserved": true
-          },
-          {
-            "name": "flags",
-            "byte_offset": 2,
-            "data_type": "X2",
-            "description": "Time mode flags",
-            "unit": null,
-            "scale": null,
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "lla",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "Position is given in LAT/LON/ALT (default is ECEF)"
-                },
-                {
-                  "name": "altInv",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Altitude is not valid (only valid if LLA is set)"
-                }
-              ]
+        {
+          "byte_offset": 1,
+          "name": "reserved1",
+          "data_type": "U1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 2,
+          "name": "flags",
+          "data_type": "X2",
+          "description": "Time mode flags",
+          "sub_fields": [
+            {
+              "name": "lla",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "description": "Position is given in LAT/LON/ALT (default is ECEF)"
+            },
+            {
+              "name": "altInv",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "description": "Altitude is not valid, in case lla was set"
             }
-          },
-          {
-            "name": "ecefXOrLat",
-            "byte_offset": 4,
-            "data_type": "I4",
-            "description": "WGS84 ECEF X coordinate (cm) or latitude (deg * 1e-7), depending on flags",
-            "unit": "deg",
-            "scale": {
-              "raw": "1e-7",
-              "multiplier": 1e-07
-            }
-          },
-          {
-            "name": "ecefYOrLon",
-            "byte_offset": 8,
-            "data_type": "I4",
-            "description": "WGS84 ECEF Y coordinate (cm) or longitude (deg * 1e-7), depending on flags",
-            "unit": "deg",
-            "scale": {
-              "raw": "1e-7",
-              "multiplier": 1e-07
-            }
-          },
-          {
-            "name": "ecefZOrAlt",
-            "byte_offset": 12,
-            "data_type": "I4",
-            "description": "WGS84 ECEF Z coordinate (cm) or altitude (cm), depending on flags",
-            "unit": "cm",
-            "scale": null
-          },
-          {
-            "name": "fixedPosAcc",
-            "byte_offset": 16,
-            "data_type": "U4",
-            "description": "Fixed position 3D accuracy",
-            "unit": "mm",
-            "scale": null
-          },
-          {
-            "name": "svinMinDur",
-            "byte_offset": 20,
-            "data_type": "U4",
-            "description": "Survey-in minimum duration",
-            "unit": "s",
-            "scale": null
-          },
-          {
-            "name": "svinAccLimit",
-            "byte_offset": 24,
-            "data_type": "U4",
-            "description": "Survey-in position accuracy limit",
-            "unit": "mm",
-            "scale": null
-          }
-        ]
-      }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "name": "ecefXOrLat",
+          "data_type": "I4",
+          "description": "WGS84 ECEF X coordinate or latitude"
+        },
+        {
+          "byte_offset": 8,
+          "name": "ecefYOrLon",
+          "data_type": "I4",
+          "description": "WGS84 ECEF Y coordinate or longitude"
+        },
+        {
+          "byte_offset": 12,
+          "name": "ecefZOrAlt",
+          "data_type": "I4",
+          "description": "WGS84 ECEF Z coordinate or altitude"
+        },
+        {
+          "byte_offset": 16,
+          "name": "fixedPosAcc",
+          "data_type": "U4",
+          "unit": "mm",
+          "description": "Fixed position 3D accuracy"
+        },
+        {
+          "byte_offset": 20,
+          "name": "svinMinDur",
+          "data_type": "U4",
+          "unit": "s",
+          "description": "Survey-in minimum duration"
+        },
+        {
+          "byte_offset": 24,
+          "name": "svinAccLimit",
+          "data_type": "U4",
+          "unit": "mm",
+          "description": "Survey-in position accuracy limit"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete extraction: Stated payload length is 28, but only extracted fields totaling 20 bytes.",
+          "Missing fields: svinMinDur (offset 20) and svinAccLimit (offset 24)."
+        ]
+      },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
@@ -120,6 +98,6 @@
       }
     ],
     "valid_variations": [],
-    "reasoning": "The single extraction provided matches the standard specification for UBX-CFG-TMODE2 in u-blox M8 generation receivers. The field offsets, types, and descriptions are accurate. The multi-purpose coordinate fields (4, 8, 12) depend on the flags; the extraction correctly identifies them and provides the LLA unit scaling, while mentioning the ECEF alternative in descriptions."
+    "reasoning": "UBX-CFG-TMODE2 is a 28-byte message across u-blox 8, 9, and M10 series documentation (unless replaced by TMODE3). Extraction 1 correctly identifies the payload length as 28 but fails to list the final two 4-byte fields (svinMinDur and svinAccLimit). Extraction 2 provides a complete and accurate representation of the full 28-byte payload."
   }
 }

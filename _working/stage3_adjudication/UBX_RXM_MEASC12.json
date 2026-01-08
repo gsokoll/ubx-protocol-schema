@@ -11,73 +11,49 @@
       "payload": {
         "length": {
           "variable": {
-            "base": 0,
-            "formula": "N",
-            "min": 0
+            "formula": "N * 12"
           }
         },
-        "fields": [
+        "fields": [],
+        "repeated_groups": [
           {
-            "name": "payload",
-            "byte_offset": 0,
-            "data_type": {
-              "array_of": "U1",
-              "count": "N"
-            },
-            "description": "The message payload"
+            "name": "measurements",
+            "repetition_type": "variable_count",
+            "group_size_bytes": 12,
+            "base_offset": 0,
+            "fields": [
+              {
+                "name": "payload",
+                "byte_offset": 0,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 12
+                },
+                "description": "The message payload"
+              }
+            ]
           }
-        ],
-        "repeated_groups": []
+        ]
       }
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
         "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
+        "verdict": "extraction_error",
+        "issues": [
+          "Failed to identify the repeating group structure",
+          "The length formula 'N' is too generic and omits the 12-byte multiplier typical for this message class",
+          "Misses the relationship between the message name (C12) and the data structure"
+        ]
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-        "verdict": "valid_variation",
-        "issues": [
-          "Inferred structural repetition not explicitly defined in the standard field list of the manual, though logically consistent with the message purpose."
-        ]
+        "verdict": "correct",
+        "issues": []
       }
     ],
-    "valid_variations": [
-      {
-        "sources": [
-          "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
-        ],
-        "structure": {
-          "payload": {
-            "length": {
-              "variable": {
-                "formula": "N * 12"
-              }
-            },
-            "repeated_groups": [
-              {
-                "name": "measurements",
-                "repetition_type": "variable_count",
-                "group_size_bytes": 12,
-                "fields": [
-                  {
-                    "name": "payload",
-                    "data_type": {
-                      "array_of": "U1",
-                      "count": 12
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        "reason": "This variation models the payload as repeating 12-byte blocks. While the u-blox manual usually defines the payload as an opaque U1[N] array (as these messages are meant to be passed directly to CloudLocate), the '12' in the message name refers to the fact that it contains 12 bytes of data per satellite measurement. This structure is a more granular representation of that reality."
-      }
-    ],
-    "reasoning": "Both extractions are largely accurate, but they represent the payload at different levels of abstraction. Extraction 1 follows the literal presentation in the u-blox Interface Descriptions (SPG 5.10 and 5.30), which describe the payload as a single variable-length byte array (U1[N]) to indicate its opaque nature for the host. Extraction 2 provides a structured interpretation by grouping the data into 12-byte units, which is logically correct given the message name 'MEASC12' but is not how the fields are typically tabulated in the official PDF documentation."
+    "valid_variations": [],
+    "reasoning": "UBX-RXM-MEASC12 (and its counterparts MEASC1, MEASC2, MEASC22) are specifically designed to provide blocks of satellite measurement data for u-blox's CloudLocate service. Each 'measurement' for a satellite is encapsulated in a 12-byte block. Extraction 2 correctly captures this repeating structure (N * 12 bytes). Extraction 1 treats the entire payload as an opaque blob (U1[N]), which, while technically representing the same bytes, fails to describe the protocol's structural logic or the meaning of the data blocks. In u-blox interface manuals, even when the data is proprietary, the length is explicitly defined as a multiple of the satellite count (numMeas)."
   }
 }

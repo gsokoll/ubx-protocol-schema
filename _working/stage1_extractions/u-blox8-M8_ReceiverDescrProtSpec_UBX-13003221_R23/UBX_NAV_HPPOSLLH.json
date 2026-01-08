@@ -1,0 +1,179 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-HPPOSLLH",
+  "extraction_timestamp": "2026-01-08T06:35:10.192932+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 381,
+    "end": 383
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-HPPOSLLH\nExpected IDs: class_id=0x01, message_id=0x14\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-HPPOSLLH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-HPPOSLLH\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x14\",\n  \"description\": \"High precision geodetic position solution\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 36\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"description\": \"Additional flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"name\": \"invalidLlh\",\n          \"description\": \"1 = Invalid lon, lat, height, hMSL, lonHp, latHp, heightHp and hMSLHp\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"lon\",\n      \"scale\": {\n        \"multiplier\": 1e-7,\n        \"raw\": \"1e-7\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Longitude\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"I4\",\n      \"name\": \"lat\",\n      \"scale\": {\n        \"multiplier\": 1e-7,\n        \"raw\": \"1e-7\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Latitude\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"I4\",\n      \"name\": \"height\",\n      \"unit\": \"mm\",\n      \"description\": \"Height above ellipsoid.\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"I4\",\n      \"name\": \"hMSL\",\n      \"unit\": \"mm\",\n      \"description\": \"Height above mean sea level\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"I1\",\n      \"name\": \"lonHp\",\n      \"scale\": {\n        \"multiplier\": 1e-9,\n        \"raw\": \"1e-9\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"High precision component of longitude. Must be in the range -99..+99. Precise longitude in deg * 1e-7 = lon + (lonHp * 1e-2).\"\n    },\n    {\n      \"byte_offset\": 25,\n      \"data_type\": \"I1\",\n      \"name\": \"latHp\",\n      \"scale\": {\n        \"multiplier\": 1e-9,\n        \"raw\": \"1e-9\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"High precision component of latitude. Must be in the range -99..+99. Precise latitude in deg * 1e-7 = lat + (latHp * 1e-2).\"\n    },\n    {\n      \"byte_offset\": 26,\n      \"data_type\": \"I1\",\n      \"name\": \"heightHp\",\n      \"scale\": {\n        \"multiplier\": 0.1,\n        \"raw\": \"0.1\"\n      },\n      \"unit\": \"mm\",\n      \"description\": \"High precision component of height above ellipsoid. Must be in the range -9..+9. Precise height in mm = height + (heightHp * 0.1).\"\n    },\n    {\n      \"byte_offset\": 27,\n      \"data_type\": \"I1\",\n      \"name\": \"hMSLHp\",\n      \"scale\": {\n        \"multiplier\": 0.1,\n        \"raw\": \"0.1\"\n      },\n      \"unit\": \"mm\",\n      \"description\": \"High precision component of height above mean sea level. Must be in range -9..+9. Precise height in mm = hMSL + (hMSLHp * 0.1)\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"U4\",\n      \"name\": \"hAcc\",\n      \"scale\": {\n        \"multiplier\": 0.1,\n        \"raw\": \"0.1\"\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Horizontal accuracy estimate\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": \"U4\",\n      \"name\": \"vAcc\",\n      \"scale\": {\n        \"multiplier\": 0.1,\n        \"raw\": \"0.1\"\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Vertical accuracy estimate\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-HPPOSLLH",
+    "class_id": "0x01",
+    "message_id": "0x14",
+    "description": "High precision geodetic position solution",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 36
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Additional flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "name": "invalidLlh",
+              "description": "1 = Invalid lon, lat, height, hMSL, lonHp, latHp, heightHp and hMSLHp"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "lon",
+          "scale": {
+            "multiplier": 1e-07,
+            "raw": "1e-7"
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I4",
+          "name": "lat",
+          "scale": {
+            "multiplier": 1e-07,
+            "raw": "1e-7"
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "I4",
+          "name": "height",
+          "unit": "mm",
+          "description": "Height above ellipsoid."
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "I4",
+          "name": "hMSL",
+          "unit": "mm",
+          "description": "Height above mean sea level"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "I1",
+          "name": "lonHp",
+          "scale": {
+            "multiplier": 1e-09,
+            "raw": "1e-9"
+          },
+          "unit": "deg",
+          "description": "High precision component of longitude. Must be in the range -99..+99. Precise longitude in deg * 1e-7 = lon + (lonHp * 1e-2)."
+        },
+        {
+          "byte_offset": 25,
+          "data_type": "I1",
+          "name": "latHp",
+          "scale": {
+            "multiplier": 1e-09,
+            "raw": "1e-9"
+          },
+          "unit": "deg",
+          "description": "High precision component of latitude. Must be in the range -99..+99. Precise latitude in deg * 1e-7 = lat + (latHp * 1e-2)."
+        },
+        {
+          "byte_offset": 26,
+          "data_type": "I1",
+          "name": "heightHp",
+          "scale": {
+            "multiplier": 0.1,
+            "raw": "0.1"
+          },
+          "unit": "mm",
+          "description": "High precision component of height above ellipsoid. Must be in the range -9..+9. Precise height in mm = height + (heightHp * 0.1)."
+        },
+        {
+          "byte_offset": 27,
+          "data_type": "I1",
+          "name": "hMSLHp",
+          "scale": {
+            "multiplier": 0.1,
+            "raw": "0.1"
+          },
+          "unit": "mm",
+          "description": "High precision component of height above mean sea level. Must be in range -9..+9. Precise height in mm = hMSL + (hMSLHp * 0.1)"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "U4",
+          "name": "hAcc",
+          "scale": {
+            "multiplier": 0.1,
+            "raw": "0.1"
+          },
+          "unit": "mm",
+          "description": "Horizontal accuracy estimate"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "U4",
+          "name": "vAcc",
+          "scale": {
+            "multiplier": 0.1,
+            "raw": "0.1"
+          },
+          "unit": "mm",
+          "description": "Vertical accuracy estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/z33cm1zf43xb"
+}

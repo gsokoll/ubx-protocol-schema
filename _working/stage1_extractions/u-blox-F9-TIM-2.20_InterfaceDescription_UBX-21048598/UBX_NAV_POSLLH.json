@@ -1,0 +1,95 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-NAV-POSLLH",
+  "extraction_timestamp": "2026-01-08T03:53:57.102570+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 140,
+    "end": 141
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-POSLLH\nExpected IDs: class_id=0x01, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-POSLLH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": {\n    \"name\": \"UBX-NAV-POSLLH\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x02\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"See important comments concerning validity of position given in section Navigation output filters in the integration manual. This message outputs the Geodetic position in the currently selected ellipsoid. The default is the WGS84 Ellipsoid, but can be changed with the message CFG-NAVSPG-USE_USRDAT.\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"name\": \"iTOW\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"I4\",\n        \"name\": \"lon\",\n        \"scale\": {\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Longitude\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"I4\",\n        \"name\": \"lat\",\n        \"scale\": {\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Latitude\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"I4\",\n        \"name\": \"height\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above ellipsoid\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"I4\",\n        \"name\": \"HMSL\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above mean sea level\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"U4\",\n        \"name\": \"hAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Horizontal accuracy estimate\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": \"U4\",\n        \"name\": \"vAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Vertical accuracy estimate\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-NAV-POSLLH",
+      "class_id": "0x01",
+      "message_id": "0x02",
+      "message_type": "periodic_polled",
+      "description": "See important comments concerning validity of position given in section Navigation output filters in the integration manual. This message outputs the Geodetic position in the currently selected ellipsoid. The default is the WGS84 Ellipsoid, but can be changed with the message CFG-NAVSPG-USE_USRDAT.",
+      "payload_length": {
+        "fixed": 28
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "I4",
+          "name": "lon",
+          "scale": {
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "lat",
+          "scale": {
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I4",
+          "name": "height",
+          "unit": "mm",
+          "description": "Height above ellipsoid"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "I4",
+          "name": "HMSL",
+          "unit": "mm",
+          "description": "Height above mean sea level"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "hAcc",
+          "unit": "mm",
+          "description": "Horizontal accuracy estimate"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U4",
+          "name": "vAcc",
+          "unit": "mm",
+          "description": "Vertical accuracy estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/zaprrwfwbdkm"
+}

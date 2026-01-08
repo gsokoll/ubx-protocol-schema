@@ -1,52 +1,123 @@
 {
   "message_name": "UBX-UPD-SOS",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-UPD-SOS",
       "class_id": "0x09",
       "message_id": "0x14",
-      "description": "Backup and restore functions for battery-backed memory (BBR) in flash memory. This message handles polling, creation, and clearing of backups, as well as status notifications.",
-      "message_type": "input_output_poll",
+      "description": "Backup and restore operations for battery-backed memory (BBR) in flash memory.",
       "payload": {
         "length": {
           "variable": {
-            "min": 0,
-            "max": 8
+            "values": [
+              0,
+              4,
+              8
+            ]
           }
         },
-        "fields": [
+        "variants": [
           {
-            "name": "cmd",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Command or status identifier. 0: Create backup, 1: Clear backup, 2: Backup creation acknowledge, 3: System restored from backup."
+            "name": "Poll backup restore status",
+            "length": 0,
+            "message_type": "poll_request"
           },
           {
-            "name": "reserved0",
-            "byte_offset": 1,
-            "data_type": {
-              "array_of": "U1",
-              "count": 3
-            },
-            "description": "Reserved",
-            "reserved": true
+            "name": "Create backup command",
+            "length": 4,
+            "fields": [
+              {
+                "name": "cmd",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "value": 0
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 1,
+                "data_type": "U1[3]",
+                "reserved": true
+              }
+            ]
           },
           {
-            "name": "response",
-            "byte_offset": 4,
-            "data_type": "U1",
-            "description": "Status response. If cmd=2: 0=Not acknowledged, 1=Acknowledged. If cmd=3: 0=Unknown, 1=Failed, 2=Restored, 3=Not restored (no backup)."
+            "name": "Clear backup command",
+            "length": 4,
+            "fields": [
+              {
+                "name": "cmd",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "value": 1
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 1,
+                "data_type": "U1[3]",
+                "reserved": true
+              }
+            ]
           },
           {
-            "name": "reserved1",
-            "byte_offset": 5,
-            "data_type": {
-              "array_of": "U1",
-              "count": 3
-            },
-            "description": "Reserved",
-            "reserved": true
+            "name": "Backup creation acknowledge",
+            "length": 8,
+            "fields": [
+              {
+                "name": "cmd",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "value": 2
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 1,
+                "data_type": "U1[3]",
+                "reserved": true
+              },
+              {
+                "name": "response",
+                "byte_offset": 4,
+                "data_type": "U1",
+                "description": "0: Not acknowledged, 1: Acknowledged"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 5,
+                "data_type": "U1[3]",
+                "reserved": true
+              }
+            ]
+          },
+          {
+            "name": "System restored from backup",
+            "length": 8,
+            "fields": [
+              {
+                "name": "cmd",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "value": 3
+              },
+              {
+                "name": "reserved0",
+                "byte_offset": 1,
+                "data_type": "U1[3]",
+                "reserved": true
+              },
+              {
+                "name": "response",
+                "byte_offset": 4,
+                "data_type": "U1",
+                "description": "0: Unknown, 1: Failed, 2: Restored, 3: Not restored"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 5,
+                "data_type": "U1[3]",
+                "reserved": true
+              }
+            ]
           }
         ]
       }
@@ -54,16 +125,18 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "valid_variation",
         "issues": [
-          "Incomplete; only describes the 0-byte poll request."
+          "Describes only the 0-byte poll request variant."
         ]
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
       },
       {
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -71,77 +144,14 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrectly describes cmd=2 as an Input 'Poll backup restore status' message rather than an Output acknowledgment."
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "valid_variation",
         "issues": [
-          "Incomplete; only describes the 0-byte poll request."
+          "Describes only the 0-byte poll request variant."
         ]
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 8-byte output variant."
-        ]
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 0-byte poll request."
-        ]
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": [
-          "Incomplete; only describes the 8-byte output variant."
-        ]
-      },
-      {
-        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "correct",
         "issues": []
       },
@@ -149,23 +159,109 @@
         "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": [
+          "Uses bitfield terminology for byte-value enums, but content is accurate."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "extraction_error",
+        "issues": [
+          "Payload length stated as fixed 8, but description correctly identifies 0, 4, and 8 byte variants."
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 8-byte output variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 8-byte output variant."
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes only the 0-byte poll request variant."
+        ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+          "F9-HPS120_Interfacedescription_UBX-19056845",
           "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+          "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
           "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-          "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
         ],
         "structure": {
-          "payload": {
-            "length": {
-              "fixed": 0
-            }
-          }
+          "description": "Poll request variant (0-byte payload)",
+          "payload_length": 0
         },
-        "reason": "Poll Request variant: Sending an empty UBX-UPD-SOS triggers the receiver to return the status output."
+        "reason": "u-blox documentation often separates the poll request from the command/output variants into different manual sub-sections."
       },
       {
         "sources": [
@@ -173,21 +269,12 @@
           "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
         ],
         "structure": {
-          "payload": {
-            "length": {
-              "fixed": 8
-            },
-            "fields": [
-              {
-                "name": "cmd",
-                "value": 3
-              }
-            ]
-          }
+          "description": "Output notification variant (8-byte payload)",
+          "payload_length": 8
         },
-        "reason": "System restored notification: Specific output variant used by the receiver to notify of a successful or failed restore."
+        "reason": "Specific focus on the receiver-generated notification that a restore operation has occurred."
       }
     ],
-    "reasoning": "The UBX-UPD-SOS message is a polymorphic message that serves as a poll request (0 bytes), an input command (4 bytes), or an output response (8 bytes). Extractions 2, 3, 14, and 15 correctly captured this multi-modal nature. Many other extractions focus on a single usage (usually the poll or the notification), which are technically subsets of the full protocol definition. Extraction 4 contains an error, misidentifying the command flow for cmd=2."
+    "reasoning": "The UBX-UPD-SOS message is a multi-purpose message used for backup/restore operations. It has five variants determined by the payload length (0, 4, or 8) and a command byte (cmd). Many extraction tools captured only one section of the manual (the poll request or the output status), which is a common layout in u-blox documentation. Extractions 5 and 6 are the most complete, showing the variable nature of the payload. Extraction 14 contains a minor contradiction stating a fixed length of 8 while describing 0 and 4 in the text."
   }
 }

@@ -1,0 +1,113 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-TIMENAVIC",
+  "extraction_timestamp": "2026-01-08T04:31:50.675703+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 126,
+    "end": 127
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMENAVIC\nExpected IDs: class_id=0x01, message_id=0x63\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMENAVIC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_class\": \"NAV\",\n  \"ubx_id\": \"TIMENAVIC\",\n  \"name\": \"UBX-NAV-TIMENAVIC\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.\",\n  \"payload_length\": {\n    \"fixed\": 20\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n    ,\n      \"examples\": [\n        {\"value\": 0, \"description\": \"start of week\"}\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"NavICTow\",\n      \"unit\": \"s\",\n      \"description\": \"NavIC time of week (rounded to seconds)\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"fNavICTow\",\n      \"unit\": \"ns\",\n      \"description\": \"Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"I2\",\n      \"name\": \"NavICWno\",\n      \"description\": \"NavIC week number\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"I1\",\n      \"name\": \"leaps\",\n      \"unit\": \"s\",\n      \"description\": \"NavIC leap seconds (NavIC-UTC)\"\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": \"X1\",\n      \"name\": \"valid\",\n      \"description\": \"Validity Flags\",\n      \"bitfield_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"NavICTowValid\",\n          \"description\": \"1 = Valid NavICTow and fNavICTow (see section Time validity in the integration manual for details)\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"NavICWnoValid\",\n          \"description\": \"1 = Valid NavICWno (see section Time validity in the integration manual for details)\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"name\": \"leapSValid\",\n          \"description\": \"1 = Valid leapS\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"name\": \"tAcc\",\n      \"unit\": \"ns\",\n      \"description\": \"Time Accuracy Estimate\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_class": "NAV",
+    "ubx_id": "TIMENAVIC",
+    "name": "UBX-NAV-TIMENAVIC",
+    "message_type": "periodic_polled",
+    "description": "This message reports the precise NavIC time of the most recent navigation solution including validity flags and an accuracy estimate.",
+    "payload_length": {
+      "fixed": 20
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "examples": [
+            {
+              "value": 0,
+              "description": "start of week"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "NavICTow",
+          "unit": "s",
+          "description": "NavIC time of week (rounded to seconds)"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "fNavICTow",
+          "unit": "ns",
+          "description": "Fractional part of the NavIC time of week (range: +/-500000000). The precise NavIC time of week in seconds is: NavICTow + fNavICTow * 1e-9"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I2",
+          "name": "NavICWno",
+          "description": "NavIC week number"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "I1",
+          "name": "leaps",
+          "unit": "s",
+          "description": "NavIC leap seconds (NavIC-UTC)"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "X1",
+          "name": "valid",
+          "description": "Validity Flags",
+          "bitfield_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "NavICTowValid",
+              "description": "1 = Valid NavICTow and fNavICTow (see section Time validity in the integration manual for details)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "NavICWnoValid",
+              "description": "1 = Valid NavICWno (see section Time validity in the integration manual for details)"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "leapSValid",
+              "description": "1 = Valid leapS"
+            }
+          ]
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "tAcc",
+          "unit": "ns",
+          "description": "Time Accuracy Estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/2jzc9j1rlpwi"
+}

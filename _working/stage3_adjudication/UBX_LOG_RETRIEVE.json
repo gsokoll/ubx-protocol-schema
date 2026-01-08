@@ -1,12 +1,11 @@
 {
   "message_name": "UBX-LOG-RETRIEVE",
-  "num_extractions": 11,
+  "num_extractions": 12,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-LOG-RETRIEVE",
       "class_id": "0x21",
       "message_id": "0x09",
-      "description": "Request log data. Log entries are returned in chronological order.",
       "message_type": "command",
       "payload": {
         "length": {
@@ -17,13 +16,13 @@
             "name": "startNumber",
             "byte_offset": 0,
             "data_type": "U4",
-            "description": "Index of first log entry to be transferred."
+            "description": "Index of first log entry to be transferred. The indexing of log entries is zero-based."
           },
           {
             "name": "entryCount",
             "byte_offset": 4,
             "data_type": "U4",
-            "description": "Number of log entries to transfer."
+            "description": "Number of log entries to transfer in total including the first entry to be transferred. Maximum is 256."
           },
           {
             "name": "version",
@@ -47,12 +46,17 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -62,27 +66,7 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Granularity mismatch: Merged 'version' (U1) and 'reserved' (3 bytes) into a single 'reserved0' (U4) field at offset 8. The byte layout is compatible but lacks field definition precision."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "extraction_error",
-        "issues": [
-          "Major Error: Missing functional field 'entryCount' at offset 4.",
-          "Incorrectly defined offset 4 as an 8-byte reserved block, obscuring both 'entryCount' and 'version'."
-        ]
-      },
-      {
-        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
       },
@@ -97,19 +81,36 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
         "issues": []
       },
       {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Collapsed 'version' (U1) and 'reserved' (U1[3]) into a single U4 'reserved0' field."
+        ]
+      },
+      {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
         "issues": [
-          "Minor naming inconsistency: Reserved field named 'reserved1' instead of 'reserved0'."
+          "Failed to extract 'entryCount' and 'version' fields, merging them into an 8-byte reserved block."
         ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "There is strong consensus (9 out of 11 sources, spanning generations from M8 to M10) on the 12-byte structure containing `startNumber` (U4), `entryCount` (U4), `version` (U1), and `reserved` (3 bytes). Extraction 4 simplifies the last 4 bytes into a single U4 reserved field, which is structurally compatible but loses the version definition. Extraction 5 contains a critical error where it swallows the `entryCount` field into a large reserved block, which contradicts all other protocol versions and functionality requirements."
+    "reasoning": "The UBX-LOG-RETRIEVE message is consistently defined across u-blox 8, M9, F9, and M10 generations as a 12-byte message. It contains startNumber (4 bytes), entryCount (4 bytes), version (1 byte), and 3 reserved bytes. Extractions 9 and 11 are considered errors because they failed to identify the specific field boundaries for entryCount and/or version, which are explicitly defined in the corresponding interface descriptions for those firmware versions. No valid protocol variations in payload structure were found."
   }
 }

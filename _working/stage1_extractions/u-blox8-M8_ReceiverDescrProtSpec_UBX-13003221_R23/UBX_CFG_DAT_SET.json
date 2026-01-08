@@ -1,0 +1,98 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-DAT-SET",
+  "extraction_timestamp": "2026-01-08T05:33:35.138661+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 212,
+    "end": 214
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-CFG-DAT from u-blox PDF manual pages.\n\nThis message has THREE different structures:\n\n**UBX-CFG-DAT-POLL (Poll request, 0 bytes):**\nEmpty payload - just polls for current datum.\n\n**UBX-CFG-DAT-SET (Set datum, 52 bytes):**\n| Offset | Type | Name |\n|--------|------|------|\n| 0 | R8 | majA |\n| 8 | R8 | flat |\n| 16 | R4 | dX |\n| 20 | R4 | dY |\n| 24 | R4 | dZ |\n| 28 | R4 | rotX |\n| 32 | R4 | rotY |\n| 36 | R4 | rotZ |\n| 40 | R4 | scale |\n\n**UBX-CFG-DAT-GET (Get datum response, 52 bytes):**\n| Offset | Type | Name |\n|--------|------|------|\n| 0 | U2 | datumNum |\n| 2 | CH[6] | datumName |\n| 8 | R8 | majA |\n| 16 | R8 | flat |\n| 24 | R4 | dX |\n| ... (continues with dY, dZ, rotX, rotY, rotZ, scale) |\n\nExtract based on message name suffix:\n- \"UBX-CFG-DAT-POLL\" \u2192 empty payload\n- \"UBX-CFG-DAT-SET\" \u2192 SET structure (starts with majA)\n- \"UBX-CFG-DAT-GET\" or \"UBX-CFG-DAT\" \u2192 GET structure (starts with datumNum)\n\nDo NOT merge structures. Return using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"message_name\": \"UBX-CFG-DAT-SET\",\n    \"message_class\": \"0x06\",\n    \"message_id\": \"0x06\",\n    \"description\": \"Set user-defined datum\",\n    \"firmware_versions\": \"u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01\",\n    \"payload_length\": \"44\",\n    \"payload_structure\": [\n      {\n        \"offset\": \"0\",\n        \"name\": \"majA\",\n        \"type\": \"R8\",\n        \"unit\": \"m\",\n        \"description\": \"Semi-major axis (accepted range = 6,300, 000.0 to 6,500,000.0 meters).\"\n      },\n      {\n        \"offset\": \"8\",\n        \"name\": \"flat\",\n        \"type\": \"R8\",\n        \"description\": \"1.0/flattening (accepted range is 0.0 to 500.0).\"\n      },\n      {\n        \"offset\": \"16\",\n        \"name\": \"dx\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"X axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"20\",\n        \"name\": \"dy\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"Y axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"24\",\n        \"name\": \"dz\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"Z axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"28\",\n        \"name\": \"rotx\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the X axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"32\",\n        \"name\": \"roty\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the Y axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"36\",\n        \"name\": \"rotZ\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the Z axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"40\",\n        \"name\": \"scale\",\n        \"type\": \"R4\",\n        \"unit\": \"ppm\",\n        \"description\": \"Scale change (accepted range is 0.0 to 50.0 parts per million).\"\n      }\n    ]\n  },\n  {\n    \"message_name\": \"UBX-CFG-DAT-GET\",\n    \"message_class\": \"0x06\",\n    \"message_id\": \"0x06\",\n    \"description\": \"Get currently defined datum\",\n    \"firmware_versions\": \"u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01\",\n    \"payload_length\": \"52\",\n    \"payload_structure\": [\n      {\n        \"offset\": \"0\",\n        \"name\": \"datumNum\",\n        \"type\": \"U2\",\n        \"description\": \"Datum number: 0 = WGS84, 0xFFFF = user-defined\"\n      },\n      {\n        \"offset\": \"2\",\n        \"name\": \"datumName\",\n        \"type\": \"CH[6]\",\n        \"description\": \"ASCII string: WGS84 or USER\"\n      },\n      {\n        \"offset\": \"8\",\n        \"name\": \"majA\",\n        \"type\": \"R8\",\n        \"unit\": \"m\",\n        \"description\": \"Semi-major axis (accepted range = 6,300, 000.0 to 6,500,000.0 meters).\"\n      },\n      {\n        \"offset\": \"16\",\n        \"name\": \"flat\",\n        \"type\": \"R8\",\n        \"description\": \"1.0/flattening (accepted range is 0.0 to 500.0).\"\n      },\n      {\n        \"offset\": \"24\",\n        \"name\": \"dx\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"X axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"28\",\n        \"name\": \"dy\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"Y axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"32\",\n        \"name\": \"dZ\",\n        \"type\": \"R4\",\n        \"unit\": \"m\",\n        \"description\": \"Z axis shift at the origin (accepted range is +/- 5000.0 meters).\"\n      },\n      {\n        \"offset\": \"36\",\n        \"name\": \"rotx\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the X axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"40\",\n        \"name\": \"roty\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the Y axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"44\",\n        \"name\": \"rotZ\",\n        \"type\": \"R4\",\n        \"unit\": \"s\",\n        \"description\": \"Rotation about the Z axis (accepted range is +/- 20.0 milli-arc seconds).\"\n      },\n      {\n        \"offset\": \"48\",\n        \"name\": \"scale\",\n        \"type\": \"R4\",\n        \"unit\": \"ppm\",\n        \"description\": \"Scale change (accepted range is 0.0 to 50.0 parts per million).\"\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-CFG-DAT-SET",
+    "message_class": "0x06",
+    "message_id": "0x06",
+    "description": "Set user-defined datum",
+    "firmware_versions": "u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01",
+    "payload_length": "44",
+    "payload_structure": [
+      {
+        "offset": "0",
+        "name": "majA",
+        "type": "R8",
+        "unit": "m",
+        "description": "Semi-major axis (accepted range = 6,300, 000.0 to 6,500,000.0 meters)."
+      },
+      {
+        "offset": "8",
+        "name": "flat",
+        "type": "R8",
+        "description": "1.0/flattening (accepted range is 0.0 to 500.0)."
+      },
+      {
+        "offset": "16",
+        "name": "dx",
+        "type": "R4",
+        "unit": "m",
+        "description": "X axis shift at the origin (accepted range is +/- 5000.0 meters)."
+      },
+      {
+        "offset": "20",
+        "name": "dy",
+        "type": "R4",
+        "unit": "m",
+        "description": "Y axis shift at the origin (accepted range is +/- 5000.0 meters)."
+      },
+      {
+        "offset": "24",
+        "name": "dz",
+        "type": "R4",
+        "unit": "m",
+        "description": "Z axis shift at the origin (accepted range is +/- 5000.0 meters)."
+      },
+      {
+        "offset": "28",
+        "name": "rotx",
+        "type": "R4",
+        "unit": "s",
+        "description": "Rotation about the X axis (accepted range is +/- 20.0 milli-arc seconds)."
+      },
+      {
+        "offset": "32",
+        "name": "roty",
+        "type": "R4",
+        "unit": "s",
+        "description": "Rotation about the Y axis (accepted range is +/- 20.0 milli-arc seconds)."
+      },
+      {
+        "offset": "36",
+        "name": "rotZ",
+        "type": "R4",
+        "unit": "s",
+        "description": "Rotation about the Z axis (accepted range is +/- 20.0 milli-arc seconds)."
+      },
+      {
+        "offset": "40",
+        "name": "scale",
+        "type": "R4",
+        "unit": "ppm",
+        "description": "Scale change (accepted range is 0.0 to 50.0 parts per million)."
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/60iz99vxonru"
+}

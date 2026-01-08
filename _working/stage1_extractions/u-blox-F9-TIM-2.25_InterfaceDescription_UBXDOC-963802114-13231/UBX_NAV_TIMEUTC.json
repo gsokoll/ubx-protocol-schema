@@ -1,0 +1,197 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-TIMEUTC",
+  "extraction_timestamp": "2026-01-08T04:32:48.361883+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 129,
+    "end": 130
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMEUTC\nExpected IDs: class_id=0x01, message_id=0x21\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMEUTC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-TIMEUTC\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x21\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 20\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"tAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Time accuracy estimate (UTC)\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"nano\",\n      \"data_type\": \"I4\",\n      \"unit\": \"ns\",\n      \"description\": \"Fraction of second, range -1e9.. 1e9 (UTC)\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"year\",\n      \"data_type\": \"U2\",\n      \"unit\": \"y\",\n      \"description\": \"Year, range 1999..2099 (UTC)\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"name\": \"month\",\n      \"data_type\": \"U1\",\n      \"unit\": \"month\",\n      \"description\": \"Month, range 1..12 (UTC)\"\n    },\n    {\n      \"byte_offset\": 15,\n      \"name\": \"day\",\n      \"data_type\": \"U1\",\n      \"unit\": \"d\",\n      \"description\": \"Day of month, range 1..31 (UTC)\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"hour\",\n      \"data_type\": \"U1\",\n      \"unit\": \"h\",\n      \"description\": \"Hour of day, range 0..23 (UTC)\"\n    },\n    {\n      \"byte_offset\": 17,\n      \"name\": \"min\",\n      \"data_type\": \"U1\",\n      \"unit\": \"min\",\n      \"description\": \"Minute of hour, range 0..59 (UTC)\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"name\": \"sec\",\n      \"data_type\": \"U1\",\n      \"unit\": \"s\",\n      \"description\": \"Seconds of minute, range 0..60 (UTC)\"\n    },\n    {\n      \"byte_offset\": 19,\n      \"name\": \"valid\",\n      \"data_type\": \"X1\",\n      \"description\": \"Validity Flags\",\n      \"bitfields\": [\n        {\n          \"name\": \"validTOW\",\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid Time of Week (see section Time validity in the integration manual for details)\"\n        },\n        {\n          \"name\": \"validWKN\",\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid Week Number (see section Time validity in the integration manual for details)\"\n        },\n        {\n          \"name\": \"validUTC\",\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"1 = Valid UTC Time\"\n        },\n        {\n          \"name\": \"authStatus\",\n          \"bit_offset\": 3,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"description\": \"Indicates if the parameters used to convert GNSS time into UTC time have been authenticated.\",\n          \"enum_values\": [\n            {\n              \"value\": 0,\n              \"description\": \"Unknown\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Authenticated\"\n            }\n          ]\n        },\n        {\n          \"name\": \"utcStandard\",\n          \"bit_offset\": 4,\n          \"bit_length\": 4,\n          \"data_type\": \"U4\",\n          \"description\": \"UTC standard identifier. (Not supported for protocol versions less than 15.00)\",\n          \"enum_values\": [\n            {\n              \"value\": 0,\n              \"description\": \"Information not available\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Communications Research Labratory (CRL), Tokyo, Japan\"\n            },\n            {\n              \"value\": 2,\n              \"description\": \"National Institute of Standards and Technology (NIST)\"\n            },\n            {\n              \"value\": 3,\n              \"description\": \"U.S. Naval Observatory (USNO)\"\n            },\n            {\n              \"value\": 4,\n              \"description\": \"International Bureau of Weights and Measures (BIPM)\"\n            },\n            {\n              \"value\": 5,\n              \"description\": \"European laboratories\"\n            },\n            {\n              \"value\": 6,\n              \"description\": \"Former Soviet Union (SU)\"\n            },\n            {\n              \"value\": 7,\n              \"description\": \"National Time Service Center (NTSC), China\"\n            },\n            {\n              \"value\": 8,\n              \"description\": \"National Physics Laboratory India (NPLI)\"\n            },\n            {\n              \"value\": 15,\n              \"description\": \"Unknown\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-TIMEUTC",
+    "class_id": "0x01",
+    "message_id": "0x21",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 20
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "tAcc",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Time accuracy estimate (UTC)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "nano",
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fraction of second, range -1e9.. 1e9 (UTC)"
+        },
+        {
+          "byte_offset": 12,
+          "name": "year",
+          "data_type": "U2",
+          "unit": "y",
+          "description": "Year, range 1999..2099 (UTC)"
+        },
+        {
+          "byte_offset": 14,
+          "name": "month",
+          "data_type": "U1",
+          "unit": "month",
+          "description": "Month, range 1..12 (UTC)"
+        },
+        {
+          "byte_offset": 15,
+          "name": "day",
+          "data_type": "U1",
+          "unit": "d",
+          "description": "Day of month, range 1..31 (UTC)"
+        },
+        {
+          "byte_offset": 16,
+          "name": "hour",
+          "data_type": "U1",
+          "unit": "h",
+          "description": "Hour of day, range 0..23 (UTC)"
+        },
+        {
+          "byte_offset": 17,
+          "name": "min",
+          "data_type": "U1",
+          "unit": "min",
+          "description": "Minute of hour, range 0..59 (UTC)"
+        },
+        {
+          "byte_offset": 18,
+          "name": "sec",
+          "data_type": "U1",
+          "unit": "s",
+          "description": "Seconds of minute, range 0..60 (UTC)"
+        },
+        {
+          "byte_offset": 19,
+          "name": "valid",
+          "data_type": "X1",
+          "description": "Validity Flags",
+          "bitfields": [
+            {
+              "name": "validTOW",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid Time of Week (see section Time validity in the integration manual for details)"
+            },
+            {
+              "name": "validWKN",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid Week Number (see section Time validity in the integration manual for details)"
+            },
+            {
+              "name": "validUTC",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "1 = Valid UTC Time"
+            },
+            {
+              "name": "authStatus",
+              "bit_offset": 3,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "Indicates if the parameters used to convert GNSS time into UTC time have been authenticated.",
+              "enum_values": [
+                {
+                  "value": 0,
+                  "description": "Unknown"
+                },
+                {
+                  "value": 1,
+                  "description": "Authenticated"
+                }
+              ]
+            },
+            {
+              "name": "utcStandard",
+              "bit_offset": 4,
+              "bit_length": 4,
+              "data_type": "U4",
+              "description": "UTC standard identifier. (Not supported for protocol versions less than 15.00)",
+              "enum_values": [
+                {
+                  "value": 0,
+                  "description": "Information not available"
+                },
+                {
+                  "value": 1,
+                  "description": "Communications Research Labratory (CRL), Tokyo, Japan"
+                },
+                {
+                  "value": 2,
+                  "description": "National Institute of Standards and Technology (NIST)"
+                },
+                {
+                  "value": 3,
+                  "description": "U.S. Naval Observatory (USNO)"
+                },
+                {
+                  "value": 4,
+                  "description": "International Bureau of Weights and Measures (BIPM)"
+                },
+                {
+                  "value": 5,
+                  "description": "European laboratories"
+                },
+                {
+                  "value": 6,
+                  "description": "Former Soviet Union (SU)"
+                },
+                {
+                  "value": 7,
+                  "description": "National Time Service Center (NTSC), China"
+                },
+                {
+                  "value": 8,
+                  "description": "National Physics Laboratory India (NPLI)"
+                },
+                {
+                  "value": 15,
+                  "description": "Unknown"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/x0ly0nal0vgw"
+}

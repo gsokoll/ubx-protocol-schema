@@ -1,30 +1,31 @@
 {
   "message_name": "UBX-MON-IO",
   "protocol_version": 0,
-  "status": "majority",
-  "agreement_ratio": 0.9166666666666666,
+  "status": "split",
+  "agreement_ratio": 0.7333333333333333,
   "winning_structure": {
     "name": "UBX-MON-IO",
     "class_id": "0x0a",
     "message_id": "0x02",
     "description": "I/O system status",
-    "message_type": "periodic_polled",
+    "message_type": "output",
     "payload": {
       "length": {
         "variable": {
+          "base": 0,
           "formula": "num_ports * 20",
           "min": 0,
-          "description": "Payload length is N (number of ports) * 20 bytes."
+          "description": "The total payload length is determined by the number of ports (num_ports) supported by the receiver, where each port contributes 20 bytes."
         }
       },
       "fields": [],
       "repeated_groups": [
         {
-          "name": "port_status",
-          "repetition_type": "variable_count_implicit",
-          "count_description": "The number of repetitions (N) corresponds to the number of ports, calculated as payload length / 20.",
+          "name": "ports",
+          "repetition_type": "variable_count",
           "group_size_bytes": 20,
           "base_offset": 0,
+          "description": "Information repeated for each I/O port supported by the receiver. The number of repetitions (num_ports) is implicitly determined by the receiver configuration.",
           "fields": [
             {
               "name": "rxBytes",
@@ -81,22 +82,185 @@
   },
   "winning_fingerprint": "e3b848ba8024b7e5",
   "agreeing_sources": [
+    "F9-HPS120_Interfacedescription_UBX-19056845",
     "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
     "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
     "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "F9-HPS120_Interfacedescription_UBX-19056845",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
     "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318"
   ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "periodic_polled",
+        "payload_length": {
+          "variable": {
+            "formula": "num_ports * 20"
+          }
+        },
+        "payload": [
+          {
+            "name": "ports",
+            "data_type": {
+              "array_of": {
+                "type": "struct",
+                "fields": [
+                  {
+                    "byte_offset": 0,
+                    "name": "rxBytes",
+                    "data_type": "U4",
+                    "unit": "bytes",
+                    "description": "Number of bytes ever received"
+                  },
+                  {
+                    "byte_offset": 4,
+                    "name": "txBytes",
+                    "data_type": "U4",
+                    "unit": "bytes",
+                    "description": "Number of bytes ever sent"
+                  },
+                  {
+                    "byte_offset": 8,
+                    "name": "parityErrs",
+                    "data_type": "U2",
+                    "description": "Number of 100 ms timeslots with parity errors"
+                  },
+                  {
+                    "byte_offset": 10,
+                    "name": "framingErrs",
+                    "data_type": "U2",
+                    "description": "Number of 100 ms timeslots with framing errors"
+                  },
+                  {
+                    "byte_offset": 12,
+                    "name": "overrunErrs",
+                    "data_type": "U2",
+                    "description": "Number of 100 ms timeslots with overrun errors"
+                  },
+                  {
+                    "byte_offset": 14,
+                    "name": "breakCond",
+                    "data_type": "U2",
+                    "description": "Number of 100 ms timeslots with break conditions"
+                  },
+                  {
+                    "byte_offset": 16,
+                    "name": "reserved0",
+                    "data_type": {
+                      "array_of": "U1",
+                      "count": 4
+                    },
+                    "reserved": true,
+                    "description": "Reserved"
+                  }
+                ]
+              },
+              "count": {
+                "formula": "payload_length / 20"
+              }
+            }
+          }
+        ]
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 0,
+              "formula": "num_ports * 20",
+              "min": 0,
+              "description": "The total payload length is determined by the number of ports (num_ports) supported by the receiver, where each port contributes 20 bytes."
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "variable_count",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "description": "Information repeated for each I/O port supported by the receiver. The number of repetitions (num_ports) is implicitly determined by the receiver configuration.",
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
     {
       "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
@@ -119,6 +283,399 @@
               "name": "port_status",
               "repetition_type": "variable_count_implicit",
               "count_description": "The number of repetitions (N) corresponds to the number of ports, calculated as payload length / 20.",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-MON-IO",
+          "class_id": "0x0a",
+          "message_id": "0x02",
+          "message_type": "periodic_polled",
+          "comment": "This message is deprecated in this protocol version. Use UBX-MON-COMMS instead. The size of the message is determined by the number of ports 'N' the receiver supports, i.e. on u-blox 5 the number of ports is 6.",
+          "payload_length": {
+            "variable": {
+              "formula": "N * 20"
+            }
+          },
+          "payload": [
+            {
+              "repeated_group": {
+                "name": "ports",
+                "count": "N",
+                "elements": [
+                  {
+                    "byte_offset": 0,
+                    "data_type": "U4",
+                    "name": "rxBytes",
+                    "description": "Number of bytes ever received",
+                    "unit": "bytes"
+                  },
+                  {
+                    "byte_offset": 4,
+                    "data_type": "U4",
+                    "name": "txBytes",
+                    "description": "Number of bytes ever sent",
+                    "unit": "bytes"
+                  },
+                  {
+                    "byte_offset": 8,
+                    "data_type": "U2",
+                    "name": "parityErrs",
+                    "description": "Number of 100 ms timeslots with parity errors"
+                  },
+                  {
+                    "byte_offset": 10,
+                    "data_type": "U2",
+                    "name": "framingErrs",
+                    "description": "Number of 100 ms timeslots with framing errors"
+                  },
+                  {
+                    "byte_offset": 12,
+                    "data_type": "U2",
+                    "name": "overrunErrs",
+                    "description": "Number of 100 ms timeslots with overrun errors"
+                  },
+                  {
+                    "byte_offset": 14,
+                    "data_type": "U2",
+                    "name": "breakCond",
+                    "description": "Number of 100 ms timeslots with break conditions"
+                  },
+                  {
+                    "byte_offset": 16,
+                    "data_type": {
+                      "array_of": "U1",
+                      "count": 4
+                    },
+                    "name": "reserved0",
+                    "reserved": true,
+                    "description": "Reserved"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "formula": "N * 20",
+              "min": 0
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "ports",
+              "repetition_type": "count_field",
+              "count_field": "N",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "ubx_class": "0x0a",
+        "ubx_id": "0x02",
+        "message_name": "UBX-MON-IO",
+        "message_type": "periodic_polled",
+        "description": "I/O system status",
+        "payload_length": {
+          "variable": {
+            "formula": "N * 20",
+            "description": "N = number of ports the receiver supports"
+          }
+        },
+        "payload": {
+          "fields": [
+            {
+              "name": "ports",
+              "data_type": {
+                "array_of": {
+                  "fields": [
+                    {
+                      "name": "rxBytes",
+                      "byte_offset": 0,
+                      "data_type": "U4",
+                      "unit": "bytes",
+                      "description": "Number of bytes ever received"
+                    },
+                    {
+                      "name": "txBytes",
+                      "byte_offset": 4,
+                      "data_type": "U4",
+                      "unit": "bytes",
+                      "description": "Number of bytes ever sent"
+                    },
+                    {
+                      "name": "parityErrs",
+                      "byte_offset": 8,
+                      "data_type": "U2",
+                      "description": "Number of 100 ms timeslots with parity errors"
+                    },
+                    {
+                      "name": "framingErrs",
+                      "byte_offset": 10,
+                      "data_type": "U2",
+                      "description": "Number of 100 ms timeslots with framing errors"
+                    },
+                    {
+                      "name": "overrunErrs",
+                      "byte_offset": 12,
+                      "data_type": "U2",
+                      "description": "Number of 100 ms timeslots with overrun errors"
+                    },
+                    {
+                      "name": "breakCond",
+                      "byte_offset": 14,
+                      "data_type": "U2",
+                      "description": "Number of 100 ms timeslots with break conditions"
+                    },
+                    {
+                      "name": "reserved0",
+                      "byte_offset": 16,
+                      "data_type": {
+                        "array_of": "U1",
+                        "count": 4
+                      },
+                      "reserved": true,
+                      "description": "Reserved"
+                    }
+                  ]
+                },
+                "count": "N",
+                "description": "Array of N port status structures (where N is the number of ports)"
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "fcbad66d805a5b23"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "min": 0,
+              "description": "Payload consists of N blocks of 20 bytes each, where N is the number of ports supported by the receiver. The number of blocks (N) is implicitly determined by the message length."
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "portStatus",
+              "repetition_type": "fill_remaining",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "formula": "numPorts * 20",
+              "description": "The number of ports ('N') is system-defined and implicitly derived from the message payload length (payload length / 20 bytes per port status block).",
+              "min": 0
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "portStatus",
+              "repetition_type": "count_field",
+              "count_field": "numPorts",
               "group_size_bytes": 20,
               "base_offset": 0,
               "fields": [
@@ -202,163 +759,6 @@
               "group_size_bytes": 20,
               "base_offset": 0,
               "description": "Repeated for each port. The number of ports (numPorts) is implicitly determined by the receiver hardware configuration (e.g., 6 for u-blox 5 devices) and not reported as an explicit field within this message.",
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status",
-        "message_type": "periodic_polled",
-        "payload": {
-          "length": {
-            "variable": {
-              "formula": "N * 20",
-              "min": 20,
-              "description": "N = Number of ports on the receiver"
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "portIoStatus",
-              "repetition_type": "implicit_count",
-              "count_field": "N",
-              "description": "N = Number of ports on the receiver",
-              "group_size_bytes": 20,
-              "base_offset": 0,
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "min": 0,
-              "description": "Payload consists of N blocks of 20 bytes each, where N is the number of ports supported by the receiver. The number of blocks (N) is implicitly determined by the message length."
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "portStatus",
-              "repetition_type": "fill_remaining",
-              "group_size_bytes": 20,
-              "base_offset": 0,
               "fields": [
                 {
                   "name": "rxBytes",
@@ -585,252 +985,7 @@
       "fingerprint": "bf97c178d43712a4"
     },
     {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "formula": "numPorts * 20",
-              "base": 0,
-              "description": "The total length is determined by the number of ports 'numPorts' supported by the receiver (e.g., 6 on u-blox 5). Each port contributes 20 bytes."
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "portStatus",
-              "repetition_type": "external_count",
-              "count_field": "numPorts",
-              "group_size_bytes": 20,
-              "base_offset": 0,
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors",
-                  "unit": "100 ms timeslots"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors",
-                  "unit": "100 ms timeslots"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors",
-                  "unit": "100 ms timeslots"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions",
-                  "unit": "100 ms timeslots"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 0,
-              "formula": "num_ports * 20",
-              "min": 0,
-              "description": "The total payload length is determined by the number of ports (num_ports) supported by the receiver, where each port contributes 20 bytes."
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "ports",
-              "repetition_type": "variable_count",
-              "group_size_bytes": 20,
-              "base_offset": 0,
-              "description": "Information repeated for each I/O port supported by the receiver. The number of repetitions (num_ports) is implicitly determined by the receiver configuration.",
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status. This message is deprecated in this protocol version. Use UBX-MON-COMMS instead. The size of the message is determined by the number of ports 'N' the receiver supports, i.e. on u-blox 5 the number of ports is 6.",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 0,
-              "formula": "num_ports * 20",
-              "description": "The payload length is variable and depends on the number of I/O ports (num_ports) supported by the receiver. Each port contributes 20 bytes to the payload."
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "ports_status",
-              "repetition_type": "derived_from_payload_length",
-              "group_size_bytes": 20,
-              "base_offset": 0,
-              "description": "I/O status for each port. The number of repetitions ('num_ports') is derived from the total payload length divided by 20 bytes per group.",
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-MON-IO",
         "class_id": "0x0a",
@@ -840,95 +995,18 @@
         "payload": {
           "length": {
             "variable": {
-              "formula": "numPorts * 20",
-              "description": "The number of ports ('N') is system-defined and implicitly derived from the message payload length (payload length / 20 bytes per port status block).",
-              "min": 0
-            }
-          },
-          "fields": [],
-          "repeated_groups": [
-            {
-              "name": "portStatus",
-              "repetition_type": "count_field",
-              "count_field": "numPorts",
-              "group_size_bytes": 20,
-              "base_offset": 0,
-              "fields": [
-                {
-                  "name": "rxBytes",
-                  "byte_offset": 0,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "txBytes",
-                  "byte_offset": 4,
-                  "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
-                },
-                {
-                  "name": "parityErrs",
-                  "byte_offset": 8,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with parity errors"
-                },
-                {
-                  "name": "framingErrs",
-                  "byte_offset": 10,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with framing errors"
-                },
-                {
-                  "name": "overrunErrs",
-                  "byte_offset": 12,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with overrun errors"
-                },
-                {
-                  "name": "breakCond",
-                  "byte_offset": 14,
-                  "data_type": "U2",
-                  "description": "Number of 100 ms timeslots with break conditions"
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 16,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 4
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "e3b848ba8024b7e5"
-    },
-    {
-      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-      "structure": {
-        "name": "UBX-MON-IO",
-        "class_id": "0x0a",
-        "message_id": "0x02",
-        "description": "I/O system status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
               "formula": "N * 20",
-              "min": 0
+              "min": 20,
+              "description": "N = Number of ports on the receiver"
             }
           },
           "fields": [],
           "repeated_groups": [
             {
-              "name": "portStatus",
-              "repetition_type": "implied_by_length",
+              "name": "portIoStatus",
+              "repetition_type": "implicit_count",
+              "count_field": "N",
+              "description": "N = Number of ports on the receiver",
               "group_size_bytes": 20,
               "base_offset": 0,
               "fields": [
@@ -936,15 +1014,13 @@
                   "name": "rxBytes",
                   "byte_offset": 0,
                   "data_type": "U4",
-                  "description": "Number of bytes ever received",
-                  "unit": "bytes"
+                  "description": "Number of bytes ever received"
                 },
                 {
                   "name": "txBytes",
                   "byte_offset": 4,
                   "data_type": "U4",
-                  "description": "Number of bytes ever sent",
-                  "unit": "bytes"
+                  "description": "Number of bytes ever sent"
                 },
                 {
                   "name": "parityErrs",
@@ -1069,7 +1145,91 @@
       "fingerprint": "e3b848ba8024b7e5"
     },
     {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "formula": "numPorts * 20",
+              "base": 0,
+              "description": "The total length is determined by the number of ports 'numPorts' supported by the receiver (e.g., 6 on u-blox 5). Each port contributes 20 bytes."
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "portStatus",
+              "repetition_type": "external_count",
+              "count_field": "numPorts",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors",
+                  "unit": "100 ms timeslots"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors",
+                  "unit": "100 ms timeslots"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors",
+                  "unit": "100 ms timeslots"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions",
+                  "unit": "100 ms timeslots"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
       "structure": {
         "name": "UBX-MON-IO",
         "class_id": "0x0a",
@@ -1086,11 +1246,90 @@
           "fields": [],
           "repeated_groups": [
             {
-              "name": "ports",
-              "repetition_type": "count_field",
-              "count_field": "N",
+              "name": "portStatus",
+              "repetition_type": "implied_by_length",
               "group_size_bytes": 20,
               "base_offset": 0,
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever received",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "Number of bytes ever sent",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e3b848ba8024b7e5"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-MON-IO",
+        "class_id": "0x0a",
+        "message_id": "0x02",
+        "description": "I/O system status. This message is deprecated in this protocol version. Use UBX-MON-COMMS instead. The size of the message is determined by the number of ports 'N' the receiver supports, i.e. on u-blox 5 the number of ports is 6.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 0,
+              "formula": "num_ports * 20",
+              "description": "The payload length is variable and depends on the number of I/O ports (num_ports) supported by the receiver. Each port contributes 20 bytes to the payload."
+            }
+          },
+          "fields": [],
+          "repeated_groups": [
+            {
+              "name": "ports_status",
+              "repetition_type": "derived_from_payload_length",
+              "group_size_bytes": 20,
+              "base_offset": 0,
+              "description": "I/O status for each port. The number of repetitions ('num_ports') is derived from the total payload length divided by 20 bytes per group.",
               "fields": [
                 {
                   "name": "rxBytes",

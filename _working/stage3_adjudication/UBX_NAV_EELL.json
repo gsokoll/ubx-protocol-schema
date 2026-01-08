@@ -7,6 +7,7 @@
       "class_id": "0x01",
       "message_id": "0x3d",
       "description": "Position error ellipse parameters",
+      "message_type": "output",
       "payload": {
         "length": {
           "fixed": 16
@@ -16,7 +17,7 @@
             "name": "iTOW",
             "byte_offset": 0,
             "data_type": "U4",
-            "description": "GPS time of week of the navigation epoch",
+            "description": "GPS time of week of the navigation epoch.",
             "unit": "ms"
           },
           {
@@ -63,7 +64,12 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -73,32 +79,56 @@
         "issues": []
       },
       {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
-        "issues": []
+        "issues": [
+          "Message type 'periodic_polled' is a more specific label used in newer documentation for 'output' messages."
+        ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": []
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses 'reserved1' instead of 'reserved0' and older description text style for iTOW."
+        ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
         "verdict": "correct",
         "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "All 7 extractions describe the exact same 16-byte message structure with identical fields, types, and scaling factors. The only minor difference is the naming of the reserved field at offset 5 in the M8 documentation ('reserved1' vs 'reserved0' in later generations), which is a documentation convention rather than a protocol difference. The canonical structure adopts 'reserved0' as it is used in the majority of (newer) documents."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 5,
+              "data_type": "U1"
+            }
+          ]
+        },
+        "reason": "u-blox 8 generation documentation often uses 'reserved1' for the padding byte at offset 5 and slightly different boilerplate text for common fields like iTOW."
+      },
+      {
+        "sources": [
+          "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052"
+        ],
+        "structure": {
+          "message_type": "periodic_polled"
+        },
+        "reason": "Newer u-blox documentation (e.g., LAP 1.50) uses 'periodic_polled' to more accurately describe output messages that are both sent automatically and can be requested via poll."
+      }
+    ],
+    "reasoning": "All 7 extractions describe an identical binary structure: a 16-byte message with the same offsets, data types, and scaling factors. Differences are limited to nomenclature (naming a reserved field 'reserved0' vs 'reserved1') and minor documentation style changes (iTOW description text and 'output' vs 'periodic_polled' message types). This indicates a very stable message structure across M8, M9, and F9 receiver generations."
   }
 }

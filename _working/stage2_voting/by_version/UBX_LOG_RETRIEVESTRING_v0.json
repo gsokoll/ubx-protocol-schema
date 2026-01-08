@@ -2,7 +2,7 @@
   "message_name": "UBX-LOG-RETRIEVESTRING",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.6666666666666666,
+  "agreement_ratio": 0.6,
   "winning_structure": {
     "name": "UBX-LOG-RETRIEVESTRING",
     "class_id": "0x21",
@@ -88,17 +88,18 @@
       ],
       "repeated_groups": [
         {
-          "name": "stringBytes",
+          "name": "bytes",
           "repetition_type": "count_field",
           "count_field": "byteCount",
-          "group_size_bytes": 1,
           "base_offset": 16,
+          "group_size_bytes": 1,
+          "description": "The bytes of the string (maximum 256)",
           "fields": [
             {
               "name": "byte",
               "byte_offset": 0,
               "data_type": "U1",
-              "description": "A byte of the string"
+              "description": "A byte of the logged string"
             }
           ]
         }
@@ -107,19 +108,224 @@
   },
   "winning_fingerprint": "c557b33a1614809a",
   "agreeing_sources": [
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
     "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
     "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
     "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
   ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "ubx_message": {
+          "message_name": "UBX-LOG-RETRIEVESTRING",
+          "class_id": "0x21",
+          "message_id": "0x0d",
+          "message_type": "output",
+          "description": "Byte string log entry",
+          "payload_length": {
+            "variable": {
+              "base": 16,
+              "formula": "byteCount"
+            }
+          },
+          "payload_fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "entryIndex",
+              "description": "The index of this log entry"
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "U1",
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 6,
+              "data_type": "U2",
+              "name": "year",
+              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "U1",
+              "name": "month",
+              "description": "Month (1-12) of UTC time"
+            },
+            {
+              "byte_offset": 9,
+              "data_type": "U1",
+              "name": "day",
+              "description": "Day (1-31) of UTC time"
+            },
+            {
+              "byte_offset": 10,
+              "data_type": "U1",
+              "name": "hour",
+              "description": "Hour (0-23) of UTC time"
+            },
+            {
+              "byte_offset": 11,
+              "data_type": "U1",
+              "name": "minute",
+              "description": "Minute (0-59) of UTC time"
+            },
+            {
+              "byte_offset": 12,
+              "data_type": "U1",
+              "name": "second",
+              "description": "Second (0-60) of UTC time"
+            },
+            {
+              "byte_offset": 13,
+              "data_type": "U1",
+              "name": "reserved1",
+              "reserved": true
+            },
+            {
+              "byte_offset": 14,
+              "data_type": "U2",
+              "name": "byteCount",
+              "description": "Size of string in bytes"
+            },
+            {
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": "byteCount"
+              },
+              "name": "bytes",
+              "description": "The bytes of the string"
+            }
+          ]
+        }
+      },
+      "fingerprint": "1edc2e62ae8d48c9"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVESTRING",
+        "class_id": "0x21",
+        "message_id": "0x0d",
+        "description": "This message is used to report a byte string log entry",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + byteCount"
+            }
+          },
+          "fields": [
+            {
+              "name": "entryIndex",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "The index of this log entry"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "year",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
+            },
+            {
+              "name": "month",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Month (1-12) of UTC time"
+            },
+            {
+              "name": "day",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Day (1-31) of UTC time"
+            },
+            {
+              "name": "hour",
+              "byte_offset": 10,
+              "data_type": "U1",
+              "description": "Hour (0-23) of UTC time"
+            },
+            {
+              "name": "minute",
+              "byte_offset": 11,
+              "data_type": "U1",
+              "description": "Minute (0-59) of UTC time"
+            },
+            {
+              "name": "second",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Second (0-60) of UTC time"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "byteCount",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "Size of string in bytes"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "bytes",
+              "repetition_type": "count_field",
+              "count_field": "byteCount",
+              "base_offset": 16,
+              "group_size_bytes": 1,
+              "description": "The bytes of the string (maximum 256)",
+              "fields": [
+                {
+                  "name": "byte",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "A byte of the logged string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "c557b33a1614809a"
+    },
     {
       "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
@@ -225,6 +431,218 @@
         }
       },
       "fingerprint": "c557b33a1614809a"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVESTRING",
+        "class_id": "0x21",
+        "message_id": "0x0d",
+        "description": "This message is used to report a byte string log entry",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + byteCount"
+            }
+          },
+          "fields": [
+            {
+              "name": "entryIndex",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "The index of this log entry"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "year",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
+            },
+            {
+              "name": "month",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Month (1-12) of UTC time"
+            },
+            {
+              "name": "day",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Day (1-31) of UTC time"
+            },
+            {
+              "name": "hour",
+              "byte_offset": 10,
+              "data_type": "U1",
+              "description": "Hour (0-23) of UTC time"
+            },
+            {
+              "name": "minute",
+              "byte_offset": 11,
+              "data_type": "U1",
+              "description": "Minute (0-59) of UTC time"
+            },
+            {
+              "name": "second",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Second (0-60) of UTC time"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "byteCount",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "Size of string in bytes"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "bytes",
+              "repetition_type": "count_field",
+              "count_field": "byteCount",
+              "group_size_bytes": 1,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "byte",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "The bytes of the string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "c557b33a1614809a"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVESTRING",
+        "class_id": "0x21",
+        "message_id": "0x0d",
+        "description": "This message is used to report a byte string log entry",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + byteCount"
+            }
+          },
+          "fields": [
+            {
+              "name": "entryIndex",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "The index of this log entry"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "year",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
+            },
+            {
+              "name": "month",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Month (1-12) of UTC time"
+            },
+            {
+              "name": "day",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Day (1-31) of UTC time"
+            },
+            {
+              "name": "hour",
+              "byte_offset": 10,
+              "data_type": "U1",
+              "description": "Hour (0-23) of UTC time"
+            },
+            {
+              "name": "minute",
+              "byte_offset": 11,
+              "data_type": "U1",
+              "description": "Minute (0-59) of UTC time"
+            },
+            {
+              "name": "second",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Second (0-60) of UTC time"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "byteCount",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "Size of string in bytes"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "string_data",
+              "repetition_type": "count_field",
+              "count_field": "byteCount",
+              "group_size_bytes": 1,
+              "base_offset": 16,
+              "fields": [
+                {
+                  "name": "bytes",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "The bytes of the string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "a312de6c424da3e6"
     },
     {
       "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
@@ -425,6 +843,113 @@
               "count_field": "byteCount",
               "group_size_bytes": 1,
               "base_offset": 16,
+              "fields": [
+                {
+                  "name": "bytes",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "The bytes of the string"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "a312de6c424da3e6"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVESTRING",
+        "class_id": "0x21",
+        "message_id": "0x0d",
+        "description": "Byte string log entry",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 16,
+              "formula": "16 + byteCount * 1",
+              "min": 16
+            }
+          },
+          "fields": [
+            {
+              "name": "entryIndex",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "The index of this log entry"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "year",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
+            },
+            {
+              "name": "month",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Month (1-12) of UTC time"
+            },
+            {
+              "name": "day",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "Day (1-31) of UTC time"
+            },
+            {
+              "name": "hour",
+              "byte_offset": 10,
+              "data_type": "U1",
+              "description": "Hour (0-23) of UTC time"
+            },
+            {
+              "name": "minute",
+              "byte_offset": 11,
+              "data_type": "U1",
+              "description": "Minute (0-59) of UTC time"
+            },
+            {
+              "name": "second",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Second (0-60) of UTC time"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "byteCount",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "description": "Size of string in bytes"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "logBytes",
+              "repetition_type": "count_field",
+              "count_field": "byteCount",
+              "base_offset": 16,
+              "group_size_bytes": 1,
               "fields": [
                 {
                   "name": "bytes",
@@ -650,432 +1175,6 @@
         }
       },
       "fingerprint": "c557b33a1614809a"
-    },
-    {
-      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVESTRING",
-        "class_id": "0x21",
-        "message_id": "0x0d",
-        "description": "This message is used to report a byte string log entry",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 16,
-              "formula": "16 + byteCount"
-            }
-          },
-          "fields": [
-            {
-              "name": "entryIndex",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "The index of this log entry"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "year",
-              "byte_offset": 6,
-              "data_type": "U2",
-              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
-            },
-            {
-              "name": "month",
-              "byte_offset": 8,
-              "data_type": "U1",
-              "description": "Month (1-12) of UTC time"
-            },
-            {
-              "name": "day",
-              "byte_offset": 9,
-              "data_type": "U1",
-              "description": "Day (1-31) of UTC time"
-            },
-            {
-              "name": "hour",
-              "byte_offset": 10,
-              "data_type": "U1",
-              "description": "Hour (0-23) of UTC time"
-            },
-            {
-              "name": "minute",
-              "byte_offset": 11,
-              "data_type": "U1",
-              "description": "Minute (0-59) of UTC time"
-            },
-            {
-              "name": "second",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Second (0-60) of UTC time"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "byteCount",
-              "byte_offset": 14,
-              "data_type": "U2",
-              "description": "Size of string in bytes"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "bytes",
-              "repetition_type": "count_field",
-              "count_field": "byteCount",
-              "group_size_bytes": 1,
-              "base_offset": 16,
-              "fields": [
-                {
-                  "name": "byte",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "The bytes of the string"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "c557b33a1614809a"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVESTRING",
-        "class_id": "0x21",
-        "message_id": "0x0d",
-        "description": "This message is used to report a byte string log entry",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 16,
-              "formula": "16 + byteCount"
-            }
-          },
-          "fields": [
-            {
-              "name": "entryIndex",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "The index of this log entry"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "year",
-              "byte_offset": 6,
-              "data_type": "U2",
-              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
-            },
-            {
-              "name": "month",
-              "byte_offset": 8,
-              "data_type": "U1",
-              "description": "Month (1-12) of UTC time"
-            },
-            {
-              "name": "day",
-              "byte_offset": 9,
-              "data_type": "U1",
-              "description": "Day (1-31) of UTC time"
-            },
-            {
-              "name": "hour",
-              "byte_offset": 10,
-              "data_type": "U1",
-              "description": "Hour (0-23) of UTC time"
-            },
-            {
-              "name": "minute",
-              "byte_offset": 11,
-              "data_type": "U1",
-              "description": "Minute (0-59) of UTC time"
-            },
-            {
-              "name": "second",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Second (0-60) of UTC time"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "byteCount",
-              "byte_offset": 14,
-              "data_type": "U2",
-              "description": "Size of string in bytes"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "string_data",
-              "repetition_type": "count_field",
-              "count_field": "byteCount",
-              "group_size_bytes": 1,
-              "base_offset": 16,
-              "fields": [
-                {
-                  "name": "bytes",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "The bytes of the string"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "a312de6c424da3e6"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVESTRING",
-        "class_id": "0x21",
-        "message_id": "0x0d",
-        "description": "This message is used to report a byte string log entry",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 16,
-              "formula": "16 + byteCount"
-            }
-          },
-          "fields": [
-            {
-              "name": "entryIndex",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "The index of this log entry"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "year",
-              "byte_offset": 6,
-              "data_type": "U2",
-              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
-            },
-            {
-              "name": "month",
-              "byte_offset": 8,
-              "data_type": "U1",
-              "description": "Month (1-12) of UTC time"
-            },
-            {
-              "name": "day",
-              "byte_offset": 9,
-              "data_type": "U1",
-              "description": "Day (1-31) of UTC time"
-            },
-            {
-              "name": "hour",
-              "byte_offset": 10,
-              "data_type": "U1",
-              "description": "Hour (0-23) of UTC time"
-            },
-            {
-              "name": "minute",
-              "byte_offset": 11,
-              "data_type": "U1",
-              "description": "Minute (0-59) of UTC time"
-            },
-            {
-              "name": "second",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Second (0-60) of UTC time"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "byteCount",
-              "byte_offset": 14,
-              "data_type": "U2",
-              "description": "Size of string in bytes"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "bytes",
-              "repetition_type": "count_field",
-              "count_field": "byteCount",
-              "base_offset": 16,
-              "group_size_bytes": 1,
-              "description": "The bytes of the string (maximum 256)",
-              "fields": [
-                {
-                  "name": "byte",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "A byte of the logged string"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "c557b33a1614809a"
-    },
-    {
-      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVESTRING",
-        "class_id": "0x21",
-        "message_id": "0x0d",
-        "description": "Byte string log entry",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 16,
-              "formula": "16 + byteCount * 1",
-              "min": 16
-            }
-          },
-          "fields": [
-            {
-              "name": "entryIndex",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "The index of this log entry"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 5,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "year",
-              "byte_offset": 6,
-              "data_type": "U2",
-              "description": "Year (1-65635) of UTC time. Will be zero if time not known"
-            },
-            {
-              "name": "month",
-              "byte_offset": 8,
-              "data_type": "U1",
-              "description": "Month (1-12) of UTC time"
-            },
-            {
-              "name": "day",
-              "byte_offset": 9,
-              "data_type": "U1",
-              "description": "Day (1-31) of UTC time"
-            },
-            {
-              "name": "hour",
-              "byte_offset": 10,
-              "data_type": "U1",
-              "description": "Hour (0-23) of UTC time"
-            },
-            {
-              "name": "minute",
-              "byte_offset": 11,
-              "data_type": "U1",
-              "description": "Minute (0-59) of UTC time"
-            },
-            {
-              "name": "second",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Second (0-60) of UTC time"
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "byteCount",
-              "byte_offset": 14,
-              "data_type": "U2",
-              "description": "Size of string in bytes"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "logBytes",
-              "repetition_type": "count_field",
-              "count_field": "byteCount",
-              "base_offset": 16,
-              "group_size_bytes": 1,
-              "fields": [
-                {
-                  "name": "bytes",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "The bytes of the string"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "a312de6c424da3e6"
     }
   ]
 }

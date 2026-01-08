@@ -1,77 +1,97 @@
 {
   "message_name": "UBX-CFG-MSG",
-  "num_extractions": 8,
+  "num_extractions": 10,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-MSG",
       "class_id": "0x06",
       "message_id": "0x01",
-      "description": "Set/Get message rate configuration",
-      "message_type": "get_set",
-      "payload": {
-        "length": {
-          "fixed": 8
-        },
-        "fields": [
-          {
-            "name": "msgClass",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Message class"
+      "description": "Configuration message for polling or setting message rates for UBX protocol messages.",
+      "variants": [
+        {
+          "name": "Poll a message configuration",
+          "message_type": "poll_request",
+          "payload_length": {
+            "fixed": 2
           },
-          {
-            "name": "msgID",
-            "byte_offset": 1,
-            "data_type": "U1",
-            "description": "Message identifier"
-          },
-          {
-            "name": "rate",
-            "byte_offset": 2,
-            "data_type": {
-              "array_of": "U1",
-              "count": 6
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "msgClass",
+              "data_type": "U1",
+              "description": "Message class"
             },
-            "description": "Send rate on I/O ports"
-          }
-        ]
-      }
+            {
+              "byte_offset": 1,
+              "name": "msgID",
+              "data_type": "U1",
+              "description": "Message identifier"
+            }
+          ]
+        },
+        {
+          "name": "Set message rate(s) (all ports)",
+          "message_type": "get_set",
+          "payload_length": {
+            "fixed": 8
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "msgClass",
+              "data_type": "U1",
+              "description": "Message class"
+            },
+            {
+              "byte_offset": 1,
+              "name": "msgID",
+              "data_type": "U1",
+              "description": "Message identifier"
+            },
+            {
+              "byte_offset": 2,
+              "name": "rate",
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Send rate on I/O port (6 ports)"
+            }
+          ]
+        },
+        {
+          "name": "Set message rate (current port)",
+          "message_type": "get_set",
+          "payload_length": {
+            "fixed": 3
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "msgClass",
+              "data_type": "U1",
+              "description": "Message class"
+            },
+            {
+              "byte_offset": 1,
+              "name": "msgID",
+              "data_type": "U1",
+              "description": "Message identifier"
+            },
+            {
+              "byte_offset": 2,
+              "name": "rate",
+              "data_type": "U1",
+              "description": "Send rate on current port"
+            }
+          ]
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "valid_variation",
-        "issues": [
-          "Extracted the Poll Request structure (2 bytes) instead of the Data/Set structure (8 bytes)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": [
-          "Extracted the Poll Request structure (2 bytes) instead of the Data/Set structure (8 bytes)"
-        ]
-      },
-      {
-        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-        "verdict": "valid_variation",
-        "issues": [
-          "Extracted the Poll Request structure (2 bytes) instead of the Data/Set structure (8 bytes)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -79,47 +99,102 @@
         "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "valid_variation",
         "issues": [
-          "Extracted the Poll Request structure (2 bytes) instead of the Data/Set structure (8 bytes)"
+          "Only extracts the poll variant"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the poll variant"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the 8-byte set-rate variant"
+        ]
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the poll variant"
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the 8-byte set-rate variant"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the poll variant"
         ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "valid_variation",
         "issues": [
-          "Extracted the Poll Request structure (2 bytes) instead of the Data/Set structure (8 bytes)"
+          "Only extracts the poll variant"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the 8-byte set-rate variant"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Only extracts the poll variant"
         ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
           "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
         ],
         "structure": {
-          "message_type": "poll_request",
-          "length": {
-            "fixed": 2
-          },
+          "payload_length": 2,
           "fields": [
-            {
-              "name": "msgClass",
-              "byte_offset": 0,
-              "data_type": "U1"
-            },
-            {
-              "name": "msgID",
-              "byte_offset": 1,
-              "data_type": "U1"
-            }
+            "msgClass",
+            "msgID"
           ]
         },
-        "reason": "UBX-CFG-MSG defines a specific Poll Request payload (2 bytes: Class, ID) distinct from the Set/Get payload (8 bytes: Class, ID, Rates). Both are valid definitions appearing in documentation, but the 8-byte definition is canonical for data representation."
+        "reason": "Poll Request variant of UBX-CFG-MSG"
+      },
+      {
+        "sources": [
+          "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
+        ],
+        "structure": {
+          "payload_length": 8,
+          "fields": [
+            "msgClass",
+            "msgID",
+            "rate[6]"
+          ]
+        },
+        "reason": "Set rate for all ports variant of UBX-CFG-MSG"
       }
     ],
-    "reasoning": "This message (UBX-CFG-MSG) has two distinct payload definitions in the protocol: a 'Poll Request' (2 bytes, containing Class/ID to query) and a 'Set/Get' configuration (8 bytes, containing Class/ID and rate array). Extractions 1, 3, and 6 captured the full Set/Get structure, which is chosen as canonical because it describes the configuration data fields. The other extractions captured the Poll Request structure. While these are accurate reflections of the Polling mechanism described in the manuals, they are marked as 'valid_variation' because they do not describe the actual configuration data structure."
+    "reasoning": "The UBX-CFG-MSG message is a polymorphic message that takes different forms based on its payload length (2, 3, or 8 bytes). Extraction 1 is the only comprehensive capture of all three forms. Other extractions captured only one variant (usually because the source manual lists them in separate tables). The structure is highly consistent across hardware generations (u-blox 8 through F9), though newer protocol versions mark this message as deprecated in favor of the VALSET/VALGET system."
   }
 }

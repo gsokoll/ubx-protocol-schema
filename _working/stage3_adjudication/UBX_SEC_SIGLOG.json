@@ -1,83 +1,73 @@
 {
   "message_name": "UBX-SEC-SIGLOG",
-  "num_extractions": 8,
+  "num_extractions": 10,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-SEC-SIGLOG",
       "class_id": "0x27",
       "message_id": "0x10",
-      "description": "Signal security log",
       "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "variable": {
-            "base": 8,
-            "formula": "8 + (numEvents * 8)",
-            "min": 8
-          }
+      "payload_length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numEvents * 8"
+        }
+      },
+      "header_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version"
         },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "numEvents",
+          "description": "Number of events in the log"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 6
+          },
+          "name": "reserved0",
+          "reserved": true
+        }
+      ],
+      "repeated_group": {
+        "name": "eventLog",
+        "count_field": "numEvents",
+        "group_size_bytes": 8,
         "fields": [
           {
-            "name": "version",
             "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Message version (0x01 for this version)"
+            "data_type": "U4",
+            "name": "timeElapsed",
+            "unit": "S",
+            "description": "Seconds elapsed since the event"
           },
           {
-            "name": "numEvents",
-            "byte_offset": 1,
+            "byte_offset": 4,
             "data_type": "U1",
-            "description": "Number of events"
+            "name": "detectionType",
+            "description": "Type of the spoofing or jamming detection"
           },
           {
-            "name": "reserved0",
-            "byte_offset": 2,
+            "byte_offset": 5,
+            "data_type": "U1",
+            "name": "eventType",
+            "description": "Type of event (start, stop, trigger, timeout)"
+          },
+          {
+            "byte_offset": 6,
             "data_type": {
               "array_of": "U1",
-              "count": 6
+              "count": 2
             },
-            "description": "Reserved",
+            "name": "reserved1",
             "reserved": true
-          }
-        ],
-        "repeated_groups": [
-          {
-            "name": "events",
-            "repetition_type": "count_field",
-            "count_field": "numEvents",
-            "group_size_bytes": 8,
-            "base_offset": 8,
-            "fields": [
-              {
-                "name": "timeElapsed",
-                "byte_offset": 0,
-                "data_type": "U4",
-                "description": "Seconds elapsed since this event",
-                "unit": "s"
-              },
-              {
-                "name": "detectionType",
-                "byte_offset": 4,
-                "data_type": "U1",
-                "description": "Type of detection (0: simulated, 1: abnormal, 2: INS mismatch, 3: abrupt change, 4: jamming, 5: auth failed, 6: replayed)"
-              },
-              {
-                "name": "eventType",
-                "byte_offset": 5,
-                "data_type": "U1",
-                "description": "Type of event (0: started, 1: stopped, 2: triggered, 3: timed-out)"
-              },
-              {
-                "name": "reserved1",
-                "byte_offset": 6,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 2
-                },
-                "description": "Reserved",
-                "reserved": true
-              }
-            ]
           }
         ]
       }
@@ -85,13 +75,9 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect group size (4 instead of 8)",
-          "Missing fields: detectionType, eventType, reserved1",
-          "Incorrect length formula"
-        ]
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -99,26 +85,34 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "extraction_error",
         "issues": [
-          "Nonsensical bitfield representation (all bits marked as 0)",
-          "Absolute byte offsets used inside repeated group instead of relative"
+          "Incorrect payload length formula (8 + 4N instead of 8 + 8N)",
+          "Missing detectionType, eventType, and reserved fields in the repeated group"
         ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing detectionType and eventType fields; replaced with generic reserved padding"
+        ]
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "correct",
-        "issues": [
-          "Absolute byte offsets used in group instead of relative, but logically sound"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": [
-          "Version 0x00 variation with deprecated jamming fields"
-        ]
+        "issues": []
       },
       {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
@@ -126,36 +120,60 @@
         "issues": []
       },
       {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-        "verdict": "valid_variation",
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
         "issues": [
-          "Version 0x00 variation"
+          "Incorrectly represented detectionType and eventType Enums as single-bit bitfields (bit_start 0, bit_end 0 for all values)"
         ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missed detectionType and eventType fields; labeled as reserved_event_padding"
-        ]
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-          "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+          "u-blox-F9-TIM-2.20",
+          "u-blox-F10-SPG-6.00",
+          "u-blox-F9-HPG-L1L5-1.40"
         ],
         "structure": {
           "version": "0x00",
           "detectionType_mapping": {
-            "4": "broadband jamming/interference (deprecated)",
-            "5": "narrowband jamming/interference (deprecated)"
+            "0": "simulated signal",
+            "1": "abnormal signal",
+            "2": "INS/GNSS mismatch",
+            "3": "abrupt changes in GNSS signal",
+            "4": "broadband jamming/interference",
+            "5": "narrowband jamming/interference"
           }
         },
-        "reason": "Older firmware versions or specific modules (F10/Early F9) use version 0x00 of the SEC-SIGLOG message, which includes deprecated mapping for jamming types."
+        "reason": "Older protocol version (0x00) using specific jamming types."
+      },
+      {
+        "sources": [
+          "u-blox-X20-HPG-2.02",
+          "u-blox-F9-TIM-2.25",
+          "u-blox-F9-LAP-1.30",
+          "u-blox-F9-DBD-1.30"
+        ],
+        "structure": {
+          "version": "0x01",
+          "detectionType_mapping": {
+            "0": "simulated signal",
+            "1": "abnormal signal",
+            "2": "INS/GNSS mismatch",
+            "3": "abrupt changes in GNSS signal",
+            "4": "jamming indicated",
+            "5": "authentication failed",
+            "6": "replayed signals"
+          }
+        },
+        "reason": "Newer protocol version (0x01) with expanded detection categories for authentication and replay attacks."
       }
     ],
-    "reasoning": "The message structure is highly consistent across most documents, defining a 8-byte header and 8-byte event blocks. Extraction 1 incorrectly identified the block size as 4. Extractions 5 and 7 show a valid legacy version (0x00) where detection types 4 and 5 refer to specific jamming types now deprecated in favor of a general 'jamming indicated' (4) in version 0x01. Extractions 3 and 8 suffered from processing errors (incorrect bitfield parsing or missing fields)."
+    "reasoning": "The message structure is highly consistent across most documents, featuring an 8-byte static header followed by a repeating group of 8-byte events. The primary variation is found in the 'version' field (0x00 vs 0x01), which dictates the interpretation of the 'detectionType' enumeration. Extractions 3 and 4 were identified as errors because they missed critical status fields or specified incorrect payload sizes. Extraction 9 failed technically by mapping enumeration values to invalid bitfield ranges."
   }
 }

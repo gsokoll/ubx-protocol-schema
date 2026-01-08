@@ -1,0 +1,135 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-ANT",
+  "extraction_timestamp": "2026-01-08T05:31:20.709746+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 208,
+    "end": 209
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-ANT\nExpected IDs: class_id=0x06, message_id=0x13\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-ANT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": {\n    \"name\": \"UBX-CFG-ANT\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x13\",\n    \"message_type\": \"get_set\",\n    \"description\": \"Antenna control settings. This message allows the user to configure the antenna supervisor. The antenna supervisor can be used to detect the status of an active antenna and control it. It can be used to turn off the supply to the antenna in the event of a short cirquit (for example) or to manage power consumption in power save mode. Refer to antenna supervisor configuration in the Integration manual for more information regarding the behavior of the antenna supervisor. Refer to UBX-MON-HW for a description of the fields in the message used to obtain the status of the antenna. Note that not all pins can be used for antenna supervisor operation, it is recommended that you use the default pins, consult the Integration manual if you need to use other pins.\",\n    \"supported_firmware\": [\n      \"u-blox 8 / u-blox M8 protocol versions 15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ],\n    \"payload_length\": {\n      \"fixed\": 4\n    },\n    \"payload_contents\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"flags\",\n        \"data_type\": \"X2\",\n        \"description\": \"Antenna flag mask (see graphic below)\",\n        \"bitfield\": [\n          {\n            \"name\": \"svcs\",\n            \"bit_offset\": 0,\n            \"num_bits\": 1,\n            \"description\": \"Enable antenna supply voltage control signal\"\n          },\n          {\n            \"name\": \"scd\",\n            \"bit_offset\": 1,\n            \"num_bits\": 1,\n            \"description\": \"Enable short circuit detection\"\n          },\n          {\n            \"name\": \"ocd\",\n            \"bit_offset\": 2,\n            \"num_bits\": 1,\n            \"description\": \"Enable open circuit detection\"\n          },\n          {\n            \"name\": \"pdwnOnSCD\",\n            \"bit_offset\": 3,\n            \"num_bits\": 1,\n            \"description\": \"Power down antenna supply if short circuit is detected. (only in combination with bit 1)\"\n          },\n          {\n            \"name\": \"recovery\",\n            \"bit_offset\": 4,\n            \"num_bits\": 1,\n            \"description\": \"Enable automatic recovery from short state\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bit_offset\": 5,\n            \"num_bits\": 11,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"pins\",\n        \"data_type\": \"X2\",\n        \"description\": \"Antenna pin configuration (see graphic below)\",\n        \"bitfield\": [\n          {\n            \"name\": \"pinSwitch\",\n            \"bit_offset\": 0,\n            \"num_bits\": 5,\n            \"description\": \"PIO-pin used for switching antenna supply\"\n          },\n          {\n            \"name\": \"pinSCD\",\n            \"bit_offset\": 5,\n            \"num_bits\": 5,\n            \"description\": \"PIO-pin used for detecting a short in the antenna supply\"\n          },\n          {\n            \"name\": \"pinOCD\",\n            \"bit_offset\": 10,\n            \"num_bits\": 5,\n            \"description\": \"PIO-pin used for detecting open/not connected antenna\"\n          },\n          {\n            \"name\": \"reconfig\",\n            \"bit_offset\": 15,\n            \"num_bits\": 1,\n            \"description\": \"if set to one, and this command is sent to the receiver, the receiver will reconfigure the pins as specified.\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-CFG-ANT",
+      "class_id": "0x06",
+      "message_id": "0x13",
+      "message_type": "get_set",
+      "description": "Antenna control settings. This message allows the user to configure the antenna supervisor. The antenna supervisor can be used to detect the status of an active antenna and control it. It can be used to turn off the supply to the antenna in the event of a short cirquit (for example) or to manage power consumption in power save mode. Refer to antenna supervisor configuration in the Integration manual for more information regarding the behavior of the antenna supervisor. Refer to UBX-MON-HW for a description of the fields in the message used to obtain the status of the antenna. Note that not all pins can be used for antenna supervisor operation, it is recommended that you use the default pins, consult the Integration manual if you need to use other pins.",
+      "supported_firmware": [
+        "u-blox 8 / u-blox M8 protocol versions 15",
+        "15.01",
+        "16",
+        "17",
+        "18",
+        "19",
+        "19.1",
+        "19.2",
+        "20",
+        "20.01",
+        "20.1",
+        "20.2",
+        "20.3",
+        "22",
+        "22.01",
+        "23",
+        "23.01"
+      ],
+      "payload_length": {
+        "fixed": 4
+      },
+      "payload_contents": [
+        {
+          "byte_offset": 0,
+          "name": "flags",
+          "data_type": "X2",
+          "description": "Antenna flag mask (see graphic below)",
+          "bitfield": [
+            {
+              "name": "svcs",
+              "bit_offset": 0,
+              "num_bits": 1,
+              "description": "Enable antenna supply voltage control signal"
+            },
+            {
+              "name": "scd",
+              "bit_offset": 1,
+              "num_bits": 1,
+              "description": "Enable short circuit detection"
+            },
+            {
+              "name": "ocd",
+              "bit_offset": 2,
+              "num_bits": 1,
+              "description": "Enable open circuit detection"
+            },
+            {
+              "name": "pdwnOnSCD",
+              "bit_offset": 3,
+              "num_bits": 1,
+              "description": "Power down antenna supply if short circuit is detected. (only in combination with bit 1)"
+            },
+            {
+              "name": "recovery",
+              "bit_offset": 4,
+              "num_bits": 1,
+              "description": "Enable automatic recovery from short state"
+            },
+            {
+              "name": "reserved",
+              "bit_offset": 5,
+              "num_bits": 11,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "name": "pins",
+          "data_type": "X2",
+          "description": "Antenna pin configuration (see graphic below)",
+          "bitfield": [
+            {
+              "name": "pinSwitch",
+              "bit_offset": 0,
+              "num_bits": 5,
+              "description": "PIO-pin used for switching antenna supply"
+            },
+            {
+              "name": "pinSCD",
+              "bit_offset": 5,
+              "num_bits": 5,
+              "description": "PIO-pin used for detecting a short in the antenna supply"
+            },
+            {
+              "name": "pinOCD",
+              "bit_offset": 10,
+              "num_bits": 5,
+              "description": "PIO-pin used for detecting open/not connected antenna"
+            },
+            {
+              "name": "reconfig",
+              "bit_offset": 15,
+              "num_bits": 1,
+              "description": "if set to one, and this command is sent to the receiver, the receiver will reconfigure the pins as specified."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/epsahciy4gic"
+}

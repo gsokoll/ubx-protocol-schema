@@ -1,15 +1,14 @@
 {
   "message_name": "UBX-RXM-RAWX",
-  "num_extractions": 12,
+  "num_extractions": 14,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-RXM-RAWX",
-      "class_id": "0x02",
-      "message_id": "0x15",
-      "description": "Multi-GNSS raw measurements",
-      "message_type": "output",
-      "payload": {
-        "length": {
+      "ubx_message": {
+        "class_id": "0x02",
+        "message_id": "0x15",
+        "name": "UBX-RXM-RAWX",
+        "description": "Multi-GNSS raw measurements",
+        "payload_length": {
           "variable": {
             "base": 16,
             "formula": "16 + numMeas * 32"
@@ -17,191 +16,191 @@
         },
         "fields": [
           {
-            "name": "rcvTow",
             "byte_offset": 0,
             "data_type": "R8",
-            "description": "Measurement time of week in receiver local time approximately aligned to the GPS time system.",
-            "unit": "s"
+            "name": "rcvTow",
+            "unit": "s",
+            "description": "Measurement time of week in receiver local time approximately aligned to the GPS time system."
           },
           {
-            "name": "week",
             "byte_offset": 8,
             "data_type": "U2",
-            "description": "GPS week number in receiver local time.",
-            "unit": "weeks"
+            "name": "week",
+            "unit": "weeks",
+            "description": "GPS week number in receiver local time."
           },
           {
-            "name": "leaps",
             "byte_offset": 10,
             "data_type": "I1",
-            "description": "GPS leap seconds (GPS-UTC).",
-            "unit": "s"
+            "name": "leaps",
+            "unit": "s",
+            "description": "GPS leap seconds (GPS-UTC)."
           },
           {
-            "name": "numMeas",
             "byte_offset": 11,
             "data_type": "U1",
+            "name": "numMeas",
             "description": "Number of measurements to follow"
           },
           {
-            "name": "recStat",
             "byte_offset": 12,
             "data_type": "X1",
+            "name": "recStat",
             "description": "Receiver tracking status bitfield",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "leapSec",
-                  "bit_start": 0,
-                  "bit_end": 0
-                },
-                {
-                  "name": "clkReset",
-                  "bit_start": 1,
-                  "bit_end": 1
-                }
-              ]
-            }
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "name": "leapSec",
+                "description": "Leap seconds have been determined"
+              },
+              {
+                "bit_offset": 1,
+                "name": "clkReset",
+                "description": "Clock reset applied"
+              }
+            ]
           },
           {
-            "name": "version",
             "byte_offset": 13,
             "data_type": "U1",
-            "description": "Message version (0x01)"
+            "name": "version",
+            "description": "Message version (0x01 for this version)"
           },
           {
-            "name": "reserved0",
             "byte_offset": 14,
             "data_type": {
               "array_of": "U1",
               "count": 2
             },
+            "name": "reserved0",
             "reserved": true
           }
         ],
-        "repeated_groups": [
-          {
-            "name": "measurements",
-            "repetition_type": "count_field",
-            "count_field": "numMeas",
-            "group_size_bytes": 32,
-            "base_offset": 16,
-            "fields": [
-              {
-                "name": "prMes",
-                "byte_offset": 0,
-                "data_type": "R8",
-                "unit": "m"
-              },
-              {
-                "name": "cpMes",
-                "byte_offset": 8,
-                "data_type": "R8",
-                "unit": "cycles"
-              },
-              {
-                "name": "doMes",
-                "byte_offset": 16,
-                "data_type": "R4",
-                "unit": "Hz"
-              },
-              {
-                "name": "gnssId",
-                "byte_offset": 20,
-                "data_type": "U1"
-              },
-              {
-                "name": "svId",
-                "byte_offset": 21,
-                "data_type": "U1"
-              },
-              {
-                "name": "sigId",
-                "byte_offset": 22,
-                "data_type": "U1"
-              },
-              {
-                "name": "freqId",
-                "byte_offset": 23,
-                "data_type": "U1"
-              },
-              {
-                "name": "locktime",
-                "byte_offset": 24,
-                "data_type": "U2",
-                "unit": "ms"
-              },
-              {
-                "name": "cno",
-                "byte_offset": 26,
-                "data_type": "U1",
-                "unit": "dBHz"
-              },
-              {
-                "name": "prStdev",
-                "byte_offset": 27,
-                "data_type": "X1",
-                "scale": "0.01 * 2^prStd"
-              },
-              {
-                "name": "cpStdev",
-                "byte_offset": 28,
-                "data_type": "X1",
-                "scale": "0.004"
-              },
-              {
-                "name": "doStdev",
-                "byte_offset": 29,
-                "data_type": "X1",
-                "scale": "0.002 * 2^doStd"
-              },
-              {
-                "name": "trkStat",
-                "byte_offset": 30,
-                "data_type": "X1"
-              },
-              {
-                "name": "reserved1",
-                "byte_offset": 31,
-                "data_type": "U1",
-                "reserved": true
-              }
-            ]
-          }
-        ]
+        "repeated_group": {
+          "num_repeats_field_name": "numMeas",
+          "group_size": 32,
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "R8",
+              "name": "prMes",
+              "unit": "m",
+              "description": "Pseudorange measurement"
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "R8",
+              "name": "cpMes",
+              "unit": "cycles",
+              "description": "Carrier phase measurement"
+            },
+            {
+              "byte_offset": 16,
+              "data_type": "R4",
+              "name": "doMes",
+              "unit": "Hz",
+              "description": "Doppler measurement"
+            },
+            {
+              "byte_offset": 20,
+              "data_type": "U1",
+              "name": "gnssId",
+              "description": "GNSS identifier"
+            },
+            {
+              "byte_offset": 21,
+              "data_type": "U1",
+              "name": "svId",
+              "description": "Satellite identifier"
+            },
+            {
+              "byte_offset": 22,
+              "data_type": "U1",
+              "name": "sigId",
+              "description": "New style signal identifier"
+            },
+            {
+              "byte_offset": 23,
+              "data_type": "U1",
+              "name": "freqId",
+              "description": "GLONASS frequency slot + 7"
+            },
+            {
+              "byte_offset": 24,
+              "data_type": "U2",
+              "name": "locktime",
+              "unit": "ms",
+              "description": "Carrier phase locktime counter"
+            },
+            {
+              "byte_offset": 26,
+              "data_type": "U1",
+              "name": "cno",
+              "unit": "dBHz",
+              "description": "Carrier-to-noise density ratio"
+            },
+            {
+              "byte_offset": 27,
+              "data_type": "X1",
+              "name": "prStdev",
+              "unit": "m",
+              "description": "Estimated pseudorange measurement standard deviation",
+              "formula": "0.01 * 2^prStd"
+            },
+            {
+              "byte_offset": 28,
+              "data_type": "X1",
+              "name": "cpStdev",
+              "unit": "cycles",
+              "description": "Estimated carrier phase measurement standard deviation",
+              "formula": "0.004"
+            },
+            {
+              "byte_offset": 29,
+              "data_type": "X1",
+              "name": "doStdev",
+              "unit": "Hz",
+              "description": "Estimated Doppler measurement standard deviation",
+              "formula": "0.002 * 2^doStd"
+            },
+            {
+              "byte_offset": 30,
+              "data_type": "X1",
+              "name": "trkStat",
+              "description": "Tracking status bitfield",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "name": "prValid"
+                },
+                {
+                  "bit_offset": 1,
+                  "name": "cpValid"
+                },
+                {
+                  "bit_offset": 2,
+                  "name": "halfCyc"
+                },
+                {
+                  "bit_offset": 3,
+                  "name": "subHalfCyc"
+                }
+              ]
+            },
+            {
+              "byte_offset": 31,
+              "data_type": "U1",
+              "name": "reserved1",
+              "reserved": true
+            }
+          ]
+        }
       }
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses 'leapS' instead of 'leaps' (M10 specific naming)"
-        ]
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -211,11 +210,32 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "extraction_error",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "valid_variation",
         "issues": [
-          "Stdev scale fields incorrectly simplified to constant multipliers, losing the 2^n component"
+          "Uses 'leapS' terminology instead of 'leaps'",
+          "Explicitly defines cpStdev scaling as 0.004 * 2^n"
         ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
@@ -223,19 +243,36 @@
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "extraction_error",
-        "issues": [
-          "Field offsets in repeated group are absolute (starting at 16) instead of relative to the group start"
-        ]
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses 'reserved1' for header and 'reserved2' for group reserved fields"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "extraction_error",
+        "issues": [
+          "Repeated group field offsets are absolute (starting at 16) rather than relative to group start (starting at 0)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -246,16 +283,24 @@
           "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395"
         ],
         "structure": {
-          "fields": [
-            {
-              "name": "leapS",
-              "byte_offset": 10
-            }
+          "field_leaps_name": "leapS",
+          "cpStdev_scaling": "0.004 * 2^n"
+        },
+        "reason": "M10 generation documentation uses slightly different field naming conventions and provides more detail on the exponential scaling of standard deviation fields."
+      },
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "reserved_field_names": [
+            "reserved1",
+            "reserved2"
           ]
         },
-        "reason": "M10 Interface Descriptions use 'leapS' (GPS Leap Seconds) as a field name, while M8/M9/F9 manuals generally use 'leaps'."
+        "reason": "Older generation (u-blox 8) manuals often iterate reserved field names globally across the message rather than resetting per group."
       }
     ],
-    "reasoning": "The UBX-RXM-RAWX message is extremely stable across u-blox receiver generations (M8 to M10). The canonical structure is clearly established by the majority of extractions. Errors in Extraction 8 and 10 are technical extraction artifacts (absolute offsets vs relative offsets, and over-simplified scaling math) rather than protocol variants. The only true variant is a minor naming change in the M10 generation."
+    "reasoning": "The UBX-RXM-RAWX message is highly consistent across u-blox 8, 9, and 10 generations. It consists of a 16-byte fixed header containing timing and status information, followed by N 32-byte measurement blocks. Extraction 13 failed because it provided absolute offsets for the repeated fields instead of group-relative offsets. Extraction 4 (M10) and Extraction 11 (u-blox 8) are correct representations of their specific generation's documentation style variations."
   }
 }

@@ -1,38 +1,39 @@
 {
   "message_name": "UBX-MON-IO",
-  "num_extractions": 12,
+  "num_extractions": 15,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-MON-IO",
       "class_id": "0x0a",
       "message_id": "0x02",
-      "description": "I/O system status. Reports receive/transmit byte counts and error statistics for the receiver's communication ports.",
+      "description": "I/O system status",
+      "message_type": "periodic_polled",
       "payload": {
         "length": {
           "variable": {
-            "formula": "N * 20",
-            "description": "Payload length is determined by the number of ports (N) supported by the receiver. Each port status block is 20 bytes."
+            "formula": "numPorts * 20",
+            "description": "The number of ports (numPorts) is implicitly determined by the receiver hardware and total payload length."
           }
         },
         "repeated_groups": [
           {
             "name": "portStatus",
-            "repetition_type": "implicit_count",
+            "repetition_type": "implicit_by_length",
             "group_size_bytes": 20,
             "fields": [
               {
                 "name": "rxBytes",
                 "byte_offset": 0,
                 "data_type": "U4",
-                "description": "Number of bytes ever received",
-                "unit": "bytes"
+                "unit": "bytes",
+                "description": "Number of bytes ever received"
               },
               {
                 "name": "txBytes",
                 "byte_offset": 4,
                 "data_type": "U4",
-                "description": "Number of bytes ever sent",
-                "unit": "bytes"
+                "unit": "bytes",
+                "description": "Number of bytes ever sent"
               },
               {
                 "name": "parityErrs",
@@ -65,8 +66,8 @@
                   "array_of": "U1",
                   "count": 4
                 },
-                "description": "Reserved",
-                "reserved": true
+                "reserved": true,
+                "description": "Reserved"
               }
             ]
           }
@@ -76,36 +77,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect message structure extracted.",
-          "The extracted fields (nPins, flags, pinMask, etc.) correspond to a hardware/PIO monitoring message (likely UBX-MON-HW or similar), not the standard UBX-MON-IO (0x0A 0x02) communication port status message.",
-          "Subsequent version HPG 1.32 (Extraction 6) uses the standard structure, confirming this is an error in Extraction 5."
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -115,7 +87,27 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "correct",
         "issues": []
       },
@@ -125,7 +117,19 @@
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "Describes a completely different 'Pin Status' version of the UBX-MON-IO message instead of the 'Port Status' version."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -135,12 +139,89 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "11 out of 12 extractions agree on a single structure: a variable-length payload consisting solely of repeated 20-byte blocks describing communication port status (RX/TX bytes, error counts). Extraction 5 is a clear outlier containing fields (nPins, flags with rtcCalib/safeBoot) that belong to a different message (likely UBX-MON-HW or UBX-MON-PIO). Since the message ID 0x0A 0x02 is consistent across all versions, and later versions of the same firmware family (HPG 1.32) return to the standard structure, Extraction 5 is adjudicated as a hallucination/extraction error where the LLM likely parsed the wrong message definition table."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318"
+        ],
+        "structure": {
+          "name": "UBX-MON-IO (Pin Status)",
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version"
+            },
+            {
+              "name": "nPins",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of pins"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X1"
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 3,
+              "data_type": "CH[10]"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 13,
+              "data_type": "U1[9]"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pin_info",
+              "group_size_bytes": 6,
+              "fields": [
+                {
+                  "name": "pinId",
+                  "byte_offset": 0,
+                  "data_type": "U2"
+                },
+                {
+                  "name": "pinMask",
+                  "byte_offset": 2,
+                  "data_type": "X2"
+                },
+                {
+                  "name": "VP",
+                  "byte_offset": 4,
+                  "data_type": "U1"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 5,
+                  "data_type": "U1"
+                }
+              ]
+            }
+          ]
+        },
+        "reason": "This version of UBX-MON-IO focuses on physical I/O pin status rather than communication port status. It appears in older or specific firmware protocol versions (e.g., HPG 1.13) before being reverted or supplemented by the standard port status message in later releases."
+      }
+    ],
+    "reasoning": "The UBX-MON-IO message (Class 0x0A, ID 0x02) typically reports communication port statistics (bytes sent/received, errors). This 'Port Status' version is found in 14 out of 15 extractions and consists of an array of 20-byte structures. Extraction 10 describes a 'Pin Status' variant with a 22-byte header and 6-byte blocks, which is a legitimate protocol variation found in certain firmware versions. Many newer manuals (Extractions 4, 9, 15) note that this message is deprecated in favor of UBX-MON-COMMS."
   }
 }

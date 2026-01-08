@@ -1,0 +1,183 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MGA-GLO-ALM",
+  "extraction_timestamp": "2026-01-08T03:39:30.660144+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 112,
+    "end": 114
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GLO-ALM\nExpected IDs: class_id=0x13, message_id=0x06\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GLO-ALM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MGA-GLO-ALM\",\n    \"class_id\": \"0x13\",\n    \"message_id\": \"0x06\",\n    \"message_type\": \"input\",\n    \"description\": \"GLONASS almanac assistance\",\n    \"payload_length\": {\n      \"fixed\": 36\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"type\",\n        \"data_type\": \"U1\",\n        \"fixed_value\": 2,\n        \"description\": \"Message type (0x02 for this type)\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"svId\",\n        \"data_type\": \"U1\",\n        \"description\": \"GLONASS Satellite identifier (see Satellite Numbering)\"\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"reserved0\",\n        \"data_type\": \"U1\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"N\",\n        \"data_type\": \"U2\",\n        \"unit\": \"days\",\n        \"description\": \"Reference calender day number of almanac within the four-year period (from string 5)\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"name\": \"M\",\n        \"data_type\": \"U1\",\n        \"description\": \"Type of GLONASS satellite (1 indicates GLONASS-M)\"\n      },\n      {\n        \"byte_offset\": 7,\n        \"name\": \"C\",\n        \"data_type\": \"U1\",\n        \"description\": \"Unhealthy flag at instant of almanac upload (1 indicates operability of satellite)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"tau\",\n        \"data_type\": \"I2\",\n        \"scale\": {\n          \"raw\": \"2^-18\",\n          \"multiplier\": 3.814697265625e-06\n        },\n        \"unit\": \"s\",\n        \"description\": \"Coarse time correction to GLONASS time\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"epsilon\",\n        \"data_type\": \"U2\",\n        \"scale\": {\n          \"raw\": \"2^-20\",\n          \"multiplier\": 9.5367431640625e-07\n        },\n        \"description\": \"Eccentricity\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"lambda\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"2^-20\",\n          \"multiplier\": 9.5367431640625e-07\n        },\n        \"unit\": \"semi-circles\",\n        \"description\": \"Longitude of the first (within the N-day) ascending node of satellite orbit in PC-90.02 coordinate system\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"deltaI\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"2^-20\",\n          \"multiplier\": 9.5367431640625e-07\n        },\n        \"unit\": \"semi-circles\",\n        \"description\": \"Correction to the mean value of inclination\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"tLambda\",\n        \"data_type\": \"U4\",\n        \"scale\": {\n          \"raw\": \"2^-5\",\n          \"multiplier\": 0.03125\n        },\n        \"unit\": \"s\",\n        \"description\": \"Time of the first ascending node passage\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"deltaT\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"2^-9\",\n          \"multiplier\": 0.001953125\n        },\n        \"unit\": \"s/orbital-period\",\n        \"description\": \"Correction to the mean value of Draconian period\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"deltaDT\",\n        \"data_type\": \"I1\",\n        \"scale\": {\n          \"raw\": \"2^-14\",\n          \"multiplier\": 6.103515625e-05\n        },\n        \"unit\": \"s/orbital-period^2\",\n        \"description\": \"Rate of change of Draconian period\"\n      },\n      {\n        \"byte_offset\": 29,\n        \"name\": \"H\",\n        \"data_type\": \"I1\",\n        \"description\": \"Carrier frequency number of navigation RF signal, Range=(-7.. 6)\"\n      },\n      {\n        \"byte_offset\": 30,\n        \"name\": \"omega\",\n        \"data_type\": \"I2\",\n        \"description\": \"Argument of perigee\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MGA-GLO-ALM",
+      "class_id": "0x13",
+      "message_id": "0x06",
+      "message_type": "input",
+      "description": "GLONASS almanac assistance",
+      "payload_length": {
+        "fixed": 36
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "type",
+          "data_type": "U1",
+          "fixed_value": 2,
+          "description": "Message type (0x02 for this type)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 2,
+          "name": "svId",
+          "data_type": "U1",
+          "description": "GLONASS Satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 3,
+          "name": "reserved0",
+          "data_type": "U1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 4,
+          "name": "N",
+          "data_type": "U2",
+          "unit": "days",
+          "description": "Reference calender day number of almanac within the four-year period (from string 5)"
+        },
+        {
+          "byte_offset": 6,
+          "name": "M",
+          "data_type": "U1",
+          "description": "Type of GLONASS satellite (1 indicates GLONASS-M)"
+        },
+        {
+          "byte_offset": 7,
+          "name": "C",
+          "data_type": "U1",
+          "description": "Unhealthy flag at instant of almanac upload (1 indicates operability of satellite)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "tau",
+          "data_type": "I2",
+          "scale": {
+            "raw": "2^-18",
+            "multiplier": 3.814697265625e-06
+          },
+          "unit": "s",
+          "description": "Coarse time correction to GLONASS time"
+        },
+        {
+          "byte_offset": 10,
+          "name": "epsilon",
+          "data_type": "U2",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "description": "Eccentricity"
+        },
+        {
+          "byte_offset": 12,
+          "name": "lambda",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "semi-circles",
+          "description": "Longitude of the first (within the N-day) ascending node of satellite orbit in PC-90.02 coordinate system"
+        },
+        {
+          "byte_offset": 16,
+          "name": "deltaI",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "semi-circles",
+          "description": "Correction to the mean value of inclination"
+        },
+        {
+          "byte_offset": 20,
+          "name": "tLambda",
+          "data_type": "U4",
+          "scale": {
+            "raw": "2^-5",
+            "multiplier": 0.03125
+          },
+          "unit": "s",
+          "description": "Time of the first ascending node passage"
+        },
+        {
+          "byte_offset": 24,
+          "name": "deltaT",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-9",
+            "multiplier": 0.001953125
+          },
+          "unit": "s/orbital-period",
+          "description": "Correction to the mean value of Draconian period"
+        },
+        {
+          "byte_offset": 28,
+          "name": "deltaDT",
+          "data_type": "I1",
+          "scale": {
+            "raw": "2^-14",
+            "multiplier": 6.103515625e-05
+          },
+          "unit": "s/orbital-period^2",
+          "description": "Rate of change of Draconian period"
+        },
+        {
+          "byte_offset": 29,
+          "name": "H",
+          "data_type": "I1",
+          "description": "Carrier frequency number of navigation RF signal, Range=(-7.. 6)"
+        },
+        {
+          "byte_offset": 30,
+          "name": "omega",
+          "data_type": "I2",
+          "description": "Argument of perigee"
+        },
+        {
+          "byte_offset": 32,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/dc3agwmve5sn"
+}

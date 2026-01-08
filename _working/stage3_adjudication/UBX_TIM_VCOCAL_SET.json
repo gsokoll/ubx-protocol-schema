@@ -6,64 +6,18 @@
       "name": "UBX-TIM-VCOCAL-SET",
       "class_id": "0x0D",
       "message_id": "0x15",
-      "description": "VCO calibration extended command",
+      "description": "Stop calibration",
       "message_type": "command",
       "payload": {
         "length": {
-          "fixed": 12
+          "fixed": 1
         },
         "fields": [
           {
             "name": "type",
             "byte_offset": 0,
             "data_type": "U1",
-            "fixed_value": 2,
-            "description": "Message type (2 for this message)"
-          },
-          {
-            "name": "version",
-            "byte_offset": 1,
-            "data_type": "U1",
-            "fixed_value": 0,
-            "description": "Message version (0x00 for this version)"
-          },
-          {
-            "name": "oscId",
-            "byte_offset": 2,
-            "data_type": "U1",
-            "description": "Oscillator to be calibrated: 0: internal oscillator, 1: external oscillator"
-          },
-          {
-            "name": "srcId",
-            "byte_offset": 3,
-            "data_type": "U1",
-            "description": "Reference source: 0: internal oscillator, 1: GNSS, 2: EXTINT0, 3: EXTINT1"
-          },
-          {
-            "name": "reserved1",
-            "byte_offset": 4,
-            "data_type": "U1[2]",
-            "reserved": true,
-            "description": "Reserved"
-          },
-          {
-            "name": "raw0",
-            "byte_offset": 6,
-            "data_type": "U2",
-            "description": "First value used for calibration"
-          },
-          {
-            "name": "raw1",
-            "byte_offset": 8,
-            "data_type": "U2",
-            "description": "Second value used for calibration"
-          },
-          {
-            "name": "maxStepSize",
-            "byte_offset": 10,
-            "data_type": "U2",
-            "unit": "raw value/s",
-            "description": "Maximum step size to be used"
+            "description": "Message type (0 for this message)"
           }
         ]
       }
@@ -76,6 +30,38 @@
         "issues": []
       }
     ],
-    "reasoning": "VCO calibration extended command (type=2) extracted from M8 manual section 32.20.9.2. This command initiates VCO calibration with specified parameters."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "name": "UBX-TIM-VCOCAL-CAL",
+          "class_id": "0x0D",
+          "message_id": "0x15",
+          "description": "Start calibration",
+          "payload": {
+            "length": {
+              "fixed": 12
+            },
+            "fields": [
+              {
+                "name": "type",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Message type (1 for this message)"
+              },
+              {
+                "name": "version",
+                "byte_offset": 1,
+                "data_type": "U1"
+              }
+            ]
+          }
+        },
+        "reason": "The UBX-TIM-VCOCAL message (0x0D 0x15) has two distinct command structures determined by the 'type' field: Type 0 (1 byte long) stops calibration, while Type 1 (12 bytes long) initiates/sets calibration parameters."
+      }
+    ],
+    "reasoning": "The provided extraction correctly identifies the Type 0 variant of the UBX-TIM-VCOCAL message used to stop VCO calibration. This matches the u-blox 8/M8 protocol specification. There is a second valid variant of the same Class/ID with a 12-byte length used for initiating calibration."
   }
 }

@@ -1,0 +1,134 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MGA-INI-TIME-GNSS",
+  "extraction_timestamp": "2026-01-08T04:18:08.819310+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 90,
+    "end": 94
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-INI-TIME-GNSS\nExpected IDs: class_id=0x13, message_id=0x40\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-INI-TIME-GNSS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nBITFIELD TYPE DETECTION (CRITICAL):\n- Use X1/X2/X4 (NOT U1/U2/U4) when:\n  - Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n  - Description mentions \"bitfield\" or lists bit meanings\n  - Sub-table shows bit positions\n- Extract bitfield structure for ALL X-type fields\n\nUBX-MGA-INI-TIME-GNSS (24 bytes): type, version, ref, gnssId, reserved0[2], week, tow, ns, tAccS, reserved1[2], tAccNs.\nIMPORTANT: reserved0 at offset 4 is U1[2] and reserved1 at offset 18 is U1[2] - arrays, NOT separate fields.\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-MGA-INI-TIME-GNSS\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x40\",\n  \"message_type\": \"input\",\n  \"description\": \"Initial time assistance GNSS\",\n  \"payload_length\": {\n    \"fixed\": 24\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"type\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 17,\n      \"description\": \"Message type (0x11 for this type)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"ref\",\n      \"data_type\": \"X1\",\n      \"description\": \"Reference to be used to set time\",\n      \"bitfield\": [\n        {\n          \"bits\": \"3:0\",\n          \"name\": \"source\",\n          \"description\": \"0 = none, i.e. on receipt of message (will be inaccurate!), 1 = relative to pulse sent to EXTINT0, 2 = relative to pulse sent to EXTINT1, 3-15 = reserved\"\n        },\n        {\n          \"bits\": 4,\n          \"name\": \"fall\",\n          \"description\": \"use falling edge of EXTINT pulse (default rising) - only if source is EXTINT\"\n        },\n        {\n          \"bits\": 5,\n          \"name\": \"last\",\n          \"description\": \"use last EXTINT pulse (default next pulse) - only if source is EXTINT\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"gnssId\",\n      \"data_type\": \"U1\",\n      \"description\": \"Source of time information. Currently supported: 0 = GPS time, 2 = Galileo time, 3 = BeiDou time, 6 = GLONASS time, 7 = NavIC time\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"reserved0\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"week\",\n      \"data_type\": \"U2\",\n      \"description\": \"GNSS week number\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"tow\",\n      \"data_type\": \"U4\",\n      \"description\": \"GNSS time of week\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"ns\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"GNSS time of week, nanosecond part from 0 to 999,999,999\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"tAccS\",\n      \"data_type\": \"U2\",\n      \"unit\": \"s\",\n      \"description\": \"Seconds part of time accuracy\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"tAccNs\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Nanoseconds part of time accuracy, from 0 to 999,999,999\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-MGA-INI-TIME-GNSS",
+    "class_id": "0x13",
+    "message_id": "0x40",
+    "message_type": "input",
+    "description": "Initial time assistance GNSS",
+    "payload_length": {
+      "fixed": 24
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "name": "type",
+        "data_type": "U1",
+        "fixed_value": 17,
+        "description": "Message type (0x11 for this type)"
+      },
+      {
+        "byte_offset": 1,
+        "name": "version",
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "byte_offset": 2,
+        "name": "ref",
+        "data_type": "X1",
+        "description": "Reference to be used to set time",
+        "bitfield": [
+          {
+            "bits": "3:0",
+            "name": "source",
+            "description": "0 = none, i.e. on receipt of message (will be inaccurate!), 1 = relative to pulse sent to EXTINT0, 2 = relative to pulse sent to EXTINT1, 3-15 = reserved"
+          },
+          {
+            "bits": 4,
+            "name": "fall",
+            "description": "use falling edge of EXTINT pulse (default rising) - only if source is EXTINT"
+          },
+          {
+            "bits": 5,
+            "name": "last",
+            "description": "use last EXTINT pulse (default next pulse) - only if source is EXTINT"
+          }
+        ]
+      },
+      {
+        "byte_offset": 3,
+        "name": "gnssId",
+        "data_type": "U1",
+        "description": "Source of time information. Currently supported: 0 = GPS time, 2 = Galileo time, 3 = BeiDou time, 6 = GLONASS time, 7 = NavIC time"
+      },
+      {
+        "byte_offset": 4,
+        "name": "reserved0",
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "byte_offset": 6,
+        "name": "week",
+        "data_type": "U2",
+        "description": "GNSS week number"
+      },
+      {
+        "byte_offset": 8,
+        "name": "tow",
+        "data_type": "U4",
+        "description": "GNSS time of week"
+      },
+      {
+        "byte_offset": 12,
+        "name": "ns",
+        "data_type": "U4",
+        "unit": "ns",
+        "description": "GNSS time of week, nanosecond part from 0 to 999,999,999"
+      },
+      {
+        "byte_offset": 16,
+        "name": "tAccS",
+        "data_type": "U2",
+        "unit": "s",
+        "description": "Seconds part of time accuracy"
+      },
+      {
+        "byte_offset": 18,
+        "name": "reserved1",
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "byte_offset": 20,
+        "name": "tAccNs",
+        "data_type": "U4",
+        "unit": "ns",
+        "description": "Nanoseconds part of time accuracy, from 0 to 999,999,999"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/lelkxblgy7tq"
+}

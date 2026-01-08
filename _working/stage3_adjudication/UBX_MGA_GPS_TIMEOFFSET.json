@@ -1,12 +1,12 @@
 {
   "message_name": "UBX-MGA-GPS-TIMEOFFSET",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-MGA-GPS-TIMEOFFSET",
+      "name": "UBX-MGA-GLO-TIMEOFFSET",
       "class_id": "0x13",
-      "message_id": "0x00",
-      "description": "GPS auxiliary time offset assistance (Type 0x03). Provides GPS time offsets relative to other systems (e.g., GLONASS) and UT1 parameters.",
+      "message_id": "0x06",
+      "description": "GLONASS auxiliary time offset assistance. While frequently requested as a 'GPS' message, this specific structure (Type 0x03) belongs to the GLONASS MGA class because it describes offsets relative to GLONASS time and UTC(SU).",
       "message_type": "input",
       "payload": {
         "length": {
@@ -23,17 +23,17 @@
             "name": "version",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Message version (0x00)"
+            "description": "Message version (0x00 for this version)"
           },
           {
             "name": "N",
             "byte_offset": 2,
             "data_type": "U2",
-            "description": "Reference calendar day number",
+            "description": "Reference calendar day number within the four-year period of almanac",
             "unit": "days"
           },
           {
-            "name": "tauc",
+            "name": "tauC",
             "byte_offset": 4,
             "data_type": "I4",
             "description": "Time scale correction to UTC(SU) time",
@@ -83,113 +83,138 @@
               "array_of": "U1",
               "count": 4
             },
-            "description": "Reserved"
+            "description": "Reserved",
+            "reserved": true
           }
         ]
       }
     },
-    "canonical_confidence": "high",
+    "canonical_confidence": "medium",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": [
-          "Message not found in source (Empty payload returned)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect payload length (12 bytes vs 20 bytes)",
-          "Missing header fields (type, version, N, tauc)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Software error during extraction"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect message identified (UBX-MGA-GPS-EPH Type 0x01 instead of TIMEOFFSET Type 0x03)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect message extracted (UBX-MGA-GLO-TIMEOFFSET instead of GPS)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": [
-          "Message explicitly not found in source"
-        ]
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "extraction_error",
-        "issues": [
-          "Software error during extraction"
+          "Correctly identified that UBX-MGA-GPS (0x13 0x00) does not contain a TIMEOFFSET type."
         ]
       },
       {
         "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": [
-          "Message explicitly not found in source"
+          "Correctly identified that the message is actually UBX-MGA-GLO (0x13 0x06) type 0x03."
+        ]
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "extraction_error",
+        "issues": [
+          "Empty payload data."
         ]
       },
       {
         "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
         "verdict": "correct",
         "issues": [
-          "Message explicitly not found in source"
+          "Correctly noted message was not found in GPS class."
         ]
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "extraction_error",
         "issues": [
-          "Software error during extraction"
+          "Misidentified UBX-MGA-GLO-TIMEOFFSET (0x13 0x06) as a GPS message (0x13 0x00)."
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": [
+          "Highest accuracy extraction; correctly identified name and ID as GLONASS-based."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "Misidentified GLONASS payload as GPS (0x13 0x00)."
+        ]
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": [
+          "Correctly noted that 0x13 0x00 does not include TIMEOFFSET."
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "extraction_error",
+        "issues": [
+          "Explicitly states the message is 'inferred' from GLONASS, confirming it does not exist as GPS."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Software error during extraction."
+        ]
+      },
+      {
+        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+        "verdict": "extraction_error",
+        "issues": [
+          "Extracted the payload for UBX-MGA-GPS-EPH (Type 0x01) instead of TIMEOFFSET."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missing Type and Version header fields; incorrect payload length."
         ]
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
         "verdict": "extraction_error",
         "issues": [
-          "Incorrect message identified (UBX-MGA-GPS-EPH Type 0x01 instead of TIMEOFFSET Type 0x03)"
+          "Extracted the payload for UBX-MGA-GPS-EPH (Type 0x01) instead of TIMEOFFSET."
         ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "extraction_error",
+        "issues": [
+          "Software error during extraction."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Misidentified GLONASS payload as GPS (0x13 0x00)."
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "extraction_error",
+        "issues": [
+          "Software error during extraction."
+        ]
       }
     ],
     "valid_variations": [],
-    "reasoning": "The canonical structure for UBX-MGA-GPS-TIMEOFFSET is defined by the UBX-MGA-GPS message with 'type' field set to 0x03. This is consistent across Extractions 1, 2, 6, and 15, describing a 20-byte payload containing 'tauc', 'tauGps', and UT1 coefficients. Several extractions (7, 14) incorrectly returned the 'EPH' (Ephemeris, Type 0x01) message, which is a different subtype. Extraction 4 found a truncated version (missing the header and first field), likely an LLM parsing error. Extraction 8 returned the GLONASS equivalent (UBX-MGA-GLO-TIMEOFFSET) instead of the requested GPS message. Extractions returning 'Not Found' (3, 9, 11, 12) are considered correct verdicts for those specific documents, as Type 0x03 is an auxiliary message not present in all simplified interface descriptions."
+    "reasoning": "The message 'UBX-MGA-GPS-TIMEOFFSET' (0x13 0x00) does not exist in standard u-blox protocol documentation. Time assistance for GPS is handled via UBX-MGA-GPS-UTC. The structure 'TIMEOFFSET' (Type 0x03) specifically belongs to the GLONASS assistance class (UBX-MGA-GLO, 0x13 0x06). Multiple extractions (5, 8, 11, 17) hallucinated the existence of the GPS version by copying the GLONASS structure, while others (13, 15) mistakenly provided the GPS Ephemeris structure. Extractions 1, 2, 7, and 10 are the most reliable as they correctly identify the message's non-existence or its proper GLONASS context."
   }
 }

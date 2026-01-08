@@ -1,27 +1,25 @@
 {
   "message_name": "UBX-MON-PATCH",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-MON-PATCH",
-      "class_id": "0x0a",
       "message_id": "0x27",
-      "description": "Information about installed patches",
+      "class_id": "0x0a",
+      "name": "UBX-MON-PATCH",
       "message_type": "output",
+      "payload_length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + nEntries * 16"
+        }
+      },
       "payload": {
-        "length": {
-          "variable": {
-            "base": 4,
-            "formula": "4 + nEntries*16",
-            "min": 4
-          }
-        },
         "fields": [
           {
             "name": "version",
             "byte_offset": 0,
             "data_type": "U2",
-            "description": "Message version (0x0001)"
+            "description": "Message version (0x0001 for this version)"
           },
           {
             "name": "nEntries",
@@ -32,8 +30,7 @@
         ],
         "repeated_groups": [
           {
-            "name": "patches",
-            "repetition_type": "count_field",
+            "name": "patch_entries",
             "count_field": "nEntries",
             "group_size_bytes": 16,
             "base_offset": 4,
@@ -42,41 +39,39 @@
                 "name": "patchInfo",
                 "byte_offset": 0,
                 "data_type": "X4",
-                "description": "Status information",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "activated",
-                      "bit_start": 0,
-                      "bit_end": 0,
-                      "description": "1: active"
-                    },
-                    {
-                      "name": "location",
-                      "bit_start": 1,
-                      "bit_end": 2,
-                      "description": "Storage location (e.g., 0: eFuse/OTP, 1: ROM...)"
-                    }
-                  ]
-                }
+                "description": "Status information about the reported patch",
+                "bitfields": [
+                  {
+                    "name": "activated",
+                    "bit_offset": 0,
+                    "bit_length": 1,
+                    "description": "1: patch active, 0: otherwise"
+                  },
+                  {
+                    "name": "location",
+                    "bit_offset": 1,
+                    "bit_length": 2,
+                    "description": "0: eFuse/OTP, 1: ROM, 2: BBR, 3: file system"
+                  }
+                ]
               },
               {
                 "name": "comparatorNumber",
                 "byte_offset": 4,
                 "data_type": "U4",
-                "description": "Comparator number"
+                "description": "The number of the comparator"
               },
               {
                 "name": "patchAddress",
                 "byte_offset": 8,
                 "data_type": "U4",
-                "description": "Target address"
+                "description": "The address that is targeted by the patch"
               },
               {
                 "name": "patchData",
                 "byte_offset": 12,
                 "data_type": "U4",
-                "description": "Patch data"
+                "description": "The data that is inserted at the patchAddress"
               }
             ]
           }
@@ -86,41 +81,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "valid_variation",
-        "issues": [
-          "Extracted the Poll Request (input) definition instead of the Output definition. While valid, it lacks the data payload."
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect byte offsets in repeated group: offsets are listed as 4, 8, 12, 16 (absolute) instead of 0, 4, 8, 12 (relative to group start)."
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -130,17 +91,26 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": [
+          "This is the poll request (empty payload) variant"
+        ]
+      },
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": [
+          "Uses OTP terminology for location 0"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -150,9 +120,41 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identifies offset 12 as reserved",
+          "Bit-offset for location is listed as 2 instead of 1"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incomplete payload; marks 12 bytes of the patch entry as reserved"
+        ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
+        "issues": [
+          "Byte offsets within the repeated group are incorrectly calculated by adding the base offset to the internal offset (e.g., 4, 8, 12, 16 instead of 0, 4, 8, 12)"
+        ]
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
@@ -160,7 +162,22 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -171,70 +188,14 @@
           "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
         ],
         "structure": {
-          "name": "UBX-MON-PATCH",
-          "description": "Poll request for installed patches",
           "message_type": "poll_request",
           "payload": {
-            "length": {
-              "fixed": 0
-            },
-            "fields": []
+            "length": 0
           }
         },
-        "reason": "This extraction captures the 'Poll Request' (Input) definition of the message rather than the 'Output' response. This is a valid message type in the UBX protocol."
-      },
-      {
-        "sources": [
-          "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157"
-        ],
-        "structure": {
-          "name": "UBX-MON-PATCH",
-          "description": "Installed patches (masked)",
-          "message_type": "output",
-          "payload": {
-            "length": {
-              "variable": {
-                "base": 4,
-                "formula": "4 + nEntries * 16"
-              }
-            },
-            "fields": [
-              {
-                "name": "version",
-                "data_type": "U2"
-              },
-              {
-                "name": "nEntries",
-                "data_type": "U2"
-              }
-            ],
-            "repeated_groups": [
-              {
-                "name": "patches",
-                "group_size_bytes": 16,
-                "fields": [
-                  {
-                    "name": "patchInfo",
-                    "data_type": "X4",
-                    "byte_offset": 0
-                  },
-                  {
-                    "name": "reserved1",
-                    "data_type": {
-                      "array_of": "U1",
-                      "count": 12
-                    },
-                    "byte_offset": 4,
-                    "reserved": true
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        "reason": "In this specific manual version, the internal patch details (comparator, address, data) are marked as 'Reserved', likely to hide implementation details in that firmware release."
+        "reason": "UBX messages with the same Class and ID can be sent without a payload to poll the receiver for the current output state."
       }
     ],
-    "reasoning": "The vast majority of extractions agree on the Output message structure consisting of a 4-byte header and 16-byte repeated blocks containing status, comparator, address, and data. Extraction 4 has a clear error in offset calculation (using absolute offsets 4,8,12,16 inside the group instead of relative 0,4,8,12). Extraction 3 is a valid Poll Request (length 0) but misses the more useful Output definition. Extraction 5 represents a documentation variant where fields are reserved. Minor terminology differences (OTP vs eFuse) in bitfield descriptions are considered correct for their respective manuals."
+    "reasoning": "The UBX-MON-PATCH message structure is highly consistent across generations (M8 through F10). It reports a variable number of 16-byte patch entries. The only legitimate nomenclature variation is the use of 'eFuse' vs 'OTP' for location code 0. Several extractions had logical errors: Extraction 13 erroneously shifted internal byte offsets within the array; Extraction 9 failed to parse the full depth of the patch entry; and Extraction 8 incorrectly labeled the data field as reserved and miscalculated bit offsets."
   }
 }

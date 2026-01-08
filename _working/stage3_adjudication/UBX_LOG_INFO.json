@@ -1,12 +1,12 @@
 {
   "message_name": "UBX-LOG-INFO",
-  "num_extractions": 11,
+  "num_extractions": 12,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-LOG-INFO",
       "class_id": "0x21",
       "message_id": "0x08",
-      "description": "This message is used to report information about the logging subsystem.",
+      "description": "Log information about the logging subsystem.",
       "message_type": "output",
       "payload": {
         "length": {
@@ -64,13 +64,13 @@
             "name": "entryCount",
             "byte_offset": 24,
             "data_type": "U4",
-            "description": "Number of entries in the log"
+            "description": "Number of entries in the log."
           },
           {
             "name": "oldestYear",
             "byte_offset": 28,
             "data_type": "U2",
-            "description": "Oldest entry UTC year (1-65635) or zero if unknown"
+            "description": "Oldest entry UTC year (1-65635) or zero if there are no entries with known time"
           },
           {
             "name": "oldestMonth",
@@ -113,7 +113,7 @@
             "name": "newestYear",
             "byte_offset": 36,
             "data_type": "U2",
-            "description": "Newest year (1-65635) or zero if unknown"
+            "description": "Newest year (1-65635) or zero if there are no entries with known time"
           },
           {
             "name": "newestMonth",
@@ -196,12 +196,19 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "valid_variation",
+        "issues": [
+          "This is the 'Poll' version of the message, which has a 0-byte payload."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -211,22 +218,7 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
       },
@@ -241,17 +233,50 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
+        "issues": [
+          "Includes more granular detail for the reserved bits in the status bitfield, which is helpful but not mandatory."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
         "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "The message definition is extremely stable across all generations (M8, M9, F9, M10). All 11 extractions agree on the fixed length (48 bytes) and field offsets/types. Extraction 11 (M8) uses slightly different naming for reserved fields (1-indexed vs 0-indexed) and explicitly lists reserved bits in the status bitfield, but this is structurally identical to the others. The canonical structure adopts the 0-indexed reserved field naming convention used by the majority (10 out of 11) of the sources."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598"
+        ],
+        "structure": {
+          "message_type": "polled",
+          "payload": {
+            "length": {
+              "fixed": 0
+            },
+            "fields": []
+          }
+        },
+        "reason": "UBX protocol defines a poll message (0 bytes) for many messages to trigger the output response."
+      }
+    ],
+    "reasoning": "The UBX-LOG-INFO message is highly consistent across multiple receiver generations (M8 through M10/F9). The canonical structure is a 48-byte response containing metadata about the filesystem logging status and entry ranges. All extractions correctly identified the fields and offsets. Extraction 2 correctly identifies the Poll request version (0 bytes). Extraction 10 provides additional explicit detail on reserved bits within the status byte, which is a common documentation style difference rather than a protocol change."
   }
 }

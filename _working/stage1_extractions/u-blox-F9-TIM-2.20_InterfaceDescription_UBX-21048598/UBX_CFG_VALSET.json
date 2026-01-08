@@ -1,0 +1,85 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-VALSET",
+  "extraction_timestamp": "2026-01-08T03:31:11.220858+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 93,
+    "end": 95
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-CFG-VALSET from u-blox PDF manual pages.\n\nThis message structure varies by firmware version:\n\n**Newer versions (F9 HPG 1.50+):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version |\n| 1 | U1 | layers | Configuration layers |\n| 2 | U1 | transaction | Transaction mode (0=none, 1=begin, 2=continue, 3=end) |\n| 3 | U1 | reserved0 | Reserved |\n| 4+ | ... | cfgData | Configuration data (key-value pairs) |\n\n**Older versions:**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version |\n| 1 | U1 | layers | Configuration layers |\n| 2 | U1[2] | reserved0 | Reserved (2 bytes) |\n| 4+ | ... | cfgData | Configuration data |\n\nExtract EXACTLY what the PDF shows for this specific manual version.\nPay attention to whether offset 2 is \"transaction\" (U1) or \"reserved0\" (U1[2]).\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"name\": \"UBX-CFG-VALSET (Set configuration item values)\",\n    \"class\": \"0x06\",\n    \"id\": \"0x8a\",\n    \"description\": \"Set configuration item values\",\n    \"payload\": [\n      {\n        \"name\": \"version\",\n        \"offset\": 0,\n        \"type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"name\": \"layers\",\n        \"offset\": 1,\n        \"type\": \"X1\",\n        \"description\": \"The layers where the configuration should be applied\",\n        \"fields\": [\n          {\n            \"name\": \"ram\",\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the RAM layer\"\n          },\n          {\n            \"name\": \"bbr\",\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the BBR layer\"\n          },\n          {\n            \"name\": \"flash\",\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the Flash layer\"\n          }\n        ]\n      },\n      {\n        \"name\": \"reserved0\",\n        \"offset\": 2,\n        \"type\": \"U1[2]\",\n        \"description\": \"Reserved\"\n      },\n      {\n        \"name\": \"cfgData\",\n        \"offset\": 4,\n        \"type\": \"U1[]\",\n        \"description\": \"Configuration data (key and value pairs)\",\n        \"is_repeated\": true,\n        \"item_type\": \"U1\",\n        \"item_size\": 1,\n        \"length_expression\": \"n\"\n      }\n    ]\n  },\n  {\n    \"name\": \"UBX-CFG-VALSET (Set configuration item values (with transaction))\",\n    \"class\": \"0x06\",\n    \"id\": \"0x8a\",\n    \"description\": \"Set configuration item values (with transaction)\",\n    \"payload\": [\n      {\n        \"name\": \"version\",\n        \"offset\": 0,\n        \"type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"layers\",\n        \"offset\": 1,\n        \"type\": \"X1\",\n        \"description\": \"The layers where the configuration should be applied\",\n        \"fields\": [\n          {\n            \"name\": \"ram\",\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the RAM layer\"\n          },\n          {\n            \"name\": \"bbr\",\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the BBR layer\"\n          },\n          {\n            \"name\": \"flash\",\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Update configuration in the Flash layer\"\n          }\n        ]\n      },\n      {\n        \"name\": \"transaction\",\n        \"offset\": 2,\n        \"type\": \"U1\",\n        \"description\": \"Transaction action to be applied\",\n        \"fields\": [\n          {\n            \"name\": \"action\",\n            \"bit_offset\": 0,\n            \"bit_length\": 2,\n            \"type\": \"U:2\",\n            \"description\": \"Transaction action to be applied\",\n            \"options\": [\n              {\n                \"value\": 0,\n                \"description\": \"Transactionless UBX-CFG-VALSET: In the next UBX-CFG-VALSET, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied (if valid). If a transaction has already been started, cancels any started transaction and the incoming configuration is applied (if valid).\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"(Re)Start set transaction: In the next UBX-CFG-VALSET, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALSET messages.\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"Set transaction ongoing: In the next UBX-CFG-VALSET, it can be either 0, 1, 2 or 3.\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"Apply and end a set transaction: In the next UBX-CFG-VALSET, it can be either 0 or 1.\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"name\": \"reserved0\",\n        \"offset\": 3,\n        \"type\": \"U1\",\n        \"description\": \"Reserved\"\n      },\n      {\n        \"name\": \"cfgData\",\n        \"offset\": 4,\n        \"type\": \"U1[]\",\n        \"description\": \"Configuration data (key and value pairs)\",\n        \"is_repeated\": true,\n        \"item_type\": \"U1\",\n        \"item_size\": 1,\n        \"length_expression\": \"n\"\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-VALSET (Set configuration item values)",
+    "class": "0x06",
+    "id": "0x8a",
+    "description": "Set configuration item values",
+    "payload": [
+      {
+        "name": "version",
+        "offset": 0,
+        "type": "U1",
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "layers",
+        "offset": 1,
+        "type": "X1",
+        "description": "The layers where the configuration should be applied",
+        "fields": [
+          {
+            "name": "ram",
+            "bit_offset": 0,
+            "bit_length": 1,
+            "type": "U:1",
+            "description": "Update configuration in the RAM layer"
+          },
+          {
+            "name": "bbr",
+            "bit_offset": 1,
+            "bit_length": 1,
+            "type": "U:1",
+            "description": "Update configuration in the BBR layer"
+          },
+          {
+            "name": "flash",
+            "bit_offset": 2,
+            "bit_length": 1,
+            "type": "U:1",
+            "description": "Update configuration in the Flash layer"
+          }
+        ]
+      },
+      {
+        "name": "reserved0",
+        "offset": 2,
+        "type": "U1[2]",
+        "description": "Reserved"
+      },
+      {
+        "name": "cfgData",
+        "offset": 4,
+        "type": "U1[]",
+        "description": "Configuration data (key and value pairs)",
+        "is_repeated": true,
+        "item_type": "U1",
+        "item_size": 1,
+        "length_expression": "n"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/ar57suu8sddy"
+}

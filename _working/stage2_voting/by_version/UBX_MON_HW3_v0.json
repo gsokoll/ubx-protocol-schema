@@ -2,12 +2,12 @@
   "message_name": "UBX-MON-HW3",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.7142857142857143,
+  "agreement_ratio": 0.5882352941176471,
   "winning_structure": {
     "name": "UBX-MON-HW3",
     "class_id": "0x0a",
     "message_id": "0x37",
-    "description": "I/O pin status",
+    "description": "This message contains information specific to each HW I/O pin, for example whether the pin is set as Input or Output.",
     "message_type": "output",
     "payload": {
       "length": {
@@ -80,7 +80,7 @@
       ],
       "repeated_groups": [
         {
-          "name": "pin_info",
+          "name": "pin_status_entry",
           "repetition_type": "count_field",
           "count_field": "nPins",
           "group_size_bytes": 6,
@@ -177,202 +177,204 @@
   },
   "winning_fingerprint": "8bdbb08ebf9bb631",
   "agreeing_sources": [
-    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
     "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
     "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
     "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "F9-HPS120_Interfacedescription_UBX-19056845",
     "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
   ],
   "all_extractions": [
     {
-      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
       "structure": {
-        "name": "UBX-MON-HW3",
-        "class_id": "0x0a",
-        "message_id": "0x37",
-        "description": "I/O pin status",
-        "message_type": "output",
-        "payload": {
-          "length": {
+        "ubx_message": {
+          "name": "UBX-MON-HW3",
+          "class_id": "0x0a",
+          "message_id": "0x37",
+          "description": "I/O pin status",
+          "message_type": "periodic_polled",
+          "payload_length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins * 6",
-              "min": 22
+              "formula": "22 + nPins * 6"
             }
           },
           "fields": [
             {
-              "name": "version",
               "byte_offset": 0,
               "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
+              "name": "version",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
             },
             {
-              "name": "nPins",
               "byte_offset": 1,
               "data_type": "U1",
+              "name": "nPins",
               "description": "The number of I/O pins included"
             },
             {
-              "name": "flags",
               "byte_offset": 2,
               "data_type": "X1",
+              "name": "flags",
               "description": "Flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "rtcCalib",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "RTC is calibrated"
-                  },
-                  {
-                    "name": "safeBoot",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Safeboot mode (0 = inactive, 1 = active)"
-                  },
-                  {
-                    "name": "xtalAbsent",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "RTC xtal has been determined to be absent"
-                  }
-                ]
-              }
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "data_type": "U1",
+                  "name": "rtcCalib",
+                  "description": "RTC is calibrated"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "data_type": "U1",
+                  "name": "safeBoot",
+                  "description": "Safeboot mode (0 = inactive, 1 = active)"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 1,
+                  "data_type": "U1",
+                  "name": "xtalAbsent",
+                  "description": "RTC xtal has been determined to be absent"
+                }
+              ]
             },
             {
-              "name": "hwVersion",
               "byte_offset": 3,
               "data_type": {
                 "array_of": "CH",
                 "count": 10
               },
+              "name": "hwVersion",
               "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
             },
             {
-              "name": "reserved0",
               "byte_offset": 13,
               "data_type": {
                 "array_of": "U1",
                 "count": 9
               },
+              "name": "reserved0",
               "description": "Reserved",
               "reserved": true
-            }
-          ],
-          "repeated_groups": [
+            },
             {
-              "name": "pin_info",
-              "repetition_type": "count_field",
-              "count_field": "nPins",
-              "group_size_bytes": 6,
-              "base_offset": 22,
-              "fields": [
-                {
-                  "name": "reserved1",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "pinId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Identifier for the pin, including both external and internal pins"
-                },
-                {
-                  "name": "pinMask",
-                  "byte_offset": 2,
-                  "data_type": "X2",
-                  "description": "Pin mask",
-                  "bitfield": {
-                    "bits": [
+              "byte_offset": 22,
+              "data_type": {
+                "num_repeats_field": "nPins",
+                "block_length": 6,
+                "fields": [
+                  {
+                    "byte_offset": 0,
+                    "data_type": "U2",
+                    "name": "pinId",
+                    "description": "Identifier for the pin, including both external and internal pins."
+                  },
+                  {
+                    "byte_offset": 2,
+                    "data_type": "X2",
+                    "name": "pinMask",
+                    "description": "Pin mask",
+                    "bit_fields": [
                       {
+                        "bit_offset": 0,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "periphPIO",
-                        "bit_start": 0,
-                        "bit_end": 0,
                         "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
                       },
                       {
+                        "bit_offset": 1,
+                        "bit_length": 3,
+                        "data_type": "U1",
                         "name": "pinBank",
-                        "bit_start": 1,
-                        "bit_end": 3,
                         "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
                       },
                       {
+                        "bit_offset": 4,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "direction",
-                        "bit_start": 4,
-                        "bit_end": 4,
                         "description": "Pin direction? 0=Input 1=Output"
                       },
                       {
+                        "bit_offset": 5,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "value",
-                        "bit_start": 5,
-                        "bit_end": 5,
                         "description": "Pin value? 0=Low 1=High"
                       },
                       {
+                        "bit_offset": 6,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "vpManager",
-                        "bit_start": 6,
-                        "bit_end": 6,
                         "description": "Used by virtual pin manager? 0=No 1=Yes"
                       },
                       {
+                        "bit_offset": 7,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "pioIrq",
-                        "bit_start": 7,
-                        "bit_end": 7,
                         "description": "Interrupt enabled? 0=No 1=Yes"
                       },
                       {
+                        "bit_offset": 8,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "pioPullHigh",
-                        "bit_start": 8,
-                        "bit_end": 8,
                         "description": "Using pull high resistor? 0=No 1=Yes"
                       },
                       {
+                        "bit_offset": 9,
+                        "bit_length": 1,
+                        "data_type": "U1",
                         "name": "pioPullLow",
-                        "bit_start": 9,
-                        "bit_end": 9,
                         "description": "Using pull low resistor 0=No 1=Yes"
                       }
                     ]
+                  },
+                  {
+                    "byte_offset": 4,
+                    "data_type": "U1",
+                    "name": "VP",
+                    "description": "Virtual pin mapping"
+                  },
+                  {
+                    "byte_offset": 5,
+                    "data_type": "U1",
+                    "name": "reserved1",
+                    "description": "Reserved",
+                    "reserved": true
                   }
-                },
-                {
-                  "name": "VP",
-                  "byte_offset": 4,
-                  "data_type": "U1",
-                  "description": "Virtual pin mapping"
-                },
-                {
-                  "name": "reserved2",
-                  "byte_offset": 5,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
+                ]
+              },
+              "name": "pinStatus"
             }
           ]
         }
       },
-      "fingerprint": "8bdbb08ebf9bb631"
+      "fingerprint": "a6d6a831c2c2c4f6"
     },
     {
-      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -383,7 +385,7 @@
           "length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins * 6",
+              "formula": "22 + nPins*6",
               "min": 22
             }
           },
@@ -450,24 +452,17 @@
           ],
           "repeated_groups": [
             {
-              "name": "pins",
+              "name": "pinStatus",
               "repetition_type": "count_field",
               "count_field": "nPins",
-              "base_offset": 22,
               "group_size_bytes": 6,
+              "base_offset": 22,
               "fields": [
                 {
-                  "name": "reserved1",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
                   "name": "pinId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Identifier for the pin, including both external and internal pins"
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Identifier for the pin, including both external and internal pins."
                 },
                 {
                   "name": "pinMask",
@@ -534,7 +529,7 @@
                   "description": "Virtual pin mapping"
                 },
                 {
-                  "name": "reserved2",
+                  "name": "reserved1",
                   "byte_offset": 5,
                   "data_type": "U1",
                   "description": "Reserved",
@@ -545,7 +540,7 @@
           ]
         }
       },
-      "fingerprint": "8bdbb08ebf9bb631"
+      "fingerprint": "bf97c178d43712a4"
     },
     {
       "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -724,7 +719,7 @@
       "fingerprint": "8bdbb08ebf9bb631"
     },
     {
-      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -735,7 +730,7 @@
           "length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins*6",
+              "formula": "22 + nPins * 6",
               "min": 22
             }
           },
@@ -802,7 +797,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "pin_status",
+              "name": "pin_info",
               "repetition_type": "count_field",
               "count_field": "nPins",
               "group_size_bytes": 6,
@@ -900,13 +895,180 @@
       "fingerprint": "8bdbb08ebf9bb631"
     },
     {
-      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-MON-HW3",
+          "class_id": "0x0a",
+          "message_id": "0x37",
+          "message_type": "periodic_polled",
+          "description": "I/O pin status",
+          "payload_length": {
+            "variable": {
+              "base": 22,
+              "formula": "22 + nPins*6"
+            }
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
+            },
+            {
+              "byte_offset": 1,
+              "data_type": "U1",
+              "name": "nPins",
+              "description": "The number of I/O pins included"
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "X1",
+              "name": "flags",
+              "description": "Flags",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "data_type": "U1",
+                  "name": "rtcCalib",
+                  "description": "RTC is calibrated"
+                },
+                {
+                  "bit_offset": 1,
+                  "data_type": "U1",
+                  "name": "safeBoot",
+                  "description": "Safeboot mode (0 = inactive, 1 = active)"
+                },
+                {
+                  "bit_offset": 2,
+                  "data_type": "U1",
+                  "name": "xtalAbsent",
+                  "description": "RTC xtal has been determined to be absent"
+                }
+              ]
+            },
+            {
+              "byte_offset": 3,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "name": "hwVersion",
+              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
+            },
+            {
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 9
+              },
+              "name": "reserved0",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "byte_offset": 22,
+              "data_type": {
+                "repeated_group": {
+                  "count_field": "nPins",
+                  "block_length": 6
+                }
+              },
+              "name": "pinStatus",
+              "description": "Status for each I/O pin",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "name": "pinId",
+                  "description": "Identifier for the pin, including both external and internal pins."
+                },
+                {
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "name": "pinMask",
+                  "description": "Pin mask",
+                  "bit_fields": [
+                    {
+                      "bit_offset": 0,
+                      "data_type": "U1",
+                      "name": "periphPIO",
+                      "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                    },
+                    {
+                      "bit_offset": 1,
+                      "data_type": "U3",
+                      "name": "pinBank",
+                      "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                    },
+                    {
+                      "bit_offset": 4,
+                      "data_type": "U1",
+                      "name": "direction",
+                      "description": "Pin direction? 0=Input 1=Output"
+                    },
+                    {
+                      "bit_offset": 5,
+                      "data_type": "U1",
+                      "name": "value",
+                      "description": "Pin value? 0=Low 1=High"
+                    },
+                    {
+                      "bit_offset": 6,
+                      "data_type": "U1",
+                      "name": "vpManager",
+                      "description": "Used by virtual pin manager? 0=No 1=Yes"
+                    },
+                    {
+                      "bit_offset": 7,
+                      "data_type": "U1",
+                      "name": "pioIrq",
+                      "description": "Interrupt enabled? 0=No 1=Yes"
+                    },
+                    {
+                      "bit_offset": 8,
+                      "data_type": "U1",
+                      "name": "pioPullHigh",
+                      "description": "Using pull high resistor? 0=No 1=Yes"
+                    },
+                    {
+                      "bit_offset": 9,
+                      "data_type": "U1",
+                      "name": "pioPullLow",
+                      "description": "Using pull low resistor 0=No 1=Yes"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "name": "VP",
+                  "description": "Virtual pin mapping"
+                },
+                {
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "name": "reserved1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "b468de4fc8859204"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
         "message_id": "0x37",
         "description": "I/O pin status",
-        "message_type": "periodic_polled",
+        "message_type": "output",
         "payload": {
           "length": {
             "variable": {
@@ -940,6 +1102,194 @@
                     "bit_start": 0,
                     "bit_end": 0,
                     "description": "RTC is calibrated"
+                  },
+                  {
+                    "name": "safeBoot",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Safeboot mode (0 = inactive, 1 = active)"
+                  },
+                  {
+                    "name": "xtalAbsent",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTC xtal has been determined to be absent"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 3,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 9
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pinStatus",
+              "repetition_type": "count_field",
+              "count_field": "nPins",
+              "group_size_bytes": 6,
+              "base_offset": 22,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "pinId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Identifier for the pin, including both external and internal pins"
+                },
+                {
+                  "name": "pinMask",
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "description": "Pin mask",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "periphPIO",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                      },
+                      {
+                        "name": "pinBank",
+                        "bit_start": 1,
+                        "bit_end": 3,
+                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                      },
+                      {
+                        "name": "direction",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "Pin direction? 0=Input 1=Output"
+                      },
+                      {
+                        "name": "value",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "Pin value? 0=Low 1=High"
+                      },
+                      {
+                        "name": "vpManager",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "Used by virtual pin manager? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioIrq",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "Interrupt enabled? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullHigh",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "Using pull high resistor? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullLow",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Using pull low resistor 0=No 1=Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "VP",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Virtual pin mapping"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "8bdbb08ebf9bb631"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-MON-HW3",
+        "class_id": "0x0a",
+        "message_id": "0x37",
+        "description": "I/O pin status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 22,
+              "formula": "22 + nPins * 6",
+              "min": 22
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPins",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of I/O pins included"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "rtcCalib",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "RTC is calibrated"
+                  },
+                  {
+                    "name": "safeBoot",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Safeboot mode (0 = inactive, 1 = active)"
+                  },
+                  {
+                    "name": "xtalAbsent",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTC xtal has been determined to be absent"
                   }
                 ]
               }
@@ -1064,65 +1414,63 @@
       "fingerprint": "8bdbb08ebf9bb631"
     },
     {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
       "structure": {
-        "name": "UBX-MON-HW3",
-        "class_id": "0x0a",
-        "message_id": "0x37",
-        "description": "I/O pin status",
-        "message_type": "output",
-        "payload": {
-          "length": {
+        "ubx_message": {
+          "message_name": "UBX-MON-HW3",
+          "class_id": 10,
+          "message_id": 55,
+          "message_type": "periodic_polled",
+          "comment": "This message contains information specific to each HW I/O pin, for example whether the pin is set as Input or Output. For the antenna supervisor status and other RF status information, see the UBX-MON-RF message.",
+          "payload_length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins * 6",
-              "count_field": "nPins"
+              "formula": "22 + nPins * 6"
             }
           },
           "fields": [
             {
-              "name": "version",
               "byte_offset": 0,
+              "name": "version",
               "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
             },
             {
-              "name": "nPins",
               "byte_offset": 1,
+              "name": "nPins",
               "data_type": "U1",
               "description": "The number of I/O pins included"
             },
             {
-              "name": "flags",
               "byte_offset": 2,
+              "name": "flags",
               "data_type": "X1",
               "description": "Flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "rtcCalib",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "RTC is calibrated"
-                  },
-                  {
-                    "name": "safeBoot",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Safeboot mode (0 = inactive, 1 = active)"
-                  },
-                  {
-                    "name": "xtalAbsent",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "RTC xtal has been determined to be absent"
-                  }
-                ]
-              }
+              "bit_fields": [
+                {
+                  "name": "rtcCalib",
+                  "bit_offset": 0,
+                  "num_bits": 1,
+                  "description": "RTC is calibrated"
+                },
+                {
+                  "name": "safeBoot",
+                  "bit_offset": 1,
+                  "num_bits": 1,
+                  "description": "Safeboot mode (0 = inactive, 1 = active)"
+                },
+                {
+                  "name": "xtalAbsent",
+                  "bit_offset": 2,
+                  "num_bits": 1,
+                  "description": "RTC xtal has been determined to be absent"
+                }
+              ]
             },
             {
-              "name": "hwVersion",
               "byte_offset": 3,
+              "name": "hwVersion",
               "data_type": {
                 "array_of": "CH",
                 "count": 10
@@ -1130,448 +1478,113 @@
               "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
             },
             {
-              "name": "reserved0",
               "byte_offset": 13,
+              "name": "reserved0",
               "data_type": {
                 "array_of": "U1",
                 "count": 9
               },
-              "description": "Reserved",
-              "reserved": true
+              "reserved": true,
+              "description": "Reserved"
             }
           ],
           "repeated_groups": [
             {
-              "name": "pin_data",
-              "repetition_type": "count_field",
+              "name": "pinData",
               "count_field": "nPins",
-              "group_size_bytes": 6,
-              "base_offset": 22,
+              "byte_length": 6,
               "fields": [
                 {
-                  "name": "pinId",
                   "byte_offset": 0,
-                  "data_type": "U2",
-                  "description": "Identifier for the pin, including both external and internal pins."
+                  "name": "reserved1",
+                  "data_type": "U1",
+                  "reserved": true,
+                  "description": "Reserved"
                 },
                 {
-                  "name": "pinMask",
+                  "byte_offset": 1,
+                  "name": "pinId",
+                  "data_type": "U1",
+                  "description": "Identifier for the pin, including both external and internal pins"
+                },
+                {
                   "byte_offset": 2,
+                  "name": "pinMask",
                   "data_type": "X2",
                   "description": "Pin mask",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "periphPIO",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
-                      },
-                      {
-                        "name": "pinBank",
-                        "bit_start": 1,
-                        "bit_end": 3,
-                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
-                      },
-                      {
-                        "name": "direction",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "Pin direction? 0=Input 1=Output"
-                      },
-                      {
-                        "name": "value",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "Pin value? 0=Low 1=High"
-                      },
-                      {
-                        "name": "vpManager",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "Used by virtual pin manager? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioIrq",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "Interrupt enabled? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullHigh",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "Using pull high resistor? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullLow",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Using pull low resistor 0=No 1=Yes"
-                      }
-                    ]
-                  }
+                  "bit_fields": [
+                    {
+                      "name": "periphPIO",
+                      "bit_offset": 0,
+                      "num_bits": 1,
+                      "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                    },
+                    {
+                      "name": "pinBank",
+                      "bit_offset": 1,
+                      "num_bits": 3,
+                      "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                    },
+                    {
+                      "name": "direction",
+                      "bit_offset": 4,
+                      "num_bits": 1,
+                      "description": "Pin direction? 0=Input 1=Output"
+                    },
+                    {
+                      "name": "value",
+                      "bit_offset": 5,
+                      "num_bits": 1,
+                      "description": "Pin value? 0=Low 1=High"
+                    },
+                    {
+                      "name": "vpManager",
+                      "bit_offset": 6,
+                      "num_bits": 1,
+                      "description": "Used by virtual pin manager? 0=No 1=Yes"
+                    },
+                    {
+                      "name": "pioIrq",
+                      "bit_offset": 7,
+                      "num_bits": 1,
+                      "description": "Interrupt enabled? 0=No 1=Yes"
+                    },
+                    {
+                      "name": "pioPullHigh",
+                      "bit_offset": 8,
+                      "num_bits": 1,
+                      "description": "Using pull high resistor? 0=No 1=Yes"
+                    },
+                    {
+                      "name": "pioPullLow",
+                      "bit_offset": 9,
+                      "num_bits": 1,
+                      "description": "Using pull low resistor 0=No 1=Yes"
+                    }
+                  ]
                 },
                 {
-                  "name": "VP",
                   "byte_offset": 4,
+                  "name": "VP",
                   "data_type": "U1",
                   "description": "Virtual pin mapping"
                 },
                 {
-                  "name": "reserved1",
                   "byte_offset": 5,
+                  "name": "reserved2",
                   "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
+                  "reserved": true,
+                  "description": "Reserved"
                 }
               ]
             }
           ]
         }
       },
-      "fingerprint": "bf97c178d43712a4"
+      "fingerprint": "4f18e6be24f826ab"
     },
     {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-      "structure": {
-        "name": "UBX-MON-HW3",
-        "class_id": "0x0a",
-        "message_id": "0x37",
-        "description": "I/O pin status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 22,
-              "formula": "22 + nPins * 6",
-              "min": 22
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "nPins",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "The number of I/O pins included"
-            },
-            {
-              "name": "flags",
-              "byte_offset": 2,
-              "data_type": "X1",
-              "description": "Flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "rtcCalib",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "RTC is calibrated"
-                  },
-                  {
-                    "name": "safeBoot",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Safeboot mode (0 = inactive, 1 = active)"
-                  },
-                  {
-                    "name": "xtalAbsent",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "RTC xtal has been determined to be absent"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 3,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 13,
-              "data_type": {
-                "array_of": "U1",
-                "count": 9
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "pinInfo",
-              "repetition_type": "count_field",
-              "count_field": "nPins",
-              "group_size_bytes": 6,
-              "base_offset": 22,
-              "fields": [
-                {
-                  "name": "pinId",
-                  "byte_offset": 0,
-                  "data_type": "U2",
-                  "description": "Identifier for the pin, including both external and internal pins."
-                },
-                {
-                  "name": "pinMask",
-                  "byte_offset": 2,
-                  "data_type": "X2",
-                  "description": "Pin mask",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "periphPIO",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
-                      },
-                      {
-                        "name": "pinBank",
-                        "bit_start": 1,
-                        "bit_end": 3,
-                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
-                      },
-                      {
-                        "name": "direction",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "Pin direction? 0=Input 1=Output"
-                      },
-                      {
-                        "name": "value",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "Pin value? 0=Low 1=High"
-                      },
-                      {
-                        "name": "vpManager",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "Used by virtual pin manager? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioIrq",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "Interrupt enabled? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullHigh",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "Using pull high resistor? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullLoW",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Using pull low resistor 0=No 1=Yes"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "VP",
-                  "byte_offset": 4,
-                  "data_type": "U1",
-                  "description": "Virtual pin mapping"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 5,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "bf97c178d43712a4"
-    },
-    {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-MON-HW3",
-        "class_id": "0x0a",
-        "message_id": "0x37",
-        "description": "I/O pin status",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 22,
-              "formula": "22 + nPins*6",
-              "min": 22
-            }
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "nPins",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "The number of I/O pins included"
-            },
-            {
-              "name": "flags",
-              "byte_offset": 2,
-              "data_type": "X1",
-              "description": "Flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "rtcCalib",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "RTC is calibrated"
-                  },
-                  {
-                    "name": "safeBoot",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Safeboot mode (0 = inactive, 1 = active)"
-                  },
-                  {
-                    "name": "xtalAbsent",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "RTC xtal has been determined to be absent"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "hwVersion",
-              "byte_offset": 3,
-              "data_type": {
-                "array_of": "CH",
-                "count": 10
-              },
-              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 13,
-              "data_type": {
-                "array_of": "U1",
-                "count": 9
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "pinStatus",
-              "repetition_type": "count_field",
-              "count_field": "nPins",
-              "group_size_bytes": 6,
-              "base_offset": 22,
-              "fields": [
-                {
-                  "name": "pinId",
-                  "byte_offset": 0,
-                  "data_type": "U2",
-                  "description": "Identifier for the pin, including both external and internal pins."
-                },
-                {
-                  "name": "pinMask",
-                  "byte_offset": 2,
-                  "data_type": "X2",
-                  "description": "Pin mask",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "periphPIO",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
-                      },
-                      {
-                        "name": "pinBank",
-                        "bit_start": 1,
-                        "bit_end": 3,
-                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
-                      },
-                      {
-                        "name": "direction",
-                        "bit_start": 4,
-                        "bit_end": 4,
-                        "description": "Pin direction? 0=Input 1=Output"
-                      },
-                      {
-                        "name": "value",
-                        "bit_start": 5,
-                        "bit_end": 5,
-                        "description": "Pin value? 0=Low 1=High"
-                      },
-                      {
-                        "name": "vpManager",
-                        "bit_start": 6,
-                        "bit_end": 6,
-                        "description": "Used by virtual pin manager? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioIrq",
-                        "bit_start": 7,
-                        "bit_end": 7,
-                        "description": "Interrupt enabled? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullHigh",
-                        "bit_start": 8,
-                        "bit_end": 8,
-                        "description": "Using pull high resistor? 0=No 1=Yes"
-                      },
-                      {
-                        "name": "pioPullLow",
-                        "bit_start": 9,
-                        "bit_end": 9,
-                        "description": "Using pull low resistor 0=No 1=Yes"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "name": "VP",
-                  "byte_offset": 4,
-                  "data_type": "U1",
-                  "description": "Virtual pin mapping"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 5,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "bf97c178d43712a4"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -1582,7 +1595,7 @@
           "length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins*6",
+              "formula": "22 + nPins * 6",
               "min": 22
             }
           },
@@ -1611,18 +1624,6 @@
                     "bit_start": 0,
                     "bit_end": 0,
                     "description": "RTC is calibrated"
-                  },
-                  {
-                    "name": "safeBoot",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Safeboot mode (0 = inactive, 1 = active)"
-                  },
-                  {
-                    "name": "xtalAbsent",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "RTC xtal has been determined to be absent"
                   }
                 ]
               }
@@ -1649,7 +1650,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "pin_status",
+              "name": "pins",
               "repetition_type": "count_field",
               "count_field": "nPins",
               "group_size_bytes": 6,
@@ -1923,7 +1924,7 @@
       "fingerprint": "8bdbb08ebf9bb631"
     },
     {
-      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -2001,7 +2002,183 @@
           ],
           "repeated_groups": [
             {
-              "name": "pin_status",
+              "name": "pins",
+              "repetition_type": "count_field",
+              "count_field": "nPins",
+              "base_offset": 22,
+              "group_size_bytes": 6,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "pinId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Identifier for the pin, including both external and internal pins"
+                },
+                {
+                  "name": "pinMask",
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "description": "Pin mask",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "periphPIO",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                      },
+                      {
+                        "name": "pinBank",
+                        "bit_start": 1,
+                        "bit_end": 3,
+                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                      },
+                      {
+                        "name": "direction",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "Pin direction? 0=Input 1=Output"
+                      },
+                      {
+                        "name": "value",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "Pin value? 0=Low 1=High"
+                      },
+                      {
+                        "name": "vpManager",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "Used by virtual pin manager? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioIrq",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "Interrupt enabled? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullHigh",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "Using pull high resistor? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullLow",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Using pull low resistor 0=No 1=Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "VP",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Virtual pin mapping"
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "8bdbb08ebf9bb631"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-MON-HW3",
+        "class_id": "0x0a",
+        "message_id": "0x37",
+        "description": "I/O pin status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 22,
+              "formula": "22 + nPins * 6",
+              "count_field": "nPins"
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPins",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of I/O pins included"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "rtcCalib",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "RTC is calibrated"
+                  },
+                  {
+                    "name": "safeBoot",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Safeboot mode (0 = inactive, 1 = active)"
+                  },
+                  {
+                    "name": "xtalAbsent",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTC xtal has been determined to be absent"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 3,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 9
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pin_data",
               "repetition_type": "count_field",
               "count_field": "nPins",
               "group_size_bytes": 6,
@@ -2092,7 +2269,7 @@
       "fingerprint": "bf97c178d43712a4"
     },
     {
-      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -2103,7 +2280,7 @@
           "length": {
             "variable": {
               "base": 22,
-              "formula": "22 + nPins * 6",
+              "formula": "22 + nPins*6",
               "min": 22
             }
           },
@@ -2170,7 +2347,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "pins",
+              "name": "pin_status",
               "repetition_type": "count_field",
               "count_field": "nPins",
               "group_size_bytes": 6,
@@ -2444,7 +2621,7 @@
       "fingerprint": "8bdbb08ebf9bb631"
     },
     {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
       "structure": {
         "name": "UBX-MON-HW3",
         "class_id": "0x0a",
@@ -2522,7 +2699,345 @@
           ],
           "repeated_groups": [
             {
-              "name": "pinStatus",
+              "name": "pinInfo",
+              "repetition_type": "count_field",
+              "count_field": "nPins",
+              "group_size_bytes": 6,
+              "base_offset": 22,
+              "fields": [
+                {
+                  "name": "pinId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Identifier for the pin, including both external and internal pins."
+                },
+                {
+                  "name": "pinMask",
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "description": "Pin mask",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "periphPIO",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                      },
+                      {
+                        "name": "pinBank",
+                        "bit_start": 1,
+                        "bit_end": 3,
+                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                      },
+                      {
+                        "name": "direction",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "Pin direction? 0=Input 1=Output"
+                      },
+                      {
+                        "name": "value",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "Pin value? 0=Low 1=High"
+                      },
+                      {
+                        "name": "vpManager",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "Used by virtual pin manager? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioIrq",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "Interrupt enabled? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullHigh",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "Using pull high resistor? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullLoW",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Using pull low resistor 0=No 1=Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "VP",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Virtual pin mapping"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "bf97c178d43712a4"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-MON-HW3",
+        "class_id": "0x0a",
+        "message_id": "0x37",
+        "description": "I/O pin status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 22,
+              "formula": "22 + nPins * 6",
+              "min": 22
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPins",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of I/O pins included"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "rtcCalib",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "RTC is calibrated"
+                  },
+                  {
+                    "name": "safeBoot",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Safeboot mode (0 = inactive, 1 = active)"
+                  },
+                  {
+                    "name": "xtalAbsent",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTC xtal has been determined to be absent"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 3,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 9
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pin_status",
+              "repetition_type": "count_field",
+              "count_field": "nPins",
+              "group_size_bytes": 6,
+              "base_offset": 22,
+              "fields": [
+                {
+                  "name": "pinId",
+                  "byte_offset": 0,
+                  "data_type": "U2",
+                  "description": "Identifier for the pin, including both external and internal pins."
+                },
+                {
+                  "name": "pinMask",
+                  "byte_offset": 2,
+                  "data_type": "X2",
+                  "description": "Pin mask",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "periphPIO",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Pin is set to peripheral or PIO? 0=Peripheral 1=PIO"
+                      },
+                      {
+                        "name": "pinBank",
+                        "bit_start": 1,
+                        "bit_end": 3,
+                        "description": "Bank the pin belongs to, where 0=A 1=B 2=C 3=D 4=E 5=F 6=G 7=H"
+                      },
+                      {
+                        "name": "direction",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "Pin direction? 0=Input 1=Output"
+                      },
+                      {
+                        "name": "value",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "Pin value? 0=Low 1=High"
+                      },
+                      {
+                        "name": "vpManager",
+                        "bit_start": 6,
+                        "bit_end": 6,
+                        "description": "Used by virtual pin manager? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioIrq",
+                        "bit_start": 7,
+                        "bit_end": 7,
+                        "description": "Interrupt enabled? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullHigh",
+                        "bit_start": 8,
+                        "bit_end": 8,
+                        "description": "Using pull high resistor? 0=No 1=Yes"
+                      },
+                      {
+                        "name": "pioPullLow",
+                        "bit_start": 9,
+                        "bit_end": 9,
+                        "description": "Using pull low resistor 0=No 1=Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "VP",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Virtual pin mapping"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 5,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "bf97c178d43712a4"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-MON-HW3",
+        "class_id": "0x0a",
+        "message_id": "0x37",
+        "description": "I/O pin status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 22,
+              "formula": "22 + nPins*6",
+              "min": 22
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "nPins",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "The number of I/O pins included"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "rtcCalib",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "RTC is calibrated"
+                  },
+                  {
+                    "name": "safeBoot",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Safeboot mode (0 = inactive, 1 = active)"
+                  },
+                  {
+                    "name": "xtalAbsent",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "RTC xtal has been determined to be absent"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "hwVersion",
+              "byte_offset": 3,
+              "data_type": {
+                "array_of": "CH",
+                "count": 10
+              },
+              "description": "Zero-terminated hardware version string (same as that returned in the UBX-MON-VER message)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 13,
+              "data_type": {
+                "array_of": "U1",
+                "count": 9
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pin_status",
               "repetition_type": "count_field",
               "count_field": "nPins",
               "group_size_bytes": 6,

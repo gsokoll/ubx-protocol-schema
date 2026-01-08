@@ -1,0 +1,110 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MGA-INI-FREQ",
+  "extraction_timestamp": "2026-01-08T03:42:59.335305+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 117,
+    "end": 121
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-INI-FREQ\nExpected IDs: class_id=0x13, message_id=0x40\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-INI-FREQ\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nBITFIELD TYPE DETECTION (CRITICAL):\n- Use X1/X2/X4 (NOT U1/U2/U4) when:\n  - Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n  - Description mentions \"bitfield\" or lists bit meanings\n  - Sub-table shows bit positions\n- Extract bitfield structure for ALL X-type fields\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-MGA-INI-FREQ\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x40\",\n  \"message_type\": \"input\",\n  \"description\": \"Initial frequency assistance. This message allows the delivery of external frequency assistance to a receiver. See section AssistNow online in the integration manual for details.\",\n  \"payload_length\": {\n    \"fixed\": 12\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"type\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message type (0x21 for this type)\",\n      \"fixed_value\": 33\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"reserved0\",\n      \"data_type\": \"U1\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"flags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Frequency reference\",\n      \"bitfield_fields\": [\n        {\n          \"name\": \"source\",\n          \"position\": 0,\n          \"length\": 4,\n          \"description\": \"Frequency reference. Currently supported: 0 = frequency available on EXTINT0; 1 = frequency available on EXTINT1; 2-15 = reserved\",\n          \"values\": [\n            {\n              \"value\": 0,\n              \"description\": \"frequency available on EXTINT0\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"frequency available on EXTINT1\"\n            },\n            {\n              \"value\": \"2-15\",\n              \"description\": \"reserved\"\n            }\n          ]\n        },\n        {\n          \"name\": \"fall\",\n          \"position\": 4,\n          \"length\": 1,\n          \"description\": \"use falling edge of EXTINT pulse (default rising)\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"freq\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw_string\": \"1e-2\",\n        \"multiplier\": 0.01\n      },\n      \"unit\": \"Hz\",\n      \"description\": \"Frequency\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"freqAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ppb\",\n      \"description\": \"Frequency accuracy\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-MGA-INI-FREQ",
+    "class_id": "0x13",
+    "message_id": "0x40",
+    "message_type": "input",
+    "description": "Initial frequency assistance. This message allows the delivery of external frequency assistance to a receiver. See section AssistNow online in the integration manual for details.",
+    "payload_length": {
+      "fixed": 12
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "name": "type",
+        "data_type": "U1",
+        "description": "Message type (0x21 for this type)",
+        "fixed_value": 33
+      },
+      {
+        "byte_offset": 1,
+        "name": "version",
+        "data_type": "U1",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "byte_offset": 2,
+        "name": "reserved0",
+        "data_type": "U1",
+        "reserved": true
+      },
+      {
+        "byte_offset": 3,
+        "name": "flags",
+        "data_type": "X1",
+        "description": "Frequency reference",
+        "bitfield_fields": [
+          {
+            "name": "source",
+            "position": 0,
+            "length": 4,
+            "description": "Frequency reference. Currently supported: 0 = frequency available on EXTINT0; 1 = frequency available on EXTINT1; 2-15 = reserved",
+            "values": [
+              {
+                "value": 0,
+                "description": "frequency available on EXTINT0"
+              },
+              {
+                "value": 1,
+                "description": "frequency available on EXTINT1"
+              },
+              {
+                "value": "2-15",
+                "description": "reserved"
+              }
+            ]
+          },
+          {
+            "name": "fall",
+            "position": 4,
+            "length": 1,
+            "description": "use falling edge of EXTINT pulse (default rising)"
+          }
+        ]
+      },
+      {
+        "byte_offset": 4,
+        "name": "freq",
+        "data_type": "I4",
+        "scale": {
+          "raw_string": "1e-2",
+          "multiplier": 0.01
+        },
+        "unit": "Hz",
+        "description": "Frequency"
+      },
+      {
+        "byte_offset": 8,
+        "name": "freqAcc",
+        "data_type": "U4",
+        "unit": "ppb",
+        "description": "Frequency accuracy"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/k72gel0k0kj1"
+}

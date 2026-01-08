@@ -1,0 +1,103 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-TIM-TP",
+  "extraction_timestamp": "2026-01-08T03:00:41.719274+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 151,
+    "end": 152
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TP\nExpected IDs: class_id=0x0d, message_id=0x01\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TP\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": 13,\n  \"message_id\": 1,\n  \"message_name\": \"UBX-TIM-TP\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 16\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"towMS\",\n      \"unit\": \"ms\",\n      \"description\": \"Time pulse time of week according to time base\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"towSubMS\",\n      \"scale\": {\n        \"raw\": true,\n        \"multiplier\": \"2^-32\"\n      },\n      \"unit\": \"ms\",\n      \"description\": \"Submillisecond part of towMS\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"qErr\",\n      \"unit\": \"ps\",\n      \"description\": \"Quantization error of time pulse. Only available in timing products\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U2\",\n      \"name\": \"week\",\n      \"unit\": \"weeks\",\n      \"description\": \"Time pulse week number according to time base\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"X1\",\n      \"name\": \"flags\",\n      \"description\": \"Flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"timeBase\",\n          \"description\": \"0 = Time base is GNSS, 1 = Time base is UTC\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"utc\",\n          \"description\": \"0 = UTC not available, 1 = UTC available\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 2,\n          \"name\": \"raim\",\n          \"description\": \"(T)RAIM information\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": 13,
+    "message_id": 1,
+    "message_name": "UBX-TIM-TP",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 16
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "towMS",
+          "unit": "ms",
+          "description": "Time pulse time of week according to time base"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "towSubMS",
+          "scale": {
+            "raw": true,
+            "multiplier": "2^-32"
+          },
+          "unit": "ms",
+          "description": "Submillisecond part of towMS"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "qErr",
+          "unit": "ps",
+          "description": "Quantization error of time pulse. Only available in timing products"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U2",
+          "name": "week",
+          "unit": "weeks",
+          "description": "Time pulse week number according to time base"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "timeBase",
+              "description": "0 = Time base is GNSS, 1 = Time base is UTC"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "utc",
+              "description": "0 = UTC not available, 1 = UTC available"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 2,
+              "name": "raim",
+              "description": "(T)RAIM information"
+            }
+          ]
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "U1",
+          "name": "reserved1",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/mj8j6hxynvnt"
+}

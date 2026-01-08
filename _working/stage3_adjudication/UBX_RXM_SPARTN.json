@@ -63,7 +63,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -71,27 +71,27 @@
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "valid_variation",
         "issues": [
-          "Labels bytes 4-7 as a single reserved U4 field instead of identifying msgType at offset 6."
+          "Defines the bytes at offset 4-7 as a single 4-byte reserved block rather than identifying the msgType field at offset 6."
         ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
         "verdict": "valid_variation",
         "issues": [
-          "Labels bytes 4-7 as a single reserved U4 field instead of identifying msgType at offset 6."
+          "Defines the bytes at offset 4-7 as a single 4-byte reserved block rather than identifying the msgType field at offset 6."
         ]
       },
       {
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "valid_variation",
         "issues": [
-          "Labels bytes 4-7 as a single reserved U4 field instead of identifying msgType at offset 6."
+          "Defines the bytes at offset 4-7 as a single 4-byte reserved block rather than identifying the msgType field at offset 6."
         ]
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [
@@ -103,6 +103,9 @@
         ],
         "structure": {
           "payload": {
+            "length": {
+              "fixed": 8
+            },
             "fields": [
               {
                 "name": "version",
@@ -122,14 +125,15 @@
               {
                 "name": "reserved0",
                 "byte_offset": 4,
-                "data_type": "U4"
+                "data_type": "U4",
+                "reserved": true
               }
             ]
           }
         },
-        "reason": "Earlier or more general documentation versions group the final 4 bytes (offset 4-7) into a single 'Reserved' field, whereas later/more specific versions (LAP 1.50, HPS 1.30) identify the last 2 bytes as 'msgType'."
+        "reason": "This variant represents documentation that treats the final 4 bytes of the message as an opaque reserved block, common in earlier firmware versions or specific product lines before the msgType field was explicitly identified."
       }
     ],
-    "reasoning": "The extractions show the progression of the UBX-RXM-SPARTN definition. While all agree the message is 8 bytes long, later documentation (Extraction 1 and 5) reveals that the previously 'reserved' space at the end of the payload actually contains 'msgType'. Extraction 1 (from LAP 1.50) is the most complete as it also notes the message's deprecation in favor of UBX-RXM-COR."
+    "reasoning": "All extractions agree on the class ID (0x02), message ID (0x33), and total payload length (8 bytes). They also agree on the first three fields (version, flags, subType). The discrepancy lies in the interpretation of the final 4 bytes. Extractions 1 and 3 provide a more granular mapping, identifying a 'msgType' field at offset 6, while extractions 2, 4, and 5 define those 4 bytes as a single reserved U4 field. Extraction 3 is the most complete as it includes the deprecation warning associated with newer firmware (LAP 1.50)."
   }
 }

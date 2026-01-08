@@ -1,0 +1,177 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-NAV-ORB",
+  "extraction_timestamp": "2026-01-08T02:50:14.615622+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 126,
+    "end": 127
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-ORB\nExpected IDs: class_id=0x01, message_id=0x34\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-ORB\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-ORB\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x34\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"GNSS orbit database info. Status of the GNSS orbit database knowledge.\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + numSv*6\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 1,\n      \"description\": \"Message version (0x01 for this version)\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"numSv\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of SVs in the database\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"reserved0\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"svs\",\n      \"data_type\": {\n        \"array_of\": {\n          \"type\": \"struct\",\n          \"fields\": [\n            {\n              \"byte_offset\": 0,\n              \"name\": \"gnssId\",\n              \"data_type\": \"U1\",\n              \"description\": \"GNSS ID\"\n            },\n            {\n              \"byte_offset\": 1,\n              \"name\": \"svId\",\n              \"data_type\": \"U1\",\n              \"description\": \"Satellite ID\"\n            },\n            {\n              \"byte_offset\": 2,\n              \"name\": \"svFlag\",\n              \"data_type\": \"X1\",\n              \"description\": \"Information Flags\",\n              \"sub_fields\": [\n                {\n                  \"name\": \"health\",\n                  \"data_type\": \"U:2\",\n                  \"bit_offset\": 0,\n                  \"description\": \"SV health: 0 = unknown, 1 = healthy, 2 = not healty\"\n                },\n                {\n                  \"name\": \"visibility\",\n                  \"data_type\": \"U:2\",\n                  \"bit_offset\": 2,\n                  \"description\": \"SV health: 0 = unknown, 1 = below horizon, 2 = above horizon, 3 = above elevation mask\"\n                }\n              ]\n            },\n            {\n              \"byte_offset\": 3,\n              \"name\": \"eph\",\n              \"data_type\": \"X1\",\n              \"description\": \"Ephemeris data\",\n              \"sub_fields\": [\n                {\n                  \"name\": \"ephUsability\",\n                  \"data_type\": \"U:5\",\n                  \"bit_offset\": 0,\n                  \"description\": \"How long the receiver will be able to use the stored ephemeris data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 450 minutes, 30 > n > 0 = The usability period is between (n-1)*15 and n*15 minutes, 0 = Ephemeris can no longer be used\"\n                },\n                {\n                  \"name\": \"ephSource\",\n                  \"data_type\": \"U:3\",\n                  \"bit_offset\": 5,\n                  \"description\": \"0 = not available, 1 = GNSS transmission, 2 = external aiding, 3-7 = other\"\n                }\n              ]\n            },\n            {\n              \"byte_offset\": 4,\n              \"name\": \"alm\",\n              \"data_type\": \"X1\",\n              \"description\": \"Almanac data\",\n              \"sub_fields\": [\n                {\n                  \"name\": \"almUsability\",\n                  \"data_type\": \"U:5\",\n                  \"bit_offset\": 0,\n                  \"description\": \"How long the receiver will be able to use the stored almanac data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 30 days, 30 > n > 0 = The usability period is between n-1 and n days, 0 = Almanac can no longer be used\"\n                },\n                {\n                  \"name\": \"almSource\",\n                  \"data_type\": \"U:3\",\n                  \"bit_offset\": 5,\n                  \"description\": \"0 = not available, 1 = GNSS transmission, 2 = external aiding, 3-7 = other\"\n                }\n              ]\n            },\n            {\n              \"byte_offset\": 5,\n              \"name\": \"otherOrb\",\n              \"data_type\": \"X1\",\n              \"description\": \"Other orbit data available\",\n              \"sub_fields\": [\n                {\n                  \"name\": \"anoAopUsability\",\n                  \"data_type\": \"U:5\",\n                  \"bit_offset\": 0,\n                  \"description\": \"How long the receiver will be able to use the orbit data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 30 days, 30 > n > 0 = The usability period is between n-1 and n days, 0 = Data can no longer be used\"\n                },\n                {\n                  \"name\": \"type\",\n                  \"data_type\": \"U:3\",\n                  \"bit_offset\": 5,\n                  \"description\": \"Type of orbit data: 0 = No orbit data available, 1 = AssistNow Offline data, 2 = AssistNow Autonomous data, 3-7 = Other orbit data\"\n                }\n              ]\n            }\n          ]\n        },\n        \"count_field\": \"numSv\"\n      }\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-ORB",
+    "class_id": "0x01",
+    "message_id": "0x34",
+    "message_type": "periodic_polled",
+    "description": "GNSS orbit database info. Status of the GNSS orbit database knowledge.",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numSv*6"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 1,
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "numSv",
+          "data_type": "U1",
+          "description": "Number of SVs in the database"
+        },
+        {
+          "byte_offset": 6,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "name": "svs",
+          "data_type": {
+            "array_of": {
+              "type": "struct",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "gnssId",
+                  "data_type": "U1",
+                  "description": "GNSS ID"
+                },
+                {
+                  "byte_offset": 1,
+                  "name": "svId",
+                  "data_type": "U1",
+                  "description": "Satellite ID"
+                },
+                {
+                  "byte_offset": 2,
+                  "name": "svFlag",
+                  "data_type": "X1",
+                  "description": "Information Flags",
+                  "sub_fields": [
+                    {
+                      "name": "health",
+                      "data_type": "U:2",
+                      "bit_offset": 0,
+                      "description": "SV health: 0 = unknown, 1 = healthy, 2 = not healty"
+                    },
+                    {
+                      "name": "visibility",
+                      "data_type": "U:2",
+                      "bit_offset": 2,
+                      "description": "SV health: 0 = unknown, 1 = below horizon, 2 = above horizon, 3 = above elevation mask"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 3,
+                  "name": "eph",
+                  "data_type": "X1",
+                  "description": "Ephemeris data",
+                  "sub_fields": [
+                    {
+                      "name": "ephUsability",
+                      "data_type": "U:5",
+                      "bit_offset": 0,
+                      "description": "How long the receiver will be able to use the stored ephemeris data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 450 minutes, 30 > n > 0 = The usability period is between (n-1)*15 and n*15 minutes, 0 = Ephemeris can no longer be used"
+                    },
+                    {
+                      "name": "ephSource",
+                      "data_type": "U:3",
+                      "bit_offset": 5,
+                      "description": "0 = not available, 1 = GNSS transmission, 2 = external aiding, 3-7 = other"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 4,
+                  "name": "alm",
+                  "data_type": "X1",
+                  "description": "Almanac data",
+                  "sub_fields": [
+                    {
+                      "name": "almUsability",
+                      "data_type": "U:5",
+                      "bit_offset": 0,
+                      "description": "How long the receiver will be able to use the stored almanac data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 30 days, 30 > n > 0 = The usability period is between n-1 and n days, 0 = Almanac can no longer be used"
+                    },
+                    {
+                      "name": "almSource",
+                      "data_type": "U:3",
+                      "bit_offset": 5,
+                      "description": "0 = not available, 1 = GNSS transmission, 2 = external aiding, 3-7 = other"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 5,
+                  "name": "otherOrb",
+                  "data_type": "X1",
+                  "description": "Other orbit data available",
+                  "sub_fields": [
+                    {
+                      "name": "anoAopUsability",
+                      "data_type": "U:5",
+                      "bit_offset": 0,
+                      "description": "How long the receiver will be able to use the orbit data from now on: 31 = The usability period is unknown, 30 = The usability period is more than 30 days, 30 > n > 0 = The usability period is between n-1 and n days, 0 = Data can no longer be used"
+                    },
+                    {
+                      "name": "type",
+                      "data_type": "U:3",
+                      "bit_offset": 5,
+                      "description": "Type of orbit data: 0 = No orbit data available, 1 = AssistNow Offline data, 2 = AssistNow Autonomous data, 3-7 = Other orbit data"
+                    }
+                  ]
+                }
+              ]
+            },
+            "count_field": "numSv"
+          }
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/wjuyscfennuz"
+}

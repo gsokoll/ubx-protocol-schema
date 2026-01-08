@@ -1,96 +1,83 @@
 {
   "message_name": "UBX-MON-GNSS",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-MON-GNSS",
+      "name": "UBX-MON-GNSS-V0",
       "class_id": "0x0a",
       "message_id": "0x28",
-      "description": "Information message major GNSS selection",
-      "message_type": "output",
-      "payload": {
-        "length": {
-          "fixed": 8
+      "payload_length": 8,
+      "fields": [
+        {
+          "byte_offset": 0,
+          "type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)"
         },
-        "fields": [
-          {
-            "name": "version",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Message version (0x00)"
-          },
-          {
-            "name": "supported",
-            "byte_offset": 1,
-            "data_type": "X1",
-            "description": "Mask of supported major GNSS",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "GPSSup",
-                  "bit_start": 0,
-                  "bit_end": 0
-                },
-                {
-                  "name": "GlonassSup",
-                  "bit_start": 1,
-                  "bit_end": 1
-                },
-                {
-                  "name": "BeidouSup",
-                  "bit_start": 2,
-                  "bit_end": 2
-                },
-                {
-                  "name": "GalileoSup",
-                  "bit_start": 3,
-                  "bit_end": 3
-                }
-              ]
-            }
-          },
-          {
-            "name": "defaultGnss",
-            "byte_offset": 2,
-            "data_type": "X1",
-            "description": "Mask of default major GNSS selection"
-          },
-          {
-            "name": "enabled",
-            "byte_offset": 3,
-            "data_type": "X1",
-            "description": "Mask of current major GNSS selection enabled"
-          },
-          {
-            "name": "simultaneous",
-            "byte_offset": 4,
-            "data_type": "U1",
-            "description": "Maximum number of concurrent major GNSS"
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 5,
-            "data_type": {
-              "array_of": "U1",
-              "count": 3
-            },
-            "description": "Reserved",
-            "reserved": true
-          }
-        ]
-      }
+        {
+          "byte_offset": 1,
+          "type": "X1",
+          "name": "supported",
+          "description": "A bit mask showing the major GNSS that can be supported by this receiver",
+          "bits": [
+            "GPSSup",
+            "GlonassSup",
+            "BeidouSup",
+            "GalileoSup"
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "type": "X1",
+          "name": "defaultGnss",
+          "description": "A bit mask showing the default major GNSS selection",
+          "bits": [
+            "GPSDef",
+            "GlonassDef",
+            "BeidouDef",
+            "GalileoDef"
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "type": "X1",
+          "name": "enabled",
+          "description": "A bit mask showing the current major GNSS selection enabled for this receiver",
+          "bits": [
+            "GPSEna",
+            "GlonassEna",
+            "BeidouEna",
+            "GalileoEna"
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "type": "U1",
+          "name": "simultaneous",
+          "description": "Maximum number of concurrent major GNSS that can be supported by this receiver"
+        },
+        {
+          "byte_offset": 5,
+          "type": "U1[3]",
+          "name": "reserved0",
+          "description": "Reserved"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missed 'simultaneous' field at byte offset 4",
+          "Incorrectly merged byte 4 into a U4 reserved field"
+        ]
       },
       {
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -98,51 +85,17 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missing 'simultaneous' field at offset 4",
-          "Field 'reserved0' incorrectly identified as U4 starting at offset 4 (should be U1[3] at offset 5)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missing 'simultaneous' field at offset 4",
-          "Field 'reserved0' incorrectly identified as U4 starting at offset 4 (should be U1[3] at offset 5)"
-        ]
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missing 'simultaneous' field at offset 4",
-          "Field 'reserved0' incorrectly identified as U4 starting at offset 4 (should be U1[3] at offset 5)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -152,7 +105,35 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missed 'simultaneous' field at byte offset 4",
+          "Incorrectly merged byte 4 into a U4 reserved field"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -162,7 +143,25 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Missed 'simultaneous' field at byte offset 4",
+          "Incorrectly merged byte 4 into a U4 reserved field"
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -174,92 +173,21 @@
         ],
         "structure": {
           "name": "UBX-MON-GNSS",
-          "description": "Information message with supported GNSS and signal plans",
-          "payload": {
-            "length": {
-              "variable": {
-                "base": 4,
-                "formula": "4 + numPlans*28"
-              }
-            },
-            "fields": [
-              {
-                "name": "version",
-                "byte_offset": 0,
-                "data_type": "U1",
-                "description": "Message version (0x01)"
-              },
-              {
-                "name": "numPlans",
-                "byte_offset": 1,
-                "data_type": "U1",
-                "description": "Number of signal plans available"
-              },
-              {
-                "name": "activePlanInfo",
-                "byte_offset": 2,
-                "data_type": "X2",
-                "description": "Information about currently active signal plan"
-              }
-            ],
-            "repeated_groups": [
-              {
-                "name": "signalPlans",
-                "count_field": "numPlans",
-                "group_size_bytes": 28,
-                "fields": [
-                  {
-                    "name": "id",
-                    "data_type": "U1"
-                  },
-                  {
-                    "name": "name",
-                    "data_type": "CH[5]"
-                  },
-                  {
-                    "name": "gpsSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "galSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "bdsSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "gloSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "sbasSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "qzssSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "navicSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "lbandSup",
-                    "data_type": "X2"
-                  },
-                  {
-                    "name": "reserved0",
-                    "data_type": "U1[6]"
-                  }
-                ]
-              }
-            ]
-          }
+          "version": "0x01",
+          "description": "Signal plan information",
+          "payload_length": "variable (4 + numPlans*28)",
+          "fields": [
+            "version",
+            "numPlans",
+            "activePlanInfo"
+          ],
+          "repeated_groups": [
+            "signalPlans"
+          ]
         },
-        "reason": "The X20 platform uses a completely different, variable-length structure (Version 0x01) for UBX-MON-GNSS to support detailed signal plans, distinct from the fixed-length bitmask structure used by M8/M9/M10/F9/F10 receivers (Version 0x00)."
+        "reason": "This represents the 'X20' or 'Next Generation' version of the message which provides detailed signal and constellation plans rather than a simple bitmask."
       }
     ],
-    "reasoning": "The UBX-MON-GNSS message has two distinct structures. The primary canonical structure (Version 0x00) is a fixed 8-byte message used by u-blox M8, M9, M10, F9, and F10 generations. This structure consists of version, supported/default/enabled bitmasks (X1), a 'simultaneous' count (U1), and 3 reserved bytes. The second legitimate structure is specific to the X20 platform (Version 0x01), which is variable length and describes signal plans. Extractions 6, 7, and 8 were marked as errors because they present the fixed-length Version 0x00 payload but miss the 'simultaneous' field at offset 4, effectively merging it into an incorrect 4-byte reserved block. This contradicts the standard definition found in all other compatible receiver manuals (including other F9 variants like Sources 4, 5, 9, 10, 15)."
+    "reasoning": "The UBX-MON-GNSS message has two distinct formats depending on the hardware generation. The legacy 8-byte format (v0) is standard for M8, M9, M10, and F9 series. In this format, byte 4 is the 'simultaneous' count field. Extractions 2, 12, and 16 incorrectly interpreted this byte as part of a 4-byte reserved block. Extraction 3 correctly identifies the major protocol revision (v1) used in newer 'X20' series hardware, which uses a variable-length signal plan structure."
   }
 }

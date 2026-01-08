@@ -18,7 +18,7 @@
             "byte_offset": 0,
             "data_type": "I4",
             "description": "WGS84 ECEF X coordinate or latitude, depending on flags below",
-            "unit": "cm or deg",
+            "unit": "cm_ or_ deg",
             "scale": {
               "raw": "1e-7",
               "multiplier": 1e-07
@@ -29,7 +29,7 @@
             "byte_offset": 4,
             "data_type": "I4",
             "description": "WGS84 ECEF Y coordinate or longitude, depending on flags below",
-            "unit": "cm or deg",
+            "unit": "cm_ or_ deg",
             "scale": {
               "raw": "1e-7",
               "multiplier": 1e-07
@@ -57,10 +57,10 @@
             "bitfield": {
               "bits": [
                 {
-                  "name": "f1",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "frequency on extint 1 (default extint 0)"
+                  "name": "fEdge",
+                  "bit_start": 6,
+                  "bit_end": 6,
+                  "description": "use falling edge (default rising)"
                 },
                 {
                   "name": "tm1",
@@ -69,10 +69,10 @@
                   "description": "time mark on extint 1 (default extint 0)"
                 },
                 {
-                  "name": "fEdge",
-                  "bit_start": 6,
-                  "bit_end": 6,
-                  "description": "use falling edge (default rising)"
+                  "name": "f1",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "frequency on extint 1 (default extint 0)"
                 }
               ]
             }
@@ -82,17 +82,17 @@
             "byte_offset": 18,
             "data_type": "U2",
             "description": "Actual week number or yearSince2000/Month (YYMM), depending on flags below",
-            "unit": "week or yearMonth"
+            "unit": "week or_ yearMonth"
           },
           {
             "name": "towOrTime",
             "byte_offset": 20,
             "data_type": "U4",
             "description": "Actual time of week or DayOfMonth/Hour/Minute/Second (DDHHMMSS), depending on flags below",
-            "unit": "ms or DDHHMMSS"
+            "unit": "ms_ or_ dayHourMinuteSec"
           },
           {
-            "name": "towNs",
+            "name": "towns",
             "byte_offset": 24,
             "data_type": "I4",
             "description": "Fractional part of time of week",
@@ -117,7 +117,7 @@
             "byte_offset": 36,
             "data_type": "I4",
             "description": "Clock drift or frequency, depending on flags below",
-            "unit": "ns/s or Hz",
+            "unit": "ns/s_ or_ Hz",
             "scale": {
               "raw": "1e-2",
               "multiplier": 0.01
@@ -128,13 +128,13 @@
             "byte_offset": 40,
             "data_type": "U4",
             "description": "Accuracy of clock drift or frequency, depending on flags below",
-            "unit": "ns/s or ppb"
+            "unit": "ns/s_ or_ ppb"
           },
           {
             "name": "flags",
             "byte_offset": 44,
             "data_type": "X4",
-            "description": "Bitmask",
+            "description": "Bitmask with the following flags",
             "bitfield": {
               "bits": [
                 {
@@ -153,7 +153,7 @@
                   "name": "clockD",
                   "bit_start": 2,
                   "bit_end": 2,
-                  "description": "Clock drift data contains valid clock drift"
+                  "description": "Clock drift data contains valid clock drift, must not be set together with clockF"
                 },
                 {
                   "name": "tp",
@@ -165,7 +165,7 @@
                   "name": "clockF",
                   "bit_start": 4,
                   "bit_end": 4,
-                  "description": "Clock drift data contains valid frequency"
+                  "description": "Clock drift data contains valid frequency, must not be set together with clockD"
                 },
                 {
                   "name": "lla",
@@ -183,7 +183,7 @@
                   "name": "prevTm",
                   "bit_start": 7,
                   "bit_end": 7,
-                  "description": "Use time mark received before AID-INI message"
+                  "description": "Use time mark received before AID-INI message (default uses mark received after message)"
                 },
                 {
                   "name": "utc",
@@ -206,6 +206,6 @@
       }
     ],
     "valid_variations": [],
-    "reasoning": "The extraction is correct and consistent with the u-blox 8/M8 Protocol Specification for the legacy UBX-AID-INI message. All byte offsets, data types (including the X2/X4 bitfields), and flag definitions match the documentation. The overloaded fields (e.g., ecefXOrLat) are correctly identified with descriptions covering both use cases, and scaling factors (1e-7 for Lat/Lon, 1e-2 for Frequency) are appropriately noted for the scaled variants. Minor string artifacts (underscores in unit fields) were cleaned in the canonical structure."
+    "reasoning": "The extraction correctly captures the 48-byte payload structure of the UBX-AID-INI message as defined in the u-blox M8 protocol specification. The field offsets, data types, and bitfield definitions for tmCfg and flags accurately reflect the multi-functional nature of the message (supporting both ECEF and LLA coordinates, as well as GPS week/TOW and UTC formats)."
   }
 }

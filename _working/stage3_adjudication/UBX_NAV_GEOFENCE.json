@@ -1,76 +1,67 @@
 {
   "message_name": "UBX-NAV-GEOFENCE",
-  "num_extractions": 10,
+  "num_extractions": 12,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-NAV-GEOFENCE",
-      "class_id": "0x01",
+      "message_name": "UBX-NAV-GEOFENCE",
+      "message_class": "0x01",
       "message_id": "0x39",
-      "description": "Geofencing status. This message outputs the evaluated states of all configured geofences.",
-      "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "variable": {
-            "base": 8,
-            "formula": "8 + numFences * 2",
-            "count_field": "numFences",
-            "min": 8
-          }
+      "description": "This message outputs the evaluated states of all configured geofences for the current epoch's position.",
+      "payload_length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numFences * 2"
+        }
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch."
         },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "U1",
+          "name": "status",
+          "description": "Geofencing status: 0 - Geofencing not available or not reliable, 1 - Geofencing active"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "U1",
+          "name": "numFences",
+          "description": "Number of geofences"
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "U1",
+          "name": "combState",
+          "description": "Combined (logical OR) state of all geofences: 0 - Unknown, 1 - Inside, 2 - Outside"
+        }
+      ],
+      "repeated_group": {
+        "name": "geofence_states",
+        "count_field": "numFences",
+        "group_size_bytes": 2,
         "fields": [
           {
-            "name": "iTOW",
             "byte_offset": 0,
-            "data_type": "U4",
-            "description": "GPS time of week of the navigation epoch.",
-            "unit": "ms"
+            "data_type": "U1",
+            "name": "state",
+            "description": "Geofence state: 0 - Unknown, 1 - Inside, 2 - Outside"
           },
           {
-            "name": "version",
-            "byte_offset": 4,
+            "byte_offset": 1,
             "data_type": "U1",
-            "description": "Message version (0x00 for this version)"
-          },
-          {
-            "name": "status",
-            "byte_offset": 5,
-            "data_type": "U1",
-            "description": "Geofencing status: 0 - Geofencing not available/reliable, 1 - Geofencing active"
-          },
-          {
-            "name": "numFences",
-            "byte_offset": 6,
-            "data_type": "U1",
-            "description": "Number of geofences"
-          },
-          {
-            "name": "combState",
-            "byte_offset": 7,
-            "data_type": "U1",
-            "description": "Combined (logical OR) state of all geofences: 0 - Unknown, 1 - Inside, 2 - Outside"
-          }
-        ],
-        "repeated_groups": [
-          {
-            "name": "fences",
-            "repetition_type": "count_field",
-            "count_field": "numFences",
-            "group_size_bytes": 2,
-            "base_offset": 8,
-            "fields": [
-              {
-                "name": "state",
-                "byte_offset": 0,
-                "data_type": "U1",
-                "description": "Geofence state: 0 - Unknown, 1 - Inside, 2 - Outside"
-              },
-              {
-                "name": "id",
-                "byte_offset": 1,
-                "data_type": "U1",
-                "description": "Geofence ID"
-              }
-            ]
+            "name": "id",
+            "description": "Geofence ID (0 = not available)"
           }
         ]
       }
@@ -78,27 +69,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -108,12 +79,32 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
@@ -123,12 +114,35 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "The message structure is consistent across all provided generations (M8 through M10). All extractions correctly identified the fixed 8-byte header and the variable length repeated group controlled by 'numFences'. Minor differences exist in the data type notation for state fields (older manuals use 'U1' for unsigned integer, newer manuals often use 'X1' for bitfield/byte), but the binary structure and enumerated values (0, 1, 2) remain identical. 'X1' and 'U1' are functionally compatible for these 1-byte enumerated fields."
+    "valid_variations": [
+      {
+        "sources": [
+          "F9-HPS120_Interfacedescription_UBX-19056845",
+          "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395"
+        ],
+        "structure": {
+          "status_data_type": "X1",
+          "combState_data_type": "X1",
+          "state_data_type": "X1"
+        },
+        "reason": "Newer u-blox documentation often uses X1 (bitfield) for fields that represent enumerations or flag sets, whereas older or more general documentation uses U1."
+      }
+    ],
+    "reasoning": "The UBX-NAV-GEOFENCE message is highly consistent across all generations from u-blox 8 through M10. Every extraction correctly identified the 8-byte base payload and the 2-byte repeating structure indexed by 'numFences'. Differences between the extractions are limited to nomenclature (e.g., U1 vs X1 data types) and specific schema formatting of repeated groups, rather than actual protocol deviations."
   }
 }

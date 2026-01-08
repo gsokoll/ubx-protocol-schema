@@ -1,8 +1,8 @@
 {
   "message_name": "UBX-CFG-GNSS",
   "protocol_version": 0,
-  "status": "unanimous",
-  "agreement_ratio": 1.0,
+  "status": "majority",
+  "agreement_ratio": 0.8888888888888888,
   "winning_structure": {
     "name": "UBX-CFG-GNSS",
     "class_id": "0x06",
@@ -45,11 +45,11 @@
       ],
       "repeated_groups": [
         {
-          "name": "gnssConfigBlock",
+          "name": "configBlocks",
           "repetition_type": "count_field",
           "count_field": "numConfigBlocks",
-          "base_offset": 4,
           "group_size_bytes": 8,
+          "base_offset": 4,
           "fields": [
             {
               "name": "gnssId",
@@ -93,7 +93,7 @@
                     "name": "sigCfgMask",
                     "bit_start": 16,
                     "bit_end": 23,
-                    "description": "Signal configuration mask\nWhen gnssId is 0 (GPS):\n  0x01 = GPS L1C/A\n  0x10 = GPS L2C\n  0x20 = GPS L5\nWhen gnssId is 1 (SBAS):\n  0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo):\n  0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n  0x10 = Galileo E5a\n  0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou):\n  0x01 = BeiDou B1I\n  0x10 = BeiDou B2I\n  0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS):\n  0x01 = QZSS L1C/A\n  0x04 = QZSS L1S\n  0x10 = QZSS L2C\n  0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS):\n  0x01 = GLONASS L1\n  0x10 = GLONASS L2"
+                    "description": "Signal configuration mask\nWhen gnssId is 0 (GPS)\n\u2022 0x01 = GPS L1C/A\n\u2022 0x10 = GPS L2C\n\u2022 0x20 = GPS L5\nWhen gnssId is 1 (SBAS)\n\u2022 0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo)\n\u2022 0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n\u2022 0x10 = Galileo E5a\n\u2022 0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou)\n\u2022 0x01 = BeiDou B1I\n\u2022 0x10 = BeiDou B2I\n\u2022 0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS)\n\u2022 0x01 = QZSS L1C/A\n\u2022 0x04 = QZSS L1S\n\u2022 0x10 = QZSS L2C\n\u2022 0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS)\n\u2022 0x01 = GLONASS L1\n\u2022 0x10 = GLONASS L2"
                   }
                 ]
               }
@@ -105,17 +105,435 @@
   },
   "winning_fingerprint": "f4149abe77688f6f",
   "agreeing_sources": [
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
     "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
     "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
-  "disagreeing_sources": [],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598"
+  ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "name": "UBX-CFG-GNSS",
+        "class_id": "0x06",
+        "message_id": "0x3e",
+        "description": "GNSS system configuration",
+        "message_type": "get_set",
+        "payload_length": {
+          "variable": {
+            "base": 4,
+            "formula": "4 + numConfigBlocks * 8"
+          }
+        },
+        "payload_fields": [
+          {
+            "byte_offset": 0,
+            "name": "msgVer",
+            "data_type": "U1",
+            "description": "Message version (0x00 for this version)",
+            "fixed_value": 0
+          },
+          {
+            "byte_offset": 1,
+            "name": "numTrkChHw",
+            "data_type": "U1",
+            "description": "Number of tracking channels available in hardware (read only)"
+          },
+          {
+            "byte_offset": 2,
+            "name": "numTrkChUse",
+            "data_type": "U1",
+            "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
+          },
+          {
+            "byte_offset": 3,
+            "name": "numConfigBlocks",
+            "data_type": "U1",
+            "description": "Number of configuration blocks following"
+          },
+          {
+            "byte_offset": 4,
+            "name": "configBlocks",
+            "data_type": {
+              "array_of": {
+                "byte_offset": 0,
+                "name": "configBlock",
+                "data_type": "block",
+                "description": "GNSS configuration block",
+                "payload_fields": [
+                  {
+                    "byte_offset": 0,
+                    "name": "gnssId",
+                    "data_type": "U1",
+                    "description": "System identifier (see Satellite Numbering)"
+                  },
+                  {
+                    "byte_offset": 1,
+                    "name": "resTrkCh",
+                    "data_type": "U1",
+                    "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
+                  },
+                  {
+                    "byte_offset": 2,
+                    "name": "maxTrkCh",
+                    "data_type": "U1",
+                    "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
+                  },
+                  {
+                    "byte_offset": 3,
+                    "name": "reserved0",
+                    "data_type": "U1",
+                    "description": "Reserved",
+                    "reserved": true
+                  },
+                  {
+                    "byte_offset": 4,
+                    "name": "flags",
+                    "data_type": "X4",
+                    "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
+                    "bitfield_fields": [
+                      {
+                        "name": "enable",
+                        "position": 0,
+                        "length": 1,
+                        "description": "Enable this system"
+                      },
+                      {
+                        "name": "sigCfgMask",
+                        "position": 16,
+                        "length": 8,
+                        "description": "Signal configuration mask. When gnssId is 0 (GPS): 0x01 = GPS L1C/A, 0x10 = GPS L2C, 0x20 = GPS L5. When gnssId is 1 (SBAS): 0x01 = SBAS L1C/A. When gnssId is 2 (Galileo): 0x01 = Galileo E1, 0x10 = Galileo E5a, 0x20 = Galileo E5b. When gnssId is 3 (BeiDou): 0x01 = BeiDou B1I, 0x10 = BeiDou B2I, 0x80 = BeiDou B2A. When gnssId is 4 (IMES): 0x01 = IMES L1. When gnssId is 5 (QZSS): 0x01 = QZSS L1C/A, 0x04 = QZSS L1S, 0x10 = QZSS L2C, 0x20 = QZSS L5. When gnssId is 6 (GLONASS): 0x01 = GLONASS L1, 0x10 = GLONASS L2."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "count_field": "numConfigBlocks"
+            }
+          }
+        ]
+      },
+      "fingerprint": "b59c26e0b3815083"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-CFG-GNSS",
+        "class_id": "0x06",
+        "message_id": "0x3e",
+        "description": "GNSS system configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numConfigBlocks * 8",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "msgVer",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numTrkChHw",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of tracking channels available in hardware (read only)"
+            },
+            {
+              "name": "numTrkChUse",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
+            },
+            {
+              "name": "numConfigBlocks",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Number of configuration blocks following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "configBlocks",
+              "repetition_type": "count_field",
+              "count_field": "numConfigBlocks",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "System identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "resTrkCh",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
+                },
+                {
+                  "name": "maxTrkCh",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 4,
+                  "data_type": "X4",
+                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "enable",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Enable this system"
+                      },
+                      {
+                        "name": "sigCfgMask",
+                        "bit_start": 16,
+                        "bit_end": 23,
+                        "description": "Signal configuration mask\nWhen gnssId is 0 (GPS)\n\u2022 0x01 = GPS L1C/A\n\u2022 0x10 = GPS L2C\n\u2022 0x20 = GPS L5\nWhen gnssId is 1 (SBAS)\n\u2022 0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo)\n\u2022 0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n\u2022 0x10 = Galileo E5a\n\u2022 0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou)\n\u2022 0x01 = BeiDou B1I\n\u2022 0x10 = BeiDou B2I\n\u2022 0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS)\n\u2022 0x01 = QZSS L1C/A\n\u2022 0x04 = QZSS L1S\n\u2022 0x10 = QZSS L2C\n\u2022 0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS)\n\u2022 0x01 = GLONASS L1\n\u2022 0x10 = GLONASS L2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f4149abe77688f6f"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-CFG-GNSS",
+        "class_id": "0x06",
+        "message_id": "0x3e",
+        "description": "GNSS system configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numConfigBlocks * 8",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "msgVer",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numTrkChHw",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of tracking channels available in hardware (read only)"
+            },
+            {
+              "name": "numTrkChUse",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
+            },
+            {
+              "name": "numConfigBlocks",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Number of configuration blocks following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "configBlock",
+              "repetition_type": "count_field",
+              "count_field": "numConfigBlocks",
+              "base_offset": 4,
+              "group_size_bytes": 8,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "System identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "resTrkCh",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
+                },
+                {
+                  "name": "maxTrkCh",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 4,
+                  "data_type": "X4",
+                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "enable",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Enable this system"
+                      },
+                      {
+                        "name": "sigCfgMask",
+                        "bit_start": 16,
+                        "bit_end": 23,
+                        "description": "Signal configuration mask. When gnssId is 0 (GPS): 0x01 = GPS L1C/A. When gnssId is 1 (SBAS): 0x01 = SBAS L1C/A. When gnssId is 2 (Galileo): 0x01 = Galileo E1 (not supported for protocol versions less than 18.00), 0x20 = Galileo E5b. When gnssId is 3 (BeiDou): 0x01 = BeiDou B1I, 0x10 = BeiDou B2I. When gnssId is 4 (IMES): 0x01 = IMES L1. When gnssId is 5 (QZSS): 0x01 = QZSS L1C/A, 0x04 = QZSS L1S, 0x10 = QZSS L2C. When gnssId is 6 (GLONASS): 0x01 = GLONASS L1, 0x10 = GLONASS L2."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f4149abe77688f6f"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "structure": {
+        "name": "UBX-CFG-GNSS",
+        "class_id": "0x06",
+        "message_id": "0x3e",
+        "description": "GNSS system configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numConfigBlocks * 8",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "msgVer",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numTrkChHw",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of tracking channels available in hardware (read only)"
+            },
+            {
+              "name": "numTrkChUse",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
+            },
+            {
+              "name": "numConfigBlocks",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Number of configuration blocks following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "configBlock",
+              "repetition_type": "count_field",
+              "count_field": "numConfigBlocks",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "System identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "resTrkCh",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
+                },
+                {
+                  "name": "maxTrkCh",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 4,
+                  "data_type": "X4",
+                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "enable",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Enable this system"
+                      },
+                      {
+                        "name": "sigCfgMask",
+                        "bit_start": 16,
+                        "bit_end": 23,
+                        "description": "Signal configuration mask\nWhen gnssId is 0 (GPS)\n\u2022 0x01 = GPS L1C/A\n\u2022 0x10 = GPS L2C\n\u2022 0x20 = GPS L5\nWhen gnssId is 1 (SBAS)\n\u2022 0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo)\n\u2022 0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n\u2022 0x10 = Galileo E5a\n\u2022 0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou)\n\u2022 0x01 = BeiDou B1I\n\u2022 0x10 = BeiDou B2I\n\u2022 0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS)\n\u2022 0x01 = QZSS L1C/A\n\u2022 0x04 = QZSS L1S\n\u2022 0x10 = QZSS L2C\n\u2022 0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS)\n\u2022 0x01 = GLONASS L1\n\u2022 0x10 = GLONASS L2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f4149abe77688f6f"
+    },
     {
       "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
       "structure": {
@@ -312,6 +730,110 @@
                         "bit_start": 16,
                         "bit_end": 23,
                         "description": "Signal configuration mask (values depend on gnssId)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f4149abe77688f6f"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-GNSS",
+        "class_id": "0x06",
+        "message_id": "0x3E",
+        "description": "GNSS system configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numConfigBlocks * 8",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "msgVer",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numTrkChHw",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of tracking channels available in hardware (read only)"
+            },
+            {
+              "name": "numTrkChUse",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "(Read only in protocol versions greater than 23) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
+            },
+            {
+              "name": "numConfigBlocks",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Number of configuration blocks following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "configBlock",
+              "repetition_type": "count_field",
+              "count_field": "numConfigBlocks",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "System identifier (see Satellite Numbering )"
+                },
+                {
+                  "name": "resTrkCh",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "(Read only in protocol versions greater than 23) Number of reserved (minimum) tracking channels for this system."
+                },
+                {
+                  "name": "maxTrkCh",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "(Read only in protocol versions greater than 23) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 4,
+                  "data_type": "X4",
+                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "enable",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Enable this system"
+                      },
+                      {
+                        "name": "sigCfgMask",
+                        "bit_start": 16,
+                        "bit_end": 23,
+                        "description": "Signal configuration mask. When gnssId is 0 (GPS) 0x01 = GPS L1C/A 0x10 = GPS L2C 0x20 = GPS L5. When gnssId is 1 (SBAS) 0x01 = SBAS L1C/A. When gnssId is 2 (Galileo) 0x01 = Galileo E1 (not supported in protocol versions less than 18) 0x10 = Galileo E5a 0x20 = Galileo E5b. When gnssId is 3 (BeiDou) 0x01 = BeiDou B1I 0x10 = BeiDou B2I 0x80 = BeiDou B2A. When gnssId is 5 (QZSS) 0x01 = QZSS L1C/A 0x04 = QZSS L1S 0x10 = QZSS L2C 0x20 = QZSS L5. When gnssId is 6 (GLONASS) 0x01 = GLONASS L1 0x10 = GLONASS L2"
                       }
                     ]
                   }
@@ -546,422 +1068,6 @@
                         "bit_end": 31,
                         "description": "Reserved",
                         "reserved": true
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f4149abe77688f6f"
-    },
-    {
-      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-      "structure": {
-        "name": "UBX-CFG-GNSS",
-        "class_id": "0x06",
-        "message_id": "0x3e",
-        "description": "GNSS system configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + numConfigBlocks * 8",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "msgVer",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numTrkChHw",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Number of tracking channels available in hardware (read only)"
-            },
-            {
-              "name": "numTrkChUse",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
-            },
-            {
-              "name": "numConfigBlocks",
-              "byte_offset": 3,
-              "data_type": "U1",
-              "description": "Number of configuration blocks following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "configBlock",
-              "repetition_type": "count_field",
-              "count_field": "numConfigBlocks",
-              "base_offset": 4,
-              "group_size_bytes": 8,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "System identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "resTrkCh",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
-                },
-                {
-                  "name": "maxTrkCh",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "flags",
-                  "byte_offset": 4,
-                  "data_type": "X4",
-                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "enable",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Enable this system"
-                      },
-                      {
-                        "name": "sigCfgMask",
-                        "bit_start": 16,
-                        "bit_end": 23,
-                        "description": "Signal configuration mask. When gnssId is 0 (GPS): 0x01 = GPS L1C/A. When gnssId is 1 (SBAS): 0x01 = SBAS L1C/A. When gnssId is 2 (Galileo): 0x01 = Galileo E1 (not supported for protocol versions less than 18.00), 0x20 = Galileo E5b. When gnssId is 3 (BeiDou): 0x01 = BeiDou B1I, 0x10 = BeiDou B2I. When gnssId is 4 (IMES): 0x01 = IMES L1. When gnssId is 5 (QZSS): 0x01 = QZSS L1C/A, 0x04 = QZSS L1S, 0x10 = QZSS L2C. When gnssId is 6 (GLONASS): 0x01 = GLONASS L1, 0x10 = GLONASS L2."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f4149abe77688f6f"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-      "structure": {
-        "name": "UBX-CFG-GNSS",
-        "class_id": "0x06",
-        "message_id": "0x3e",
-        "description": "GNSS system configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + numConfigBlocks * 8",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "msgVer",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numTrkChHw",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Number of tracking channels available in hardware (read only)"
-            },
-            {
-              "name": "numTrkChUse",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
-            },
-            {
-              "name": "numConfigBlocks",
-              "byte_offset": 3,
-              "data_type": "U1",
-              "description": "Number of configuration blocks following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "configBlock",
-              "repetition_type": "count_field",
-              "count_field": "numConfigBlocks",
-              "group_size_bytes": 8,
-              "base_offset": 4,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "System identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "resTrkCh",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
-                },
-                {
-                  "name": "maxTrkCh",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "flags",
-                  "byte_offset": 4,
-                  "data_type": "X4",
-                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "enable",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Enable this system"
-                      },
-                      {
-                        "name": "sigCfgMask",
-                        "bit_start": 16,
-                        "bit_end": 23,
-                        "description": "Signal configuration mask\nWhen gnssId is 0 (GPS)\n\u2022 0x01 = GPS L1C/A\n\u2022 0x10 = GPS L2C\n\u2022 0x20 = GPS L5\nWhen gnssId is 1 (SBAS)\n\u2022 0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo)\n\u2022 0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n\u2022 0x10 = Galileo E5a\n\u2022 0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou)\n\u2022 0x01 = BeiDou B1I\n\u2022 0x10 = BeiDou B2I\n\u2022 0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS)\n\u2022 0x01 = QZSS L1C/A\n\u2022 0x04 = QZSS L1S\n\u2022 0x10 = QZSS L2C\n\u2022 0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS)\n\u2022 0x01 = GLONASS L1\n\u2022 0x10 = GLONASS L2"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f4149abe77688f6f"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-      "structure": {
-        "name": "UBX-CFG-GNSS",
-        "class_id": "0x06",
-        "message_id": "0x3e",
-        "description": "GNSS system configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + numConfigBlocks * 8",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "msgVer",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numTrkChHw",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Number of tracking channels available in hardware (read only)"
-            },
-            {
-              "name": "numTrkChUse",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "(Read only for protocol versions greater than 23.00) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
-            },
-            {
-              "name": "numConfigBlocks",
-              "byte_offset": 3,
-              "data_type": "U1",
-              "description": "Number of configuration blocks following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "configBlocks",
-              "repetition_type": "count_field",
-              "count_field": "numConfigBlocks",
-              "group_size_bytes": 8,
-              "base_offset": 4,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "System identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "resTrkCh",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Number of reserved (minimum) tracking channels for this system."
-                },
-                {
-                  "name": "maxTrkCh",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "(Read only for protocol versions greater than 23.00) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
-                },
-                {
-                  "name": "reserved0",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "flags",
-                  "byte_offset": 4,
-                  "data_type": "X4",
-                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "enable",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Enable this system"
-                      },
-                      {
-                        "name": "sigCfgMask",
-                        "bit_start": 16,
-                        "bit_end": 23,
-                        "description": "Signal configuration mask\nWhen gnssId is 0 (GPS)\n\u2022 0x01 = GPS L1C/A\n\u2022 0x10 = GPS L2C\n\u2022 0x20 = GPS L5\nWhen gnssId is 1 (SBAS)\n\u2022 0x01 = SBAS L1C/A\nWhen gnssId is 2 (Galileo)\n\u2022 0x01 = Galileo E1 (not supported for protocol versions less than 18.00)\n\u2022 0x10 = Galileo E5a\n\u2022 0x20 = Galileo E5b\nWhen gnssId is 3 (BeiDou)\n\u2022 0x01 = BeiDou B1I\n\u2022 0x10 = BeiDou B2I\n\u2022 0x80 = BeiDou B2A\nWhen gnssId is 5 (QZSS)\n\u2022 0x01 = QZSS L1C/A\n\u2022 0x04 = QZSS L1S\n\u2022 0x10 = QZSS L2C\n\u2022 0x20 = QZSS L5\nWhen gnssId is 6 (GLONASS)\n\u2022 0x01 = GLONASS L1\n\u2022 0x10 = GLONASS L2"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "f4149abe77688f6f"
-    },
-    {
-      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-      "structure": {
-        "name": "UBX-CFG-GNSS",
-        "class_id": "0x06",
-        "message_id": "0x3E",
-        "description": "GNSS system configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 4,
-              "formula": "4 + numConfigBlocks * 8",
-              "min": 4
-            }
-          },
-          "fields": [
-            {
-              "name": "msgVer",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "numTrkChHw",
-              "byte_offset": 1,
-              "data_type": "U1",
-              "description": "Number of tracking channels available in hardware (read only)"
-            },
-            {
-              "name": "numTrkChUse",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "(Read only in protocol versions greater than 23) Number of tracking channels to use. Must be > 0, <= numTrkChHw. If 0xFF, then number of tracking channels to use will be set to numTrkChHw."
-            },
-            {
-              "name": "numConfigBlocks",
-              "byte_offset": 3,
-              "data_type": "U1",
-              "description": "Number of configuration blocks following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "configBlock",
-              "repetition_type": "count_field",
-              "count_field": "numConfigBlocks",
-              "group_size_bytes": 8,
-              "base_offset": 4,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "System identifier (see Satellite Numbering )"
-                },
-                {
-                  "name": "resTrkCh",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "(Read only in protocol versions greater than 23) Number of reserved (minimum) tracking channels for this system."
-                },
-                {
-                  "name": "maxTrkCh",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "(Read only in protocol versions greater than 23) Maximum number of tracking channels used for this system. Must be > 0, >= resTrkChn, <= numTrkChUse and <= maximum number of tracking channels supported for this system."
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 3,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "flags",
-                  "byte_offset": 4,
-                  "data_type": "X4",
-                  "description": "Bitfield of flags. At least one signal must be configured in every enabled system.",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "enable",
-                        "bit_start": 0,
-                        "bit_end": 0,
-                        "description": "Enable this system"
-                      },
-                      {
-                        "name": "sigCfgMask",
-                        "bit_start": 16,
-                        "bit_end": 23,
-                        "description": "Signal configuration mask. When gnssId is 0 (GPS) 0x01 = GPS L1C/A 0x10 = GPS L2C 0x20 = GPS L5. When gnssId is 1 (SBAS) 0x01 = SBAS L1C/A. When gnssId is 2 (Galileo) 0x01 = Galileo E1 (not supported in protocol versions less than 18) 0x10 = Galileo E5a 0x20 = Galileo E5b. When gnssId is 3 (BeiDou) 0x01 = BeiDou B1I 0x10 = BeiDou B2I 0x80 = BeiDou B2A. When gnssId is 5 (QZSS) 0x01 = QZSS L1C/A 0x04 = QZSS L1S 0x10 = QZSS L2C 0x20 = QZSS L5. When gnssId is 6 (GLONASS) 0x01 = GLONASS L1 0x10 = GLONASS L2"
                       }
                     ]
                   }

@@ -1,6 +1,6 @@
 {
   "message_name": "UBX-CFG-GEOFENCE",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-GEOFENCE",
@@ -8,131 +8,108 @@
       "message_id": "0x69",
       "description": "Geofencing configuration",
       "message_type": "get_set",
-      "payload": {
-        "length": {
-          "variable": {
-            "base": 8,
-            "formula": "8 + numFences * 12",
-            "min": 8
-          }
+      "payload_length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numFences * 12",
+          "min": 8
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
         },
-        "fields": [
-          {
-            "name": "version",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Message version (0x00 for this version)"
-          },
-          {
-            "name": "numFences",
-            "byte_offset": 1,
-            "data_type": "U1",
-            "description": "Number of geofences contained in this message"
-          },
-          {
-            "name": "confLvl",
-            "byte_offset": 2,
-            "data_type": "U1",
-            "description": "Required confidence level for state evaluation"
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 3,
-            "data_type": "U1",
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "pioEnabled",
-            "byte_offset": 4,
-            "data_type": "U1",
-            "description": "1 = Enable PIO combined fence state output, 0 = disable"
-          },
-          {
-            "name": "pinPolarity",
-            "byte_offset": 5,
-            "data_type": "U1",
-            "description": "PIO pin polarity"
-          },
-          {
-            "name": "pin",
-            "byte_offset": 6,
-            "data_type": "U1",
-            "description": "PIO pin number"
-          },
-          {
-            "name": "reserved1",
-            "byte_offset": 7,
-            "data_type": "U1",
-            "description": "Reserved",
-            "reserved": true
-          }
-        ],
-        "repeated_groups": [
-          {
-            "name": "fences",
-            "repetition_type": "count_field",
-            "count_field": "numFences",
-            "group_size_bytes": 12,
-            "base_offset": 8,
-            "fields": [
-              {
-                "name": "lat",
-                "byte_offset": 0,
-                "data_type": "I4",
-                "description": "Latitude of the geofence circle center",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-7",
-                  "multiplier": 1e-07
-                }
-              },
-              {
-                "name": "lon",
-                "byte_offset": 4,
-                "data_type": "I4",
-                "description": "Longitude of the geofence circle center",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-7",
-                  "multiplier": 1e-07
-                }
-              },
-              {
-                "name": "radius",
-                "byte_offset": 8,
-                "data_type": "U4",
-                "description": "Radius of the geofence circle",
-                "unit": "m",
-                "scale": {
-                  "raw": "1e-2",
-                  "multiplier": 0.01
-                }
-              }
-            ]
-          }
-        ]
-      }
+        {
+          "name": "numFences",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of geofences contained in this message. Note that the receiver can only store a limited number of geofences (currently 4)."
+        },
+        {
+          "name": "confLvl",
+          "byte_offset": 2,
+          "data_type": "U1",
+          "description": "Required confidence level for state evaluation. This value times the position's standard deviation (sigma) defines the confidence band. 0 = no confidence required; 1 = 68%; 2 = 95%; 3 = 99.7%; 4 = 99.99%"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 3,
+          "data_type": "U1",
+          "reserved": true
+        },
+        {
+          "name": "pioEnabled",
+          "byte_offset": 4,
+          "data_type": "U1",
+          "description": "1 = Enable PIO combined fence state output, 0 = disable"
+        },
+        {
+          "name": "pinPolarity",
+          "byte_offset": 5,
+          "data_type": "U1",
+          "description": "PIO pin polarity. 0 = Low means inside, 1 = Low means outside. Unknown state is always high."
+        },
+        {
+          "name": "pin",
+          "byte_offset": 6,
+          "data_type": "U1",
+          "description": "PIO pin number"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 7,
+          "data_type": "U1",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "geofences",
+          "repetition_type": "count_field",
+          "count_field": "numFences",
+          "group_size_bytes": 12,
+          "base_offset": 8,
+          "fields": [
+            {
+              "name": "lat",
+              "byte_offset": 0,
+              "data_type": "I4",
+              "unit": "deg",
+              "scale": 1e-07,
+              "description": "Latitude of the geofence circle center"
+            },
+            {
+              "name": "lon",
+              "byte_offset": 4,
+              "data_type": "I4",
+              "unit": "deg",
+              "scale": 1e-07,
+              "description": "Longitude of the geofence circle center"
+            },
+            {
+              "name": "radius",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "unit": "m",
+              "scale": 0.01,
+              "description": "Radius of the geofence circle"
+            }
+          ]
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -147,7 +124,12 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
@@ -155,11 +137,40 @@
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": [
-          "Uses older reserved field naming conventions (reserved1/2 vs reserved0/1), but structurally identical."
+          "Uses non-standard naming (reserved1, reserved2) for offsets 3 and 7, but functionally identical."
         ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "All 8 extractions describe the exact same binary structure with high consistency. The fixed header is 8 bytes containing version, fence count, confidence level, PIO settings, and two reserved bytes (offsets 3 and 7). This is followed by a variable length array of 12-byte fence definitions (Lat I4, Lon I4, Radius U4). Differences between extractions are limited to the naming of the repeated group (e.g., 'geofence', 'geofence_circles', 'fences') and the naming of reserved fields in the older M8 documentation. The canonical structure uses the modern naming convention found in the majority of the F9/M9 documents."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "byte_offset": 3,
+              "name": "reserved1"
+            },
+            {
+              "byte_offset": 7,
+              "name": "reserved2"
+            }
+          ]
+        },
+        "reason": "The u-blox 8 generation documentation often uses sequential naming for reserved fields across the entire message rather than resetting per field group."
+      }
+    ],
+    "reasoning": "The UBX-CFG-GEOFENCE message is highly consistent across M8, M9, and F9 generations. It consists of an 8-byte configuration header followed by a variable number of 12-byte circle definitions. All extractions correctly identified the offsets, data types (U1s for the header, I4/I4/U4 for the circles), and scaling factors (1e-7 for coordinates and 0.01 for radius). The only differences are cosmetic, such as the naming of the repeated group or reserved fields."
   }
 }

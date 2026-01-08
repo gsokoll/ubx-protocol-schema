@@ -1,0 +1,152 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-TIM-TP",
+  "extraction_timestamp": "2026-01-08T04:03:29.538988+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 184,
+    "end": 185
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TP\nExpected IDs: class_id=0x0d, message_id=0x01\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TP\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-TIM-TP\",\n  \"id\": {\n    \"class_id\": 13,\n    \"message_id\": 1\n  },\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"This message contains information on the timing of the next pulse at the TIMEPULSEO output. The recommended configuration when using this message is to set both the measurement rate (CFG-RATE) and the timepulse frequency (CFG-TP) to 1 Hz.\",\n  \"payload_length\": {\n    \"fixed\": 16\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"towMS\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"Time pulse time of week according to time base\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"towSubMS\",\n      \"data_type\": \"U4\",\n      \"scale\": {\n        \"raw\": \"2^-32\",\n        \"multiplier\": 2.3283064365386963e-10\n      },\n      \"unit\": \"ms\",\n      \"description\": \"Submillisecond part of towMS\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"qErr\",\n      \"data_type\": \"I4\",\n      \"unit\": \"ps\",\n      \"description\": \"Quantization error of time pulse\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"week\",\n      \"data_type\": \"U2\",\n      \"unit\": \"weeks\",\n      \"description\": \"Time pulse week number according to time base\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"name\": \"flags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"timeBase\",\n          \"description\": \"Time base\",\n          \"value_description\": [\n            {\n              \"value\": 0,\n              \"description\": \"Time base is GNSS\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Time base is UTC\"\n            }\n          ]\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"utc\",\n          \"description\": \"UTC available\",\n          \"value_description\": [\n            {\n              \"value\": 0,\n              \"description\": \"UTC not available\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"UTC available\"\n            }\n          ]\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 2,\n          \"name\": \"raim\",\n          \"description\": \"(T)RAIM information\",\n          \"value_description\": [\n            {\n              \"value\": 0,\n              \"description\": \"Information not available\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Not active\"\n            }\n          ]\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 1,\n          \"name\": \"qErrInvalid\",\n          \"description\": \"Quantization Error Invalid Flag\",\n          \"value_description\": [\n            {\n              \"value\": 0,\n              \"description\": \"Quantization error valid\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"Quantization error invalid\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 15,\n      \"name\": \"refInfo\",\n      \"data_type\": \"X1\",\n      \"description\": \"Time reference information\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-TIM-TP",
+    "id": {
+      "class_id": 13,
+      "message_id": 1
+    },
+    "message_type": "periodic_polled",
+    "description": "This message contains information on the timing of the next pulse at the TIMEPULSEO output. The recommended configuration when using this message is to set both the measurement rate (CFG-RATE) and the timepulse frequency (CFG-TP) to 1 Hz.",
+    "payload_length": {
+      "fixed": 16
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "towMS",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Time pulse time of week according to time base"
+        },
+        {
+          "byte_offset": 4,
+          "name": "towSubMS",
+          "data_type": "U4",
+          "scale": {
+            "raw": "2^-32",
+            "multiplier": 2.3283064365386963e-10
+          },
+          "unit": "ms",
+          "description": "Submillisecond part of towMS"
+        },
+        {
+          "byte_offset": 8,
+          "name": "qErr",
+          "data_type": "I4",
+          "unit": "ps",
+          "description": "Quantization error of time pulse"
+        },
+        {
+          "byte_offset": 12,
+          "name": "week",
+          "data_type": "U2",
+          "unit": "weeks",
+          "description": "Time pulse week number according to time base"
+        },
+        {
+          "byte_offset": 14,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "timeBase",
+              "description": "Time base",
+              "value_description": [
+                {
+                  "value": 0,
+                  "description": "Time base is GNSS"
+                },
+                {
+                  "value": 1,
+                  "description": "Time base is UTC"
+                }
+              ]
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "utc",
+              "description": "UTC available",
+              "value_description": [
+                {
+                  "value": 0,
+                  "description": "UTC not available"
+                },
+                {
+                  "value": 1,
+                  "description": "UTC available"
+                }
+              ]
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 2,
+              "name": "raim",
+              "description": "(T)RAIM information",
+              "value_description": [
+                {
+                  "value": 0,
+                  "description": "Information not available"
+                },
+                {
+                  "value": 1,
+                  "description": "Not active"
+                }
+              ]
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "qErrInvalid",
+              "description": "Quantization Error Invalid Flag",
+              "value_description": [
+                {
+                  "value": 0,
+                  "description": "Quantization error valid"
+                },
+                {
+                  "value": 1,
+                  "description": "Quantization error invalid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "byte_offset": 15,
+          "name": "refInfo",
+          "data_type": "X1",
+          "description": "Time reference information"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/bl3ubrzob1vw"
+}

@@ -1,19 +1,20 @@
 {
   "message_name": "UBX-CFG-VALDEL",
-  "num_extractions": 23,
+  "num_extractions": 25,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-VALDEL",
       "class_id": "0x06",
       "message_id": "0x8c",
-      "description": "Delete configuration item values (with transaction)",
+      "description": "Delete configuration item values (with transaction support)",
       "message_type": "set",
       "payload": {
         "length": {
           "variable": {
             "base": 4,
-            "formula": "4 + numKeys * 4",
-            "min": 4
+            "formula": "4 + N*4",
+            "min": 4,
+            "max": 260
           }
         },
         "fields": [
@@ -34,13 +35,13 @@
                   "name": "bbr",
                   "bit_start": 1,
                   "bit_end": 1,
-                  "description": "Delete from BBR layer"
+                  "description": "Delete configuration from the BBR layer"
                 },
                 {
                   "name": "flash",
                   "bit_start": 2,
                   "bit_end": 2,
-                  "description": "Delete from Flash layer"
+                  "description": "Delete configuration from the Flash layer"
                 }
               ]
             }
@@ -49,14 +50,14 @@
             "name": "transaction",
             "byte_offset": 2,
             "data_type": "X1",
-            "description": "Transaction action (0=None, 1=Start, 2=Ongoing, 3=Apply)",
+            "description": "Transaction action to be applied",
             "bitfield": {
               "bits": [
                 {
                   "name": "action",
                   "bit_start": 0,
                   "bit_end": 1,
-                  "description": "Transaction action"
+                  "description": "0: Transactionless, 1: Start, 2: Ongoing, 3: Apply"
                 }
               ]
             }
@@ -65,22 +66,21 @@
             "name": "reserved0",
             "byte_offset": 3,
             "data_type": "U1",
-            "description": "Reserved",
-            "reserved": true
+            "description": "Reserved"
           }
         ],
         "repeated_groups": [
           {
             "name": "keys",
-            "repetition_type": "derived_from_payload_length",
+            "repetition_type": "derived_from_length",
             "group_size_bytes": 4,
             "base_offset": 4,
             "fields": [
               {
-                "name": "keyId",
+                "name": "keyID",
                 "byte_offset": 0,
                 "data_type": "U4",
-                "description": "Configuration key IDs to delete"
+                "description": "Configuration key IDs of the configuration items to be deleted"
               }
             ]
           }
@@ -90,14 +90,26 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect message_id ('VALDEL' instead of 0x8c)",
+          "Incorrect class_id format"
+        ]
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses bits 0/1 for layers (BBR/Flash) instead of the standard 1/2 used in most Gen 9/10 documentation."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message (no transaction support)."
+        ]
       },
       {
         "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -105,114 +117,43 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)",
-          "Incorrect layer bit definitions (0=BBR, 1=Flash) likely due to documentation inaccuracy"
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)",
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)"
-        ]
-      },
-      {
-        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)"
-        ]
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": [
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)"
-        ]
       },
       {
         "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
         "verdict": "valid_variation",
         "issues": [
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)",
-          "Keys defined in 'fields' instead of 'repeated_groups' (schema inconsistency)"
-        ]
-      },
-      {
-        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)"
+          "Uses bits 0/1 for layers."
         ]
       },
       {
         "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
         "verdict": "valid_variation",
         "issues": [
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)",
-          "Keys defined in 'fields' instead of 'repeated_groups' (schema inconsistency)"
+          "Uses bits 0/1 for layers."
         ]
       },
       {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "valid_variation",
         "issues": [
-          "Uses Version 0 structure (no transaction)",
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)"
+          "Represents Version 0x00 of the message."
         ]
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
         "verdict": "valid_variation",
         "issues": [
-          "Uses Version 0 structure (no transaction)"
+          "Represents Version 0x00 of the message.",
+          "Uses bits 0/1 for layers."
         ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses Version 0 structure (no transaction)",
-          "Incorrect layer bit definitions (0=BBR, 1=Flash)"
-        ]
-      },
-      {
-        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "LAP120_Interfacedescription_UBX-20046191",
-        "verdict": "correct",
-        "issues": []
       },
       {
         "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
@@ -220,72 +161,123 @@
         "issues": []
       },
       {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "extraction_error",
+        "issues": [
+          "Message ID concatenated as '0x06 0x8c'",
+          "Poorly structured payload fields"
+        ]
+      },
+      {
+        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message."
+        ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message.",
+          "Uses bits 0/1 for layers."
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
         "verdict": "valid_variation",
         "issues": [
-          "Uses Version 0 structure (no transaction) despite M10 typically supporting Version 1",
-          "Keys defined in 'fields' instead of 'repeated_groups' (schema inconsistency)"
+          "Represents Version 0x00 of the message.",
+          "Missing explicit version value in extraction metadata."
         ]
       },
       {
         "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
         "verdict": "valid_variation",
         "issues": [
-          "Uses Version 0 structure (no transaction)"
+          "Represents Version 0x00 of the message."
         ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "LAP120_Interfacedescription_UBX-20046191",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
         "verdict": "valid_variation",
         "issues": [
-          "Uses Version 0 structure (no transaction)"
+          "Represents Version 0x00 of the message.",
+          "Uses bits 0/1 for layers."
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x00 of the message."
         ]
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "F9-HPS-1.21",
-          "u-blox-F9-LAP-1.30",
-          "u-blox-F9-HPG-1.32",
-          "M9-ADR-5.15",
-          "u-blox-F9-HPG-L1L5-1.40",
-          "u-blox-M9-MDR-2.16",
-          "u-blox-F9-DBD-1.30",
-          "M9-ADR-5.10",
-          "u-blox-F9-HPG-1.50",
-          "u-blox-M10-SPG-5.10",
-          "u-blox-F9-HPS-1.40",
-          "u-blox-F9-HPS-1.30"
+          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+          "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+          "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+          "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
         ],
         "structure": {
+          "version": "0x00",
+          "header_length": 4,
           "fields": [
-            {
-              "name": "version",
-              "data_type": "U1",
-              "description": "Message version (0x00)"
-            },
-            {
-              "name": "layers",
-              "data_type": "X1",
-              "description": "Layers to delete from"
-            },
-            {
-              "name": "reserved0",
-              "data_type": "U1[2]",
-              "description": "Reserved (2 bytes)"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "keys",
-              "description": "Keys to delete"
-            }
+            "version (U1)",
+            "layers (X1)",
+            "reserved0 (U1[2])"
           ]
         },
-        "reason": "Legacy version (Ver 0) of the message before transaction support was added. 'reserved0' is 2 bytes and 'transaction' field is missing."
+        "reason": "Version 0x00 is the legacy version of the message which does not support configuration transactions; it applies changes immediately."
       }
     ],
-    "reasoning": "The UBX-CFG-VALDEL message exists in two main versions. Version 0 (Legacy) has a 2-byte reserved field and no transaction support. Version 1 (Modern) re-purposes one reserved byte for a 'transaction' field. The canonical structure is Version 1 as it is the superset and standard for newer firmware (M10, F10, newer F9/M9). A significant number of extractions report Layer bits as 0/1 (BBR/Flash) instead of the standard 1/2. This is likely a documentation inaccuracy or specific document convention, but the protocol standard (UBX-CFG layers) maps BBR to 0x02 (Bit 1) and Flash to 0x04 (Bit 2). The adjudication accepts Version 0 as a valid variation but favors Version 1 definitions with standard bitmasks."
+    "reasoning": "The UBX-CFG-VALDEL message exists in two distinct versions (0x00 and 0x01). Version 0x01 added a 'transaction' byte at offset 2, reducing the 'reserved0' field from 2 bytes to 1 byte. Across various product documentation (HPG, HPS, SPG), the bit-mapping for layers fluctuates between bits 0/1 and bits 1/2. The 1/2 mapping is the more standard alignment for the u-blox configuration framework (where Bit 0 is RAM, Bit 1 is BBR, and Bit 2 is Flash), though some documents simplify this to 0/1. Extractions were judged against the most current transactional (V1) version as canonical."
   }
 }

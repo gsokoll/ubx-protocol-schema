@@ -27,7 +27,7 @@
             "name": "numOsc",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Number of oscillators to configure"
+            "description": "Number of oscillators to configure (affects length of this message)"
           },
           {
             "name": "reserved1",
@@ -72,13 +72,13 @@
                       "name": "isCalibrated",
                       "bit_start": 0,
                       "bit_end": 0,
-                      "description": "1 if the oscillator gain is calibrated"
+                      "description": "1 if the oscillator gain is calibrated, 0 if not"
                     },
                     {
                       "name": "controlIf",
                       "bit_start": 1,
                       "bit_end": 3,
-                      "description": "Communication interface for oscillator control"
+                      "description": "Communication interface for oscillator control: 0: Custom DAC, 1: Microchip MCP4726, 2: TI DAC8571, 13: 12 bit DAC attached to host, 14: 14 bit DAC attached to host, 15: 16 bit DAC attached to host"
                     }
                   ]
                 }
@@ -105,7 +105,7 @@
                 "name": "withTemp",
                 "byte_offset": 12,
                 "data_type": "U4",
-                "description": "Oscillator stability limit over operating temperature range",
+                "description": "Oscillator stability limit over operating temperature range (must be > 0)",
                 "unit": "ppb",
                 "scale": {
                   "raw": "2^-8",
@@ -116,7 +116,7 @@
                 "name": "withAge",
                 "byte_offset": 16,
                 "data_type": "U4",
-                "description": "Oscillator stability with age",
+                "description": "Oscillator stability with age (must be > 0)",
                 "unit": "ppb/year",
                 "scale": {
                   "raw": "2^-8",
@@ -127,7 +127,7 @@
                 "name": "timeToTemp",
                 "byte_offset": 20,
                 "data_type": "U2",
-                "description": "Minimum time for temp variation to move freq by 'withTemp'",
+                "description": "The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0)",
                 "unit": "s"
               },
               {
@@ -144,7 +144,7 @@
                 "name": "gainVco",
                 "byte_offset": 24,
                 "data_type": "I4",
-                "description": "Oscillator control gain/slope",
+                "description": "Oscillator control gain/slope; change of frequency per unit change in raw control change",
                 "unit": "ppb/raw LSB",
                 "scale": {
                   "raw": "2^-16",
@@ -155,7 +155,7 @@
                 "name": "gainUncertainty",
                 "byte_offset": 28,
                 "data_type": "U1",
-                "description": "Relative uncertainty of oscillator control gain/slope",
+                "description": "Relative uncertainty (1 standard deviation) of oscillator control gain/slope",
                 "scale": {
                   "raw": "2^-8",
                   "multiplier": 0.00390625
@@ -185,6 +185,6 @@
       }
     ],
     "valid_variations": [],
-    "reasoning": "The single extraction provided is from the u-blox 8 M8 Receiver Description and Protocol Specification. The structure (header + repeated block of 32 bytes) is consistent with u-blox message definitions for this generation. The specific scaling factors (2^-2 for frequency, 2^-8 for stability, 2^-16 for gain) are specific to the DOSC message and appear correctly transcribed."
+    "reasoning": "The single extraction provided matches the standard u-blox 8 generation protocol specification for timing products (like the M8F). The byte offsets, repeated group logic, and complex scaling factors (using binary powers for precision) are correctly mapped and consistent with official documentation."
   }
 }

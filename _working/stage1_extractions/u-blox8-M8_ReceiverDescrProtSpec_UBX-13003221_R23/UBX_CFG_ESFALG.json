@@ -1,0 +1,81 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-ESFALG",
+  "extraction_timestamp": "2026-01-08T05:35:06.920327+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 216,
+    "end": 217
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-ESFALG\nExpected IDs: class_id=0x06, message_id=0x56\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-ESFALG\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_messages\": [\n    {\n      \"name\": \"UBX-CFG-ESFALG\",\n      \"class_id\": \"0x06\",\n      \"message_id\": \"0x56\",\n      \"description\": \"Get/set IMU-mount misalignment configuration\",\n      \"message_type\": \"get_set\",\n      \"payload_length\": {\n        \"fixed\": 12\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"name\": \"bitfield\",\n          \"data_type\": \"U4\",\n          \"description\": \"Bitfield (see graphic below)\"\n        },\n        {\n          \"byte_offset\": 4,\n          \"name\": \"yaw\",\n          \"data_type\": \"U4\",\n          \"scale\": {\n            \"raw\": \"1e-2\",\n            \"multiplier\": 0.01\n          },\n          \"unit\": \"deg\",\n          \"description\": \"User-defined IMU-mount yaw angle [0, 360]\"\n        },\n        {\n          \"byte_offset\": 8,\n          \"name\": \"pitch\",\n          \"data_type\": \"I2\",\n          \"scale\": {\n            \"raw\": \"1e-2\",\n            \"multiplier\": 0.01\n          },\n          \"unit\": \"deg\",\n          \"description\": \"User-defined IMU-mount pitch angle [-90, 90]\"\n        },\n        {\n          \"byte_offset\": 10,\n          \"name\": \"roll\",\n          \"data_type\": \"I2\",\n          \"scale\": {\n            \"raw\": \"1e-2\",\n            \"multiplier\": 0.01\n          },\n          \"unit\": \"deg\",\n          \"description\": \"User-defined IMU-mount roll angle [-180, 180]\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_messages": [
+      {
+        "name": "UBX-CFG-ESFALG",
+        "class_id": "0x06",
+        "message_id": "0x56",
+        "description": "Get/set IMU-mount misalignment configuration",
+        "message_type": "get_set",
+        "payload_length": {
+          "fixed": 12
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "name": "bitfield",
+            "data_type": "U4",
+            "description": "Bitfield (see graphic below)"
+          },
+          {
+            "byte_offset": 4,
+            "name": "yaw",
+            "data_type": "U4",
+            "scale": {
+              "raw": "1e-2",
+              "multiplier": 0.01
+            },
+            "unit": "deg",
+            "description": "User-defined IMU-mount yaw angle [0, 360]"
+          },
+          {
+            "byte_offset": 8,
+            "name": "pitch",
+            "data_type": "I2",
+            "scale": {
+              "raw": "1e-2",
+              "multiplier": 0.01
+            },
+            "unit": "deg",
+            "description": "User-defined IMU-mount pitch angle [-90, 90]"
+          },
+          {
+            "byte_offset": 10,
+            "name": "roll",
+            "data_type": "I2",
+            "scale": {
+              "raw": "1e-2",
+              "multiplier": 0.01
+            },
+            "unit": "deg",
+            "description": "User-defined IMU-mount roll angle [-180, 180]"
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/y2s50h0y2hmq"
+}

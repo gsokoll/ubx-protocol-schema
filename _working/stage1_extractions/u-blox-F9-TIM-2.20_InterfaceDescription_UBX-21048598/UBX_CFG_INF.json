@@ -1,0 +1,45 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-INF",
+  "extraction_timestamp": "2026-01-08T03:22:13.304236+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 67,
+    "end": 68
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-INF\nExpected IDs: class_id=0x06, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-INF\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"name\": \"UBX-CFG-INF (Poll configuration for one protocol)\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x02\",\n    \"message_type\": \"poll\",\n    \"payload_length\": {\n      \"fixed\": 1\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"protocolID\",\n        \"description\": \"Protocol identifier, identifying the output protocol for this poll request. The following are valid protocol identifiers: 0: UBX protocol, 1: NMEA protocol, 2-255: Reserved\"\n      }\n    ]\n  },\n  {\n    \"name\": \"UBX-CFG-INF (Information message configuration - Get/Set)\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x02\",\n    \"message_type\": \"get_set\",\n    \"payload_length\": {\n      \"variable\": {\n        \"block_size\": 10\n      }\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"protocolID\",\n        \"description\": \"Protocol identifier, identifying for which protocol the configuration is set/get. The following are valid protocol identifiers: 0: UBX protocol, 1: NMEA protocol, 2-255: Reserved\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"name\": \"reserved0\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": {\n          \"array_of\": \"X1\",\n          \"count\": 6\n        },\n        \"name\": \"infMsgMask\",\n        \"description\": \"A bit mask, saying which information messages are enabled on each I/O port (one byte per port)\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"ERROR\",\n            \"description\": \"enable ERROR\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"WARNING\",\n            \"description\": \"enable WARNING\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"name\": \"NOTICE\",\n            \"description\": \"enable NOTICE\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"name\": \"TEST\",\n            \"description\": \"enable TEST\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"bit_length\": 1,\n            \"name\": \"DEBUG\",\n            \"description\": \"enable DEBUG\"\n          }\n        ]\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-INF (Poll configuration for one protocol)",
+    "class_id": "0x06",
+    "message_id": "0x02",
+    "message_type": "poll",
+    "payload_length": {
+      "fixed": 1
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "protocolID",
+          "description": "Protocol identifier, identifying the output protocol for this poll request. The following are valid protocol identifiers: 0: UBX protocol, 1: NMEA protocol, 2-255: Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/9yjcm0qi0lyo"
+}

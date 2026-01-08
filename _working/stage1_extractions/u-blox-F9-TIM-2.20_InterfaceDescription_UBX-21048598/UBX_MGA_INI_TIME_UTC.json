@@ -1,0 +1,164 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MGA-INI-TIME-UTC",
+  "extraction_timestamp": "2026-01-08T03:44:11.602377+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 117,
+    "end": 121
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-INI-TIME-UTC\nExpected IDs: class_id=0x13, message_id=0x40\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-INI-TIME-UTC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nBITFIELD TYPE DETECTION (CRITICAL):\n- Use X1/X2/X4 (NOT U1/U2/U4) when:\n  - Field named \"flags\", \"mask\", \"status\", \"cfg\", \"supported\", \"enabled\"\n  - Description mentions \"bitfield\" or lists bit meanings\n  - Sub-table shows bit positions\n- Extract bitfield structure for ALL X-type fields\n\nUBX-MGA-INI-TIME-UTC (24 bytes): type, version, ref, leapSecs, year, month, day, hour, minute, second, reserved0, ns, tAccS, reserved1[2], tAccNs.\nIMPORTANT: reserved1 at offset 18 is a 2-byte array U1[2], NOT two separate fields.\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_class\": \"0x13\",\n  \"ubx_id\": \"0x40\",\n  \"name\": \"UBX-MGA-INI-TIME-UTC\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 24\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"type\",\n      \"description\": \"Message type (0x10 for this type)\",\n      \"fixed_value\": 16\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X1\",\n      \"name\": \"ref\",\n      \"description\": \"Reference to be used to set time\",\n      \"bitfield_members\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 4,\n          \"data_type\": \"U4\",\n          \"name\": \"source\",\n          \"description\": \"0 = none, i.e. on receipt of message (will be inaccurate!); 1 = relative to pulse sent to EXTINT0; 2 = relative to pulse sent to EXTINT1; 3-15 reserved\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"fall\",\n          \"description\": \"use falling edge of EXTINT pulse (default rising) - only if source is EXTINT\"\n        },\n        {\n          \"bit_offset\": 5,\n          \"bit_length\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"last\",\n          \"description\": \"use last EXTINT pulse (default next pulse) - only if source is EXTINT\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"I1\",\n      \"name\": \"leapSecs\",\n      \"unit\": \"S\",\n      \"description\": \"Number of leap seconds since 1980 (or 0x80 = -128 if unknown)\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U2\",\n      \"name\": \"year\",\n      \"description\": \"Year\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"U1\",\n      \"name\": \"month\",\n      \"description\": \"Month, starting at 1\"\n    },\n    {\n      \"byte_offset\": 7,\n      \"data_type\": \"U1\",\n      \"name\": \"day\",\n      \"description\": \"Day, starting at 1\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U1\",\n      \"name\": \"hour\",\n      \"description\": \"Hour, from 0 to 23\"\n    },\n    {\n      \"byte_offset\": 9,\n      \"data_type\": \"U1\",\n      \"name\": \"minute\",\n      \"description\": \"Minute, from 0 to 59\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"U1\",\n      \"name\": \"second\",\n      \"unit\": \"S\",\n      \"description\": \"Seconds, from 0 to 59\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U4\",\n      \"name\": \"ns\",\n      \"unit\": \"ns\",\n      \"description\": \"Nanoseconds, from 0 to 999,999,999\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U2\",\n      \"name\": \"tAccS\",\n      \"unit\": \"S\",\n      \"description\": \"Seconds part of time accuracy\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U4\",\n      \"name\": \"tAccNs\",\n      \"unit\": \"ns\",\n      \"description\": \"Nanoseconds part of time accuracy, from 0 to 999,999,999\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_class": "0x13",
+    "ubx_id": "0x40",
+    "name": "UBX-MGA-INI-TIME-UTC",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 24
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "type",
+          "description": "Message type (0x10 for this type)",
+          "fixed_value": 16
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X1",
+          "name": "ref",
+          "description": "Reference to be used to set time",
+          "bitfield_members": [
+            {
+              "bit_offset": 0,
+              "bit_length": 4,
+              "data_type": "U4",
+              "name": "source",
+              "description": "0 = none, i.e. on receipt of message (will be inaccurate!); 1 = relative to pulse sent to EXTINT0; 2 = relative to pulse sent to EXTINT1; 3-15 reserved"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "data_type": "U1",
+              "name": "fall",
+              "description": "use falling edge of EXTINT pulse (default rising) - only if source is EXTINT"
+            },
+            {
+              "bit_offset": 5,
+              "bit_length": 1,
+              "data_type": "U1",
+              "name": "last",
+              "description": "use last EXTINT pulse (default next pulse) - only if source is EXTINT"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "I1",
+          "name": "leapSecs",
+          "unit": "S",
+          "description": "Number of leap seconds since 1980 (or 0x80 = -128 if unknown)"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U2",
+          "name": "year",
+          "description": "Year"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "U1",
+          "name": "month",
+          "description": "Month, starting at 1"
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "U1",
+          "name": "day",
+          "description": "Day, starting at 1"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U1",
+          "name": "hour",
+          "description": "Hour, from 0 to 23"
+        },
+        {
+          "byte_offset": 9,
+          "data_type": "U1",
+          "name": "minute",
+          "description": "Minute, from 0 to 59"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U1",
+          "name": "second",
+          "unit": "S",
+          "description": "Seconds, from 0 to 59"
+        },
+        {
+          "byte_offset": 11,
+          "data_type": "U1",
+          "name": "reserved0",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "ns",
+          "unit": "ns",
+          "description": "Nanoseconds, from 0 to 999,999,999"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U2",
+          "name": "tAccS",
+          "unit": "S",
+          "description": "Seconds part of time accuracy"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "tAccNs",
+          "unit": "ns",
+          "description": "Nanoseconds part of time accuracy, from 0 to 999,999,999"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/75jxs2cebjnl"
+}

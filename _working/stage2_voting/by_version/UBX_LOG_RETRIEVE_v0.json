@@ -2,7 +2,7 @@
   "message_name": "UBX-LOG-RETRIEVE",
   "protocol_version": 0,
   "status": "majority",
-  "agreement_ratio": 0.8181818181818182,
+  "agreement_ratio": 0.8333333333333334,
   "winning_structure": {
     "name": "UBX-LOG-RETRIEVE",
     "class_id": "0x21",
@@ -47,15 +47,16 @@
   },
   "winning_fingerprint": "6d0752dc7b5f5d89",
   "agreeing_sources": [
-    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
     "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
     "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
     "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [
     "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
@@ -63,7 +64,7 @@
   ],
   "all_extractions": [
     {
-      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
       "structure": {
         "name": "UBX-LOG-RETRIEVE",
         "class_id": "0x21",
@@ -109,12 +110,58 @@
       "fingerprint": "6d0752dc7b5f5d89"
     },
     {
-      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-LOG-RETRIEVE",
+          "class_id": "0x21",
+          "message_id": "0x09",
+          "message_type": "command",
+          "payload_length": {
+            "fixed": 12
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "startNumber",
+              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U4",
+              "name": "entryCount",
+              "description": "Number of log entries to transfer in total including the first entry to be transferred. If it is larger than the log entries available starting from the first entry to be transferred, then only the available log entries are transferred followed by a UBX-ACK-NAK. The maximum is 256."
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
+            },
+            {
+              "byte_offset": 9,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "name": "reserved0",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "6d0752dc7b5f5d89"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
       "structure": {
         "name": "UBX-LOG-RETRIEVE",
         "class_id": "0x21",
         "message_id": "0x09",
-        "description": "This message is used to request logged data (log recording must first be disabled). Log entries are returned in chronological order. The maximum number of entries that can be returned in response to a single UBX-LOG-RETRIEVE message is 256.",
+        "description": "This message is used to request logged data (log recording must first be disabled, see UBX-CFG-LOGFILTER). Log entries are returned in chronological order, using the messages UBX-LOG-RETRIEVEPOS and UBX-LOG-RETRIEVESTRING. If the odometer was enabled at the time a position was logged, then message UBX-LOG-RETRIEVEPOSEXTRA will also be used. The maximum number of entries that can be returned in response to a single UBX-LOG-RETRIEVE message is 256. If more entries than this are required the message will need to be sent multiple times with different startNumbers. The retrieve will be stopped if any UBX-LOG message is received. The speed of transfer can be maximized by using a high data rate and temporarily stopping the GPS processing (see UBX-CFG-RST).",
         "message_type": "command",
         "payload": {
           "length": {
@@ -201,130 +248,13 @@
       "fingerprint": "6d0752dc7b5f5d89"
     },
     {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
         "name": "UBX-LOG-RETRIEVE",
         "class_id": "0x21",
         "message_id": "0x09",
         "description": "Request log data",
         "message_type": "command",
-        "payload": {
-          "length": {
-            "fixed": 12
-          },
-          "fields": [
-            {
-              "name": "startNumber",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
-            },
-            {
-              "name": "entryCount",
-              "byte_offset": 4,
-              "data_type": "U4",
-              "description": "Number of log entries to transfer in total including the first entry to be transferred. If it is larger than the log entries available starting from the first entry to be transferred, then only the available log entries are transferred followed by a UBX-ACK-NAK. The maximum is 256."
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 8,
-              "data_type": "U4",
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "7133b917fb57d1f5"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVE",
-        "class_id": "0x21",
-        "message_id": "0x09",
-        "description": "This message is used to request logged data (log recording must first be disabled, see UBX-CFG-LOGFILTER).",
-        "message_type": "command",
-        "payload": {
-          "length": {
-            "fixed": 12
-          },
-          "fields": [
-            {
-              "name": "startNumber",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 4,
-              "data_type": {
-                "array_of": "U1",
-                "count": 8
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "2641cacee744aa57"
-    },
-    {
-      "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVE",
-        "class_id": "0x21",
-        "message_id": "0x09",
-        "description": "Request log data",
-        "message_type": "command",
-        "payload": {
-          "length": {
-            "fixed": 12
-          },
-          "fields": [
-            {
-              "name": "startNumber",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
-            },
-            {
-              "name": "entryCount",
-              "byte_offset": 4,
-              "data_type": "U4",
-              "description": "Number of log entries to transfer in total including the first entry to be transferred. If it is larger than the log entries available starting from the first entry to be transferred, then only the available log entries are transferred followed by a UBX-ACK-NAK. The maximum is 256."
-            },
-            {
-              "name": "version",
-              "byte_offset": 8,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 9,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "6d0752dc7b5f5d89"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-LOG-RETRIEVE",
-        "class_id": "0x21",
-        "message_id": "0x09",
-        "description": "This message is used to request logged data. Log entries are returned in chronological order.",
-        "message_type": "input",
         "payload": {
           "length": {
             "fixed": 12
@@ -456,12 +386,12 @@
       "fingerprint": "6d0752dc7b5f5d89"
     },
     {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
       "structure": {
         "name": "UBX-LOG-RETRIEVE",
         "class_id": "0x21",
         "message_id": "0x09",
-        "description": "This message is used to request logged data (log recording must first be disabled, see UBX-CFG-LOGFILTER). Log entries are returned in chronological order, using the messages UBX-LOG-RETRIEVEPOS and UBX-LOG-RETRIEVESTRING. If the odometer was enabled at the time a position was logged, then message UBX-LOG-RETRIEVEPOSEXTRA will also be used. The maximum number of entries that can be returned in response to a single UBX-LOG-RETRIEVE message is 256. If more entries than this are required the message will need to be sent multiple times with different startNumbers. The retrieve will be stopped if any UBX-LOG message is received. The speed of transfer can be maximized by using a high data rate and temporarily stopping the GPS processing (see UBX-CFG-RST).",
+        "description": "This message is used to request logged data (log recording must first be disabled). Log entries are returned in chronological order. The maximum number of entries that can be returned in response to a single UBX-LOG-RETRIEVE message is 256.",
         "message_type": "command",
         "payload": {
           "length": {
@@ -502,6 +432,43 @@
       "fingerprint": "6d0752dc7b5f5d89"
     },
     {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVE",
+        "class_id": "0x21",
+        "message_id": "0x09",
+        "description": "Request log data",
+        "message_type": "command",
+        "payload": {
+          "length": {
+            "fixed": 12
+          },
+          "fields": [
+            {
+              "name": "startNumber",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
+            },
+            {
+              "name": "entryCount",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Number of log entries to transfer in total including the first entry to be transferred. If it is larger than the log entries available starting from the first entry to be transferred, then only the available log entries are transferred followed by a UBX-ACK-NAK. The maximum is 256."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "7133b917fb57d1f5"
+    },
+    {
       "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
       "structure": {
         "name": "UBX-LOG-RETRIEVE",
@@ -534,6 +501,86 @@
             },
             {
               "name": "reserved1",
+              "byte_offset": 9,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "6d0752dc7b5f5d89"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVE",
+        "class_id": "0x21",
+        "message_id": "0x09",
+        "description": "This message is used to request logged data (log recording must first be disabled, see UBX-CFG-LOGFILTER).",
+        "message_type": "command",
+        "payload": {
+          "length": {
+            "fixed": 12
+          },
+          "fields": [
+            {
+              "name": "startNumber",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "2641cacee744aa57"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-LOG-RETRIEVE",
+        "class_id": "0x21",
+        "message_id": "0x09",
+        "description": "This message is used to request logged data. Log entries are returned in chronological order.",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "fixed": 12
+          },
+          "fields": [
+            {
+              "name": "startNumber",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "Index of first log entry to be transferred. If it is larger than the index of the last available log entry, then the first log entry to be transferred is the last available log entry. The indexing of log entries is zero-based."
+            },
+            {
+              "name": "entryCount",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Number of log entries to transfer in total including the first entry to be transferred. If it is larger than the log entries available starting from the first entry to be transferred, then only the available log entries are transferred followed by a UBX-ACK-NAK. The maximum is 256."
+            },
+            {
+              "name": "version",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
               "byte_offset": 9,
               "data_type": {
                 "array_of": "U1",

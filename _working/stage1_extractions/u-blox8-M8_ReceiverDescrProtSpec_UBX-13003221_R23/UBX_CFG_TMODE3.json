@@ -1,0 +1,137 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-TMODE3",
+  "extraction_timestamp": "2026-01-08T05:50:50.421847+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 285,
+    "end": 287
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-TMODE3\nExpected IDs: class_id=0x06, message_id=0x71\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-TMODE3\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-CFG-TMODE3\",\n    \"class_id\": \"0x06\",\n    \"message_id\": \"0x71\",\n    \"description\": \"Time mode settings 3\",\n    \"message_type\": \"get_set\",\n    \"payload_length\": {\n      \"fixed\": 40\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"reserved1\",\n        \"data_type\": \"U1\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"flags\",\n        \"data_type\": \"X2\",\n        \"description\": \"Receiver mode flags\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"ecefXOrLat\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm or deg*1e-7\",\n        \"description\": \"WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"ecefYOrLon\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm or deg*1e-7\",\n        \"description\": \"WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"ecefZOrAlt\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"ecefXOrLatHP\",\n        \"data_type\": \"I1\",\n        \"unit\": \"0.1 mm or deg*1e-9\",\n        \"description\": \"High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)\"\n      },\n      {\n        \"byte_offset\": 17,\n        \"name\": \"ecefYOrLonHP\",\n        \"data_type\": \"I1\",\n        \"unit\": \"0.1 mm or deg*1e-9\",\n        \"description\": \"High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"ecefZOrAltHP\",\n        \"data_type\": \"I1\",\n        \"unit\": \"0.1 mm\",\n        \"description\": \"High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)\"\n      },\n      {\n        \"byte_offset\": 19,\n        \"name\": \"reserved2\",\n        \"data_type\": \"U1\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"fixedPosAcc\",\n        \"data_type\": \"U4\",\n        \"unit\": \"0.1 mm\",\n        \"description\": \"Fixed position 3D accuracy\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"svinMinDur\",\n        \"data_type\": \"U4\",\n        \"unit\": \"s\",\n        \"description\": \"Survey-in minimum duration\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"svinAccLimit\",\n        \"data_type\": \"U4\",\n        \"unit\": \"0.1 mm\",\n        \"description\": \"Survey-in position accuracy limit\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"name\": \"reserved3\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 8\n        },\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-CFG-TMODE3",
+      "class_id": "0x06",
+      "message_id": "0x71",
+      "description": "Time mode settings 3",
+      "message_type": "get_set",
+      "payload_length": {
+        "fixed": 40
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "name": "reserved1",
+          "data_type": "U1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 2,
+          "name": "flags",
+          "data_type": "X2",
+          "description": "Receiver mode flags"
+        },
+        {
+          "byte_offset": 4,
+          "name": "ecefXOrLat",
+          "data_type": "I4",
+          "unit": "cm or deg*1e-7",
+          "description": "WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above"
+        },
+        {
+          "byte_offset": 8,
+          "name": "ecefYOrLon",
+          "data_type": "I4",
+          "unit": "cm or deg*1e-7",
+          "description": "WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above"
+        },
+        {
+          "byte_offset": 12,
+          "name": "ecefZOrAlt",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above"
+        },
+        {
+          "byte_offset": 16,
+          "name": "ecefXOrLatHP",
+          "data_type": "I1",
+          "unit": "0.1 mm or deg*1e-9",
+          "description": "High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF X coordinate in units of cm, or the precise WGS84 ECEF latitude in units of 1e-7 degrees, is given by ecefXOrLat + (ecefXOrLatHP * 1e-2)"
+        },
+        {
+          "byte_offset": 17,
+          "name": "ecefYOrLonHP",
+          "data_type": "I1",
+          "unit": "0.1 mm or deg*1e-9",
+          "description": "High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Y coordinate in units of cm, or the precise WGS84 ECEF longitude in units of 1e-7 degrees, is given by ecefYOrLon + (ecefYOrLonHP * 1e-2)"
+        },
+        {
+          "byte_offset": 18,
+          "name": "ecefZOrAltHP",
+          "data_type": "I1",
+          "unit": "0.1 mm",
+          "description": "High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above. Must be in the range -99..+99. The precise WGS84 ECEF Z coordinate, or altitude coordinate, in units of cm is given by ecefZOrAlt + (ecefZOrAltHP * 1e-2)"
+        },
+        {
+          "byte_offset": 19,
+          "name": "reserved2",
+          "data_type": "U1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 20,
+          "name": "fixedPosAcc",
+          "data_type": "U4",
+          "unit": "0.1 mm",
+          "description": "Fixed position 3D accuracy"
+        },
+        {
+          "byte_offset": 24,
+          "name": "svinMinDur",
+          "data_type": "U4",
+          "unit": "s",
+          "description": "Survey-in minimum duration"
+        },
+        {
+          "byte_offset": 28,
+          "name": "svinAccLimit",
+          "data_type": "U4",
+          "unit": "0.1 mm",
+          "description": "Survey-in position accuracy limit"
+        },
+        {
+          "byte_offset": 32,
+          "name": "reserved3",
+          "data_type": {
+            "array_of": "U1",
+            "count": 8
+          },
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/vdbz2ko8vf41"
+}

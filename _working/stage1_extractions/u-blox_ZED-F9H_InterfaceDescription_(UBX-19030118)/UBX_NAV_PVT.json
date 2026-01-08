@@ -1,0 +1,405 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-NAV-PVT",
+  "extraction_timestamp": "2026-01-08T02:51:22.160623+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 128,
+    "end": 130
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-PVT\nExpected IDs: class_id=0x01, message_id=0x07\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-PVT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-PVT\",\n  \"description\": \"Navigation position velocity time solution\",\n  \"message_type\": \"periodic_polled\",\n  \"class_id\": 1,\n  \"message_id\": 7,\n  \"payload_length\": {\n    \"fixed\": 92\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"year\",\n      \"data_type\": \"U2\",\n      \"unit\": \"y\",\n      \"description\": \"Year (UTC)\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"month\",\n      \"data_type\": \"U1\",\n      \"unit\": \"month\",\n      \"description\": \"Month, range 1..12 (UTC)\"\n    },\n    {\n      \"byte_offset\": 7,\n      \"name\": \"day\",\n      \"data_type\": \"U1\",\n      \"unit\": \"d\",\n      \"description\": \"Day of month, range 1..31 (UTC)\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"hour\",\n      \"data_type\": \"U1\",\n      \"unit\": \"h\",\n      \"description\": \"Hour of day, range 0..23 (UTC)\"\n    },\n    {\n      \"byte_offset\": 9,\n      \"name\": \"min\",\n      \"data_type\": \"U1\",\n      \"unit\": \"min\",\n      \"description\": \"Minute of hour, range 0..59 (UTC)\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"name\": \"sec\",\n      \"data_type\": \"U1\",\n      \"unit\": \"s\",\n      \"description\": \"Seconds of minute, range 0..60 (UTC)\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"name\": \"valid\",\n      \"data_type\": \"X1\",\n      \"description\": \"Validity flags\",\n      \"bit_fields\": [\n        {\n          \"name\": \"validDate\",\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"description\": \"1 = valid UTC Date\"\n        },\n        {\n          \"name\": \"validTime\",\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"description\": \"1 = valid UTC time of day\"\n        },\n        {\n          \"name\": \"fullyResolved\",\n          \"bit_offset\": 2,\n          \"num_bits\": 1,\n          \"description\": \"1 = UTC time of day has been fully resolved\"\n        },\n        {\n          \"name\": \"validMag\",\n          \"bit_offset\": 3,\n          \"num_bits\": 1,\n          \"description\": \"1 = valid magnetic declination\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"tAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Time accuracy estimate (UTC)\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"nano\",\n      \"data_type\": \"I4\",\n      \"unit\": \"ns\",\n      \"description\": \"Fraction of second, range -1e9.. 1e9 (UTC)\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"fixType\",\n      \"data_type\": \"U1\",\n      \"description\": \"GNSSfix Type\",\n      \"mapping\": {\n        \"0\": \"no fix\",\n        \"1\": \"dead reckoning only\",\n        \"2\": \"2D-fix\",\n        \"3\": \"3D-fix\",\n        \"4\": \"GNSS + dead reckoning combined\",\n        \"5\": \"time only fix\"\n      }\n    },\n    {\n      \"byte_offset\": 21,\n      \"name\": \"flags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Fix status flags\",\n      \"bit_fields\": [\n        {\n          \"name\": \"gnssFixOK\",\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"description\": \"1 = valid fix (i.e within DOP & accuracy masks)\"\n        },\n        {\n          \"name\": \"diffSoln\",\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"description\": \"1 = differential corrections were applied\"\n        },\n        {\n          \"name\": \"psmState\",\n          \"bit_offset\": 2,\n          \"num_bits\": 3,\n          \"description\": \"Power save mode state\",\n          \"mapping\": {\n            \"0\": \"PSM is not active\",\n            \"1\": \"Enabled (an intermediate state before Acquisition state)\",\n            \"2\": \"Acquisition\",\n            \"3\": \"Tracking\",\n            \"4\": \"Power Optimized Tracking\"\n          }\n        },\n        {\n          \"name\": \"headVehValid\",\n          \"bit_offset\": 5,\n          \"num_bits\": 1,\n          \"description\": \"1 = heading of vehicle is valid, only set if the receiver is in sensor fusion mode\"\n        },\n        {\n          \"name\": \"carrSoln\",\n          \"bit_offset\": 6,\n          \"num_bits\": 2,\n          \"description\": \"Carrier phase range solution status\",\n          \"mapping\": {\n            \"0\": \"no carrier phase range solution\",\n            \"1\": \"carrier phase range solution with floating ambiguities\",\n            \"2\": \"carrier phase range solution with fixed ambiguities\"\n          }\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 22,\n      \"name\": \"flags2\",\n      \"data_type\": \"X1\",\n      \"description\": \"Additional flags\",\n      \"bit_fields\": [\n        {\n          \"name\": \"confirmedAvai\",\n          \"bit_offset\": 5,\n          \"num_bits\": 1,\n          \"description\": \"1 = information about UTC Date and Time of Day validity confirmation is available\"\n        },\n        {\n          \"name\": \"confirmedDate\",\n          \"bit_offset\": 6,\n          \"num_bits\": 1,\n          \"description\": \"1 = UTC Date validity could be confirmed\"\n        },\n        {\n          \"name\": \"confirmedTime\",\n          \"bit_offset\": 7,\n          \"num_bits\": 1,\n          \"description\": \"1 = UTC Time of Day could be confirmed\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 23,\n      \"name\": \"numSV\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of satellites used in Nav Solution\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"lon\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"1e-7\",\n        \"multiplier\": 0.0000001\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Longitude\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"lat\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"1e-7\",\n        \"multiplier\": 0.0000001\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Latitude\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"height\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm\",\n      \"description\": \"Height above ellipsoid\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"name\": \"hMSL\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm\",\n      \"description\": \"Height above mean sea level\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"name\": \"hAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"mm\",\n      \"description\": \"Horizontal accuracy estimate\"\n    },\n    {\n      \"byte_offset\": 44,\n      \"name\": \"vAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"mm\",\n      \"description\": \"Vertical accuracy estimate\"\n    },\n    {\n      \"byte_offset\": 48,\n      \"name\": \"velN\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm/s\",\n      \"description\": \"NED north velocity\"\n    },\n    {\n      \"byte_offset\": 52,\n      \"name\": \"velE\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm/s\",\n      \"description\": \"NED east velocity\"\n    },\n    {\n      \"byte_offset\": 56,\n      \"name\": \"velD\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm/s\",\n      \"description\": \"NED down velocity\"\n    },\n    {\n      \"byte_offset\": 60,\n      \"name\": \"gSpeed\",\n      \"data_type\": \"I4\",\n      \"unit\": \"mm/s\",\n      \"description\": \"Ground Speed (2-D)\"\n    },\n    {\n      \"byte_offset\": 64,\n      \"name\": \"headMot\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"1e-5\",\n        \"multiplier\": 0.00001\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Heading of motion (2-D)\"\n    },\n    {\n      \"byte_offset\": 68,\n      \"name\": \"sAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"mm/s\",\n      \"description\": \"Speed accuracy estimate\"\n    },\n    {\n      \"byte_offset\": 72,\n      \"name\": \"headAcc\",\n      \"data_type\": \"U4\",\n      \"scale\": {\n        \"raw\": \"1e-5\",\n        \"multiplier\": 0.00001\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Heading accuracy estimate (both motion and vehicle)\"\n    },\n    {\n      \"byte_offset\": 76,\n      \"name\": \"PDOP\",\n      \"data_type\": \"U2\",\n      \"scale\": {\n        \"raw\": \"0.01\",\n        \"multiplier\": 0.01\n      },\n      \"description\": \"Position DOP\"\n    },\n    {\n      \"byte_offset\": 78,\n      \"name\": \"flags3\",\n      \"data_type\": \"X1\",\n      \"description\": \"Additional flags\",\n      \"bit_fields\": [\n        {\n          \"name\": \"invalidLlh\",\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"description\": \"1 = Invalid lon, lat, height and hMSL\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 79,\n      \"name\": \"reserved0\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 5\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 84,\n      \"name\": \"headVeh\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"1e-5\",\n        \"multiplier\": 0.00001\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Heading of vehicle (2-D), this is only valid when headVehValid is set, otherwise the output is set to the heading of motion\"\n    },\n    {\n      \"byte_offset\": 88,\n      \"name\": \"magDec\",\n      \"data_type\": \"I2\",\n      \"scale\": {\n        \"raw\": \"1e-2\",\n        \"multiplier\": 0.01\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Magnetic declination. Only supported in ADR 4.10 and later.\"\n    },\n    {\n      \"byte_offset\": 90,\n      \"name\": \"magAcc\",\n      \"data_type\": \"U2\",\n      \"scale\": {\n        \"raw\": \"1e-2\",\n        \"multiplier\": 0.01\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Magnetic declination accuracy. Only supported in ADR 4.10 and later.\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-PVT",
+    "description": "Navigation position velocity time solution",
+    "message_type": "periodic_polled",
+    "class_id": 1,
+    "message_id": 7,
+    "payload_length": {
+      "fixed": 92
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch."
+        },
+        {
+          "byte_offset": 4,
+          "name": "year",
+          "data_type": "U2",
+          "unit": "y",
+          "description": "Year (UTC)"
+        },
+        {
+          "byte_offset": 6,
+          "name": "month",
+          "data_type": "U1",
+          "unit": "month",
+          "description": "Month, range 1..12 (UTC)"
+        },
+        {
+          "byte_offset": 7,
+          "name": "day",
+          "data_type": "U1",
+          "unit": "d",
+          "description": "Day of month, range 1..31 (UTC)"
+        },
+        {
+          "byte_offset": 8,
+          "name": "hour",
+          "data_type": "U1",
+          "unit": "h",
+          "description": "Hour of day, range 0..23 (UTC)"
+        },
+        {
+          "byte_offset": 9,
+          "name": "min",
+          "data_type": "U1",
+          "unit": "min",
+          "description": "Minute of hour, range 0..59 (UTC)"
+        },
+        {
+          "byte_offset": 10,
+          "name": "sec",
+          "data_type": "U1",
+          "unit": "s",
+          "description": "Seconds of minute, range 0..60 (UTC)"
+        },
+        {
+          "byte_offset": 11,
+          "name": "valid",
+          "data_type": "X1",
+          "description": "Validity flags",
+          "bit_fields": [
+            {
+              "name": "validDate",
+              "bit_offset": 0,
+              "num_bits": 1,
+              "description": "1 = valid UTC Date"
+            },
+            {
+              "name": "validTime",
+              "bit_offset": 1,
+              "num_bits": 1,
+              "description": "1 = valid UTC time of day"
+            },
+            {
+              "name": "fullyResolved",
+              "bit_offset": 2,
+              "num_bits": 1,
+              "description": "1 = UTC time of day has been fully resolved"
+            },
+            {
+              "name": "validMag",
+              "bit_offset": 3,
+              "num_bits": 1,
+              "description": "1 = valid magnetic declination"
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "name": "tAcc",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Time accuracy estimate (UTC)"
+        },
+        {
+          "byte_offset": 16,
+          "name": "nano",
+          "data_type": "I4",
+          "unit": "ns",
+          "description": "Fraction of second, range -1e9.. 1e9 (UTC)"
+        },
+        {
+          "byte_offset": 20,
+          "name": "fixType",
+          "data_type": "U1",
+          "description": "GNSSfix Type",
+          "mapping": {
+            "0": "no fix",
+            "1": "dead reckoning only",
+            "2": "2D-fix",
+            "3": "3D-fix",
+            "4": "GNSS + dead reckoning combined",
+            "5": "time only fix"
+          }
+        },
+        {
+          "byte_offset": 21,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Fix status flags",
+          "bit_fields": [
+            {
+              "name": "gnssFixOK",
+              "bit_offset": 0,
+              "num_bits": 1,
+              "description": "1 = valid fix (i.e within DOP & accuracy masks)"
+            },
+            {
+              "name": "diffSoln",
+              "bit_offset": 1,
+              "num_bits": 1,
+              "description": "1 = differential corrections were applied"
+            },
+            {
+              "name": "psmState",
+              "bit_offset": 2,
+              "num_bits": 3,
+              "description": "Power save mode state",
+              "mapping": {
+                "0": "PSM is not active",
+                "1": "Enabled (an intermediate state before Acquisition state)",
+                "2": "Acquisition",
+                "3": "Tracking",
+                "4": "Power Optimized Tracking"
+              }
+            },
+            {
+              "name": "headVehValid",
+              "bit_offset": 5,
+              "num_bits": 1,
+              "description": "1 = heading of vehicle is valid, only set if the receiver is in sensor fusion mode"
+            },
+            {
+              "name": "carrSoln",
+              "bit_offset": 6,
+              "num_bits": 2,
+              "description": "Carrier phase range solution status",
+              "mapping": {
+                "0": "no carrier phase range solution",
+                "1": "carrier phase range solution with floating ambiguities",
+                "2": "carrier phase range solution with fixed ambiguities"
+              }
+            }
+          ]
+        },
+        {
+          "byte_offset": 22,
+          "name": "flags2",
+          "data_type": "X1",
+          "description": "Additional flags",
+          "bit_fields": [
+            {
+              "name": "confirmedAvai",
+              "bit_offset": 5,
+              "num_bits": 1,
+              "description": "1 = information about UTC Date and Time of Day validity confirmation is available"
+            },
+            {
+              "name": "confirmedDate",
+              "bit_offset": 6,
+              "num_bits": 1,
+              "description": "1 = UTC Date validity could be confirmed"
+            },
+            {
+              "name": "confirmedTime",
+              "bit_offset": 7,
+              "num_bits": 1,
+              "description": "1 = UTC Time of Day could be confirmed"
+            }
+          ]
+        },
+        {
+          "byte_offset": 23,
+          "name": "numSV",
+          "data_type": "U1",
+          "description": "Number of satellites used in Nav Solution"
+        },
+        {
+          "byte_offset": 24,
+          "name": "lon",
+          "data_type": "I4",
+          "scale": {
+            "raw": "1e-7",
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 28,
+          "name": "lat",
+          "data_type": "I4",
+          "scale": {
+            "raw": "1e-7",
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 32,
+          "name": "height",
+          "data_type": "I4",
+          "unit": "mm",
+          "description": "Height above ellipsoid"
+        },
+        {
+          "byte_offset": 36,
+          "name": "hMSL",
+          "data_type": "I4",
+          "unit": "mm",
+          "description": "Height above mean sea level"
+        },
+        {
+          "byte_offset": 40,
+          "name": "hAcc",
+          "data_type": "U4",
+          "unit": "mm",
+          "description": "Horizontal accuracy estimate"
+        },
+        {
+          "byte_offset": 44,
+          "name": "vAcc",
+          "data_type": "U4",
+          "unit": "mm",
+          "description": "Vertical accuracy estimate"
+        },
+        {
+          "byte_offset": 48,
+          "name": "velN",
+          "data_type": "I4",
+          "unit": "mm/s",
+          "description": "NED north velocity"
+        },
+        {
+          "byte_offset": 52,
+          "name": "velE",
+          "data_type": "I4",
+          "unit": "mm/s",
+          "description": "NED east velocity"
+        },
+        {
+          "byte_offset": 56,
+          "name": "velD",
+          "data_type": "I4",
+          "unit": "mm/s",
+          "description": "NED down velocity"
+        },
+        {
+          "byte_offset": 60,
+          "name": "gSpeed",
+          "data_type": "I4",
+          "unit": "mm/s",
+          "description": "Ground Speed (2-D)"
+        },
+        {
+          "byte_offset": 64,
+          "name": "headMot",
+          "data_type": "I4",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading of motion (2-D)"
+        },
+        {
+          "byte_offset": 68,
+          "name": "sAcc",
+          "data_type": "U4",
+          "unit": "mm/s",
+          "description": "Speed accuracy estimate"
+        },
+        {
+          "byte_offset": 72,
+          "name": "headAcc",
+          "data_type": "U4",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading accuracy estimate (both motion and vehicle)"
+        },
+        {
+          "byte_offset": 76,
+          "name": "PDOP",
+          "data_type": "U2",
+          "scale": {
+            "raw": "0.01",
+            "multiplier": 0.01
+          },
+          "description": "Position DOP"
+        },
+        {
+          "byte_offset": 78,
+          "name": "flags3",
+          "data_type": "X1",
+          "description": "Additional flags",
+          "bit_fields": [
+            {
+              "name": "invalidLlh",
+              "bit_offset": 0,
+              "num_bits": 1,
+              "description": "1 = Invalid lon, lat, height and hMSL"
+            }
+          ]
+        },
+        {
+          "byte_offset": 79,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 5
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 84,
+          "name": "headVeh",
+          "data_type": "I4",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading of vehicle (2-D), this is only valid when headVehValid is set, otherwise the output is set to the heading of motion"
+        },
+        {
+          "byte_offset": 88,
+          "name": "magDec",
+          "data_type": "I2",
+          "scale": {
+            "raw": "1e-2",
+            "multiplier": 0.01
+          },
+          "unit": "deg",
+          "description": "Magnetic declination. Only supported in ADR 4.10 and later."
+        },
+        {
+          "byte_offset": 90,
+          "name": "magAcc",
+          "data_type": "U2",
+          "scale": {
+            "raw": "1e-2",
+            "multiplier": 0.01
+          },
+          "unit": "deg",
+          "description": "Magnetic declination accuracy. Only supported in ADR 4.10 and later."
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/igm0g7k2vndg"
+}

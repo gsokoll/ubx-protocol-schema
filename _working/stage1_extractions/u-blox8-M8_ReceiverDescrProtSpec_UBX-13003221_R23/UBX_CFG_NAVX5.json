@@ -1,0 +1,216 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-NAVX5",
+  "extraction_timestamp": "2026-01-08T05:41:55.501250+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 236,
+    "end": 241
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-NAVX5\nExpected IDs: class_id=0x06, message_id=0x23\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-NAVX5\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-CFG-NAVX5\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x23\",\n  \"message_type\": \"get_set\",\n  \"description\": \"Navigation engine expert settings\",\n  \"firmware_versions\": \"u-blox 8/u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01\",\n  \"payload_length\": {\n    \"fixed\": 44\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U2\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x0003 for this version)\",\n      \"fixed_value\": 3\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X2\",\n      \"name\": \"mask1\",\n      \"description\": \"First parameters bitmask. Only the flagged parameters will be applied, unused bits must be set to 0. Bitfield: minMax (bit 0-2): 1 = apply min/max SVs settings; minCno (bit 3): 1 = apply minimum C/NO setting; initial3dfix (bit 6): 1 = apply initial 3D fix settings; wknRoll (bit 9-10): 1 = apply GPS weeknumber rollover settings; ackAid (bit 13): 1 = apply assistance acknowledgement settings; PPP (bit 14): 1 = apply usePPP flag; aop (bit 15): 1 = apply aopCfg (useAOP flag) and aopOrbMaxErr settings (AssistNow Autonomous).\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"mask2\",\n      \"description\": \"Second parameters bitmask. Only the flagged parameters will be applied, unused bits must be set to 0. Bitfield: adr (bit 6): Apply ADR/UDR sensor fusion on/off setting (useAdr flag); sigAttenComp (bit 7): Apply signal attenuation compensation feature settings.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"U1\",\n      \"name\": \"minSVs\",\n      \"unit\": \"#SVs\",\n      \"description\": \"Minimum number of satellites for navigation\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"data_type\": \"U1\",\n      \"name\": \"maxSVs\",\n      \"unit\": \"#SVs\",\n      \"description\": \"Maximum number of satellites for navigation\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U1\",\n      \"name\": \"minCNO\",\n      \"unit\": \"dBHz\",\n      \"description\": \"Minimum satellite signal level for navigation\"\n    },\n    {\n      \"byte_offset\": 13,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved2\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"U1\",\n      \"name\": \"iniFix3D\",\n      \"description\": \"1 = initial fix must be 3D\"\n    },\n    {\n      \"byte_offset\": 15,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved3\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 17,\n      \"data_type\": \"U1\",\n      \"name\": \"ackAiding\",\n      \"description\": \"1 = issue acknowledgements for assistance message input\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": \"U2\",\n      \"name\": \"wknRollover\",\n      \"description\": \"GPS week rollover number; GPS week numbers will be set correctly from this week up to 1024 weeks after this week. Setting this to 0 reverts to firmware default.\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U1\",\n      \"name\": \"sigAttenCompMode\",\n      \"unit\": \"dBHz\",\n      \"description\": \"Only supported on certain products Permanently attenuated signal compensation (0 = disabled, 255 = automatic, 1..63 = maximum expected C/NO value)\"\n    },\n    {\n      \"byte_offset\": 21,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved4\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 22,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved5\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved6\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 26,\n      \"data_type\": \"U1\",\n      \"name\": \"usePPP\",\n      \"description\": \"1 = use Precise Point Positioning (only available with the PPP product variant)\"\n    },\n    {\n      \"byte_offset\": 27,\n      \"data_type\": \"U1\",\n      \"name\": \"aopCfg\",\n      \"description\": \"AssistNow Autonomous configuration. Bitfield: useAOP (bit 0): 1 = enable AssistNow Autonomous.\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved7\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 30,\n      \"data_type\": \"U2\",\n      \"name\": \"aopOrbMaxErr\",\n      \"unit\": \"m\",\n      \"description\": \"Maximum acceptable (modeled) AssistNow Autonomous orbit error (valid range = 5..1000, or 0 = reset to firmware default)\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved8\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 36,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"name\": \"reserved9\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 39,\n      \"data_type\": \"U1\",\n      \"name\": \"useAdr\",\n      \"description\": \"Only supported on certain products Enable/disable ADR/UDR sensor fusion (if 0: sensor fusion is disabled - if 1: sensor fusion is enabled).\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved10\",\n      \"reserved\": true,\n      \"description\": \"Reserved to fill 44-byte payload length\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-CFG-NAVX5",
+    "class_id": "0x06",
+    "message_id": "0x23",
+    "message_type": "get_set",
+    "description": "Navigation engine expert settings",
+    "firmware_versions": "u-blox 8/u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01",
+    "payload_length": {
+      "fixed": 44
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U2",
+          "name": "version",
+          "description": "Message version (0x0003 for this version)",
+          "fixed_value": 3
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X2",
+          "name": "mask1",
+          "description": "First parameters bitmask. Only the flagged parameters will be applied, unused bits must be set to 0. Bitfield: minMax (bit 0-2): 1 = apply min/max SVs settings; minCno (bit 3): 1 = apply minimum C/NO setting; initial3dfix (bit 6): 1 = apply initial 3D fix settings; wknRoll (bit 9-10): 1 = apply GPS weeknumber rollover settings; ackAid (bit 13): 1 = apply assistance acknowledgement settings; PPP (bit 14): 1 = apply usePPP flag; aop (bit 15): 1 = apply aopCfg (useAOP flag) and aopOrbMaxErr settings (AssistNow Autonomous)."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "mask2",
+          "description": "Second parameters bitmask. Only the flagged parameters will be applied, unused bits must be set to 0. Bitfield: adr (bit 6): Apply ADR/UDR sensor fusion on/off setting (useAdr flag); sigAttenComp (bit 7): Apply signal attenuation compensation feature settings."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U1",
+          "name": "minSVs",
+          "unit": "#SVs",
+          "description": "Minimum number of satellites for navigation"
+        },
+        {
+          "byte_offset": 11,
+          "data_type": "U1",
+          "name": "maxSVs",
+          "unit": "#SVs",
+          "description": "Maximum number of satellites for navigation"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U1",
+          "name": "minCNO",
+          "unit": "dBHz",
+          "description": "Minimum satellite signal level for navigation"
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "U1",
+          "name": "reserved2",
+          "reserved": true
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "U1",
+          "name": "iniFix3D",
+          "description": "1 = initial fix must be 3D"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved3",
+          "reserved": true
+        },
+        {
+          "byte_offset": 17,
+          "data_type": "U1",
+          "name": "ackAiding",
+          "description": "1 = issue acknowledgements for assistance message input"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "U2",
+          "name": "wknRollover",
+          "description": "GPS week rollover number; GPS week numbers will be set correctly from this week up to 1024 weeks after this week. Setting this to 0 reverts to firmware default."
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U1",
+          "name": "sigAttenCompMode",
+          "unit": "dBHz",
+          "description": "Only supported on certain products Permanently attenuated signal compensation (0 = disabled, 255 = automatic, 1..63 = maximum expected C/NO value)"
+        },
+        {
+          "byte_offset": 21,
+          "data_type": "U1",
+          "name": "reserved4",
+          "reserved": true
+        },
+        {
+          "byte_offset": 22,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved5",
+          "reserved": true
+        },
+        {
+          "byte_offset": 24,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved6",
+          "reserved": true
+        },
+        {
+          "byte_offset": 26,
+          "data_type": "U1",
+          "name": "usePPP",
+          "description": "1 = use Precise Point Positioning (only available with the PPP product variant)"
+        },
+        {
+          "byte_offset": 27,
+          "data_type": "U1",
+          "name": "aopCfg",
+          "description": "AssistNow Autonomous configuration. Bitfield: useAOP (bit 0): 1 = enable AssistNow Autonomous."
+        },
+        {
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved7",
+          "reserved": true
+        },
+        {
+          "byte_offset": 30,
+          "data_type": "U2",
+          "name": "aopOrbMaxErr",
+          "unit": "m",
+          "description": "Maximum acceptable (modeled) AssistNow Autonomous orbit error (valid range = 5..1000, or 0 = reset to firmware default)"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved8",
+          "reserved": true
+        },
+        {
+          "byte_offset": 36,
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "name": "reserved9",
+          "reserved": true
+        },
+        {
+          "byte_offset": 39,
+          "data_type": "U1",
+          "name": "useAdr",
+          "description": "Only supported on certain products Enable/disable ADR/UDR sensor fusion (if 0: sensor fusion is disabled - if 1: sensor fusion is enabled)."
+        },
+        {
+          "byte_offset": 40,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved10",
+          "reserved": true,
+          "description": "Reserved to fill 44-byte payload length"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/y64g90ljpuow"
+}

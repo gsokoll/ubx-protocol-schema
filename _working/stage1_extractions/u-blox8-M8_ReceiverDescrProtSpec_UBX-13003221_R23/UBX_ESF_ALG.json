@@ -1,0 +1,135 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-ESF-ALG",
+  "extraction_timestamp": "2026-01-08T05:52:33.894791+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 294,
+    "end": 295
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-ESF-ALG\nExpected IDs: class_id=0x10, message_id=0x14\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-ESF-ALG\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-ESF-ALG\",\n    \"class_id\": \"0x10\",\n    \"message_id\": \"0x14\",\n    \"description\": \"IMU alignment information\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 16\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTow\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"fixed_value\": 1,\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"flags\",\n        \"data_type\": \"U1\",\n        \"description\": \"Flags\",\n        \"bitfields\": [\n          {\n            \"name\": \"autoMntAlgon\",\n            \"mask\": \"0x01\",\n            \"description\": \"Automatic IMU-mount alignment on/off bit (0: automatic alignment is not running, 1: automatic alignment is running)\"\n          },\n          {\n            \"name\": \"status\",\n            \"mask\": \"0x0E\",\n            \"description\": \"Status of the IMU-mount alignment (0: user-defined/fixed angles are used, 1: IMU-mount roll/pitch angles alignment is ongoing, 2: IMU-mount roll/pitch/yaw angles alignment is ongoing, 3: coarse IMU-mount alignment are used, 4: fine IMU-mount alignment are used)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 6,\n        \"name\": \"error\",\n        \"data_type\": \"U1\",\n        \"description\": \"Flags\",\n        \"bitfields\": [\n          {\n            \"name\": \"tiltAlgError\",\n            \"mask\": \"0x01\",\n            \"description\": \"IMU-mount tilt (roll and/or pitch) alignment error (0: no error, 1: error)\"\n          },\n          {\n            \"name\": \"yawAlgError\",\n            \"mask\": \"0x02\",\n            \"description\": \"IMU-mount yaw alignment error (0: no error, 1: error)\"\n          },\n          {\n            \"name\": \"angleError\",\n            \"mask\": \"0x04\",\n            \"description\": \"IMU-mount misalignment Euler angle singularity error (0: no error, 1: error). If this error bit is set, the IMU-mount roll and IMU-mount yaw angles cannot uniquely be defined due to the singularity issue happening with installations mounted with a +/- 90 degrees misalignment around pitch axis. This is also known as the 'gimbal-lock' problem affecting rotations described by Euler angles.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 7,\n        \"name\": \"reserved1\",\n        \"data_type\": \"U1\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"yaw\",\n        \"data_type\": \"U4\",\n        \"scaling\": {\n          \"raw_unit\": \"deg\",\n          \"multiplier\": 0.01\n        },\n        \"unit\": \"deg\",\n        \"description\": \"IMU-mount yaw angle [0, 360]\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"pitch\",\n        \"data_type\": \"I2\",\n        \"scaling\": {\n          \"raw_unit\": \"deg\",\n          \"multiplier\": 0.01\n        },\n        \"unit\": \"deg\",\n        \"description\": \"IMU-mount pitch angle [-90, 90]\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"roll\",\n        \"data_type\": \"I2\",\n        \"scaling\": {\n          \"raw_unit\": \"deg\",\n          \"multiplier\": 0.01\n        },\n        \"unit\": \"deg\",\n        \"description\": \"IMU-mount roll angle [-180, 180]\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-ESF-ALG",
+      "class_id": "0x10",
+      "message_id": "0x14",
+      "description": "IMU alignment information",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 16
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTow",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 1,
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "flags",
+          "data_type": "U1",
+          "description": "Flags",
+          "bitfields": [
+            {
+              "name": "autoMntAlgon",
+              "mask": "0x01",
+              "description": "Automatic IMU-mount alignment on/off bit (0: automatic alignment is not running, 1: automatic alignment is running)"
+            },
+            {
+              "name": "status",
+              "mask": "0x0E",
+              "description": "Status of the IMU-mount alignment (0: user-defined/fixed angles are used, 1: IMU-mount roll/pitch angles alignment is ongoing, 2: IMU-mount roll/pitch/yaw angles alignment is ongoing, 3: coarse IMU-mount alignment are used, 4: fine IMU-mount alignment are used)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 6,
+          "name": "error",
+          "data_type": "U1",
+          "description": "Flags",
+          "bitfields": [
+            {
+              "name": "tiltAlgError",
+              "mask": "0x01",
+              "description": "IMU-mount tilt (roll and/or pitch) alignment error (0: no error, 1: error)"
+            },
+            {
+              "name": "yawAlgError",
+              "mask": "0x02",
+              "description": "IMU-mount yaw alignment error (0: no error, 1: error)"
+            },
+            {
+              "name": "angleError",
+              "mask": "0x04",
+              "description": "IMU-mount misalignment Euler angle singularity error (0: no error, 1: error). If this error bit is set, the IMU-mount roll and IMU-mount yaw angles cannot uniquely be defined due to the singularity issue happening with installations mounted with a +/- 90 degrees misalignment around pitch axis. This is also known as the 'gimbal-lock' problem affecting rotations described by Euler angles."
+            }
+          ]
+        },
+        {
+          "byte_offset": 7,
+          "name": "reserved1",
+          "data_type": "U1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "name": "yaw",
+          "data_type": "U4",
+          "scaling": {
+            "raw_unit": "deg",
+            "multiplier": 0.01
+          },
+          "unit": "deg",
+          "description": "IMU-mount yaw angle [0, 360]"
+        },
+        {
+          "byte_offset": 12,
+          "name": "pitch",
+          "data_type": "I2",
+          "scaling": {
+            "raw_unit": "deg",
+            "multiplier": 0.01
+          },
+          "unit": "deg",
+          "description": "IMU-mount pitch angle [-90, 90]"
+        },
+        {
+          "byte_offset": 14,
+          "name": "roll",
+          "data_type": "I2",
+          "scaling": {
+            "raw_unit": "deg",
+            "multiplier": 0.01
+          },
+          "unit": "deg",
+          "description": "IMU-mount roll angle [-180, 180]"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/qwt0c3unu2w5"
+}

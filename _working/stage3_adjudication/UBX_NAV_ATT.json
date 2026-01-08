@@ -6,7 +6,7 @@
       "name": "UBX-NAV-ATT",
       "class_id": "0x01",
       "message_id": "0x05",
-      "description": "Attitude solution. This message outputs the attitude solution as roll, pitch and heading angles.",
+      "description": "This message outputs the attitude solution as roll, pitch and heading angles.",
       "message_type": "periodic_polled",
       "payload": {
         "length": {
@@ -108,7 +108,12 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -118,17 +123,12 @@
         "issues": []
       },
       {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
@@ -136,11 +136,11 @@
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "valid_variation",
         "issues": [
-          "Naming convention: uses 'reserved1' instead of 'reserved0'."
+          "Uses legacy field name 'reserved1' instead of 'reserved0'"
         ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
         "verdict": "correct",
         "issues": []
       }
@@ -151,101 +151,20 @@
           "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
-          "name": "UBX-NAV-ATT",
-          "class_id": "0x01",
-          "message_id": "0x05",
-          "description": "Attitude solution",
-          "payload": {
-            "length": {
-              "fixed": 32
-            },
-            "fields": [
-              {
-                "name": "iTOW",
-                "byte_offset": 0,
-                "data_type": "U4",
-                "unit": "ms"
-              },
-              {
-                "name": "version",
-                "byte_offset": 4,
-                "data_type": "U1"
-              },
-              {
-                "name": "reserved1",
-                "byte_offset": 5,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 3
-                },
-                "reserved": true
-              },
-              {
-                "name": "roll",
-                "byte_offset": 8,
-                "data_type": "I4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
-              },
-              {
-                "name": "pitch",
-                "byte_offset": 12,
-                "data_type": "I4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
-              },
-              {
-                "name": "heading",
-                "byte_offset": 16,
-                "data_type": "I4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
-              },
-              {
-                "name": "accRoll",
-                "byte_offset": 20,
-                "data_type": "U4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
-              },
-              {
-                "name": "accPitch",
-                "byte_offset": 24,
-                "data_type": "U4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
-              },
-              {
-                "name": "accHeading",
-                "byte_offset": 28,
-                "data_type": "U4",
-                "unit": "deg",
-                "scale": {
-                  "raw": "1e-5",
-                  "multiplier": 1e-05
-                }
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
               }
-            ]
-          }
+            }
+          ]
         },
-        "reason": "The M8 generation documentation (Extraction 6) names the reserved field at offset 5 'reserved1', whereas the M9 and F9 generations name it 'reserved0'. The binary structure is identical."
+        "reason": "Legacy naming convention for the reserved byte block at offset 5 in the M8 series documentation."
       }
     ],
-    "reasoning": "The message definition is highly consistent across all 7 extractions covering u-blox M8, M9, and F9 generations. All extractions agree on the fixed length of 32 bytes and the layout of functional fields (iTOW, version, roll, pitch, heading, accRoll, accPitch, accHeading) along with their data types and scaling factors. The only discrepancy is the naming of the reserved field block at byte offset 5: the older M8 manual (Extraction 6) refers to it as 'reserved1', while the newer M9/F9 manuals refer to it as 'reserved0'. This is a documentation convention difference, not a protocol change. The canonical structure adopts 'reserved0' as it is the current standard."
+    "reasoning": "The UBX-NAV-ATT message is highly stable across generations (M8, M9, F9). All extractions agree on the 32-byte length, field ordering, data types, and scaling factors (1e-5). Minor differences exist in field naming (reserved0 vs reserved1) and the detail provided in descriptions, but the binary protocol definition is identical."
   }
 }

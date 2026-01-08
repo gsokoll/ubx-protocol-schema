@@ -1,0 +1,136 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MON-SYS",
+  "extraction_timestamp": "2026-01-08T04:24:22.185485+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 105,
+    "end": 106
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-SYS\nExpected IDs: class_id=0x0a, message_id=0x39\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-SYS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MON-SYS\",\n    \"class_id\": \"0x0a\",\n    \"message_id\": \"0x39\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 24\n    },\n    \"payload_description\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"msgVer\",\n        \"data_type\": \"U1\",\n        \"fixed_value\": 1,\n        \"description\": \"Message Version (0x01)\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"bootType\",\n        \"data_type\": \"U1\",\n        \"description\": \"Boot type system\\n0-Unknown\\n1-Cold Start\\n2-Watchdog\\n3-Hardware reset\\n4-Hardware backup\\n5-Software backup\\n6-Software reset\\n7-VIO fail\\n8-VDD_X fail\\n9-VDD_RF fail\\n10-V_CORE_HIGH fail\\n11-System reset\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"cpuLoad\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Highest actual load of realtime tasks of all CPUs in %\"\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"cpuLoadMax\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Maximal CPU load value in % seen since last restart\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"memUsage\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Highest actual dynamic memory usage of all CPUs in %\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"memUsageMax\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Maximal dynamic memory usage in % seen since last restart\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"name\": \"ioUsage\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Highest actual IO bandwidth usage of all rx/tx interfaces in %\"\n      },\n      {\n        \"byte_offset\": 7,\n        \"name\": \"ioUsageMax\",\n        \"data_type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Maximal bandwidth usage of all rx/tx interfaces in % seen since last restart\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"runTime\",\n        \"data_type\": \"U4\",\n        \"unit\": \"sec\",\n        \"description\": \"Time since last restart\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"noticeCount\",\n        \"data_type\": \"U2\",\n        \"description\": \"Number of notices occured since last restart\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"warnCount\",\n        \"data_type\": \"U2\",\n        \"description\": \"Number of warnings occured since last restart\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"errorCount\",\n        \"data_type\": \"U2\",\n        \"description\": \"Number of errors occured since last restart\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"tempValue\",\n        \"data_type\": \"I1\",\n        \"unit\": \"[C]\",\n        \"description\": \"Temperature value [C]\"\n      },\n      {\n        \"byte_offset\": 19,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 5\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-SYS",
+      "class_id": "0x0a",
+      "message_id": "0x39",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 24
+      },
+      "payload_description": [
+        {
+          "byte_offset": 0,
+          "name": "msgVer",
+          "data_type": "U1",
+          "fixed_value": 1,
+          "description": "Message Version (0x01)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "bootType",
+          "data_type": "U1",
+          "description": "Boot type system\n0-Unknown\n1-Cold Start\n2-Watchdog\n3-Hardware reset\n4-Hardware backup\n5-Software backup\n6-Software reset\n7-VIO fail\n8-VDD_X fail\n9-VDD_RF fail\n10-V_CORE_HIGH fail\n11-System reset"
+        },
+        {
+          "byte_offset": 2,
+          "name": "cpuLoad",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Highest actual load of realtime tasks of all CPUs in %"
+        },
+        {
+          "byte_offset": 3,
+          "name": "cpuLoadMax",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Maximal CPU load value in % seen since last restart"
+        },
+        {
+          "byte_offset": 4,
+          "name": "memUsage",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Highest actual dynamic memory usage of all CPUs in %"
+        },
+        {
+          "byte_offset": 5,
+          "name": "memUsageMax",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Maximal dynamic memory usage in % seen since last restart"
+        },
+        {
+          "byte_offset": 6,
+          "name": "ioUsage",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Highest actual IO bandwidth usage of all rx/tx interfaces in %"
+        },
+        {
+          "byte_offset": 7,
+          "name": "ioUsageMax",
+          "data_type": "U1",
+          "unit": "%",
+          "description": "Maximal bandwidth usage of all rx/tx interfaces in % seen since last restart"
+        },
+        {
+          "byte_offset": 8,
+          "name": "runTime",
+          "data_type": "U4",
+          "unit": "sec",
+          "description": "Time since last restart"
+        },
+        {
+          "byte_offset": 12,
+          "name": "noticeCount",
+          "data_type": "U2",
+          "description": "Number of notices occured since last restart"
+        },
+        {
+          "byte_offset": 14,
+          "name": "warnCount",
+          "data_type": "U2",
+          "description": "Number of warnings occured since last restart"
+        },
+        {
+          "byte_offset": 16,
+          "name": "errorCount",
+          "data_type": "U2",
+          "description": "Number of errors occured since last restart"
+        },
+        {
+          "byte_offset": 18,
+          "name": "tempValue",
+          "data_type": "I1",
+          "unit": "[C]",
+          "description": "Temperature value [C]"
+        },
+        {
+          "byte_offset": 19,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 5
+          },
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/59is9nmn1am6"
+}

@@ -13,7 +13,7 @@
       "length": {
         "variable": {
           "base": 12,
-          "formula": "12 + N*4",
+          "formula": "12 + N * 4",
           "min": 12
         }
       },
@@ -22,7 +22,8 @@
           "name": "sTtag",
           "byte_offset": 0,
           "data_type": "U4",
-          "description": "sensor time tag"
+          "description": "sensor time tag",
+          "unit": "ms"
         },
         {
           "name": "version",
@@ -53,8 +54,9 @@
       ],
       "repeated_groups": [
         {
-          "name": "data_blocks",
-          "repetition_type": "num_derived_from_payload_length",
+          "name": "data_items",
+          "repetition_type": "calculated_from_length",
+          "length_formula": "(payload_length - 12) / 4",
           "group_size_bytes": 4,
           "base_offset": 12,
           "fields": [
@@ -62,7 +64,7 @@
               "name": "data",
               "byte_offset": 0,
               "data_type": "X4",
-              "description": "Sensor data and type",
+              "description": "Data block containing calibrated sensor measurement and its type",
               "bitfield": {
                 "bits": [
                   {
@@ -87,15 +89,15 @@
   },
   "winning_fingerprint": "bca3882b2b91be2a",
   "agreeing_sources": [
-    "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+    "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
     "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-    "M9-MDR-2.10_InterfaceDescription_UBX-21036678"
+    "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public"
   ],
   "disagreeing_sources": [],
   "all_extractions": [
     {
-      "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
       "structure": {
         "name": "UBX-ESF-CAL",
         "class_id": "0x10",
@@ -106,7 +108,7 @@
           "length": {
             "variable": {
               "base": 12,
-              "formula": "12 + N*4",
+              "formula": "12 + N * 4",
               "min": 12
             }
           },
@@ -115,7 +117,8 @@
               "name": "sTtag",
               "byte_offset": 0,
               "data_type": "U4",
-              "description": "sensor time tag"
+              "description": "sensor time tag",
+              "unit": "ms"
             },
             {
               "name": "version",
@@ -146,8 +149,9 @@
           ],
           "repeated_groups": [
             {
-              "name": "data_blocks",
-              "repetition_type": "num_derived_from_payload_length",
+              "name": "data_items",
+              "repetition_type": "calculated_from_length",
+              "length_formula": "(payload_length - 12) / 4",
               "group_size_bytes": 4,
               "base_offset": 12,
               "fields": [
@@ -155,7 +159,7 @@
                   "name": "data",
                   "byte_offset": 0,
                   "data_type": "X4",
-                  "description": "Sensor data and type",
+                  "description": "Data block containing calibrated sensor measurement and its type",
                   "bitfield": {
                     "bits": [
                       {
@@ -267,6 +271,92 @@
       "fingerprint": "bca3882b2b91be2a"
     },
     {
+      "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "structure": {
+        "name": "UBX-ESF-CAL",
+        "class_id": "0x10",
+        "message_id": "0x04",
+        "description": "Calibrated sensor measurements",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 12,
+              "formula": "12 + N*4",
+              "min": 12
+            }
+          },
+          "fields": [
+            {
+              "name": "sTtag",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "sensor time tag"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "data_blocks",
+              "repetition_type": "num_derived_from_payload_length",
+              "group_size_bytes": 4,
+              "base_offset": 12,
+              "fields": [
+                {
+                  "name": "data",
+                  "byte_offset": 0,
+                  "data_type": "X4",
+                  "description": "Sensor data and type",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "dataField",
+                        "bit_start": 0,
+                        "bit_end": 23,
+                        "description": "Data"
+                      },
+                      {
+                        "name": "dataType",
+                        "bit_start": 24,
+                        "bit_end": 29,
+                        "description": "Type of data (0 = no data; 1..63 = data type)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "bca3882b2b91be2a"
+    },
+    {
       "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
       "structure": {
         "name": "UBX-ESF-CAL",
@@ -330,94 +420,6 @@
                   "byte_offset": 0,
                   "data_type": "X4",
                   "description": "Data item",
-                  "bitfield": {
-                    "bits": [
-                      {
-                        "name": "dataField",
-                        "bit_start": 0,
-                        "bit_end": 23,
-                        "description": "Data"
-                      },
-                      {
-                        "name": "dataType",
-                        "bit_start": 24,
-                        "bit_end": 29,
-                        "description": "Type of data (0 = no data; 1..63 = data type)"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "bca3882b2b91be2a"
-    },
-    {
-      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
-      "structure": {
-        "name": "UBX-ESF-CAL",
-        "class_id": "0x10",
-        "message_id": "0x04",
-        "description": "Calibrated sensor measurements",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 12,
-              "formula": "12 + N * 4",
-              "min": 12
-            }
-          },
-          "fields": [
-            {
-              "name": "sTtag",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "sensor time tag",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 8,
-              "data_type": {
-                "array_of": "U1",
-                "count": 4
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "data_items",
-              "repetition_type": "calculated_from_length",
-              "length_formula": "(payload_length - 12) / 4",
-              "group_size_bytes": 4,
-              "base_offset": 12,
-              "fields": [
-                {
-                  "name": "data",
-                  "byte_offset": 0,
-                  "data_type": "X4",
-                  "description": "Data block containing calibrated sensor measurement and its type",
                   "bitfield": {
                     "bits": [
                       {

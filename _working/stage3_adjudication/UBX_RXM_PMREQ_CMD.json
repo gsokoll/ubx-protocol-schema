@@ -1,17 +1,14 @@
 {
   "message_name": "UBX-RXM-PMREQ-CMD",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-RXM-PMREQ-CMD",
       "class_id": "0x02",
       "message_id": "0x41",
-      "description": "Requests a power management related task of the receiver.",
-      "message_type": "command",
+      "description": "This message requests a power management related task of the receiver.",
+      "payload_length": 16,
       "payload": {
-        "length": {
-          "fixed": 16
-        },
         "fields": [
           {
             "name": "version",
@@ -34,26 +31,26 @@
             "byte_offset": 4,
             "data_type": "U4",
             "unit": "ms",
-            "description": "Duration of the requested task. 0 for infinite/wait for pin."
+            "description": "Duration of the requested task. The maximum supported value is 12 days. Set to 0 to wait for a wakeup signal on a pin"
           },
           {
             "name": "flags",
             "byte_offset": 8,
             "data_type": "X4",
-            "description": "task flags",
+            "description": "Task flags",
             "bitfield": {
               "bits": [
                 {
                   "name": "backup",
                   "bit_start": 1,
                   "bit_end": 1,
-                  "description": "Set to 1 to put the receiver into backup mode"
+                  "description": "The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB"
                 },
                 {
                   "name": "force",
                   "bit_start": 2,
                   "bit_end": 2,
-                  "description": "Set to 1 for minimum power consumption / Force backup while USB connected"
+                  "description": "Force receiver backup while USB is connected. USB interface will be disabled."
                 }
               ]
             }
@@ -69,25 +66,25 @@
                   "name": "uartrx",
                   "bit_start": 3,
                   "bit_end": 3,
-                  "description": "Wake up on UART RX pin edge"
+                  "description": "Wake up the receiver if there is an edge on the UART RX pin"
                 },
                 {
                   "name": "extint0",
                   "bit_start": 5,
                   "bit_end": 5,
-                  "description": "Wake up on EXTINT0 pin edge"
+                  "description": "Wake up the receiver if there is an edge on the EXTINT0 pin"
                 },
                 {
                   "name": "extint1",
                   "bit_start": 6,
                   "bit_end": 6,
-                  "description": "Wake up on EXTINT1 pin edge"
+                  "description": "Wake up the receiver if there is an edge on the EXTINT1 pin"
                 },
                 {
                   "name": "spics",
                   "bit_start": 7,
                   "bit_end": 7,
-                  "description": "Wake up on SPI CS pin edge"
+                  "description": "Wake up the receiver if there is an edge on the SPI CS pin"
                 }
               ]
             }
@@ -98,47 +95,8 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Bit offsets for flags (backup/force) are shifted (0/1 instead of 1/2)",
-          "Bit offsets for wakeupSources are shifted (2/4/5 instead of 3/5/6)"
-        ]
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "valid_variation",
-        "issues": [
-          "Represents the 8-byte version of the message"
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "valid_variation",
-        "issues": [
-          "Represents the 8-byte version of the message"
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "extraction_error",
-        "issues": [
-          "Misplaced 'force' flag bit into the 'wakeupSources' bitfield"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
         "issues": []
       },
       {
@@ -147,19 +105,24 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
         "issues": []
       },
       {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "valid_variation",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "extraction_error",
         "issues": [
-          "Represents the 8-byte version of the message"
+          "Incorrect bit offsets (off-by-one) for flags and wakeupSources bitfields"
         ]
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -169,11 +132,36 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
         "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "extraction_error",
         "issues": [
-          "Represents the 8-byte legacy version of the message"
+          "The 'force' bit is misplaced in the wakeupSources bitfield instead of the flags bitfield"
         ]
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "valid_variation",
+        "issues": []
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
@@ -181,51 +169,54 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
         "verdict": "correct",
-        "issues": [
-          "Omitted spics bit, but otherwise structure and primary flags are correct"
-        ]
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
           "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-          "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
           "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
-          "payload": {
-            "length": {
-              "fixed": 8
+          "payload_length": 8,
+          "fields": [
+            {
+              "name": "duration",
+              "offset": 0,
+              "type": "U4"
             },
-            "fields": [
-              {
-                "name": "duration",
-                "byte_offset": 0,
-                "data_type": "U4"
-              },
-              {
-                "name": "flags",
-                "byte_offset": 4,
-                "data_type": "X4",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "backup",
-                      "bit_start": 1,
-                      "bit_end": 1
-                    }
-                  ]
-                }
+            {
+              "name": "flags",
+              "offset": 4,
+              "type": "X4",
+              "bits": {
+                "backup": 1
               }
-            ]
-          }
+            }
+          ]
         },
-        "reason": "Legacy 8-byte version of the RXM-PMREQ message commonly used in u-blox 8 and early F9 firmware versions."
+        "reason": "Legacy 8-byte version of the PMREQ message used in older firmware or specific hardware variants where versioning and wakeup source configuration are not available."
       }
     ],
-    "reasoning": "The message has two primary versions: an 8-byte legacy version and a 16-byte modern version (Version 0). Extractions 1 and 5 contain bit-alignment errors where the LLM either shifted bit positions or grouped bits into the wrong payload fields. Extraction 12 provides the most rigorous definition of the 16-byte version, including explicit reserved bit ranges, confirming that bit 1 is backup and bit 3 is UART RX. The 16-byte version is considered canonical for M9, M10, and F9 series."
+    "reasoning": "The message UBX-RXM-PMREQ (Class 0x02, ID 0x41) exists in two primary forms across the u-blox documentation. The modern 16-byte version (v0) includes a version byte and an explicit configuration for wakeup sources (UART RX, EXTINT0/1, SPI CS). The legacy 8-byte version provides only the duration and the backup flag. Extraction 4 contains systematic bit-offset errors (decrementing all bit indices by 1). Extraction 9 incorrectly identifies the 'force' flag as a bit within the wakeupSources field rather than the flags field."
   }
 }

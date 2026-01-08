@@ -1,0 +1,342 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-PM2",
+  "extraction_timestamp": "2026-01-08T05:44:49.115177+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 252,
+    "end": 257
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-PM2\nExpected IDs: class_id=0x06, message_id=0x3B\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-PM2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"ubx_class\": \"0x06\",\n    \"ubx_id\": \"0x3B\",\n    \"name\": \"UBX-CFG-PM2\",\n    \"message_type\": \"get_set\",\n    \"description\": \"Extended power management configuration\",\n    \"supported_firmware\": \"u-blox 8 / u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 23.01\",\n    \"comment\": \"This feature is not supported for either the ADR or FTS products.\",\n    \"payload_length\": {\n      \"fixed\": 48\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"version\",\n        \"description\": \"Message version (0x02 for this version). Note: the message version number is the same as for protocol version 23.01; please select correct message version based on the protocol version supported by your firmware.\",\n        \"fixed_value\": 2\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"name\": \"reserved1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"U1\",\n        \"name\": \"maxStartupStateDur\",\n        \"unit\": \"s\",\n        \"description\": \"Maximum time to spend in Acquisition state. If 0: bound disabled. (see maxStartupStateDur) (not supported in protocol versions 23 to 23.01).\"\n      },\n      {\n        \"byte_offset\": 3,\n        \"data_type\": \"U1\",\n        \"name\": \"reserved2\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"X4\",\n        \"name\": \"flags\",\n        \"description\": \"PSM configuration flags\",\n        \"bitfield\": [\n          {\n            \"bit_offset\": 0,\n            \"num_bits\": 3,\n            \"name\": \"optTarget\",\n            \"description\": \"Optimization target\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"performance (default)\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"power save\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 4,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 5,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 6,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 7,\n                \"description\": \"reserved\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 3,\n            \"num_bits\": 2,\n            \"name\": \"extintSel\",\n            \"description\": \"EXTINT pin select\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"EXTINT0\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"EXTINT1\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 5,\n            \"num_bits\": 2,\n            \"name\": \"extintWake\",\n            \"description\": \"EXTINT pin control\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"disabled\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"enabled, keep receiver awake as long as selected EXTINT pin is 'high'\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 7,\n            \"num_bits\": 1,\n            \"name\": \"extintBackup\",\n            \"description\": \"EXTINT pin control\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"disabled\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"enabled, force receiver into BACKUP mode when selected EXTINT pin is 'low'\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 8,\n            \"num_bits\": 2,\n            \"name\": \"limitPeakCurr\",\n            \"description\": \"Limit peak current\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"disabled\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"enabled, peak current is limited\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"reserved\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 10,\n            \"num_bits\": 1,\n            \"name\": \"waitTimeFix\",\n            \"description\": \"Wait for Timefix\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"wait for normal fix OK before starting on time\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"wait for time fix OK before starting on time\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 11,\n            \"num_bits\": 1,\n            \"name\": \"updateRTC\",\n            \"description\": \"Update Real Time Clock\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"do not wake up to update RTC. RTC is updated during normal on-time.\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"update RTC. The receiver adds extra wake-up cycles to update the RTC.\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 12,\n            \"num_bits\": 1,\n            \"name\": \"updateEPH\",\n            \"description\": \"Update Ephemeris\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"do not wake up to update Ephemeris data\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"update Ephemeris. The receiver adds extra wake-up cycles to update the Ephemeris data\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 13,\n            \"num_bits\": 3,\n            \"name\": \"reserved_13_15\",\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          },\n          {\n            \"bit_offset\": 16,\n            \"num_bits\": 2,\n            \"name\": \"mode\",\n            \"description\": \"Mode of operation\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"ON/OFF operation (PSMOO)\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"cyclic tracking operation (PSMCT)\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"reserved\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"reserved\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 18,\n            \"num_bits\": 1,\n            \"name\": \"doNotEnterOff\",\n            \"description\": \"Behavior of receiver in case of no fix\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"receiver enters (Inactive) Awaiting next search state\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"receiver does not enter (Inactive) Awaiting next search state but keeps trying to acquire a fix instead\"\n              }\n            ]\n          },\n          {\n            \"bit_offset\": 19,\n            \"num_bits\": 13,\n            \"name\": \"reserved_19_31\",\n            \"description\": \"Reserved\",\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U4\",\n        \"name\": \"updatePeriod\",\n        \"unit\": \"ms\",\n        \"description\": \"Position update period. If set to 0, the receiver will never retry a fix and it will wait for external events.\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"U4\",\n        \"name\": \"searchPeriod\",\n        \"unit\": \"ms\",\n        \"description\": \"Acquisition retry period if previously failed. If set to 0, the receiver will never retry a startup. (not supported in protocol versions 23 to 23.01).\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U4\",\n        \"name\": \"gridOffset\",\n        \"unit\": \"ms\",\n        \"description\": \"Grid offset relative to GPS start of week (not supported in protocol versions 23 to 23.01).\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"U2\",\n        \"name\": \"onTime\",\n        \"unit\": \"s\",\n        \"description\": \"Time to stay in Tracking state (not supported in protocol versions 23 to 23.01).\"\n      },\n      {\n        \"byte_offset\": 22,\n        \"data_type\": \"U2\",\n        \"name\": \"minAcqTime\",\n        \"unit\": \"s\",\n        \"description\": \"minimal search time\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 20\n        },\n        \"name\": \"reserved3\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 44,\n        \"data_type\": \"U4\",\n        \"name\": \"extintInactivityMs\",\n        \"unit\": \"ms\",\n        \"description\": \"inactivity time out on EXTINT pin if enabled\"\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_class": "0x06",
+    "ubx_id": "0x3B",
+    "name": "UBX-CFG-PM2",
+    "message_type": "get_set",
+    "description": "Extended power management configuration",
+    "supported_firmware": "u-blox 8 / u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 23.01",
+    "comment": "This feature is not supported for either the ADR or FTS products.",
+    "payload_length": {
+      "fixed": 48
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "U1",
+        "name": "version",
+        "description": "Message version (0x02 for this version). Note: the message version number is the same as for protocol version 23.01; please select correct message version based on the protocol version supported by your firmware.",
+        "fixed_value": 2
+      },
+      {
+        "byte_offset": 1,
+        "data_type": "U1",
+        "name": "reserved1",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 2,
+        "data_type": "U1",
+        "name": "maxStartupStateDur",
+        "unit": "s",
+        "description": "Maximum time to spend in Acquisition state. If 0: bound disabled. (see maxStartupStateDur) (not supported in protocol versions 23 to 23.01)."
+      },
+      {
+        "byte_offset": 3,
+        "data_type": "U1",
+        "name": "reserved2",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "X4",
+        "name": "flags",
+        "description": "PSM configuration flags",
+        "bitfield": [
+          {
+            "bit_offset": 0,
+            "num_bits": 3,
+            "name": "optTarget",
+            "description": "Optimization target",
+            "values": [
+              {
+                "value": 0,
+                "description": "performance (default)"
+              },
+              {
+                "value": 1,
+                "description": "power save"
+              },
+              {
+                "value": 2,
+                "description": "reserved"
+              },
+              {
+                "value": 3,
+                "description": "reserved"
+              },
+              {
+                "value": 4,
+                "description": "reserved"
+              },
+              {
+                "value": 5,
+                "description": "reserved"
+              },
+              {
+                "value": 6,
+                "description": "reserved"
+              },
+              {
+                "value": 7,
+                "description": "reserved"
+              }
+            ]
+          },
+          {
+            "bit_offset": 3,
+            "num_bits": 2,
+            "name": "extintSel",
+            "description": "EXTINT pin select",
+            "values": [
+              {
+                "value": 0,
+                "description": "EXTINT0"
+              },
+              {
+                "value": 1,
+                "description": "EXTINT1"
+              }
+            ]
+          },
+          {
+            "bit_offset": 5,
+            "num_bits": 2,
+            "name": "extintWake",
+            "description": "EXTINT pin control",
+            "values": [
+              {
+                "value": 0,
+                "description": "disabled"
+              },
+              {
+                "value": 1,
+                "description": "enabled, keep receiver awake as long as selected EXTINT pin is 'high'"
+              }
+            ]
+          },
+          {
+            "bit_offset": 7,
+            "num_bits": 1,
+            "name": "extintBackup",
+            "description": "EXTINT pin control",
+            "values": [
+              {
+                "value": 0,
+                "description": "disabled"
+              },
+              {
+                "value": 1,
+                "description": "enabled, force receiver into BACKUP mode when selected EXTINT pin is 'low'"
+              }
+            ]
+          },
+          {
+            "bit_offset": 8,
+            "num_bits": 2,
+            "name": "limitPeakCurr",
+            "description": "Limit peak current",
+            "values": [
+              {
+                "value": 0,
+                "description": "disabled"
+              },
+              {
+                "value": 1,
+                "description": "enabled, peak current is limited"
+              },
+              {
+                "value": 2,
+                "description": "reserved"
+              },
+              {
+                "value": 3,
+                "description": "reserved"
+              }
+            ]
+          },
+          {
+            "bit_offset": 10,
+            "num_bits": 1,
+            "name": "waitTimeFix",
+            "description": "Wait for Timefix",
+            "values": [
+              {
+                "value": 0,
+                "description": "wait for normal fix OK before starting on time"
+              },
+              {
+                "value": 1,
+                "description": "wait for time fix OK before starting on time"
+              }
+            ]
+          },
+          {
+            "bit_offset": 11,
+            "num_bits": 1,
+            "name": "updateRTC",
+            "description": "Update Real Time Clock",
+            "values": [
+              {
+                "value": 0,
+                "description": "do not wake up to update RTC. RTC is updated during normal on-time."
+              },
+              {
+                "value": 1,
+                "description": "update RTC. The receiver adds extra wake-up cycles to update the RTC."
+              }
+            ]
+          },
+          {
+            "bit_offset": 12,
+            "num_bits": 1,
+            "name": "updateEPH",
+            "description": "Update Ephemeris",
+            "values": [
+              {
+                "value": 0,
+                "description": "do not wake up to update Ephemeris data"
+              },
+              {
+                "value": 1,
+                "description": "update Ephemeris. The receiver adds extra wake-up cycles to update the Ephemeris data"
+              }
+            ]
+          },
+          {
+            "bit_offset": 13,
+            "num_bits": 3,
+            "name": "reserved_13_15",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "bit_offset": 16,
+            "num_bits": 2,
+            "name": "mode",
+            "description": "Mode of operation",
+            "values": [
+              {
+                "value": 0,
+                "description": "ON/OFF operation (PSMOO)"
+              },
+              {
+                "value": 1,
+                "description": "cyclic tracking operation (PSMCT)"
+              },
+              {
+                "value": 2,
+                "description": "reserved"
+              },
+              {
+                "value": 3,
+                "description": "reserved"
+              }
+            ]
+          },
+          {
+            "bit_offset": 18,
+            "num_bits": 1,
+            "name": "doNotEnterOff",
+            "description": "Behavior of receiver in case of no fix",
+            "values": [
+              {
+                "value": 0,
+                "description": "receiver enters (Inactive) Awaiting next search state"
+              },
+              {
+                "value": 1,
+                "description": "receiver does not enter (Inactive) Awaiting next search state but keeps trying to acquire a fix instead"
+              }
+            ]
+          },
+          {
+            "bit_offset": 19,
+            "num_bits": 13,
+            "name": "reserved_19_31",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "byte_offset": 8,
+        "data_type": "U4",
+        "name": "updatePeriod",
+        "unit": "ms",
+        "description": "Position update period. If set to 0, the receiver will never retry a fix and it will wait for external events."
+      },
+      {
+        "byte_offset": 12,
+        "data_type": "U4",
+        "name": "searchPeriod",
+        "unit": "ms",
+        "description": "Acquisition retry period if previously failed. If set to 0, the receiver will never retry a startup. (not supported in protocol versions 23 to 23.01)."
+      },
+      {
+        "byte_offset": 16,
+        "data_type": "U4",
+        "name": "gridOffset",
+        "unit": "ms",
+        "description": "Grid offset relative to GPS start of week (not supported in protocol versions 23 to 23.01)."
+      },
+      {
+        "byte_offset": 20,
+        "data_type": "U2",
+        "name": "onTime",
+        "unit": "s",
+        "description": "Time to stay in Tracking state (not supported in protocol versions 23 to 23.01)."
+      },
+      {
+        "byte_offset": 22,
+        "data_type": "U2",
+        "name": "minAcqTime",
+        "unit": "s",
+        "description": "minimal search time"
+      },
+      {
+        "byte_offset": 24,
+        "data_type": {
+          "array_of": "U1",
+          "count": 20
+        },
+        "name": "reserved3",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 44,
+        "data_type": "U4",
+        "name": "extintInactivityMs",
+        "unit": "ms",
+        "description": "inactivity time out on EXTINT pin if enabled"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/mdly17tr0h2m"
+}

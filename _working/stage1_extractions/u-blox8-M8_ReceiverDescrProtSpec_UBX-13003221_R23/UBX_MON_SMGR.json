@@ -1,0 +1,313 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MON-SMGR",
+  "extraction_timestamp": "2026-01-08T06:29:34.739987+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 363,
+    "end": 366
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-SMGR\nExpected IDs: class_id=0x0A, message_id=0x2E\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-SMGR\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MON-SMGR\",\n    \"class_id\": \"0x0A\",\n    \"message_id\": \"0x2E\",\n    \"description\": \"Synchronization manager status\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 16\n    },\n    \"payload\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"Time of the week\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"intosc\",\n        \"data_type\": \"X2\",\n        \"description\": \"A bit mask, indicating the status of the local oscillator\",\n        \"bitfields\": [\n          {\n            \"name\": \"intOscState\",\n            \"bits\": 3,\n            \"bit_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"State of the oscillator:\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"autonomous operation\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"calibration ongoing\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"oscillator is steered by the host\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"idle state\"\n              }\n            ]\n          },\n          {\n            \"name\": \"intOscCalib\",\n            \"bits\": 1,\n            \"bit_offset\": 3,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = oscillator gain is calibrated\"\n          },\n          {\n            \"name\": \"intOscDisc\",\n            \"bits\": 1,\n            \"bit_offset\": 4,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = signal is disciplined\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bits\": 11,\n            \"bit_offset\": 5,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"extosc\",\n        \"data_type\": \"X2\",\n        \"description\": \"A bit mask, indicating the status of the external oscillator\",\n        \"bitfields\": [\n          {\n            \"name\": \"extOscState\",\n            \"bits\": 3,\n            \"bit_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"State of the oscillator:\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"autonomous operation\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"calibration ongoing\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"oscillator is steered by the host\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"idle state\"\n              }\n            ]\n          },\n          {\n            \"name\": \"extOscCalib\",\n            \"bits\": 1,\n            \"bit_offset\": 3,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = oscillator gain is calibrated\"\n          },\n          {\n            \"name\": \"extOscDisc\",\n            \"bits\": 1,\n            \"bit_offset\": 4,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = signal is disciplined\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bits\": 11,\n            \"bit_offset\": 5,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"discSrc\",\n        \"data_type\": \"U1\",\n        \"description\": \"Disciplining source identifier:\",\n        \"values\": [\n          {\n            \"value\": 0,\n            \"description\": \"internal oscillator\"\n          },\n          {\n            \"value\": 1,\n            \"description\": \"GNSS\"\n          },\n          {\n            \"value\": 2,\n            \"description\": \"EXTINT0\"\n          },\n          {\n            \"value\": 3,\n            \"description\": \"EXTINT1\"\n          },\n          {\n            \"value\": 4,\n            \"description\": \"internal oscillator measured by the host\"\n          },\n          {\n            \"value\": 5,\n            \"description\": \"external oscillator measured by the host\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 13,\n        \"name\": \"gnss\",\n        \"data_type\": \"X1\",\n        \"description\": \"A bit mask, indicating the status of the GNSS\",\n        \"bitfields\": [\n          {\n            \"name\": \"gnssAvail\",\n            \"bits\": 1,\n            \"bit_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = GNSS is present\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bits\": 7,\n            \"bit_offset\": 1,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"extInt0\",\n        \"data_type\": \"X1\",\n        \"description\": \"A bit mask, indicating the status of the external input 0\",\n        \"bitfields\": [\n          {\n            \"name\": \"extInt0Avail\",\n            \"bits\": 1,\n            \"bit_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = signal present at this input\"\n          },\n          {\n            \"name\": \"extInt0Type\",\n            \"bits\": 1,\n            \"bit_offset\": 1,\n            \"data_type\": \"U1\",\n            \"description\": \"Source type:\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"frequency\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"time\"\n              }\n            ]\n          },\n          {\n            \"name\": \"extInt0FeedBack\",\n            \"bits\": 1,\n            \"bit_offset\": 2,\n            \"data_type\": \"U1\",\n            \"description\": \"This source is used as feedback of the external oscillator\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bits\": 5,\n            \"bit_offset\": 3,\n            \"reserved\": true\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 15,\n        \"name\": \"extInt1\",\n        \"data_type\": \"X1\",\n        \"description\": \"A bit mask, indicating the status of the external input 1\",\n        \"bitfields\": [\n          {\n            \"name\": \"extInt1Avail\",\n            \"bits\": 1,\n            \"bit_offset\": 0,\n            \"data_type\": \"U1\",\n            \"description\": \"1 = signal present at this input\"\n          },\n          {\n            \"name\": \"extInt1Type\",\n            \"bits\": 1,\n            \"bit_offset\": 1,\n            \"data_type\": \"U1\",\n            \"description\": \"Source type:\",\n            \"values\": [\n              {\n                \"value\": 0,\n                \"description\": \"frequency\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"time\"\n              }\n            ]\n          },\n          {\n            \"name\": \"extInt1FeedBack\",\n            \"bits\": 1,\n            \"bit_offset\": 2,\n            \"data_type\": \"U1\",\n            \"description\": \"This source is used as feedback of the external oscillator\"\n          },\n          {\n            \"name\": \"reserved\",\n            \"bits\": 5,\n            \"bit_offset\": 3,\n            \"reserved\": true\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-SMGR",
+      "class_id": "0x0A",
+      "message_id": "0x2E",
+      "description": "Synchronization manager status",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 16
+      },
+      "payload": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 4,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Time of the week"
+        },
+        {
+          "byte_offset": 8,
+          "name": "intosc",
+          "data_type": "X2",
+          "description": "A bit mask, indicating the status of the local oscillator",
+          "bitfields": [
+            {
+              "name": "intOscState",
+              "bits": 3,
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "State of the oscillator:",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "autonomous operation"
+                },
+                {
+                  "value": 1,
+                  "description": "calibration ongoing"
+                },
+                {
+                  "value": 2,
+                  "description": "oscillator is steered by the host"
+                },
+                {
+                  "value": 3,
+                  "description": "idle state"
+                }
+              ]
+            },
+            {
+              "name": "intOscCalib",
+              "bits": 1,
+              "bit_offset": 3,
+              "data_type": "U1",
+              "description": "1 = oscillator gain is calibrated"
+            },
+            {
+              "name": "intOscDisc",
+              "bits": 1,
+              "bit_offset": 4,
+              "data_type": "U1",
+              "description": "1 = signal is disciplined"
+            },
+            {
+              "name": "reserved",
+              "bits": 11,
+              "bit_offset": 5,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 10,
+          "name": "extosc",
+          "data_type": "X2",
+          "description": "A bit mask, indicating the status of the external oscillator",
+          "bitfields": [
+            {
+              "name": "extOscState",
+              "bits": 3,
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "State of the oscillator:",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "autonomous operation"
+                },
+                {
+                  "value": 1,
+                  "description": "calibration ongoing"
+                },
+                {
+                  "value": 2,
+                  "description": "oscillator is steered by the host"
+                },
+                {
+                  "value": 3,
+                  "description": "idle state"
+                }
+              ]
+            },
+            {
+              "name": "extOscCalib",
+              "bits": 1,
+              "bit_offset": 3,
+              "data_type": "U1",
+              "description": "1 = oscillator gain is calibrated"
+            },
+            {
+              "name": "extOscDisc",
+              "bits": 1,
+              "bit_offset": 4,
+              "data_type": "U1",
+              "description": "1 = signal is disciplined"
+            },
+            {
+              "name": "reserved",
+              "bits": 11,
+              "bit_offset": 5,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "name": "discSrc",
+          "data_type": "U1",
+          "description": "Disciplining source identifier:",
+          "values": [
+            {
+              "value": 0,
+              "description": "internal oscillator"
+            },
+            {
+              "value": 1,
+              "description": "GNSS"
+            },
+            {
+              "value": 2,
+              "description": "EXTINT0"
+            },
+            {
+              "value": 3,
+              "description": "EXTINT1"
+            },
+            {
+              "value": 4,
+              "description": "internal oscillator measured by the host"
+            },
+            {
+              "value": 5,
+              "description": "external oscillator measured by the host"
+            }
+          ]
+        },
+        {
+          "byte_offset": 13,
+          "name": "gnss",
+          "data_type": "X1",
+          "description": "A bit mask, indicating the status of the GNSS",
+          "bitfields": [
+            {
+              "name": "gnssAvail",
+              "bits": 1,
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "1 = GNSS is present"
+            },
+            {
+              "name": "reserved",
+              "bits": 7,
+              "bit_offset": 1,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 14,
+          "name": "extInt0",
+          "data_type": "X1",
+          "description": "A bit mask, indicating the status of the external input 0",
+          "bitfields": [
+            {
+              "name": "extInt0Avail",
+              "bits": 1,
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "1 = signal present at this input"
+            },
+            {
+              "name": "extInt0Type",
+              "bits": 1,
+              "bit_offset": 1,
+              "data_type": "U1",
+              "description": "Source type:",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "frequency"
+                },
+                {
+                  "value": 1,
+                  "description": "time"
+                }
+              ]
+            },
+            {
+              "name": "extInt0FeedBack",
+              "bits": 1,
+              "bit_offset": 2,
+              "data_type": "U1",
+              "description": "This source is used as feedback of the external oscillator"
+            },
+            {
+              "name": "reserved",
+              "bits": 5,
+              "bit_offset": 3,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 15,
+          "name": "extInt1",
+          "data_type": "X1",
+          "description": "A bit mask, indicating the status of the external input 1",
+          "bitfields": [
+            {
+              "name": "extInt1Avail",
+              "bits": 1,
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "1 = signal present at this input"
+            },
+            {
+              "name": "extInt1Type",
+              "bits": 1,
+              "bit_offset": 1,
+              "data_type": "U1",
+              "description": "Source type:",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "frequency"
+                },
+                {
+                  "value": 1,
+                  "description": "time"
+                }
+              ]
+            },
+            {
+              "name": "extInt1FeedBack",
+              "bits": 1,
+              "bit_offset": 2,
+              "data_type": "U1",
+              "description": "This source is used as feedback of the external oscillator"
+            },
+            {
+              "name": "reserved",
+              "bits": 5,
+              "bit_offset": 3,
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ftp9kud2srj3"
+}

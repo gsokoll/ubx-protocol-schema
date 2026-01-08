@@ -1,0 +1,141 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-NAV-HPPOSECEF",
+  "extraction_timestamp": "2026-01-08T02:49:05.105410+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 124,
+    "end": 125
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-HPPOSECEF\nExpected IDs: class_id=0x01, message_id=0x13\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-HPPOSECEF\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-NAV-HPPOSECEF\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x13\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"fixed_value\": 0,\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"ecefx\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"ECEF X coordinate\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"ecefY\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"ECEF Y coordinate\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"ecefZ\",\n        \"data_type\": \"I4\",\n        \"unit\": \"cm\",\n        \"description\": \"ECEF Z coordinate\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"ecefXHp\",\n        \"data_type\": \"I1\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"unit\": \"mm\",\n        \"description\": \"High precision component of ECEF X coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefX + (ecefXHp * 1e-2).\"\n      },\n      {\n        \"byte_offset\": 21,\n        \"name\": \"ecefYHp\",\n        \"data_type\": \"I1\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"unit\": \"mm\",\n        \"description\": \"High precision component of ECEF Y coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefY + (ecefYHp * 1e-2).\"\n      },\n      {\n        \"byte_offset\": 22,\n        \"name\": \"ecefZHp\",\n        \"data_type\": \"I1\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"unit\": \"mm\",\n        \"description\": \"High precision component of ECEF Z coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefZ + (ecefZHp * 1e-2).\"\n      },\n      {\n        \"byte_offset\": 23,\n        \"name\": \"flags\",\n        \"data_type\": \"X1\",\n        \"description\": \"Additional flags\",\n        \"bitfields\": [\n          {\n            \"name\": \"invalidEcef\",\n            \"bits\": 0,\n            \"description\": \"1 = Invalid ecefX, ecefY, ecefZ, ecefXHp, ecefYHp and ecefZHp\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"pAcc\",\n        \"data_type\": \"U4\",\n        \"scale\": {\n          \"raw\": \"0.1\",\n          \"multiplier\": 0.1\n        },\n        \"unit\": \"mm\",\n        \"description\": \"Position Accuracy Estimate\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-NAV-HPPOSECEF",
+      "class_id": "0x01",
+      "message_id": "0x13",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 28
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 0,
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 4,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details."
+        },
+        {
+          "byte_offset": 8,
+          "name": "ecefx",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "ECEF X coordinate"
+        },
+        {
+          "byte_offset": 12,
+          "name": "ecefY",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "ECEF Y coordinate"
+        },
+        {
+          "byte_offset": 16,
+          "name": "ecefZ",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "ECEF Z coordinate"
+        },
+        {
+          "byte_offset": 20,
+          "name": "ecefXHp",
+          "data_type": "I1",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "High precision component of ECEF X coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefX + (ecefXHp * 1e-2)."
+        },
+        {
+          "byte_offset": 21,
+          "name": "ecefYHp",
+          "data_type": "I1",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "High precision component of ECEF Y coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefY + (ecefYHp * 1e-2)."
+        },
+        {
+          "byte_offset": 22,
+          "name": "ecefZHp",
+          "data_type": "I1",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "High precision component of ECEF Z coordinate. Must be in the range of -99..+99. Precise coordinate in cm = ecefZ + (ecefZHp * 1e-2)."
+        },
+        {
+          "byte_offset": 23,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Additional flags",
+          "bitfields": [
+            {
+              "name": "invalidEcef",
+              "bits": 0,
+              "description": "1 = Invalid ecefX, ecefY, ecefZ, ecefXHp, ecefYHp and ecefZHp"
+            }
+          ]
+        },
+        {
+          "byte_offset": 24,
+          "name": "pAcc",
+          "data_type": "U4",
+          "scale": {
+            "raw": "0.1",
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "Position Accuracy Estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/x5uc7naby6gz"
+}

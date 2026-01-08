@@ -1,0 +1,134 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-SEC-SIG",
+  "extraction_timestamp": "2026-01-08T04:02:10.329361+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 181,
+    "end": 181
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-SEC-SIG\nExpected IDs: class_id=0x27, message_id=0x09\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-SEC-SIG\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\nUBX-SEC-SIG reports signal security information. Structure depends on version:\n- v1 (12 bytes): version@0, reserved0[3]@1, jamFlags@4, reserved1[3]@5, spfFlags@8, reserved2[3]@9\n- v2 (variable): version@0, sigSecFlags@1, reserved@2, jamNumCentFreqs@3, then jamming/spoofing data\n\nIMPORTANT: Each field has ONE definition at ONE offset. Do NOT extract the same offset twice.\nIf the PDF shows both V0 and V1 variants, extract ONLY the structure that matches this manual's version.\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-SEC-SIG\",\n  \"class_id\": \"0x27\",\n  \"message_id\": \"0x09\",\n  \"description\": \"Information related to the security, i.e. availability and integrity, of the signals.\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 12\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x01 for this version)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"reserved0\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"jamFlags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Information related to jamming/interference\",\n      \"bitfields\": [\n        {\n          \"name\": \"jamDetEnabled\",\n          \"data_type\": \"U1\",\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"description\": \"Flag indicates whether jamming/interference detection is enabled\"\n        },\n        {\n          \"name\": \"jammingState\",\n          \"data_type\": \"U2\",\n          \"bit_offset\": 1,\n          \"bit_length\": 2,\n          \"description\": \"Jamming/interference state\",\n          \"mapping\": {\n            \"0\": \"Unknown\",\n            \"1\": \"No jamming indicated\",\n            \"2\": \"Warning; jamming indicated but fix OK\",\n            \"3\": \"Critical; jamming indicated and no fix\"\n          }\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"spfFlags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Information related to GNSS spoofing\",\n      \"bitfields\": [\n        {\n          \"name\": \"spfDetEnabled\",\n          \"data_type\": \"U1\",\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"description\": \"Flag indicates whether spoofing detection is enabled\"\n        },\n        {\n          \"name\": \"spoofingState\",\n          \"data_type\": \"U3\",\n          \"bit_offset\": 1,\n          \"bit_length\": 3,\n          \"description\": \"Spoofing state\",\n          \"mapping\": {\n            \"0\": \"Unknown\",\n            \"1\": \"No spoofing indicated\",\n            \"2\": \"Spoofing indicated\",\n            \"3\": \"Spoofing affirmed\"\n          },\n          \"note\": \"Note that the spoofing state value only reflects the detector state for the current navigation epoch. I.e. a value of 1: No spoofing indicated does not mean that the receiver is not spoofed, it simply states that the detector was not triggered in this epoch.\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 9,\n      \"name\": \"reserved2\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-SEC-SIG",
+    "class_id": "0x27",
+    "message_id": "0x09",
+    "description": "Information related to the security, i.e. availability and integrity, of the signals.",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 12
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "name": "jamFlags",
+          "data_type": "X1",
+          "description": "Information related to jamming/interference",
+          "bitfields": [
+            {
+              "name": "jamDetEnabled",
+              "data_type": "U1",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "description": "Flag indicates whether jamming/interference detection is enabled"
+            },
+            {
+              "name": "jammingState",
+              "data_type": "U2",
+              "bit_offset": 1,
+              "bit_length": 2,
+              "description": "Jamming/interference state",
+              "mapping": {
+                "0": "Unknown",
+                "1": "No jamming indicated",
+                "2": "Warning; jamming indicated but fix OK",
+                "3": "Critical; jamming indicated and no fix"
+              }
+            }
+          ]
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 8,
+          "name": "spfFlags",
+          "data_type": "X1",
+          "description": "Information related to GNSS spoofing",
+          "bitfields": [
+            {
+              "name": "spfDetEnabled",
+              "data_type": "U1",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "description": "Flag indicates whether spoofing detection is enabled"
+            },
+            {
+              "name": "spoofingState",
+              "data_type": "U3",
+              "bit_offset": 1,
+              "bit_length": 3,
+              "description": "Spoofing state",
+              "mapping": {
+                "0": "Unknown",
+                "1": "No spoofing indicated",
+                "2": "Spoofing indicated",
+                "3": "Spoofing affirmed"
+              },
+              "note": "Note that the spoofing state value only reflects the detector state for the current navigation epoch. I.e. a value of 1: No spoofing indicated does not mean that the receiver is not spoofed, it simply states that the detector was not triggered in this epoch."
+            }
+          ]
+        },
+        {
+          "byte_offset": 9,
+          "name": "reserved2",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/jwgaqngn6fts"
+}

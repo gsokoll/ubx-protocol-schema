@@ -1,0 +1,251 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-CFG-PRT",
+  "extraction_timestamp": "2026-01-08T04:07:24.027605+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 63,
+    "end": 68
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-PRT\nExpected IDs: class_id=0x06, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-PRT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x00\",\n  \"name\": \"UBX-CFG-PRT\",\n  \"message_type\": \"input_output\",\n  \"type\": \"get_set\",\n  \"description\": \"This polymorphic message configures various port types (UART, USB, SPI, I2C). The payload structure for offsets 4-11 (mode and baudRate/reserved fields) varies significantly based on the 'portID' field. This definition primarily describes the structure for UART ports for fields 4-11, with notes on variations. Additionally, a distinct 'Poll request' variant of this message exists with a fixed payload length of 1 byte, containing only a U1 'portID' at offset 0, used to request a port's configuration.\",\n  \"payload_length\": {\n    \"variable\": {\n      \"formula\": \"20 * N\",\n      \"min_N\": 1,\n      \"description\": \"N configuration units. Input messages can concatenate units. Output messages always contain one config unit (N=1), thus having a fixed length of 20 bytes.\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"portID\",\n      \"description\": \"Port identifier number. (e.g., 0 for I2C, 1 for UART1, 2 for UART2, 3 for USB, 4 for SPI)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X2\",\n      \"name\": \"txReady\",\n      \"description\": \"Enable TX ready feature for this port. This field's interpretation of its bits is common across UART, USB, SPI, I2C ports.\",\n      \"bitfields\": [\n        {\n          \"bits\": \"0\",\n          \"data_type\": \"U:1\",\n          \"name\": \"en\",\n          \"description\": \"Enable TX ready feature for this port\"\n        },\n        {\n          \"bits\": \"1\",\n          \"data_type\": \"U:1\",\n          \"name\": \"pol\",\n          \"description\": \"Polarity (0: High-active, 1: Low-active)\"\n        },\n        {\n          \"bits\": \"15:2\",\n          \"data_type\": \"U:14\",\n          \"name\": \"reserved_txReady\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"mode\",\n      \"description\": \"A bit mask describing the UART mode. NOTE: This field (and subsequent 'baudRate' field) is specific to UART port configurations. For USB, this 8-byte block (offsets 4-11) is U1[8] reserved. For SPI and I2C, this block contains an X4 'mode' field (with different bitfields, e.g., spiMode for SPI, slaveAddr for I2C) and a U1[4] reserved field.\",\n      \"bitfields\": [\n        {\n          \"bits\": \"5:0\",\n          \"data_type\": \"U:6\",\n          \"name\": \"reserved_mode_0_5\",\n          \"reserved\": true\n        },\n        {\n          \"bits\": \"7:6\",\n          \"data_type\": \"U:2\",\n          \"name\": \"charLen\",\n          \"description\": \"Character length (00: 5bit (not supported), 01: 6bit (not supported), 10: 7bit (supported only with parity), 11: 8bit)\"\n        },\n        {\n          \"bits\": \"8\",\n          \"data_type\": \"U:1\",\n          \"name\": \"reserved_mode_8\",\n          \"reserved\": true\n        },\n        {\n          \"bits\": \"11:9\",\n          \"data_type\": \"U:3\",\n          \"name\": \"parity\",\n          \"description\": \"Parity (000: Even parity, 001: Odd parity, 10X: No parity, X1X: Reserved)\"\n        },\n        {\n          \"bits\": \"13:12\",\n          \"data_type\": \"U:2\",\n          \"name\": \"nStopBits\",\n          \"description\": \"Number of Stop bits (00: 1 Stop bit, 01: 1.5 Stop bit, 10: 2 Stop bit, 11: 0.5 Stop bit)\"\n        },\n        {\n          \"bits\": \"31:14\",\n          \"data_type\": \"U:18\",\n          \"name\": \"reserved_mode_14_31\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U4\",\n      \"name\": \"baudRate\",\n      \"unit\": \"Bits/s\",\n      \"description\": \"Baud rate in bits/second. NOTE: This field is specific to UART port configurations. For other port types, this memory region is used differently (e.g., reserved or part of other port-specific modes).\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"X2\",\n      \"name\": \"inProtoMask\",\n      \"description\": \"A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Common across UART, USB, SPI, I2C ports.\",\n      \"bitfields\": [\n        {\n          \"bits\": \"0\",\n          \"data_type\": \"U:1\",\n          \"name\": \"inUbx\",\n          \"description\": \"UBX protocol\"\n        },\n        {\n          \"bits\": \"1\",\n          \"data_type\": \"U:1\",\n          \"name\": \"inNmea\",\n          \"description\": \"NMEA protocol\"\n        },\n        {\n          \"bits\": \"2\",\n          \"data_type\": \"U:1\",\n          \"name\": \"inRtcm\",\n          \"description\": \"RTCM2 protocol\"\n        },\n        {\n          \"bits\": \"4:3\",\n          \"data_type\": \"U:2\",\n          \"name\": \"reserved_inProtoMask_3_4\",\n          \"reserved\": true\n        },\n        {\n          \"bits\": \"5\",\n          \"data_type\": \"U:1\",\n          \"name\": \"inRtcm3\",\n          \"description\": \"RTCM3 protocol (not supported for protocol versions less than 20.00)\"\n        },\n        {\n          \"bits\": \"15:6\",\n          \"data_type\": \"U:10\",\n          \"name\": \"reserved_inProtoMask_6_15\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"X2\",\n      \"name\": \"outProtoMask\",\n      \"description\": \"A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Common across UART, USB, SPI, I2C ports.\",\n      \"bitfields\": [\n        {\n          \"bits\": \"0\",\n          \"data_type\": \"U:1\",\n          \"name\": \"outUbx\",\n          \"description\": \"UBX protocol\"\n        },\n        {\n          \"bits\": \"1\",\n          \"data_type\": \"U:1\",\n          \"name\": \"outNmea\",\n          \"description\": \"NMEA protocol\"\n        },\n        {\n          \"bits\": \"4:2\",\n          \"data_type\": \"U:3\",\n          \"name\": \"reserved_outProtoMask_2_4\",\n          \"reserved\": true\n        },\n        {\n          \"bits\": \"5\",\n          \"data_type\": \"U:1\",\n          \"name\": \"outRtcm3\",\n          \"description\": \"RTCM3 protocol (not supported for protocol versions less than 20.00)\"\n        },\n        {\n          \"bits\": \"15:6\",\n          \"data_type\": \"U:10\",\n          \"name\": \"reserved_outProtoMask_6_15\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"X2\",\n      \"name\": \"flags\",\n      \"description\": \"Flags bit mask. Common across UART, USB, SPI, I2C ports. Bit 1, 'extendedTx', affects TX ready functionality.\",\n      \"bitfields\": [\n        {\n          \"bits\": \"0\",\n          \"data_type\": \"U:1\",\n          \"name\": \"reserved_flags_0\",\n          \"reserved\": true\n        },\n        {\n          \"bits\": \"1\",\n          \"data_type\": \"U:1\",\n          \"name\": \"extendedTx\",\n          \"description\": \"Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set, the port will time out if no activity for 1.5 s regardless of allocated TX memory (not supported for protocol versions less than 13.01).\"\n        },\n        {\n          \"bits\": \"15:2\",\n          \"data_type\": \"U:14\",\n          \"name\": \"reserved_flags_2_15\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved_final\",\n      \"array_of\": \"U1\",\n      \"count\": 2,\n      \"reserved\": true,\n      \"description\": \"Reserved. (Named 'reserved1' or 'reserved2' in some port definitions, e.g., USB, SPI, I2C).\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x06",
+    "message_id": "0x00",
+    "name": "UBX-CFG-PRT",
+    "message_type": "input_output",
+    "type": "get_set",
+    "description": "This polymorphic message configures various port types (UART, USB, SPI, I2C). The payload structure for offsets 4-11 (mode and baudRate/reserved fields) varies significantly based on the 'portID' field. This definition primarily describes the structure for UART ports for fields 4-11, with notes on variations. Additionally, a distinct 'Poll request' variant of this message exists with a fixed payload length of 1 byte, containing only a U1 'portID' at offset 0, used to request a port's configuration.",
+    "payload_length": {
+      "variable": {
+        "formula": "20 * N",
+        "min_N": 1,
+        "description": "N configuration units. Input messages can concatenate units. Output messages always contain one config unit (N=1), thus having a fixed length of 20 bytes."
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "portID",
+          "description": "Port identifier number. (e.g., 0 for I2C, 1 for UART1, 2 for UART2, 3 for USB, 4 for SPI)"
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X2",
+          "name": "txReady",
+          "description": "Enable TX ready feature for this port. This field's interpretation of its bits is common across UART, USB, SPI, I2C ports.",
+          "bitfields": [
+            {
+              "bits": "0",
+              "data_type": "U:1",
+              "name": "en",
+              "description": "Enable TX ready feature for this port"
+            },
+            {
+              "bits": "1",
+              "data_type": "U:1",
+              "name": "pol",
+              "description": "Polarity (0: High-active, 1: Low-active)"
+            },
+            {
+              "bits": "15:2",
+              "data_type": "U:14",
+              "name": "reserved_txReady",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "mode",
+          "description": "A bit mask describing the UART mode. NOTE: This field (and subsequent 'baudRate' field) is specific to UART port configurations. For USB, this 8-byte block (offsets 4-11) is U1[8] reserved. For SPI and I2C, this block contains an X4 'mode' field (with different bitfields, e.g., spiMode for SPI, slaveAddr for I2C) and a U1[4] reserved field.",
+          "bitfields": [
+            {
+              "bits": "5:0",
+              "data_type": "U:6",
+              "name": "reserved_mode_0_5",
+              "reserved": true
+            },
+            {
+              "bits": "7:6",
+              "data_type": "U:2",
+              "name": "charLen",
+              "description": "Character length (00: 5bit (not supported), 01: 6bit (not supported), 10: 7bit (supported only with parity), 11: 8bit)"
+            },
+            {
+              "bits": "8",
+              "data_type": "U:1",
+              "name": "reserved_mode_8",
+              "reserved": true
+            },
+            {
+              "bits": "11:9",
+              "data_type": "U:3",
+              "name": "parity",
+              "description": "Parity (000: Even parity, 001: Odd parity, 10X: No parity, X1X: Reserved)"
+            },
+            {
+              "bits": "13:12",
+              "data_type": "U:2",
+              "name": "nStopBits",
+              "description": "Number of Stop bits (00: 1 Stop bit, 01: 1.5 Stop bit, 10: 2 Stop bit, 11: 0.5 Stop bit)"
+            },
+            {
+              "bits": "31:14",
+              "data_type": "U:18",
+              "name": "reserved_mode_14_31",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U4",
+          "name": "baudRate",
+          "unit": "Bits/s",
+          "description": "Baud rate in bits/second. NOTE: This field is specific to UART port configurations. For other port types, this memory region is used differently (e.g., reserved or part of other port-specific modes)."
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "X2",
+          "name": "inProtoMask",
+          "description": "A mask describing which input protocols are active. Each bit of this mask is used for a protocol. Common across UART, USB, SPI, I2C ports.",
+          "bitfields": [
+            {
+              "bits": "0",
+              "data_type": "U:1",
+              "name": "inUbx",
+              "description": "UBX protocol"
+            },
+            {
+              "bits": "1",
+              "data_type": "U:1",
+              "name": "inNmea",
+              "description": "NMEA protocol"
+            },
+            {
+              "bits": "2",
+              "data_type": "U:1",
+              "name": "inRtcm",
+              "description": "RTCM2 protocol"
+            },
+            {
+              "bits": "4:3",
+              "data_type": "U:2",
+              "name": "reserved_inProtoMask_3_4",
+              "reserved": true
+            },
+            {
+              "bits": "5",
+              "data_type": "U:1",
+              "name": "inRtcm3",
+              "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+            },
+            {
+              "bits": "15:6",
+              "data_type": "U:10",
+              "name": "reserved_inProtoMask_6_15",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "X2",
+          "name": "outProtoMask",
+          "description": "A mask describing which output protocols are active. Each bit of this mask is used for a protocol. Common across UART, USB, SPI, I2C ports.",
+          "bitfields": [
+            {
+              "bits": "0",
+              "data_type": "U:1",
+              "name": "outUbx",
+              "description": "UBX protocol"
+            },
+            {
+              "bits": "1",
+              "data_type": "U:1",
+              "name": "outNmea",
+              "description": "NMEA protocol"
+            },
+            {
+              "bits": "4:2",
+              "data_type": "U:3",
+              "name": "reserved_outProtoMask_2_4",
+              "reserved": true
+            },
+            {
+              "bits": "5",
+              "data_type": "U:1",
+              "name": "outRtcm3",
+              "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+            },
+            {
+              "bits": "15:6",
+              "data_type": "U:10",
+              "name": "reserved_outProtoMask_6_15",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "X2",
+          "name": "flags",
+          "description": "Flags bit mask. Common across UART, USB, SPI, I2C ports. Bit 1, 'extendedTx', affects TX ready functionality.",
+          "bitfields": [
+            {
+              "bits": "0",
+              "data_type": "U:1",
+              "name": "reserved_flags_0",
+              "reserved": true
+            },
+            {
+              "bits": "1",
+              "data_type": "U:1",
+              "name": "extendedTx",
+              "description": "Extended TX timeout: if set, the port will time out if allocated TX memory >=4 kB and no activity for 1.5 s. If not set, the port will time out if no activity for 1.5 s regardless of allocated TX memory (not supported for protocol versions less than 13.01)."
+            },
+            {
+              "bits": "15:2",
+              "data_type": "U:14",
+              "name": "reserved_flags_2_15",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "U1",
+          "name": "reserved_final",
+          "array_of": "U1",
+          "count": 2,
+          "reserved": true,
+          "description": "Reserved. (Named 'reserved1' or 'reserved2' in some port definitions, e.g., USB, SPI, I2C)."
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/vb814d0tdt7l"
+}

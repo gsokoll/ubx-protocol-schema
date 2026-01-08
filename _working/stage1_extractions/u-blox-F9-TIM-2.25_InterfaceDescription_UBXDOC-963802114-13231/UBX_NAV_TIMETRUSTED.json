@@ -1,0 +1,158 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-NAV-TIMETRUSTED",
+  "extraction_timestamp": "2026-01-08T04:32:28.682064+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 128,
+    "end": 129
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMETRUSTED\nExpected IDs: class_id=0x01, message_id=0x64\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMETRUSTED\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-TIMETRUSTED\",\n  \"description\": \"External trusted time information\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x64\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 40\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x01 for this version)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"refSys\",\n      \"description\": \"Reference time system (all the GNSS system supported by UBX-MGA-INI-TIME_GNSS except Glonass)\",\n      \"values\": {\n        \"0\": \"None\",\n        \"1\": \"GPS Time\",\n        \"2\": \"Galileo System Time (GST)\",\n        \"3\": \"Beidou System Time (BDT)\",\n        \"15\": \"NavIC System Time\"\n      }\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X1\",\n      \"name\": \"valid\",\n      \"description\": \"Validity Flags\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"trustedTime\",\n          \"description\": \"1 = Valid initial and propagated trusted time (iniWno, iniTow, fIniTow, iniTAcc, propWno, propTow, fPropTow and propTAcc)\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"deltaTimeValid\",\n          \"description\": \"1 = Valid delta time (deltas and deltaMs) between current estimated time and the propagated trusted time\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U2\",\n      \"name\": \"iniWno\",\n      \"description\": \"Initial week number\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"U2\",\n      \"name\": \"propWno\",\n      \"description\": \"Week number propagating the initial trusted time\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U4\",\n      \"name\": \"iniTow\",\n      \"unit\": \"ms\",\n      \"description\": \"Initial time of week\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"name\": \"propTow\",\n      \"unit\": \"ms\",\n      \"description\": \"Time of week propagating the initial trusted time\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U4\",\n      \"name\": \"iniTAcc\",\n      \"unit\": \"ms\",\n      \"description\": \"Initial Time Accuracy Estimate\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"U4\",\n      \"name\": \"propTAcc\",\n      \"unit\": \"ms\",\n      \"description\": \"Propagated Time Accuracy Estimate\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"I4\",\n      \"name\": \"deltas\",\n      \"unit\": \"s\",\n      \"description\": \"Integer seconds of delta time (current estimated time minus propagated trusted time)\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": \"I4\",\n      \"name\": \"deltaMs\",\n      \"unit\": \"ms\",\n      \"description\": \"Integer milliseconds of delta time (current estimated time minus propagated trusted time)\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-TIMETRUSTED",
+    "description": "External trusted time information",
+    "class_id": "0x01",
+    "message_id": "0x64",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 40
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x01 for this version)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "refSys",
+          "description": "Reference time system (all the GNSS system supported by UBX-MGA-INI-TIME_GNSS except Glonass)",
+          "values": {
+            "0": "None",
+            "1": "GPS Time",
+            "2": "Galileo System Time (GST)",
+            "3": "Beidou System Time (BDT)",
+            "15": "NavIC System Time"
+          }
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X1",
+          "name": "valid",
+          "description": "Validity Flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "trustedTime",
+              "description": "1 = Valid initial and propagated trusted time (iniWno, iniTow, fIniTow, iniTAcc, propWno, propTow, fPropTow and propTAcc)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "deltaTimeValid",
+              "description": "1 = Valid delta time (deltas and deltaMs) between current estimated time and the propagated trusted time"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "U1",
+          "name": "reserved0",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U2",
+          "name": "iniWno",
+          "description": "Initial week number"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U2",
+          "name": "propWno",
+          "description": "Week number propagating the initial trusted time"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "iniTow",
+          "unit": "ms",
+          "description": "Initial time of week"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "propTow",
+          "unit": "ms",
+          "description": "Time of week propagating the initial trusted time"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "iniTAcc",
+          "unit": "ms",
+          "description": "Initial Time Accuracy Estimate"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U4",
+          "name": "propTAcc",
+          "unit": "ms",
+          "description": "Propagated Time Accuracy Estimate"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "I4",
+          "name": "deltas",
+          "unit": "s",
+          "description": "Integer seconds of delta time (current estimated time minus propagated trusted time)"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "I4",
+          "name": "deltaMs",
+          "unit": "ms",
+          "description": "Integer milliseconds of delta time (current estimated time minus propagated trusted time)"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/69joh9u3rp1g"
+}

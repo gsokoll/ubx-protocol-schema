@@ -1,0 +1,251 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-PRT",
+  "extraction_timestamp": "2026-01-08T03:26:46.495983+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 77,
+    "end": 82
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-PRT\nExpected IDs: class_id=0x06, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-PRT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-CFG-PRT\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x00\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"fixed\": 20\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"portID\",\n      \"description\": \"Port identifier number (see the integration manual for valid UART port IDs)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X2\",\n      \"name\": \"txReady\",\n      \"description\": \"Enable TX ready feature for this port\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"en\",\n          \"description\": \"Enable TX ready feature\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"pol\",\n          \"description\": \"Polarity (0: High-active, 1: Low-active)\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"num_bits\": 5,\n          \"name\": \"pin\",\n          \"description\": \"PIO to be used (must not be in use by another function)\"\n        },\n        {\n          \"bit_offset\": 7,\n          \"num_bits\": 9,\n          \"name\": \"thres\",\n          \"description\": \"Threshold (multiplied by 8 bytes, TX ready PIN goes active after >= thres*8 bytes pending for the port)\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"mode\",\n      \"description\": \"A bit mask describing the UART mode\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 6,\n          \"name\": \"reserved_0\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 6,\n          \"num_bits\": 2,\n          \"name\": \"charLen\",\n          \"description\": \"Character length (00: 5bit, 01: 6bit, 10: 7bit, 11: 8bit)\"\n        },\n        {\n          \"bit_offset\": 8,\n          \"num_bits\": 1,\n          \"name\": \"reserved_1\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 9,\n          \"num_bits\": 3,\n          \"name\": \"parity\",\n          \"description\": \"Parity (000: Even, 001: Odd, 10X: No parity, X1X: Reserved)\"\n        },\n        {\n          \"bit_offset\": 12,\n          \"num_bits\": 2,\n          \"name\": \"nStopBits\",\n          \"description\": \"Number of Stop bits (00: 1 Stop, 01: 1.5 Stop, 10: 2 Stop, 11: 0.5 Stop)\"\n        },\n        {\n          \"bit_offset\": 14,\n          \"num_bits\": 18,\n          \"name\": \"reserved_2\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U4\",\n      \"name\": \"baudRate\",\n      \"unit\": \"Bits/s\",\n      \"description\": \"Baud rate in bits/second\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"X2\",\n      \"name\": \"inProtoMask\",\n      \"description\": \"A mask describing which input protocols are active.\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"inUbx\",\n          \"description\": \"UBX protocol\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"inNmea\",\n          \"description\": \"NMEA protocol\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"num_bits\": 1,\n          \"name\": \"inRtcm\",\n          \"description\": \"RTCM2 protocol\"\n        },\n        {\n          \"bit_offset\": 3,\n          \"num_bits\": 2,\n          \"name\": \"reserved_0\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 5,\n          \"num_bits\": 1,\n          \"name\": \"inRtcm3\",\n          \"description\": \"RTCM3 protocol (not supported for protocol versions less than 20.00)\"\n        },\n        {\n          \"bit_offset\": 6,\n          \"num_bits\": 10,\n          \"name\": \"reserved_1\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"X2\",\n      \"name\": \"outProtoMask\",\n      \"description\": \"A mask describing which output protocols are active.\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"outUbx\",\n          \"description\": \"UBX protocol\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"outNmea\",\n          \"description\": \"NMEA protocol\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"num_bits\": 3,\n          \"name\": \"reserved_0\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 5,\n          \"num_bits\": 1,\n          \"name\": \"outRtcm3\",\n          \"description\": \"RTCM3 protocol (not supported for protocol versions less than 20.00)\"\n        },\n        {\n          \"bit_offset\": 6,\n          \"num_bits\": 10,\n          \"name\": \"reserved_1\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"X2\",\n      \"name\": \"flags\",\n      \"description\": \"Flags bit mask\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"num_bits\": 1,\n          \"name\": \"reserved_0\",\n          \"reserved\": true\n        },\n        {\n          \"bit_offset\": 1,\n          \"num_bits\": 1,\n          \"name\": \"extendedTxTimeout\",\n          \"description\": \"Extended TX timeout: if set, port times out if allocated TX memory >=4 kB and no activity for 1.5s. If not set, port times out if no activity for 1.5s regardless of allocated TX memory (not supported for protocol versions less than 13.01).\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"num_bits\": 14,\n          \"name\": \"reserved_1\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-PRT",
+    "class_id": "0x06",
+    "message_id": "0x00",
+    "message_type": "get_set",
+    "payload_length": {
+      "fixed": 20
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "portID",
+          "description": "Port identifier number (see the integration manual for valid UART port IDs)"
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X2",
+          "name": "txReady",
+          "description": "Enable TX ready feature for this port",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "en",
+              "description": "Enable TX ready feature"
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "pol",
+              "description": "Polarity (0: High-active, 1: Low-active)"
+            },
+            {
+              "bit_offset": 2,
+              "num_bits": 5,
+              "name": "pin",
+              "description": "PIO to be used (must not be in use by another function)"
+            },
+            {
+              "bit_offset": 7,
+              "num_bits": 9,
+              "name": "thres",
+              "description": "Threshold (multiplied by 8 bytes, TX ready PIN goes active after >= thres*8 bytes pending for the port)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "mode",
+          "description": "A bit mask describing the UART mode",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 6,
+              "name": "reserved_0",
+              "reserved": true
+            },
+            {
+              "bit_offset": 6,
+              "num_bits": 2,
+              "name": "charLen",
+              "description": "Character length (00: 5bit, 01: 6bit, 10: 7bit, 11: 8bit)"
+            },
+            {
+              "bit_offset": 8,
+              "num_bits": 1,
+              "name": "reserved_1",
+              "reserved": true
+            },
+            {
+              "bit_offset": 9,
+              "num_bits": 3,
+              "name": "parity",
+              "description": "Parity (000: Even, 001: Odd, 10X: No parity, X1X: Reserved)"
+            },
+            {
+              "bit_offset": 12,
+              "num_bits": 2,
+              "name": "nStopBits",
+              "description": "Number of Stop bits (00: 1 Stop, 01: 1.5 Stop, 10: 2 Stop, 11: 0.5 Stop)"
+            },
+            {
+              "bit_offset": 14,
+              "num_bits": 18,
+              "name": "reserved_2",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U4",
+          "name": "baudRate",
+          "unit": "Bits/s",
+          "description": "Baud rate in bits/second"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "X2",
+          "name": "inProtoMask",
+          "description": "A mask describing which input protocols are active.",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "inUbx",
+              "description": "UBX protocol"
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "inNmea",
+              "description": "NMEA protocol"
+            },
+            {
+              "bit_offset": 2,
+              "num_bits": 1,
+              "name": "inRtcm",
+              "description": "RTCM2 protocol"
+            },
+            {
+              "bit_offset": 3,
+              "num_bits": 2,
+              "name": "reserved_0",
+              "reserved": true
+            },
+            {
+              "bit_offset": 5,
+              "num_bits": 1,
+              "name": "inRtcm3",
+              "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+            },
+            {
+              "bit_offset": 6,
+              "num_bits": 10,
+              "name": "reserved_1",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "X2",
+          "name": "outProtoMask",
+          "description": "A mask describing which output protocols are active.",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "outUbx",
+              "description": "UBX protocol"
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "outNmea",
+              "description": "NMEA protocol"
+            },
+            {
+              "bit_offset": 2,
+              "num_bits": 3,
+              "name": "reserved_0",
+              "reserved": true
+            },
+            {
+              "bit_offset": 5,
+              "num_bits": 1,
+              "name": "outRtcm3",
+              "description": "RTCM3 protocol (not supported for protocol versions less than 20.00)"
+            },
+            {
+              "bit_offset": 6,
+              "num_bits": 10,
+              "name": "reserved_1",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "X2",
+          "name": "flags",
+          "description": "Flags bit mask",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "num_bits": 1,
+              "name": "reserved_0",
+              "reserved": true
+            },
+            {
+              "bit_offset": 1,
+              "num_bits": 1,
+              "name": "extendedTxTimeout",
+              "description": "Extended TX timeout: if set, port times out if allocated TX memory >=4 kB and no activity for 1.5s. If not set, port times out if no activity for 1.5s regardless of allocated TX memory (not supported for protocol versions less than 13.01)."
+            },
+            {
+              "bit_offset": 2,
+              "num_bits": 14,
+              "name": "reserved_1",
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ousyxldx3a2e"
+}

@@ -1,0 +1,138 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-NAV-TIMELS",
+  "extraction_timestamp": "2026-01-08T03:57:59.848094+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 152,
+    "end": 153
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-TIMELS\nExpected IDs: class_id=0x01, message_id=0x26\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-TIMELS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": {\n    \"name\": \"UBX-NAV-TIMELS\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x26\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"Information about the upcoming leap second event if one is scheduled.\",\n    \"payload_length\": {\n      \"fixed\": 24\n    },\n    \"payload\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"srcOfCurrLs\",\n        \"data_type\": \"U1\",\n        \"description\": \"Information source for the current number of leap seconds.\\n\u2022 0 = Default (hardcoded in the firmware, can be outdated)\\n\u2022 1 = Derived from time difference between GPS and GLONASS time\\n\u2022 2 = GPS\\n\u2022 3 = SBAS\\n\u2022 4 = BeiDou\\n\u2022 5 = Galileo\\n\u2022 6 = Aided data\\n\u2022 7 = Configured\\n\u2022 8 = NavIC\\n\u2022 255 = Unknown\"\n      },\n      {\n        \"byte_offset\": 9,\n        \"name\": \"currLs\",\n        \"data_type\": \"I1\",\n        \"unit\": \"S\",\n        \"description\": \"Current number of leap seconds since start of GPS time (Jan 6, 1980). It reflects how much GPS time is ahead of UTC time. Galileo number of leap seconds is the same as GPS. BeiDou number of leap seconds is 14 less than GPS. GLONASS follows UTC time, so no leap seconds.\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"name\": \"srcOfLsChange\",\n        \"data_type\": \"U1\",\n        \"description\": \"Information source for the future leap second event.\\n\u2022 0 = No source\\n\u2022 2 = GPS\\n\u2022 3 = SBAS\\n\u2022 4 = BeiDou\\n\u2022 5 = Galileo\\n\u2022 6 = GLONASS\\n\u2022 7 = NavIC\"\n      },\n      {\n        \"byte_offset\": 11,\n        \"name\": \"lsChange\",\n        \"data_type\": \"I1\",\n        \"unit\": \"S\",\n        \"description\": \"Future leap second change if one is scheduled. +1 = positive leap second, -1 = negative leap second, 0 = no future leap second event scheduled or no information available.\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"timeToLsEvent\",\n        \"data_type\": \"I4\",\n        \"unit\": \"S\",\n        \"description\": \"Number of seconds until the next leap second event, or from the last leap second event if no future event scheduled. If > 0 event is in the future, = 0 event is now, < 0 event is in the past. Valid only if validTimeToLsEvent = 1.\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"dateOfLsGpsWn\",\n        \"data_type\": \"U2\",\n        \"description\": \"GPS week number (WN) of the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1.\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"dateOfLsGpsDn\",\n        \"data_type\": \"U2\",\n        \"description\": \"GPS day of week number (DN) for the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1. (GPS and Galileo DN: from 1 = Sun to 7 = Sat. BeiDou DN: from 0 = Sun to 6 = Sat.)\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 3\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 23,\n        \"name\": \"valid\",\n        \"data_type\": \"X1\",\n        \"description\": \"Validity flags\",\n        \"bit_fields\": [\n          {\n            \"name\": \"validCurrLs\",\n            \"position\": 0,\n            \"length\": 1,\n            \"description\": \"1 = Valid current number of leap seconds value.\"\n          },\n          {\n            \"name\": \"validTimeToLsEvent\",\n            \"position\": 1,\n            \"length\": 1,\n            \"description\": \"1 = Valid time to next leap second event or from the last leap second event if no future event scheduled.\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-NAV-TIMELS",
+      "class_id": "0x01",
+      "message_id": "0x26",
+      "message_type": "periodic_polled",
+      "description": "Information about the upcoming leap second event if one is scheduled.",
+      "payload_length": {
+        "fixed": 24
+      },
+      "payload": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 8,
+          "name": "srcOfCurrLs",
+          "data_type": "U1",
+          "description": "Information source for the current number of leap seconds.\n\u2022 0 = Default (hardcoded in the firmware, can be outdated)\n\u2022 1 = Derived from time difference between GPS and GLONASS time\n\u2022 2 = GPS\n\u2022 3 = SBAS\n\u2022 4 = BeiDou\n\u2022 5 = Galileo\n\u2022 6 = Aided data\n\u2022 7 = Configured\n\u2022 8 = NavIC\n\u2022 255 = Unknown"
+        },
+        {
+          "byte_offset": 9,
+          "name": "currLs",
+          "data_type": "I1",
+          "unit": "S",
+          "description": "Current number of leap seconds since start of GPS time (Jan 6, 1980). It reflects how much GPS time is ahead of UTC time. Galileo number of leap seconds is the same as GPS. BeiDou number of leap seconds is 14 less than GPS. GLONASS follows UTC time, so no leap seconds."
+        },
+        {
+          "byte_offset": 10,
+          "name": "srcOfLsChange",
+          "data_type": "U1",
+          "description": "Information source for the future leap second event.\n\u2022 0 = No source\n\u2022 2 = GPS\n\u2022 3 = SBAS\n\u2022 4 = BeiDou\n\u2022 5 = Galileo\n\u2022 6 = GLONASS\n\u2022 7 = NavIC"
+        },
+        {
+          "byte_offset": 11,
+          "name": "lsChange",
+          "data_type": "I1",
+          "unit": "S",
+          "description": "Future leap second change if one is scheduled. +1 = positive leap second, -1 = negative leap second, 0 = no future leap second event scheduled or no information available."
+        },
+        {
+          "byte_offset": 12,
+          "name": "timeToLsEvent",
+          "data_type": "I4",
+          "unit": "S",
+          "description": "Number of seconds until the next leap second event, or from the last leap second event if no future event scheduled. If > 0 event is in the future, = 0 event is now, < 0 event is in the past. Valid only if validTimeToLsEvent = 1."
+        },
+        {
+          "byte_offset": 16,
+          "name": "dateOfLsGpsWn",
+          "data_type": "U2",
+          "description": "GPS week number (WN) of the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1."
+        },
+        {
+          "byte_offset": 18,
+          "name": "dateOfLsGpsDn",
+          "data_type": "U2",
+          "description": "GPS day of week number (DN) for the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1. (GPS and Galileo DN: from 1 = Sun to 7 = Sat. BeiDou DN: from 0 = Sun to 6 = Sat.)"
+        },
+        {
+          "byte_offset": 20,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 23,
+          "name": "valid",
+          "data_type": "X1",
+          "description": "Validity flags",
+          "bit_fields": [
+            {
+              "name": "validCurrLs",
+              "position": 0,
+              "length": 1,
+              "description": "1 = Valid current number of leap seconds value."
+            },
+            {
+              "name": "validTimeToLsEvent",
+              "position": 1,
+              "length": 1,
+              "description": "1 = Valid time to next leap second event or from the last leap second event if no future event scheduled."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/r2t75nrdf9vk"
+}

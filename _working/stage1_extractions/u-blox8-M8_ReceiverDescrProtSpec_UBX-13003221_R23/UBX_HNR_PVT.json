@@ -1,0 +1,318 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-HNR-PVT",
+  "extraction_timestamp": "2026-01-08T05:57:20.918652+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 304,
+    "end": 307
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-HNR-PVT\nExpected IDs: class_id=0x28, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-HNR-PVT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"message_name\": \"UBX-HNR-PVT\",\n    \"class_id\": \"0x28\",\n    \"message_id\": \"0x00\",\n    \"description\": \"High rate output of PVT solution\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 72\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"name\": \"iTOW\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U2\",\n        \"name\": \"year\",\n        \"unit\": \"y\",\n        \"description\": \"Year (UTC)\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"data_type\": \"U1\",\n        \"name\": \"month\",\n        \"unit\": \"month\",\n        \"description\": \"Month, range 1..12 (UTC)\"\n      },\n      {\n        \"byte_offset\": 7,\n        \"data_type\": \"U1\",\n        \"name\": \"day\",\n        \"unit\": \"d\",\n        \"description\": \"Day of month, range 1..31 (UTC)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U1\",\n        \"name\": \"hour\",\n        \"unit\": \"h\",\n        \"description\": \"Hour of day, range 0..23 (UTC)\"\n      },\n      {\n        \"byte_offset\": 9,\n        \"data_type\": \"U1\",\n        \"name\": \"min\",\n        \"unit\": \"min\",\n        \"description\": \"Minute of hour, range 0..59 (UTC)\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"data_type\": \"U1\",\n        \"name\": \"sec\",\n        \"unit\": \"s\",\n        \"description\": \"Seconds of minute, range 0..60 (UTC)\"\n      },\n      {\n        \"byte_offset\": 11,\n        \"data_type\": \"X1\",\n        \"name\": \"valid\",\n        \"description\": \"Validity Flags\",\n        \"sub_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"validDate\",\n            \"description\": \"1 = Valid UTC Date\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"validTime\",\n            \"description\": \"1 = Valid UTC Time of Day\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"name\": \"fullyResolved\",\n            \"description\": \"1 = UTC Time of Day has been fully resolved (no seconds uncertainty)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"I4\",\n        \"name\": \"nano\",\n        \"unit\": \"ns\",\n        \"description\": \"Fraction of second, range -1e9 .. 1e9 (UTC)\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U1\",\n        \"name\": \"gpsFix\",\n        \"description\": \"GPSfix Type, range 0..5\",\n        \"value_descriptions\": [\n          {\n            \"value\": 0,\n            \"description\": \"No Fix\"\n          },\n          {\n            \"value\": 1,\n            \"description\": \"Dead Reckoning only\"\n          },\n          {\n            \"value\": 2,\n            \"description\": \"2D-Fix\"\n          },\n          {\n            \"value\": 3,\n            \"description\": \"3D-Fix\"\n          },\n          {\n            \"value\": 4,\n            \"description\": \"GPS + dead reckoning combined\"\n          },\n          {\n            \"value\": 5,\n            \"description\": \"Time only fix\"\n          },\n          {\n            \"value\": \"0x06..0xff\",\n            \"description\": \"reserved\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 17,\n        \"data_type\": \"X1\",\n        \"name\": \"flags\",\n        \"description\": \"Fix Status Flags\",\n        \"sub_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"GPSfixOK\",\n            \"description\": \">1 = Fix within limits (e.g. DOP & accuracy)\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"DiffSoln\",\n            \"description\": \"1 = DGPS used\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"name\": \"WKNSET\",\n            \"description\": \"1 = Valid GPS week number\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"name\": \"TOWSET\",\n            \"description\": \"1 = Valid GPS time of week (ITOW & fTOW)\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"bit_length\": 1,\n            \"name\": \"headVehValid\",\n            \"description\": \"1 = Heading of vehicle is valid\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 18,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved1\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"I4\",\n        \"name\": \"lon\",\n        \"scale\": {\n          \"raw\": \"1e-7\",\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Longitude\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": \"I4\",\n        \"name\": \"lat\",\n        \"scale\": {\n          \"raw\": \"1e-7\",\n          \"multiplier\": 1e-7\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Latitude\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"data_type\": \"I4\",\n        \"name\": \"height\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above Ellipsoid\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"data_type\": \"I4\",\n        \"name\": \"HMSL\",\n        \"unit\": \"mm\",\n        \"description\": \"Height above mean sea level\"\n      },\n      {\n        \"byte_offset\": 36,\n        \"data_type\": \"I4\",\n        \"name\": \"gSpeed\",\n        \"unit\": \"mm/s\",\n        \"description\": \"Ground Speed (2-D)\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"data_type\": \"I4\",\n        \"name\": \"speed\",\n        \"unit\": \"mm/s\",\n        \"description\": \"Speed (3-D)\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"data_type\": \"I4\",\n        \"name\": \"headMot\",\n        \"scale\": {\n          \"raw\": \"1e-5\",\n          \"multiplier\": 1e-5\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Heading of motion (2-D)\"\n      },\n      {\n        \"byte_offset\": 48,\n        \"data_type\": \"I4\",\n        \"name\": \"headVeh\",\n        \"scale\": {\n          \"raw\": \"1e-5\",\n          \"multiplier\": 1e-5\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Heading of vehicle (2-D)\"\n      },\n      {\n        \"byte_offset\": 52,\n        \"data_type\": \"U4\",\n        \"name\": \"hAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Horizontal accuracy\"\n      },\n      {\n        \"byte_offset\": 56,\n        \"data_type\": \"U4\",\n        \"name\": \"vAcc\",\n        \"unit\": \"mm\",\n        \"description\": \"Vertical accuracy\"\n      },\n      {\n        \"byte_offset\": 60,\n        \"data_type\": \"U4\",\n        \"name\": \"sAcc\",\n        \"unit\": \"mm/s\",\n        \"description\": \"Speed accuracy\"\n      },\n      {\n        \"byte_offset\": 64,\n        \"data_type\": \"U4\",\n        \"name\": \"headAcc\",\n        \"scale\": {\n          \"raw\": \"1e-5\",\n          \"multiplier\": 1e-5\n        },\n        \"unit\": \"deg\",\n        \"description\": \"Heading accuracy\"\n      },\n      {\n        \"byte_offset\": 68,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 4\n        },\n        \"name\": \"reserved2\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "message_name": "UBX-HNR-PVT",
+      "class_id": "0x28",
+      "message_id": "0x00",
+      "description": "High rate output of PVT solution",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 72
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U2",
+          "name": "year",
+          "unit": "y",
+          "description": "Year (UTC)"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "U1",
+          "name": "month",
+          "unit": "month",
+          "description": "Month, range 1..12 (UTC)"
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "U1",
+          "name": "day",
+          "unit": "d",
+          "description": "Day of month, range 1..31 (UTC)"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U1",
+          "name": "hour",
+          "unit": "h",
+          "description": "Hour of day, range 0..23 (UTC)"
+        },
+        {
+          "byte_offset": 9,
+          "data_type": "U1",
+          "name": "min",
+          "unit": "min",
+          "description": "Minute of hour, range 0..59 (UTC)"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U1",
+          "name": "sec",
+          "unit": "s",
+          "description": "Seconds of minute, range 0..60 (UTC)"
+        },
+        {
+          "byte_offset": 11,
+          "data_type": "X1",
+          "name": "valid",
+          "description": "Validity Flags",
+          "sub_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "validDate",
+              "description": "1 = Valid UTC Date"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "validTime",
+              "description": "1 = Valid UTC Time of Day"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "fullyResolved",
+              "description": "1 = UTC Time of Day has been fully resolved (no seconds uncertainty)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I4",
+          "name": "nano",
+          "unit": "ns",
+          "description": "Fraction of second, range -1e9 .. 1e9 (UTC)"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U1",
+          "name": "gpsFix",
+          "description": "GPSfix Type, range 0..5",
+          "value_descriptions": [
+            {
+              "value": 0,
+              "description": "No Fix"
+            },
+            {
+              "value": 1,
+              "description": "Dead Reckoning only"
+            },
+            {
+              "value": 2,
+              "description": "2D-Fix"
+            },
+            {
+              "value": 3,
+              "description": "3D-Fix"
+            },
+            {
+              "value": 4,
+              "description": "GPS + dead reckoning combined"
+            },
+            {
+              "value": 5,
+              "description": "Time only fix"
+            },
+            {
+              "value": "0x06..0xff",
+              "description": "reserved"
+            }
+          ]
+        },
+        {
+          "byte_offset": 17,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Fix Status Flags",
+          "sub_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "GPSfixOK",
+              "description": ">1 = Fix within limits (e.g. DOP & accuracy)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "DiffSoln",
+              "description": "1 = DGPS used"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "WKNSET",
+              "description": "1 = Valid GPS week number"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "TOWSET",
+              "description": "1 = Valid GPS time of week (ITOW & fTOW)"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "headVehValid",
+              "description": "1 = Heading of vehicle is valid"
+            }
+          ]
+        },
+        {
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "I4",
+          "name": "lon",
+          "scale": {
+            "raw": "1e-7",
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "I4",
+          "name": "lat",
+          "scale": {
+            "raw": "1e-7",
+            "multiplier": 1e-07
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "I4",
+          "name": "height",
+          "unit": "mm",
+          "description": "Height above Ellipsoid"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "I4",
+          "name": "HMSL",
+          "unit": "mm",
+          "description": "Height above mean sea level"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "I4",
+          "name": "gSpeed",
+          "unit": "mm/s",
+          "description": "Ground Speed (2-D)"
+        },
+        {
+          "byte_offset": 40,
+          "data_type": "I4",
+          "name": "speed",
+          "unit": "mm/s",
+          "description": "Speed (3-D)"
+        },
+        {
+          "byte_offset": 44,
+          "data_type": "I4",
+          "name": "headMot",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading of motion (2-D)"
+        },
+        {
+          "byte_offset": 48,
+          "data_type": "I4",
+          "name": "headVeh",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading of vehicle (2-D)"
+        },
+        {
+          "byte_offset": 52,
+          "data_type": "U4",
+          "name": "hAcc",
+          "unit": "mm",
+          "description": "Horizontal accuracy"
+        },
+        {
+          "byte_offset": 56,
+          "data_type": "U4",
+          "name": "vAcc",
+          "unit": "mm",
+          "description": "Vertical accuracy"
+        },
+        {
+          "byte_offset": 60,
+          "data_type": "U4",
+          "name": "sAcc",
+          "unit": "mm/s",
+          "description": "Speed accuracy"
+        },
+        {
+          "byte_offset": 64,
+          "data_type": "U4",
+          "name": "headAcc",
+          "scale": {
+            "raw": "1e-5",
+            "multiplier": 1e-05
+          },
+          "unit": "deg",
+          "description": "Heading accuracy"
+        },
+        {
+          "byte_offset": 68,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved2",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/65nh1478exm5"
+}

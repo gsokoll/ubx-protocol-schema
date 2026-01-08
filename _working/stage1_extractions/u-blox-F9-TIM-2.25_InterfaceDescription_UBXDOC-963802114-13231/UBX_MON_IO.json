@@ -1,0 +1,102 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MON-IO",
+  "extraction_timestamp": "2026-01-08T04:22:04.942246+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 101,
+    "end": 101
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-IO\nExpected IDs: class_id=0x0a, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-IO\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_class\": \"0x0a\",\n  \"ubx_id\": \"0x02\",\n  \"message_name\": \"UBX-MON-IO\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"I/O system status\",\n  \"payload_length\": {\n    \"variable\": {\n      \"formula\": \"N * 20\",\n      \"description\": \"N = number of ports the receiver supports\"\n    }\n  },\n  \"fields\": [\n    {\n      \"name\": \"ports\",\n      \"data_type\": {\n        \"array_of\": {\n          \"fields\": [\n            {\n              \"name\": \"rxBytes\",\n              \"byte_offset\": 0,\n              \"data_type\": \"U4\",\n              \"unit\": \"bytes\",\n              \"description\": \"Number of bytes ever received\"\n            },\n            {\n              \"name\": \"txBytes\",\n              \"byte_offset\": 4,\n              \"data_type\": \"U4\",\n              \"unit\": \"bytes\",\n              \"description\": \"Number of bytes ever sent\"\n            },\n            {\n              \"name\": \"parityErrs\",\n              \"byte_offset\": 8,\n              \"data_type\": \"U2\",\n              \"description\": \"Number of 100 ms timeslots with parity errors\"\n            },\n            {\n              \"name\": \"framingErrs\",\n              \"byte_offset\": 10,\n              \"data_type\": \"U2\",\n              \"description\": \"Number of 100 ms timeslots with framing errors\"\n            },\n            {\n              \"name\": \"overrunErrs\",\n              \"byte_offset\": 12,\n              \"data_type\": \"U2\",\n              \"description\": \"Number of 100 ms timeslots with overrun errors\"\n            },\n            {\n              \"name\": \"breakCond\",\n              \"byte_offset\": 14,\n              \"data_type\": \"U2\",\n              \"description\": \"Number of 100 ms timeslots with break conditions\"\n            },\n            {\n              \"name\": \"reserved0\",\n              \"byte_offset\": 16,\n              \"data_type\": {\n                \"array_of\": \"U1\",\n                \"count\": 4\n              },\n              \"reserved\": true,\n              \"description\": \"Reserved\"\n            }\n          ]\n        },\n        \"count\": \"N\",\n        \"description\": \"Array of N port status structures (where N is the number of ports)\"\n      }\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_class": "0x0a",
+    "ubx_id": "0x02",
+    "message_name": "UBX-MON-IO",
+    "message_type": "periodic_polled",
+    "description": "I/O system status",
+    "payload_length": {
+      "variable": {
+        "formula": "N * 20",
+        "description": "N = number of ports the receiver supports"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "name": "ports",
+          "data_type": {
+            "array_of": {
+              "fields": [
+                {
+                  "name": "rxBytes",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever received"
+                },
+                {
+                  "name": "txBytes",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "unit": "bytes",
+                  "description": "Number of bytes ever sent"
+                },
+                {
+                  "name": "parityErrs",
+                  "byte_offset": 8,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with parity errors"
+                },
+                {
+                  "name": "framingErrs",
+                  "byte_offset": 10,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with framing errors"
+                },
+                {
+                  "name": "overrunErrs",
+                  "byte_offset": 12,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with overrun errors"
+                },
+                {
+                  "name": "breakCond",
+                  "byte_offset": 14,
+                  "data_type": "U2",
+                  "description": "Number of 100 ms timeslots with break conditions"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 16,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "reserved": true,
+                  "description": "Reserved"
+                }
+              ]
+            },
+            "count": "N",
+            "description": "Array of N port status structures (where N is the number of ports)"
+          }
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ue0nihgmmnn6"
+}

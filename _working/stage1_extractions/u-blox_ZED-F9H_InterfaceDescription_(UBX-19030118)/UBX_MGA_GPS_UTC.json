@@ -1,0 +1,141 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-MGA-GPS-UTC",
+  "extraction_timestamp": "2026-01-08T02:40:04.615212+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 103,
+    "end": 106
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GPS-UTC\nExpected IDs: class_id=0x13, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GPS-UTC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MGA-GPS-UTC\",\n    \"class_id\": \"0x13\",\n    \"message_id\": \"0x00\",\n    \"message_type\": \"input\",\n    \"payload_length\": {\n      \"fixed\": 20\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"type\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message type (0x05 for this type)\",\n        \"fixed_value\": 5\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"reserved0\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"utcA0\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"2^-30\",\n          \"multiplier\": 9.313225746154785e-10\n        },\n        \"unit\": \"s\",\n        \"description\": \"First parameter of UTC polynomial\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"utcA1\",\n        \"data_type\": \"I4\",\n        \"scale\": {\n          \"raw\": \"2^-50\",\n          \"multiplier\": 8.881784197001252e-16\n        },\n        \"unit\": \"s/s\",\n        \"description\": \"Second parameter of UTC polynomial\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"utcDtLS\",\n        \"data_type\": \"I1\",\n        \"unit\": \"s\",\n        \"description\": \"Delta time due to current leap seconds\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"name\": \"utcTot\",\n        \"data_type\": \"U1\",\n        \"scale\": {\n          \"raw\": \"2^12\",\n          \"multiplier\": 4096\n        },\n        \"unit\": \"s\",\n        \"description\": \"UTC parameters reference time of week (GPS time)\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"name\": \"utcWNt\",\n        \"data_type\": \"U1\",\n        \"unit\": \"weeks\",\n        \"description\": \"UTC parameters reference week number (the 8-bit WNt field)\"\n      },\n      {\n        \"byte_offset\": 15,\n        \"name\": \"utcWNlsf\",\n        \"data_type\": \"U1\",\n        \"unit\": \"weeks\",\n        \"description\": \"Week number at the end of which the future leap second becomes effective (the 8-bit WNLSF field)\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"utcDn\",\n        \"data_type\": \"U1\",\n        \"unit\": \"days\",\n        \"description\": \"Day number at the end of which the future leap second becomes effective\"\n      },\n      {\n        \"byte_offset\": 17,\n        \"name\": \"utcDtLSF\",\n        \"data_type\": \"I1\",\n        \"unit\": \"s\",\n        \"description\": \"Delta time due to future leap seconds\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MGA-GPS-UTC",
+      "class_id": "0x13",
+      "message_id": "0x00",
+      "message_type": "input",
+      "payload_length": {
+        "fixed": 20
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "name": "type",
+          "data_type": "U1",
+          "description": "Message type (0x05 for this type)",
+          "fixed_value": 5
+        },
+        {
+          "byte_offset": 1,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 2,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "name": "utcA0",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "s",
+          "description": "First parameter of UTC polynomial"
+        },
+        {
+          "byte_offset": 8,
+          "name": "utcA1",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-50",
+            "multiplier": 8.881784197001252e-16
+          },
+          "unit": "s/s",
+          "description": "Second parameter of UTC polynomial"
+        },
+        {
+          "byte_offset": 12,
+          "name": "utcDtLS",
+          "data_type": "I1",
+          "unit": "s",
+          "description": "Delta time due to current leap seconds"
+        },
+        {
+          "byte_offset": 13,
+          "name": "utcTot",
+          "data_type": "U1",
+          "scale": {
+            "raw": "2^12",
+            "multiplier": 4096
+          },
+          "unit": "s",
+          "description": "UTC parameters reference time of week (GPS time)"
+        },
+        {
+          "byte_offset": 14,
+          "name": "utcWNt",
+          "data_type": "U1",
+          "unit": "weeks",
+          "description": "UTC parameters reference week number (the 8-bit WNt field)"
+        },
+        {
+          "byte_offset": 15,
+          "name": "utcWNlsf",
+          "data_type": "U1",
+          "unit": "weeks",
+          "description": "Week number at the end of which the future leap second becomes effective (the 8-bit WNLSF field)"
+        },
+        {
+          "byte_offset": 16,
+          "name": "utcDn",
+          "data_type": "U1",
+          "unit": "days",
+          "description": "Day number at the end of which the future leap second becomes effective"
+        },
+        {
+          "byte_offset": 17,
+          "name": "utcDtLSF",
+          "data_type": "I1",
+          "unit": "s",
+          "description": "Delta time due to future leap seconds"
+        },
+        {
+          "byte_offset": 18,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/n8rpul6bccwv"
+}

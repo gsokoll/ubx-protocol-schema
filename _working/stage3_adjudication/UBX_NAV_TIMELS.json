@@ -1,235 +1,240 @@
 {
   "message_name": "UBX-NAV-TIMELS",
-  "num_extractions": 15,
-  "adjudication": {
-    "canonical_structure": {
-      "name": "UBX-NAV-TIMELS",
-      "class_id": "0x01",
-      "message_id": "0x26",
-      "description": "Leap second event information",
-      "message_type": "periodic_polled",
-      "payload": {
-        "length": {
+  "num_extractions": 18,
+  "adjudication": [
+    {
+      "canonical_structure": {
+        "name": "UBX-NAV-TIMELS",
+        "class_id": "0x01",
+        "message_id": "0x26",
+        "description": "Information about the upcoming leap second event if one is scheduled.",
+        "message_type": "periodic_polled",
+        "payload_length": {
           "fixed": 24
         },
-        "fields": [
+        "payload": [
           {
-            "name": "iTOW",
             "byte_offset": 0,
+            "name": "iTOW",
             "data_type": "U4",
-            "description": "GPS time of week of the navigation epoch.",
-            "unit": "ms"
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch."
           },
           {
-            "name": "version",
             "byte_offset": 4,
+            "name": "version",
             "data_type": "U1",
             "description": "Message version (0x00 for this version)"
           },
           {
-            "name": "reserved0",
             "byte_offset": 5,
+            "name": "reserved0",
             "data_type": {
               "array_of": "U1",
               "count": 3
             },
-            "description": "Reserved",
-            "reserved": true
+            "reserved": true,
+            "description": "Reserved"
           },
           {
-            "name": "srcOfCurrLs",
             "byte_offset": 8,
+            "name": "srcOfCurrLs",
             "data_type": "U1",
-            "description": "Information source for the current number of leap seconds (e.g., Default, GPS, GLONASS, BeiDou, Galileo, NavIC, etc.)"
+            "description": "Information source for the current number of leap seconds. 0=Default, 1=Derived from GPS/GLONASS, 2=GPS, 3=SBAS, 4=BeiDou, 5=Galileo, 6=Aided, 7=Configured, 8=NavIC, 255=Unknown"
           },
           {
-            "name": "currLs",
             "byte_offset": 9,
+            "name": "currLs",
             "data_type": "I1",
-            "description": "Current number of leap seconds since start of GPS time.",
-            "unit": "s"
+            "unit": "s",
+            "description": "Current number of leap seconds since start of GPS time (Jan 6, 1980)."
           },
           {
-            "name": "srcOfLsChange",
             "byte_offset": 10,
+            "name": "srcOfLsChange",
             "data_type": "U1",
-            "description": "Information source for the future leap second event."
+            "description": "Information source for the future leap second event. 0=No source, 2=GPS, 3=SBAS, 4=BeiDou, 5=Galileo, 6=GLONASS, 7=NavIC"
           },
           {
-            "name": "lsChange",
             "byte_offset": 11,
+            "name": "lsChange",
             "data_type": "I1",
-            "description": "Future leap second change if one is scheduled (+1, -1, or 0).",
-            "unit": "s"
+            "unit": "s",
+            "description": "Future leap second change if one is scheduled. +1 = positive, -1 = negative, 0 = none."
           },
           {
-            "name": "timeToLsEvent",
             "byte_offset": 12,
+            "name": "timeToLsEvent",
             "data_type": "I4",
-            "description": "Number of seconds until the next leap second event.",
-            "unit": "s"
+            "unit": "s",
+            "description": "Number of seconds until (or since) the leap second event."
           },
           {
-            "name": "dateOfLsGpsWn",
             "byte_offset": 16,
+            "name": "dateOfLsGpsWn",
             "data_type": "U2",
-            "description": "GPS week number of the leap second event."
+            "description": "GPS week number (WN) of the next leap second event."
           },
           {
-            "name": "dateOfLsGpsDn",
             "byte_offset": 18,
+            "name": "dateOfLsGpsDn",
             "data_type": "U2",
-            "description": "GPS day of week number for the leap second event."
+            "description": "GPS day of week number (DN) for the next leap second event."
           },
           {
-            "name": "reserved1",
             "byte_offset": 20,
+            "name": "reserved1",
             "data_type": {
               "array_of": "U1",
               "count": 3
             },
-            "description": "Reserved",
-            "reserved": true
+            "reserved": true,
+            "description": "Reserved"
           },
           {
-            "name": "valid",
             "byte_offset": 23,
+            "name": "valid",
             "data_type": "X1",
             "description": "Validity flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "validCurrLs",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "1 = Valid current number of leap seconds value"
-                },
-                {
-                  "name": "validTimeToLsEvent",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "1 = Valid time to next leap second event"
-                }
-              ]
-            }
+            "bit_fields": [
+              {
+                "name": "validCurrLs",
+                "position": 0,
+                "length": 1,
+                "description": "1 = Valid current number of leap seconds value"
+              },
+              {
+                "name": "validTimeToLsEvent",
+                "position": 1,
+                "length": 1,
+                "description": "1 = Valid time to leap second event"
+              }
+            ]
           }
         ]
-      }
-    },
-    "canonical_confidence": "high",
-    "extraction_verdicts": [
-      {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
       },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses legacy naming 'IRNSS' (value 7) instead of 'NavIC' in srcOfLsChange description"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "valid_variation",
-        "issues": [
-          "Older firmware definition: srcOfCurrLs only defines sources 0-7, missing NavIC (8)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incomplete descriptions for srcOfCurrLs and srcOfLsChange (missing the list of valid source identifiers)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses alternative field naming: reserved1 and reserved2 instead of reserved0 and reserved1"
-        ]
-      },
-      {
-        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
-      }
-    ],
-    "valid_variations": [
-      {
-        "sources": [
-          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
-        ],
-        "structure": {
-          "fields": [
-            {
-              "name": "reserved1",
-              "byte_offset": 5
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 20
-            }
+      "canonical_confidence": "high",
+      "extraction_verdicts": [
+        {
+          "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+          "verdict": "valid_variation",
+          "issues": [
+            "Older protocol version: Missing NavIC (8/7) in source enums"
           ]
         },
-        "reason": "Older documentation (u-blox 8) numbers reserved blocks starting from 1 instead of 0."
-      },
-      {
-        "sources": [
-          "F9-HPS120_Interfacedescription_UBX-19056845",
-          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318"
-        ],
-        "structure": {},
-        "reason": "Earlier firmware versions refer to the Indian satellite system as IRNSS (source 7/8) before the documentation standardized on the name NavIC."
-      }
-    ],
-    "reasoning": "The UBX-NAV-TIMELS message is highly consistent across generations (M8 through F10). The payload is always 24 bytes. Differences observed are primarily in metadata: (1) unit notation ('s' vs 'S'), (2) naming of reserved fields (reserved0/1 vs reserved1/2), and (3) the expansion of the source enumerations (srcOfCurrLs/srcOfLsChange) to include newer GNSS like NavIC. Extraction 9 is marked as an error because it stripped essential enum definitions from the description."
-  }
+        {
+          "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "verdict": "valid_variation",
+          "issues": [
+            "Older protocol version: Missing NavIC in enums",
+            "Non-standard field names: dateOfLsGps_Wn"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "verdict": "valid_variation",
+          "issues": [
+            "Uses IRNSS label for NavIC source ID"
+          ]
+        },
+        {
+          "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+          "verdict": "valid_variation",
+          "issues": [
+            "U-blox 8 variation: Uses reserved1/reserved2 naming instead of reserved0/reserved1"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "verdict": "extraction_error",
+          "issues": [
+            "Missing source enum values for srcOfCurrLs and srcOfLsChange"
+          ]
+        }
+      ],
+      "valid_variations": [
+        {
+          "sources": [
+            "F9-HPS120_Interfacedescription_UBX-19056845",
+            "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
+          ],
+          "structure": null,
+          "reason": "Older firmware versions produced before NavIC support was fully integrated into the standard UBX-NAV-TIMELS protocol documentation; these lack source ID 8 and source ID 7."
+        },
+        {
+          "sources": [
+            "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+          ],
+          "structure": null,
+          "reason": "The u-blox 8 series often numbers reserved fields differently (reserved1 and reserved2) compared to the u-blox 9/10/F9 series (reserved0 and reserved1)."
+        }
+      ],
+      "reasoning": "The UBX-NAV-TIMELS message is structurally identical across all hardware generations (24 bytes, specific bitfield at the end). The only differences are documentation-level enums for new GNSS constellations like NavIC (IRNSS) and slight naming conventions for reserved padding fields. Extraction 18 failed to capture the enum values which are critical for message interpretation."
+    }
+  ]
 }

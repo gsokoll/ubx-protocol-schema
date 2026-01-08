@@ -21,14 +21,14 @@
             "name": "sTtag",
             "byte_offset": 0,
             "data_type": "U4",
-            "description": "Sensor time tag",
+            "description": "sensor time tag",
             "unit": "ms"
           },
           {
             "name": "version",
             "byte_offset": 4,
             "data_type": "U1",
-            "description": "Message version (0x00)"
+            "description": "Message version (0x00 for this version)"
           },
           {
             "name": "reserved0",
@@ -54,7 +54,7 @@
         "repeated_groups": [
           {
             "name": "data_items",
-            "repetition_type": "num_derived_from_payload_length",
+            "repetition_type": "calculated_from_length",
             "group_size_bytes": 4,
             "base_offset": 12,
             "fields": [
@@ -62,20 +62,20 @@
                 "name": "data",
                 "byte_offset": 0,
                 "data_type": "X4",
-                "description": "Sensor data and type",
+                "description": "Data block containing calibrated sensor measurement and its type",
                 "bitfield": {
                   "bits": [
                     {
                       "name": "dataField",
                       "bit_start": 0,
                       "bit_end": 23,
-                      "description": "Data (24-bit signed/unsigned)"
+                      "description": "Data"
                     },
                     {
                       "name": "dataType",
                       "bit_start": 24,
                       "bit_end": 29,
-                      "description": "Type of data"
+                      "description": "Type of data (0 = no data; 1..63 = data type)"
                     }
                   ]
                 }
@@ -88,7 +88,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
         "verdict": "correct",
         "issues": []
       },
@@ -98,17 +98,17 @@
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
         "verdict": "correct",
         "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "All four extractions present an identical structure for UBX-ESF-CAL. There are no deviations in field names, offsets, data types, or bitfield layouts. Extractions 3 and 4 correctly identified the 'ms' unit for the sTtag field, which has been incorporated into the canonical structure. The message consists of a 12-byte header followed by a variable number of 4-byte data blocks."
+    "reasoning": "All four extractions describe the exact same binary message format across different firmware versions (M9 ADR and MDR). They all correctly identify the 12-byte header (consisting of time tag, version, and two reserved blocks) and the 4-byte repeated data block. While the naming of the repeated group varies slightly (e.g., 'data_items' vs 'data_blocks'), the underlying logic and bit-offsets within the X4 field (0-23 for data, 24-29 for type) are consistent and correct."
   }
 }

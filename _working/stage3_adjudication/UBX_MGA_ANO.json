@@ -29,13 +29,13 @@
             "name": "svId",
             "byte_offset": 2,
             "data_type": "U1",
-            "description": "Satellite identifier"
+            "description": "Satellite identifier (see Satellite Numbering)"
           },
           {
             "name": "gnssId",
             "byte_offset": 3,
             "data_type": "U1",
-            "description": "GNSS identifier"
+            "description": "GNSS identifier (see Satellite Numbering)"
           },
           {
             "name": "year",
@@ -92,17 +92,12 @@
         "issues": []
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
         "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
         "issues": []
       },
@@ -110,9 +105,35 @@
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses different naming convention for reserved fields (reserved1/reserved2 instead of reserved0/reserved1)"
+        ]
       }
     ],
-    "valid_variations": [],
-    "reasoning": "All 5 extractions across M8, M9, F10, and M10 generations describe an identical message structure (76 bytes fixed length, identical field offsets and types). The only minor difference is Extraction 4 (M8) naming the reserved fields 'reserved1' and 'reserved2' instead of 'reserved0' and 'reserved1', which is a documentation naming convention change, not a protocol change."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 7
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 72
+            }
+          ]
+        },
+        "reason": "Older u-blox 8 documentation utilizes a 1-based indexing for reserved fields in certain messages, whereas newer M9/M10 documentation follows 0-based indexing."
+      }
+    ],
+    "reasoning": "All five extractions describe the exact same 76-byte binary payload layout. The fields, data types, and offsets are identical across all receiver generations (M8 through M10/F10). The only discrepancies are purely cosmetic: Extraction 4 contains a slightly more detailed text description, and Extraction 5 (the oldest source) uses 'reserved1' and 'reserved2' names for the padding bytes, whereas the newer sources use 'reserved0' and 'reserved1'."
   }
 }

@@ -235,7 +235,10 @@ def extract_pages_as_images_cropped(
 
 
 # Firmware type identifiers used in u-blox manuals
-_FIRMWARE_TYPES = r"HPG|SPG|HPS|LAP|DBD|ADR|MDR|HDG"
+# SPG=Standard Precision, HPG=High Precision, HPS=High Precision Sensor, LAP=Lane Accurate
+# DBD=Dual Band Dead Reckoning, ADR=Automotive Dead Reckoning, MDR=Multi-mode Dead Reckoning
+# HDG=Heading, TIM=Timing, UDR=Untethered Dead Reckoning, FTS=Timing (older naming)
+_FIRMWARE_TYPES = r"HPG|SPG|HPS|LAP|DBD|ADR|MDR|HDG|TIM|UDR|FTS"
 
 
 def extract_manual_metadata(pdf_path: Path, search_pages: int = 30) -> ManualMetadata:

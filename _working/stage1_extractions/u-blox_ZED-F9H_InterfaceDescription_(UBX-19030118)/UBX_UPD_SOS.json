@@ -1,0 +1,195 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-UPD-SOS",
+  "extraction_timestamp": "2026-01-08T03:01:16.462812+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 153,
+    "end": 158
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-UPD-SOS\nExpected IDs: class_id=0x09, message_id=0x14\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-UPD-SOS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class\": \"UPD\",\n  \"id\": \"SOS\",\n  \"class_id\": \"0x09\",\n  \"message_id\": \"0x14\",\n  \"name\": \"UBX-UPD-SOS\",\n  \"description\": \"Messages used to download firmware and update on flash.\",\n  \"payload_variants\": [\n    {\n      \"name\": \"Poll backup restore status\",\n      \"message_type\": \"polled\",\n      \"comment\": \"Sending this (empty) message to the receiver results in the receiver returning a System restored from backup message.\",\n      \"payload_length\": {\n        \"fixed\": 0\n      },\n      \"fields\": []\n    },\n    {\n      \"name\": \"Create backup in flash\",\n      \"message_type\": \"command\",\n      \"comment\": \"The host can send this message to save part of the battery-backed memory (BBR) in a file in the flash file system. The feature is designed to emulate the presence of the backup battery even if it is not present; the host can issue the save on shutdown command before switching off the device supply. It is recommended to issue a GNSS stop command using UBX-CFG-RST before in order to keep the BBR memory content consistent.\",\n      \"payload_length\": {\n        \"fixed\": 4\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"cmd\",\n          \"description\": \"Command\",\n          \"fixed_value\": 0\n        },\n        {\n          \"byte_offset\": 1,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved0\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"name\": \"Clear backup in flash\",\n      \"message_type\": \"command\",\n      \"comment\": \"The host can send this message to erase the backup file present in flash. It is recommended that the clear operation is issued after the host has received the notification that the memory has been restored after a reset. Alternatively the host can parse the startup string Restored data saved on shutdown or poll the UBX-UPD-SOS message for obtaining the status.\",\n      \"payload_length\": {\n        \"fixed\": 4\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"cmd\",\n          \"description\": \"Command\",\n          \"fixed_value\": 1\n        },\n        {\n          \"byte_offset\": 1,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved0\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"name\": \"Backup creation acknowledge\",\n      \"message_type\": \"output\",\n      \"comment\": \"The message is sent from the device as confirmation of creation of a backup file in flash. The host can safely shut down the device after having received this message.\",\n      \"payload_length\": {\n        \"fixed\": 8\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"cmd\",\n          \"description\": \"Command\",\n          \"fixed_value\": 2\n        },\n        {\n          \"byte_offset\": 1,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved0\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"byte_offset\": 4,\n          \"data_type\": \"U1\",\n          \"name\": \"response\",\n          \"description\": \"Response status\",\n          \"description_as_enum\": {\n            \"0\": \"Not acknowledged\",\n            \"1\": \"Acknowledged\"\n          }\n        },\n        {\n          \"byte_offset\": 5,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved1\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        }\n      ]\n    },\n    {\n      \"name\": \"System restored from backup\",\n      \"message_type\": \"output\",\n      \"comment\": \"The message is sent from the device to notify the host the BBR has been restored from a backup file in the flash file system. The host should clear the backup file after receiving this message. If the UBX-UPD-SOS message is polled, this message will be resent.\",\n      \"payload_length\": {\n        \"fixed\": 8\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"cmd\",\n          \"description\": \"Command\",\n          \"fixed_value\": 3\n        },\n        {\n          \"byte_offset\": 1,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved0\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"byte_offset\": 4,\n          \"data_type\": \"U1\",\n          \"name\": \"response\",\n          \"description\": \"System restore status\",\n          \"description_as_enum\": {\n            \"0\": \"Unknown\",\n            \"1\": \"Failed restoring from backup\",\n            \"2\": \"Restored from backup\",\n            \"3\": \"Not restored (no backup)\"\n          }\n        },\n        {\n          \"byte_offset\": 5,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 3\n          },\n          \"name\": \"reserved1\",\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class": "UPD",
+    "id": "SOS",
+    "class_id": "0x09",
+    "message_id": "0x14",
+    "name": "UBX-UPD-SOS",
+    "description": "Messages used to download firmware and update on flash.",
+    "payload_variants": [
+      {
+        "name": "Poll backup restore status",
+        "message_type": "polled",
+        "comment": "Sending this (empty) message to the receiver results in the receiver returning a System restored from backup message.",
+        "payload_length": {
+          "fixed": 0
+        },
+        "fields": []
+      },
+      {
+        "name": "Create backup in flash",
+        "message_type": "command",
+        "comment": "The host can send this message to save part of the battery-backed memory (BBR) in a file in the flash file system. The feature is designed to emulate the presence of the backup battery even if it is not present; the host can issue the save on shutdown command before switching off the device supply. It is recommended to issue a GNSS stop command using UBX-CFG-RST before in order to keep the BBR memory content consistent.",
+        "payload_length": {
+          "fixed": 4
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "data_type": "U1",
+            "name": "cmd",
+            "description": "Command",
+            "fixed_value": 0
+          },
+          {
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved0",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "name": "Clear backup in flash",
+        "message_type": "command",
+        "comment": "The host can send this message to erase the backup file present in flash. It is recommended that the clear operation is issued after the host has received the notification that the memory has been restored after a reset. Alternatively the host can parse the startup string Restored data saved on shutdown or poll the UBX-UPD-SOS message for obtaining the status.",
+        "payload_length": {
+          "fixed": 4
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "data_type": "U1",
+            "name": "cmd",
+            "description": "Command",
+            "fixed_value": 1
+          },
+          {
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved0",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "name": "Backup creation acknowledge",
+        "message_type": "output",
+        "comment": "The message is sent from the device as confirmation of creation of a backup file in flash. The host can safely shut down the device after having received this message.",
+        "payload_length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "data_type": "U1",
+            "name": "cmd",
+            "description": "Command",
+            "fixed_value": 2
+          },
+          {
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved0",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "byte_offset": 4,
+            "data_type": "U1",
+            "name": "response",
+            "description": "Response status",
+            "description_as_enum": {
+              "0": "Not acknowledged",
+              "1": "Acknowledged"
+            }
+          },
+          {
+            "byte_offset": 5,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved1",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "name": "System restored from backup",
+        "message_type": "output",
+        "comment": "The message is sent from the device to notify the host the BBR has been restored from a backup file in the flash file system. The host should clear the backup file after receiving this message. If the UBX-UPD-SOS message is polled, this message will be resent.",
+        "payload_length": {
+          "fixed": 8
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "data_type": "U1",
+            "name": "cmd",
+            "description": "Command",
+            "fixed_value": 3
+          },
+          {
+            "byte_offset": 1,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved0",
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "byte_offset": 4,
+            "data_type": "U1",
+            "name": "response",
+            "description": "System restore status",
+            "description_as_enum": {
+              "0": "Unknown",
+              "1": "Failed restoring from backup",
+              "2": "Restored from backup",
+              "3": "Not restored (no backup)"
+            }
+          },
+          {
+            "byte_offset": 5,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "name": "reserved1",
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/heqzpw5dejqc"
+}

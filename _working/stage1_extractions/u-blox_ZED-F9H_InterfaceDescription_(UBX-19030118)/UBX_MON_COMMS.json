@@ -1,0 +1,173 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-MON-COMMS",
+  "extraction_timestamp": "2026-01-08T02:43:34.846368+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 112,
+    "end": 113
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-COMMS\nExpected IDs: class_id=0x0a, message_id=0x36\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-COMMS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-COMMS\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x36\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + nPorts*40\"\n    }\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"nPorts\",\n      \"description\": \"Number of ports included\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"X1\",\n      \"name\": \"txErrors\",\n      \"description\": \"TX error bitmask. Bit 0: Memory Allocation error; Bit 1: Allocation error (TX buffer full).\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"protIds\",\n      \"description\": \"The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 0xFF: No protocol reported.\"\n    }\n  ],\n  \"payload_fields_repeated\": {\n    \"name\": \"ports\",\n    \"count_field\": \"nPorts\",\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U2\",\n        \"name\": \"portId\",\n        \"description\": \"Unique identifier for the port.\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"U2\",\n        \"name\": \"txPending\",\n        \"unit\": \"bytes\",\n        \"description\": \"Number of bytes pending in transmitter buffer\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"name\": \"txBytes\",\n        \"unit\": \"bytes\",\n        \"description\": \"Number of bytes ever sent\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U1\",\n        \"name\": \"txUsage\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage transmitter buffer during the last sysmon period\"\n      },\n      {\n        \"byte_offset\": 9,\n        \"data_type\": \"U1\",\n        \"name\": \"txPeakUsage\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage transmitter buffer\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"data_type\": \"U2\",\n        \"name\": \"rxPending\",\n        \"unit\": \"bytes\",\n        \"description\": \"Number of bytes in receiver buffer\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"U4\",\n        \"name\": \"rxBytes\",\n        \"unit\": \"bytes\",\n        \"description\": \"Number of bytes ever received\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U1\",\n        \"name\": \"rxUsage\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage receiver buffer during the last sysmon period\"\n      },\n      {\n        \"byte_offset\": 17,\n        \"data_type\": \"U1\",\n        \"name\": \"rxPeakUsage\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage receiver buffer\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"data_type\": \"U2\",\n        \"name\": \"overrunErrs\",\n        \"description\": \"Number of 100 ms timeslots with overrun errors\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": {\n          \"array_of\": \"U2\",\n          \"count\": 4\n        },\n        \"name\": \"msgs\",\n        \"unit\": \"msg\",\n        \"description\": \"Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field.\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 8\n        },\n        \"name\": \"reserved1\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 36,\n        \"data_type\": \"U4\",\n        \"name\": \"skipped\",\n        \"unit\": \"bytes\",\n        \"description\": \"Number of skipped bytes\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-COMMS",
+    "class_id": "0x0a",
+    "message_id": "0x36",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + nPorts*40"
+      }
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "U1",
+        "name": "version",
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "byte_offset": 1,
+        "data_type": "U1",
+        "name": "nPorts",
+        "description": "Number of ports included"
+      },
+      {
+        "byte_offset": 2,
+        "data_type": "X1",
+        "name": "txErrors",
+        "description": "TX error bitmask. Bit 0: Memory Allocation error; Bit 1: Allocation error (TX buffer full)."
+      },
+      {
+        "byte_offset": 3,
+        "data_type": "U1",
+        "name": "reserved0",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "name": "protIds",
+        "description": "The identifiers of the protocols reported in the msgs array. 0: UBX, 1: NMEA, 2: RTCM2, 5: RTCM3, 0xFF: No protocol reported."
+      }
+    ],
+    "payload_fields_repeated": {
+      "name": "ports",
+      "count_field": "nPorts",
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U2",
+          "name": "portId",
+          "description": "Unique identifier for the port."
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U2",
+          "name": "txPending",
+          "unit": "bytes",
+          "description": "Number of bytes pending in transmitter buffer"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "txBytes",
+          "unit": "bytes",
+          "description": "Number of bytes ever sent"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U1",
+          "name": "txUsage",
+          "unit": "%",
+          "description": "Maximum usage transmitter buffer during the last sysmon period"
+        },
+        {
+          "byte_offset": 9,
+          "data_type": "U1",
+          "name": "txPeakUsage",
+          "unit": "%",
+          "description": "Maximum usage transmitter buffer"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U2",
+          "name": "rxPending",
+          "unit": "bytes",
+          "description": "Number of bytes in receiver buffer"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "rxBytes",
+          "unit": "bytes",
+          "description": "Number of bytes ever received"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U1",
+          "name": "rxUsage",
+          "unit": "%",
+          "description": "Maximum usage receiver buffer during the last sysmon period"
+        },
+        {
+          "byte_offset": 17,
+          "data_type": "U1",
+          "name": "rxPeakUsage",
+          "unit": "%",
+          "description": "Maximum usage receiver buffer"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "U2",
+          "name": "overrunErrs",
+          "description": "Number of 100 ms timeslots with overrun errors"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": {
+            "array_of": "U2",
+            "count": 4
+          },
+          "name": "msgs",
+          "unit": "msg",
+          "description": "Number of successfully parsed messages for each protocol. The reported protocols are identified through the protIds field."
+        },
+        {
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 8
+          },
+          "name": "reserved1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "U4",
+          "name": "skipped",
+          "unit": "bytes",
+          "description": "Number of skipped bytes"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/300kncyho61r"
+}

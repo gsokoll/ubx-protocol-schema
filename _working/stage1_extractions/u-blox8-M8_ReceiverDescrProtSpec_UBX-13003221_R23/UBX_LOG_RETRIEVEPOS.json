@@ -1,0 +1,187 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-LOG-RETRIEVEPOS",
+  "extraction_timestamp": "2026-01-08T06:03:45.652646+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 319,
+    "end": 320
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-LOG-RETRIEVEPOS\nExpected IDs: class_id=0x21, message_id=0x0b\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-LOG-RETRIEVEPOS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-LOG-RETRIEVEPOS\",\n  \"class_id\": 33,\n  \"message_id\": 11,\n  \"message_type\": \"output\",\n  \"description\": \"Position fix log entry\",\n  \"payload_length\": {\n    \"fixed\": 40\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"entryIndex\",\n      \"description\": \"The index of this log entry\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"I4\",\n      \"name\": \"lon\",\n      \"scale\": {\n        \"multiplier\": 1e-7,\n        \"raw\": \"1e-7\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Longitude\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I4\",\n      \"name\": \"lat\",\n      \"scale\": {\n        \"multiplier\": 1e-7,\n        \"raw\": \"1e-7\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Latitude\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"I4\",\n      \"name\": \"hMSL\",\n      \"unit\": \"mm\",\n      \"description\": \"Height above mean sea level\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"name\": \"hAcc\",\n      \"unit\": \"mm\",\n      \"description\": \"Horizontal accuracy estimate\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U4\",\n      \"name\": \"gSpeed\",\n      \"unit\": \"mm/s\",\n      \"description\": \"Ground speed (2-D)\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"U4\",\n      \"name\": \"heading\",\n      \"scale\": {\n        \"multiplier\": 1e-5,\n        \"raw\": \"1e-5\"\n      },\n      \"unit\": \"deg\",\n      \"description\": \"Heading\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 29,\n      \"data_type\": \"U1\",\n      \"name\": \"fixType\",\n      \"description\": \"Fix type:\",\n      \"named_values\": [\n        {\n          \"name\": \"Dead Reckoning only\",\n          \"value\": 1\n        },\n        {\n          \"name\": \"2D-Fix\",\n          \"value\": 2\n        },\n        {\n          \"name\": \"3D-Fix\",\n          \"value\": 3\n        },\n        {\n          \"name\": \"GNSS + Dead Reckoning combined\",\n          \"value\": 4\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 30,\n      \"data_type\": \"U2\",\n      \"name\": \"year\",\n      \"description\": \"Year (1-65635) of UTC time\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"data_type\": \"U1\",\n      \"name\": \"month\",\n      \"description\": \"Month (1-12) of UTC time\"\n    },\n    {\n      \"byte_offset\": 33,\n      \"data_type\": \"U1\",\n      \"name\": \"day\",\n      \"description\": \"Day (1-31) of UTC time\"\n    },\n    {\n      \"byte_offset\": 34,\n      \"data_type\": \"U1\",\n      \"name\": \"hour\",\n      \"description\": \"Hour (0-23) of UTC time\"\n    },\n    {\n      \"byte_offset\": 35,\n      \"data_type\": \"U1\",\n      \"name\": \"minute\",\n      \"description\": \"Minute (0-59) of UTC time\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"data_type\": \"U1\",\n      \"name\": \"second\",\n      \"description\": \"Second (0-60) of UTC time\"\n    },\n    {\n      \"byte_offset\": 37,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 38,\n      \"data_type\": \"U1\",\n      \"name\": \"numSV\",\n      \"description\": \"Number of satellites used in the position fix\"\n    },\n    {\n      \"byte_offset\": 39,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved2\",\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-LOG-RETRIEVEPOS",
+    "class_id": 33,
+    "message_id": 11,
+    "message_type": "output",
+    "description": "Position fix log entry",
+    "payload_length": {
+      "fixed": 40
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "entryIndex",
+          "description": "The index of this log entry"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "I4",
+          "name": "lon",
+          "scale": {
+            "multiplier": 1e-07,
+            "raw": "1e-7"
+          },
+          "unit": "deg",
+          "description": "Longitude"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "lat",
+          "scale": {
+            "multiplier": 1e-07,
+            "raw": "1e-7"
+          },
+          "unit": "deg",
+          "description": "Latitude"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I4",
+          "name": "hMSL",
+          "unit": "mm",
+          "description": "Height above mean sea level"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "hAcc",
+          "unit": "mm",
+          "description": "Horizontal accuracy estimate"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "gSpeed",
+          "unit": "mm/s",
+          "description": "Ground speed (2-D)"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U4",
+          "name": "heading",
+          "scale": {
+            "multiplier": 1e-05,
+            "raw": "1e-5"
+          },
+          "unit": "deg",
+          "description": "Heading"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "U1",
+          "name": "version",
+          "fixed_value": 0,
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 29,
+          "data_type": "U1",
+          "name": "fixType",
+          "description": "Fix type:",
+          "named_values": [
+            {
+              "name": "Dead Reckoning only",
+              "value": 1
+            },
+            {
+              "name": "2D-Fix",
+              "value": 2
+            },
+            {
+              "name": "3D-Fix",
+              "value": 3
+            },
+            {
+              "name": "GNSS + Dead Reckoning combined",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "byte_offset": 30,
+          "data_type": "U2",
+          "name": "year",
+          "description": "Year (1-65635) of UTC time"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "U1",
+          "name": "month",
+          "description": "Month (1-12) of UTC time"
+        },
+        {
+          "byte_offset": 33,
+          "data_type": "U1",
+          "name": "day",
+          "description": "Day (1-31) of UTC time"
+        },
+        {
+          "byte_offset": 34,
+          "data_type": "U1",
+          "name": "hour",
+          "description": "Hour (0-23) of UTC time"
+        },
+        {
+          "byte_offset": 35,
+          "data_type": "U1",
+          "name": "minute",
+          "description": "Minute (0-59) of UTC time"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "U1",
+          "name": "second",
+          "description": "Second (0-60) of UTC time"
+        },
+        {
+          "byte_offset": 37,
+          "data_type": "U1",
+          "name": "reserved1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 38,
+          "data_type": "U1",
+          "name": "numSV",
+          "description": "Number of satellites used in the position fix"
+        },
+        {
+          "byte_offset": 39,
+          "data_type": "U1",
+          "name": "reserved2",
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/oege03cgguy8"
+}

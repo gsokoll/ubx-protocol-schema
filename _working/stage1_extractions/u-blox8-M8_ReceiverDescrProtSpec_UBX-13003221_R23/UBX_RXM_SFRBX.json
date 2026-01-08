@@ -1,0 +1,103 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-RXM-SFRBX",
+  "extraction_timestamp": "2026-01-08T06:50:38.183241+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 434,
+    "end": 436
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-RXM-SFRBX\nExpected IDs: class_id=0x02, message_id=0x13\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-RXM-SFRBX\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-RXM-SFRBX\",\n  \"message_class\": \"0x02\",\n  \"message_id\": \"0x13\",\n  \"message_type\": \"output\",\n  \"description\": \"Broadcast navigation data subframe\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + 4 * numWords\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"gnssId\",\n      \"description\": \"GNSS identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"svId\",\n      \"description\": \"Satellite identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"freqId\",\n      \"description\": \"Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"name\": \"numWords\",\n      \"description\": \"The number of data words contained in this message (up to 10, for currently supported signals)\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"U1\",\n      \"name\": \"chn\",\n      \"description\": \"The tracking channel number the message was received on\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x02 for this version)\",\n      \"fixed_value\": 2\n    },\n    {\n      \"byte_offset\": 7,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved2\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of\": \"U4\",\n        \"count_field\": \"numWords\"\n      },\n      \"name\": \"dwrd\",\n      \"description\": \"The data words\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-RXM-SFRBX",
+    "message_class": "0x02",
+    "message_id": "0x13",
+    "message_type": "output",
+    "description": "Broadcast navigation data subframe",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + 4 * numWords"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "gnssId",
+          "description": "GNSS identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "svId",
+          "description": "Satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U1",
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "U1",
+          "name": "freqId",
+          "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "numWords",
+          "description": "The number of data words contained in this message (up to 10, for currently supported signals)"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "U1",
+          "name": "chn",
+          "description": "The tracking channel number the message was received on"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x02 for this version)",
+          "fixed_value": 2
+        },
+        {
+          "byte_offset": 7,
+          "data_type": "U1",
+          "name": "reserved2",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 8,
+          "data_type": {
+            "array_of": "U4",
+            "count_field": "numWords"
+          },
+          "name": "dwrd",
+          "description": "The data words"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/uerm6vg1wy4x"
+}

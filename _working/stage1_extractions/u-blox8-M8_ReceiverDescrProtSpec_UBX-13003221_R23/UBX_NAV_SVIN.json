@@ -1,0 +1,167 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-SVIN",
+  "extraction_timestamp": "2026-01-08T06:41:36.602050+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 407,
+    "end": 409
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SVIN\nExpected IDs: class_id=0x01, message_id=0x3B\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SVIN\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-SVIN\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x3B\",\n  \"description\": \"Survey-in data\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 40\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 3\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"dur\",\n      \"data_type\": \"U4\",\n      \"unit\": \"s\",\n      \"description\": \"Passed survey-in observation time\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"meanX\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm\",\n      \"description\": \"Current survey-in mean position ECEF X coordinate\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"meanY\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm\",\n      \"description\": \"Current survey-in mean position ECEF Y coordinate\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"meanZ\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm\",\n      \"description\": \"Current survey-in mean position ECEF Z coordinate\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"meanXHP\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"multiplier\": 0.1\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Current high-precision survey-in mean position ECEF X coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF X coordinate, in units of cm, is given by meanX + (0.01 * meanXHP)\"\n    },\n    {\n      \"byte_offset\": 25,\n      \"name\": \"meanYHP\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"multiplier\": 0.1\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Current high-precision survey-in mean position ECEF Y coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF Y coordinate, in units of cm, is given by meanY + (0.01 * meanYHP)\"\n    },\n    {\n      \"byte_offset\": 26,\n      \"name\": \"meanZHP\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"multiplier\": 0.1\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Current high-precision survey-in mean position ECEF Z coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF Z coordinate, in units of cm, is given by meanZ + (0.01 * meanZHP)\"\n    },\n    {\n      \"byte_offset\": 27,\n      \"name\": \"reserved2\",\n      \"data_type\": \"U1\",\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"meanAcc\",\n      \"data_type\": \"U4\",\n      \"scale\": {\n        \"multiplier\": 0.1\n      },\n      \"unit\": \"mm\",\n      \"description\": \"Current survey-in mean position accuracy\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"obs\",\n      \"data_type\": \"U4\",\n      \"description\": \"Number of position observations used during survey-in\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"name\": \"valid\",\n      \"data_type\": \"U1\",\n      \"description\": \"Survey-in position validity flag, 1 = valid, otherwise 0\"\n    },\n    {\n      \"byte_offset\": 37,\n      \"name\": \"active\",\n      \"data_type\": \"U1\",\n      \"description\": \"Survey-in in progress flag, 1 = in-progress, otherwise 0\"\n    },\n    {\n      \"byte_offset\": 38,\n      \"name\": \"reserved3\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-SVIN",
+    "class_id": "0x01",
+    "message_id": "0x3B",
+    "description": "Survey-in data",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 40
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 0,
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 4,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 8,
+          "name": "dur",
+          "data_type": "U4",
+          "unit": "s",
+          "description": "Passed survey-in observation time"
+        },
+        {
+          "byte_offset": 12,
+          "name": "meanX",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF X coordinate"
+        },
+        {
+          "byte_offset": 16,
+          "name": "meanY",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Y coordinate"
+        },
+        {
+          "byte_offset": 20,
+          "name": "meanZ",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Z coordinate"
+        },
+        {
+          "byte_offset": 24,
+          "name": "meanXHP",
+          "data_type": "I1",
+          "scale": {
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "Current high-precision survey-in mean position ECEF X coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF X coordinate, in units of cm, is given by meanX + (0.01 * meanXHP)"
+        },
+        {
+          "byte_offset": 25,
+          "name": "meanYHP",
+          "data_type": "I1",
+          "scale": {
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "Current high-precision survey-in mean position ECEF Y coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF Y coordinate, in units of cm, is given by meanY + (0.01 * meanYHP)"
+        },
+        {
+          "byte_offset": 26,
+          "name": "meanZHP",
+          "data_type": "I1",
+          "scale": {
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "Current high-precision survey-in mean position ECEF Z coordinate. Must be in the range -99..+99. The current survey-in mean position ECEF Z coordinate, in units of cm, is given by meanZ + (0.01 * meanZHP)"
+        },
+        {
+          "byte_offset": 27,
+          "name": "reserved2",
+          "data_type": "U1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 28,
+          "name": "meanAcc",
+          "data_type": "U4",
+          "scale": {
+            "multiplier": 0.1
+          },
+          "unit": "mm",
+          "description": "Current survey-in mean position accuracy"
+        },
+        {
+          "byte_offset": 32,
+          "name": "obs",
+          "data_type": "U4",
+          "description": "Number of position observations used during survey-in"
+        },
+        {
+          "byte_offset": 36,
+          "name": "valid",
+          "data_type": "U1",
+          "description": "Survey-in position validity flag, 1 = valid, otherwise 0"
+        },
+        {
+          "byte_offset": 37,
+          "name": "active",
+          "data_type": "U1",
+          "description": "Survey-in in progress flag, 1 = in-progress, otherwise 0"
+        },
+        {
+          "byte_offset": 38,
+          "name": "reserved3",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/9fuz0t6b0fk8"
+}

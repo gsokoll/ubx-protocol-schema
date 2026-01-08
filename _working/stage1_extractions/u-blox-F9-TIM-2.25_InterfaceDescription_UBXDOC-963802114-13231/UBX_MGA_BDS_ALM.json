@@ -1,0 +1,191 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MGA-BDS-ALM",
+  "extraction_timestamp": "2026-01-08T04:10:40.875223+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 78,
+    "end": 81
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-BDS-ALM\nExpected IDs: class_id=0x13, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-BDS-ALM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-BDS-ALM\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x03\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 40\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"type\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message type (0x02 for this version)\",\n      \"fixed_value\": 2\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"svId\",\n      \"data_type\": \"U1\",\n      \"description\": \"BeiDou satellite identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"reserved0\",\n      \"data_type\": \"U1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"Wna\",\n      \"data_type\": \"U1\",\n      \"unit\": \"week\",\n      \"description\": \"Almanac Week Number\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"toa\",\n      \"data_type\": \"U1\",\n      \"scale\": {\n        \"raw\": \"2^-12\",\n        \"multiplier\": 0.000244140625\n      },\n      \"unit\": \"s\",\n      \"description\": \"Almanac reference time\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"deltal\",\n      \"data_type\": \"I2\",\n      \"scale\": {\n        \"raw\": \"2^-19\",\n        \"multiplier\": 1.9073486328125e-06\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Almanac correction of orbit reference inclination at reference time\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"sqrtA\",\n      \"data_type\": \"U4\",\n      \"scale\": {\n        \"raw\": \"2^-11\",\n        \"multiplier\": 0.00048828125\n      },\n      \"unit\": \"m^0.5\",\n      \"description\": \"Almanac square root of semi-major axis\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"e\",\n      \"data_type\": \"U4\",\n      \"scale\": {\n        \"raw\": \"2^-21\",\n        \"multiplier\": 4.76837158203125e-07\n      },\n      \"description\": \"Almanac eccentricity\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"omega\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-23\",\n        \"multiplier\": 1.1920928955078125e-07\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Almanac argument of perigee\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"M0\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-23\",\n        \"multiplier\": 1.1920928955078125e-07\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Almanac mean anomaly at reference time\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"Omega0\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-23\",\n        \"multiplier\": 1.1920928955078125e-07\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Almanac longitude of ascending node of orbit plane at computed according to reference time\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"omegaDot\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-38\",\n        \"multiplier\": 3.637978807091713e-12\n      },\n      \"unit\": \"semi-circles/s\",\n      \"description\": \"Almanac rate of right ascension\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"a0\",\n      \"data_type\": \"I2\",\n      \"scale\": {\n        \"raw\": \"2^-20\",\n        \"multiplier\": 9.5367431640625e-07\n      },\n      \"unit\": \"s\",\n      \"description\": \"Almanac satellite clock bias\"\n    },\n    {\n      \"byte_offset\": 34,\n      \"name\": \"a1\",\n      \"data_type\": \"I2\",\n      \"scale\": {\n        \"raw\": \"2^-38\",\n        \"multiplier\": 3.637978807091713e-12\n      },\n      \"unit\": \"s/s\",\n      \"description\": \"Almanac satellite clock rate\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-BDS-ALM",
+    "class_id": "0x13",
+    "message_id": "0x03",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 40
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "type",
+          "data_type": "U1",
+          "description": "Message type (0x02 for this version)",
+          "fixed_value": 2
+        },
+        {
+          "byte_offset": 1,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 2,
+          "name": "svId",
+          "data_type": "U1",
+          "description": "BeiDou satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 3,
+          "name": "reserved0",
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "name": "Wna",
+          "data_type": "U1",
+          "unit": "week",
+          "description": "Almanac Week Number"
+        },
+        {
+          "byte_offset": 5,
+          "name": "toa",
+          "data_type": "U1",
+          "scale": {
+            "raw": "2^-12",
+            "multiplier": 0.000244140625
+          },
+          "unit": "s",
+          "description": "Almanac reference time"
+        },
+        {
+          "byte_offset": 6,
+          "name": "deltal",
+          "data_type": "I2",
+          "scale": {
+            "raw": "2^-19",
+            "multiplier": 1.9073486328125e-06
+          },
+          "unit": "semi-circles",
+          "description": "Almanac correction of orbit reference inclination at reference time"
+        },
+        {
+          "byte_offset": 8,
+          "name": "sqrtA",
+          "data_type": "U4",
+          "scale": {
+            "raw": "2^-11",
+            "multiplier": 0.00048828125
+          },
+          "unit": "m^0.5",
+          "description": "Almanac square root of semi-major axis"
+        },
+        {
+          "byte_offset": 12,
+          "name": "e",
+          "data_type": "U4",
+          "scale": {
+            "raw": "2^-21",
+            "multiplier": 4.76837158203125e-07
+          },
+          "description": "Almanac eccentricity"
+        },
+        {
+          "byte_offset": 16,
+          "name": "omega",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-23",
+            "multiplier": 1.1920928955078125e-07
+          },
+          "unit": "semi-circles",
+          "description": "Almanac argument of perigee"
+        },
+        {
+          "byte_offset": 20,
+          "name": "M0",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-23",
+            "multiplier": 1.1920928955078125e-07
+          },
+          "unit": "semi-circles",
+          "description": "Almanac mean anomaly at reference time"
+        },
+        {
+          "byte_offset": 24,
+          "name": "Omega0",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-23",
+            "multiplier": 1.1920928955078125e-07
+          },
+          "unit": "semi-circles",
+          "description": "Almanac longitude of ascending node of orbit plane at computed according to reference time"
+        },
+        {
+          "byte_offset": 28,
+          "name": "omegaDot",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-38",
+            "multiplier": 3.637978807091713e-12
+          },
+          "unit": "semi-circles/s",
+          "description": "Almanac rate of right ascension"
+        },
+        {
+          "byte_offset": 32,
+          "name": "a0",
+          "data_type": "I2",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "s",
+          "description": "Almanac satellite clock bias"
+        },
+        {
+          "byte_offset": 34,
+          "name": "a1",
+          "data_type": "I2",
+          "scale": {
+            "raw": "2^-38",
+            "multiplier": 3.637978807091713e-12
+          },
+          "unit": "s/s",
+          "description": "Almanac satellite clock rate"
+        },
+        {
+          "byte_offset": 36,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/w3eih6y7wr56"
+}

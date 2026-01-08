@@ -1,0 +1,37 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MON-VER",
+  "extraction_timestamp": "2026-01-08T06:31:03.972504+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 371,
+    "end": 373
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-VER\nExpected IDs: class_id=0x0A, message_id=0x04\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-VER\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"name\": \"UBX-MON-VER\",\n    \"class_id\": \"0x0A\",\n    \"message_id\": \"0x04\",\n    \"message_type\": \"polled\",\n    \"description\": \"Poll receiver and software version\",\n    \"payload_length\": {\n      \"fixed\": 0\n    },\n    \"payload_fields\": []\n  },\n  {\n    \"name\": \"UBX-MON-VER\",\n    \"class_id\": \"0x0A\",\n    \"message_id\": \"0x04\",\n    \"message_type\": \"polled\",\n    \"description\": \"Receiver and software version\",\n    \"payload_length\": {\n      \"variable\": {\n        \"base\": 40,\n        \"formula\": \"40 + N*30\"\n      }\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 30\n        },\n        \"name\": \"swVersion\",\n        \"description\": \"Nul-terminated software version string.\"\n      },\n      {\n        \"byte_offset\": 30,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 10\n        },\n        \"name\": \"hwVersion\",\n        \"description\": \"Nul-terminated hardware version string\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"data_type\": {\n          \"array_of\": \"CH\",\n          \"count\": 30\n        },\n        \"name\": \"extension\",\n        \"description\": \"Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long and contains varying software information. Not all extension fields may appear. Examples of reported information: the software version string of the underlying ROM (when the receiver's firmware is running from flash), the firmware version, the supported protocol version, the module identifier, the flash information structure (FIS) file information, the supported major GNSS, the supported augmentation systems. See Firmware and protocol versions for details.\",\n        \"is_repeated\": true,\n        \"repeated_count_formula\": \"N\"\n      }\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-VER",
+    "class_id": "0x0A",
+    "message_id": "0x04",
+    "message_type": "polled",
+    "description": "Poll receiver and software version",
+    "payload_length": {
+      "fixed": 0
+    },
+    "payload_fields": []
+  },
+  "review": null,
+  "uploaded_file_name": "files/1a4y9potf8dt"
+}

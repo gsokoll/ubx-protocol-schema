@@ -1,0 +1,276 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-SBAS",
+  "extraction_timestamp": "2026-01-08T05:48:34.165536+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 276,
+    "end": 278
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-SBAS\nExpected IDs: class_id=0x06, message_id=0x16\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-SBAS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_class\": \"0x06\",\n  \"message_id\": \"0x16\",\n  \"name\": \"UBX-CFG-SBAS\",\n  \"description\": \"SBAS configuration\",\n  \"message_type\": \"get_set\",\n  \"supported_on\": [\n    \"u-blox 8/u-blox M8 protocol versions 15\",\n    \"15.01\",\n    \"16\",\n    \"17\",\n    \"18\",\n    \"19\",\n    \"19.1\",\n    \"19.2\",\n    \"20\",\n    \"20.01\",\n    \"20.1\",\n    \"20.2\",\n    \"20.3\",\n    \"22\",\n    \"22.01\",\n    \"23\",\n    \"23.01\"\n  ],\n  \"payload_length\": {\n    \"fixed\": 8\n  },\n  \"payload_contents\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"mode\",\n      \"data_type\": \"X1\",\n      \"description\": \"SBAS mode\",\n      \"bitfield_data\": [\n        {\n          \"name\": \"enabled\",\n          \"description\": \"SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation\",\n          \"bit_range\": \"[0, 0]\"\n        },\n        {\n          \"name\": \"test\",\n          \"description\": \"SBAS testbed: Use data anyhow (1) / Ignore data when in test mode (SBAS msg 0)\",\n          \"bit_range\": \"[1, 1]\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"usage\",\n      \"data_type\": \"X1\",\n      \"description\": \"SBAS usage\",\n      \"bitfield_data\": [\n        {\n          \"name\": \"range\",\n          \"description\": \"Use SBAS GEOs as a ranging source (for navigation)\",\n          \"bit_range\": \"[0, 0]\"\n        },\n        {\n          \"name\": \"diffCorr\",\n          \"description\": \"Use SBAS differential corrections\",\n          \"bit_range\": \"[1, 1]\"\n        },\n        {\n          \"name\": \"integrity\",\n          \"description\": \"Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available.\",\n          \"bit_range\": \"[2, 2]\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"maxSBAS\",\n      \"data_type\": \"U1\",\n      \"description\": \"Maximum number of SBAS prioritized tracking channels (valid range: 0 - 3) to use (obsolete and superseded by UBX-CFG-GNSS in protocol versions 14+).\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"scanmode2\",\n      \"data_type\": \"X1\",\n      \"description\": \"Continuation of scanmode bitmask\",\n      \"bitfield_data\": [\n        {\n          \"name\": \"PRN153\",\n          \"bit_range\": \"[0, 0]\"\n        },\n        {\n          \"name\": \"PRN152\",\n          \"bit_range\": \"[1, 1]\"\n        },\n        {\n          \"name\": \"PRN151\",\n          \"bit_range\": \"[2, 2]\"\n        },\n        {\n          \"name\": \"PRN150\",\n          \"bit_range\": \"[3, 3]\"\n        },\n        {\n          \"name\": \"PRN149\",\n          \"bit_range\": \"[4, 4]\"\n        },\n        {\n          \"name\": \"PRN148\",\n          \"bit_range\": \"[5, 5]\"\n        },\n        {\n          \"name\": \"PRN147\",\n          \"bit_range\": \"[6, 6]\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"scanmode1\",\n      \"data_type\": \"X4\",\n      \"description\": \"Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.\",\n      \"bitfield_data\": [\n        {\n          \"name\": \"PRN120\",\n          \"bit_range\": \"[0, 0]\"\n        },\n        {\n          \"name\": \"PRN121\",\n          \"bit_range\": \"[1, 1]\"\n        },\n        {\n          \"name\": \"PRN122\",\n          \"bit_range\": \"[2, 2]\"\n        },\n        {\n          \"name\": \"PRN123\",\n          \"bit_range\": \"[3, 3]\"\n        },\n        {\n          \"name\": \"PRN124\",\n          \"bit_range\": \"[4, 4]\"\n        },\n        {\n          \"name\": \"PRN125\",\n          \"bit_range\": \"[5, 5]\"\n        },\n        {\n          \"name\": \"PRN126\",\n          \"bit_range\": \"[6, 6]\"\n        },\n        {\n          \"name\": \"PRN127\",\n          \"bit_range\": \"[7, 7]\"\n        },\n        {\n          \"name\": \"PRN128\",\n          \"bit_range\": \"[8, 8]\"\n        },\n        {\n          \"name\": \"PRN129\",\n          \"bit_range\": \"[9, 9]\"\n        },\n        {\n          \"name\": \"PRN130\",\n          \"bit_range\": \"[10, 10]\"\n        },\n        {\n          \"name\": \"PRN131\",\n          \"bit_range\": \"[11, 11]\"\n        },\n        {\n          \"name\": \"PRN132\",\n          \"bit_range\": \"[12, 12]\"\n        },\n        {\n          \"name\": \"PRN133\",\n          \"bit_range\": \"[13, 13]\"\n        },\n        {\n          \"name\": \"PRN134\",\n          \"bit_range\": \"[14, 14]\"\n        },\n        {\n          \"name\": \"PRN135\",\n          \"bit_range\": \"[15, 15]\"\n        },\n        {\n          \"name\": \"PRN136\",\n          \"bit_range\": \"[16, 16]\"\n        },\n        {\n          \"name\": \"PRN137\",\n          \"bit_range\": \"[17, 17]\"\n        },\n        {\n          \"name\": \"PRN138\",\n          \"bit_range\": \"[18, 18]\"\n        },\n        {\n          \"name\": \"PRN139\",\n          \"bit_range\": \"[19, 19]\"\n        },\n        {\n          \"name\": \"PRN140\",\n          \"bit_range\": \"[20, 20]\"\n        },\n        {\n          \"name\": \"PRN141\",\n          \"bit_range\": \"[21, 21]\"\n        },\n        {\n          \"name\": \"PRN142\",\n          \"bit_range\": \"[22, 22]\"\n        },\n        {\n          \"name\": \"PRN143\",\n          \"bit_range\": \"[23, 23]\"\n        },\n        {\n          \"name\": \"PRN144\",\n          \"bit_range\": \"[24, 24]\"\n        },\n        {\n          \"name\": \"PRN145\",\n          \"bit_range\": \"[25, 25]\"\n        },\n        {\n          \"name\": \"PRN146\",\n          \"bit_range\": \"[26, 26]\"\n        },\n        {\n          \"name\": \"PRN147\",\n          \"bit_range\": \"[27, 27]\"\n        },\n        {\n          \"name\": \"PRN148\",\n          \"bit_range\": \"[28, 28]\"\n        },\n        {\n          \"name\": \"PRN149\",\n          \"bit_range\": \"[29, 29]\"\n        },\n        {\n          \"name\": \"PRN150\",\n          \"bit_range\": \"[30, 30]\"\n        },\n        {\n          \"name\": \"PRN151\",\n          \"bit_range\": \"[31, 31]\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_class": "0x06",
+    "message_id": "0x16",
+    "name": "UBX-CFG-SBAS",
+    "description": "SBAS configuration",
+    "message_type": "get_set",
+    "supported_on": [
+      "u-blox 8/u-blox M8 protocol versions 15",
+      "15.01",
+      "16",
+      "17",
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22",
+      "22.01",
+      "23",
+      "23.01"
+    ],
+    "payload_length": {
+      "fixed": 8
+    },
+    "payload_contents": [
+      {
+        "byte_offset": 0,
+        "name": "mode",
+        "data_type": "X1",
+        "description": "SBAS mode",
+        "bitfield_data": [
+          {
+            "name": "enabled",
+            "description": "SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation",
+            "bit_range": "[0, 0]"
+          },
+          {
+            "name": "test",
+            "description": "SBAS testbed: Use data anyhow (1) / Ignore data when in test mode (SBAS msg 0)",
+            "bit_range": "[1, 1]"
+          }
+        ]
+      },
+      {
+        "byte_offset": 1,
+        "name": "usage",
+        "data_type": "X1",
+        "description": "SBAS usage",
+        "bitfield_data": [
+          {
+            "name": "range",
+            "description": "Use SBAS GEOs as a ranging source (for navigation)",
+            "bit_range": "[0, 0]"
+          },
+          {
+            "name": "diffCorr",
+            "description": "Use SBAS differential corrections",
+            "bit_range": "[1, 1]"
+          },
+          {
+            "name": "integrity",
+            "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available.",
+            "bit_range": "[2, 2]"
+          }
+        ]
+      },
+      {
+        "byte_offset": 2,
+        "name": "maxSBAS",
+        "data_type": "U1",
+        "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0 - 3) to use (obsolete and superseded by UBX-CFG-GNSS in protocol versions 14+)."
+      },
+      {
+        "byte_offset": 3,
+        "name": "scanmode2",
+        "data_type": "X1",
+        "description": "Continuation of scanmode bitmask",
+        "bitfield_data": [
+          {
+            "name": "PRN153",
+            "bit_range": "[0, 0]"
+          },
+          {
+            "name": "PRN152",
+            "bit_range": "[1, 1]"
+          },
+          {
+            "name": "PRN151",
+            "bit_range": "[2, 2]"
+          },
+          {
+            "name": "PRN150",
+            "bit_range": "[3, 3]"
+          },
+          {
+            "name": "PRN149",
+            "bit_range": "[4, 4]"
+          },
+          {
+            "name": "PRN148",
+            "bit_range": "[5, 5]"
+          },
+          {
+            "name": "PRN147",
+            "bit_range": "[6, 6]"
+          }
+        ]
+      },
+      {
+        "byte_offset": 4,
+        "name": "scanmode1",
+        "data_type": "X4",
+        "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+        "bitfield_data": [
+          {
+            "name": "PRN120",
+            "bit_range": "[0, 0]"
+          },
+          {
+            "name": "PRN121",
+            "bit_range": "[1, 1]"
+          },
+          {
+            "name": "PRN122",
+            "bit_range": "[2, 2]"
+          },
+          {
+            "name": "PRN123",
+            "bit_range": "[3, 3]"
+          },
+          {
+            "name": "PRN124",
+            "bit_range": "[4, 4]"
+          },
+          {
+            "name": "PRN125",
+            "bit_range": "[5, 5]"
+          },
+          {
+            "name": "PRN126",
+            "bit_range": "[6, 6]"
+          },
+          {
+            "name": "PRN127",
+            "bit_range": "[7, 7]"
+          },
+          {
+            "name": "PRN128",
+            "bit_range": "[8, 8]"
+          },
+          {
+            "name": "PRN129",
+            "bit_range": "[9, 9]"
+          },
+          {
+            "name": "PRN130",
+            "bit_range": "[10, 10]"
+          },
+          {
+            "name": "PRN131",
+            "bit_range": "[11, 11]"
+          },
+          {
+            "name": "PRN132",
+            "bit_range": "[12, 12]"
+          },
+          {
+            "name": "PRN133",
+            "bit_range": "[13, 13]"
+          },
+          {
+            "name": "PRN134",
+            "bit_range": "[14, 14]"
+          },
+          {
+            "name": "PRN135",
+            "bit_range": "[15, 15]"
+          },
+          {
+            "name": "PRN136",
+            "bit_range": "[16, 16]"
+          },
+          {
+            "name": "PRN137",
+            "bit_range": "[17, 17]"
+          },
+          {
+            "name": "PRN138",
+            "bit_range": "[18, 18]"
+          },
+          {
+            "name": "PRN139",
+            "bit_range": "[19, 19]"
+          },
+          {
+            "name": "PRN140",
+            "bit_range": "[20, 20]"
+          },
+          {
+            "name": "PRN141",
+            "bit_range": "[21, 21]"
+          },
+          {
+            "name": "PRN142",
+            "bit_range": "[22, 22]"
+          },
+          {
+            "name": "PRN143",
+            "bit_range": "[23, 23]"
+          },
+          {
+            "name": "PRN144",
+            "bit_range": "[24, 24]"
+          },
+          {
+            "name": "PRN145",
+            "bit_range": "[25, 25]"
+          },
+          {
+            "name": "PRN146",
+            "bit_range": "[26, 26]"
+          },
+          {
+            "name": "PRN147",
+            "bit_range": "[27, 27]"
+          },
+          {
+            "name": "PRN148",
+            "bit_range": "[28, 28]"
+          },
+          {
+            "name": "PRN149",
+            "bit_range": "[29, 29]"
+          },
+          {
+            "name": "PRN150",
+            "bit_range": "[30, 30]"
+          },
+          {
+            "name": "PRN151",
+            "bit_range": "[31, 31]"
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/6j7krlqmdlwb"
+}

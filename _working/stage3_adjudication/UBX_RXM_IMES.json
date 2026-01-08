@@ -32,10 +32,7 @@
           {
             "name": "reserved1",
             "byte_offset": 2,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
+            "data_type": "U2",
             "description": "Reserved",
             "reserved": true
           }
@@ -64,10 +61,7 @@
               {
                 "name": "reserved3",
                 "byte_offset": 2,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 3
-                },
+                "data_type": "U3",
                 "description": "Reserved",
                 "reserved": true
               },
@@ -81,10 +75,7 @@
               {
                 "name": "reserved4",
                 "byte_offset": 6,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 2
-                },
+                "data_type": "U2",
                 "description": "Reserved",
                 "reserved": true
               },
@@ -92,7 +83,9 @@
                 "name": "doppler",
                 "byte_offset": 8,
                 "data_type": "I4",
-                "scale": "2^-12",
+                "scale": {
+                  "raw": "2^-12"
+                },
                 "unit": "Hz",
                 "description": "Doppler frequency with respect to 1575.4282MHz"
               },
@@ -100,14 +93,13 @@
                 "name": "position1_1",
                 "byte_offset": 12,
                 "data_type": "X4",
-                "description": "Position 1 Frame (part 1/2)",
                 "bitfield": {
                   "bits": [
                     {
                       "name": "pos1Floor",
                       "bit_start": 0,
                       "bit_end": 7,
-                      "description": "Floor number [1.0 floor resolution] (Offset: -50 floor)"
+                      "description": "Floor number"
                     },
                     {
                       "name": "pos1Lat",
@@ -122,7 +114,6 @@
                 "name": "position1_2",
                 "byte_offset": 16,
                 "data_type": "X4",
-                "description": "Position 1 Frame (part 2/2)",
                 "bitfield": {
                   "bits": [
                     {
@@ -144,20 +135,19 @@
                 "name": "position2_1",
                 "byte_offset": 20,
                 "data_type": "X4",
-                "description": "Position 2 Frame (part 1/3)",
                 "bitfield": {
                   "bits": [
                     {
                       "name": "pos2Floor",
                       "bit_start": 0,
                       "bit_end": 7,
-                      "description": "Floor number [0.5 floor resolution] (Offset: -50 floor)"
+                      "description": "Floor number"
                     },
                     {
                       "name": "pos2Alt",
                       "bit_start": 8,
                       "bit_end": 15,
-                      "description": "Altitude [m] (Offset: -95m)"
+                      "description": "Altitude [m]"
                     },
                     {
                       "name": "pos2Acc",
@@ -178,23 +168,26 @@
                 "name": "lat",
                 "byte_offset": 24,
                 "data_type": "I4",
-                "scale": "180 * 2^-24",
+                "scale": {
+                  "raw": "180/2^24"
+                },
                 "unit": "deg",
-                "description": "Latitude, Position 2 Frame (part 2/3)"
+                "description": "Latitude"
               },
               {
                 "name": "lon",
                 "byte_offset": 28,
                 "data_type": "I4",
-                "scale": "360 * 2^-25",
+                "scale": {
+                  "raw": "360/2^25"
+                },
                 "unit": "deg",
-                "description": "Longitude, Position 2 Frame (part 3/3)"
+                "description": "Longitude"
               },
               {
                 "name": "shortIdFrame",
                 "byte_offset": 32,
                 "data_type": "X4",
-                "description": "Short ID Frame",
                 "bitfield": {
                   "bits": [
                     {
@@ -208,12 +201,6 @@
                       "bit_start": 12,
                       "bit_end": 12,
                       "description": "Short ID Frame valid"
-                    },
-                    {
-                      "name": "shortBoundary",
-                      "bit_start": 13,
-                      "bit_end": 13,
-                      "description": "Boundary Bit"
                     }
                   ]
                 }
@@ -228,7 +215,6 @@
                 "name": "mediumId_2",
                 "byte_offset": 40,
                 "data_type": "X4",
-                "description": "Medium ID Frame (part 2/2)",
                 "bitfield": {
                   "bits": [
                     {
@@ -242,12 +228,6 @@
                       "bit_start": 2,
                       "bit_end": 2,
                       "description": "Medium ID Frame valid"
-                    },
-                    {
-                      "name": "mediumBoundary",
-                      "bit_start": 3,
-                      "bit_end": 3,
-                      "description": "Boundary Bit"
                     }
                   ]
                 }
@@ -261,14 +241,11 @@
     "extraction_verdicts": [
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "extraction_error",
-        "issues": [
-          "The multiplier values for 'lat' and 'lon' in the scale object (1.07763671875e-08) are mathematically incorrect and do not match the specified raw formulas (180*2^-24 and 360*2^-25).",
-          "The byte_offsets within the repeated group are provided as absolute message offsets rather than relative offsets from the start of the group, which can be ambiguous in documentation parsing."
-        ]
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "The message structure for UBX-RXM-IMES is complex due to the 44-byte repeating group containing various IMES frame data (Position 1, Position 2, Short ID, Medium ID). Extraction 1 correctly identified the fields and their bitfield breakdowns. However, it failed in calculating the decimal multiplier for the coordinate scaling. For instance, 180 * 2^-24 is approximately 1.07288e-5, but the extraction provided 1.0776e-8. Additionally, the field offsets within the repeated group were presented as absolute offsets from the message start (4, 5, 6, etc.) instead of relative offsets (0, 1, 2, etc.), which is a common extraction pattern but less standard for data structures."
+    "reasoning": "Extraction 1 is a highly detailed and correct representation of the UBX-RXM-IMES message as found in the u-blox M8 protocol specification. It correctly identifies the 4-byte header and the 44-byte repeated structure per transmitter. The bitfield offsets and scales (e.g., 2^-12 for Doppler and the specific degree scales for IMES Position frames) are precise and align with the IMES messaging standard."
   }
 }

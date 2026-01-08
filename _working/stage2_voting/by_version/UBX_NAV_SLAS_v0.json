@@ -2,18 +2,18 @@
   "message_name": "UBX-NAV-SLAS",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.5,
+  "agreement_ratio": 0.46153846153846156,
   "winning_structure": {
     "name": "UBX-NAV-SLAS",
     "class_id": "0x01",
     "message_id": "0x42",
-    "description": "QZSS L1S SLAS status data",
-    "message_type": "output",
+    "description": "This message outputs the status of the QZSS L1S SLAS sub system",
+    "message_type": "periodic_polled",
     "payload": {
       "length": {
         "variable": {
           "base": 20,
-          "formula": "20 + (cnt * 8)",
+          "formula": "20 + cnt * 8",
           "min": 20
         }
       },
@@ -46,22 +46,22 @@
           "byte_offset": 8,
           "data_type": "I4",
           "description": "Longitude of the used ground monitoring station",
+          "unit": "deg",
           "scale": {
             "raw": "1e-3",
             "multiplier": 0.001
-          },
-          "unit": "deg"
+          }
         },
         {
           "name": "gmsLat",
           "byte_offset": 12,
           "data_type": "I4",
           "description": "Latitude of the used ground monitoring station",
+          "unit": "deg",
           "scale": {
             "raw": "1e-3",
             "multiplier": 0.001
-          },
-          "unit": "deg"
+          }
         },
         {
           "name": "gmsCode",
@@ -112,7 +112,7 @@
       ],
       "repeated_groups": [
         {
-          "name": "corrections",
+          "name": "pseudorange_corrections",
           "repetition_type": "count_field",
           "count_field": "cnt",
           "group_size_bytes": 8,
@@ -161,22 +161,183 @@
   },
   "winning_fingerprint": "96896249fd58ccee",
   "agreeing_sources": [
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
     "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
     "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
   ],
   "disagreeing_sources": [
     "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
     "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
     "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "all_extractions": [
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 20,
+              "formula": "20 + cnt * 8",
+              "min": 20
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = Ground monitoring station available"
+                  },
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "cnt",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pseudorange_corrections",
+              "repetition_type": "count_field",
+              "count_field": "cnt",
+              "group_size_bytes": 8,
+              "base_offset": 20,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 3,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "prc",
+                  "byte_offset": 6,
+                  "data_type": "I2",
+                  "description": "Pseudorange correction",
+                  "unit": "cm"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "96896249fd58ccee"
+    },
     {
       "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
       "structure": {
@@ -197,6 +358,621 @@
         }
       },
       "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "message_type": "periodic_polled",
+        "payload_length": {
+          "variable": {
+            "base": 20,
+            "formula": "20 + cnt * 8"
+          }
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "iTOW",
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+            },
+            {
+              "byte_offset": 4,
+              "name": "version",
+              "data_type": "U1",
+              "fixed_value": 0,
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "name": "reserved0",
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "reserved": true,
+              "description": "Reserved"
+            },
+            {
+              "byte_offset": 8,
+              "name": "gmsLon",
+              "data_type": "I4",
+              "scale": {
+                "multiplier": 0.001,
+                "raw_string": "1e-3"
+              },
+              "unit": "deg",
+              "description": "Longitude of the used ground monitoring station"
+            },
+            {
+              "byte_offset": 12,
+              "name": "gmsLat",
+              "data_type": "I4",
+              "scale": {
+                "multiplier": 0.001,
+                "raw_string": "1e-3"
+              },
+              "unit": "deg",
+              "description": "Latitude of the used ground monitoring station"
+            },
+            {
+              "byte_offset": 16,
+              "name": "gmsCode",
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "byte_offset": 17,
+              "name": "qzssSvId",
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "byte_offset": 18,
+              "name": "serviceFlags",
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "flags": [
+                {
+                  "name": "gmsAvailable",
+                  "bits": 0,
+                  "description": "1 = Ground monitoring station available"
+                },
+                {
+                  "name": "qzssSvAvailable",
+                  "bits": 1,
+                  "description": "1 = Correction providing QZSS SV available"
+                },
+                {
+                  "name": "testMode",
+                  "bits": 2,
+                  "description": "1 = Currently used QZSS SV in test mode"
+                }
+              ]
+            },
+            {
+              "byte_offset": 19,
+              "name": "cnt",
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
+            },
+            {
+              "byte_offset": 20,
+              "name": "repeated_group",
+              "num_repeats_field": "cnt",
+              "repeating_fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "gnssId",
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering)"
+                },
+                {
+                  "byte_offset": 1,
+                  "name": "svId",
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "byte_offset": 2,
+                  "name": "reserved1",
+                  "data_type": "U1",
+                  "reserved": true,
+                  "description": "Reserved"
+                },
+                {
+                  "byte_offset": 3,
+                  "name": "reserved2",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "reserved": true,
+                  "description": "Reserved"
+                },
+                {
+                  "byte_offset": 6,
+                  "name": "prc",
+                  "data_type": "I2",
+                  "unit": "cm",
+                  "description": "Pseudorange correction"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "1e3b73a55be8eb32"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 20,
+              "formula": "20 + cnt * 8"
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = Ground monitoring station available"
+                  },
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "cnt",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pseudorangeCorrections",
+              "repetition_type": "count_field",
+              "count_field": "cnt",
+              "group_size_bytes": 8,
+              "base_offset": 20,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 3,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "prc",
+                  "byte_offset": 6,
+                  "data_type": "I2",
+                  "description": "Pseudorange correction",
+                  "unit": "cm"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "96896249fd58ccee"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 20,
+              "formula": "20 + cnt * 8",
+              "min": 20
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = Ground monitoring station available"
+                  },
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "cnt",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pseudorangeCorrections",
+              "repetition_type": "count_field",
+              "count_field": "cnt",
+              "group_size_bytes": 8,
+              "base_offset": 20,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 2,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 6
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "a1c1e6163ada0668"
+    },
+    {
+      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "QZSS L1S SLAS status data",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 20,
+              "formula": "20 + cnt*8",
+              "min": 20
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "unit": "deg",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              }
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = Ground monitoring station available"
+                  },
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "cnt",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "pseudorangeCorrections",
+              "repetition_type": "count_field",
+              "count_field": "cnt",
+              "group_size_bytes": 8,
+              "base_offset": 20,
+              "fields": [
+                {
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 3,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "prc",
+                  "byte_offset": 6,
+                  "data_type": "I2",
+                  "description": "Pseudorange correction",
+                  "unit": "cm"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "96896249fd58ccee"
     },
     {
       "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
@@ -468,93 +1244,12 @@
       "fingerprint": "96896249fd58ccee"
     },
     {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
       "structure": {
         "name": "UBX-NAV-SLAS",
         "class_id": "0x01",
         "message_id": "0x42",
-        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "fixed": 19
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service"
-            }
-          ]
-        }
-      },
-      "fingerprint": "96ed65b79e96f8c0"
-    },
-    {
-      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
+        "description": "QZSS L1S SLAS status data",
         "message_type": "periodic_polled",
         "payload": {
           "length": {
@@ -659,7 +1354,7 @@
           ],
           "repeated_groups": [
             {
-              "name": "pseudorange_corrections",
+              "name": "corrections",
               "repetition_type": "count_field",
               "count_field": "cnt",
               "group_size_bytes": 8,
@@ -707,527 +1402,6 @@
         }
       },
       "fingerprint": "96896249fd58ccee"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "QZSS L1S SLAS status data",
-        "message_type": "periodic_polled",
-        "payload": {
-          "length": {
-            "fixed": 19
-          },
-          "fields": [
-            {
-              "name": "iTow",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "gmsAvailable",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "1 = Ground monitoring station available"
-                  },
-                  {
-                    "name": "qzssSvAvailable",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "1 = Correction providing QZSS SV available"
-                  },
-                  {
-                    "name": "testMode",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "1 = Currently used QZSS SV in test mode"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "fingerprint": "96ed65b79e96f8c0"
-    },
-    {
-      "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "QZSS L1S SLAS status data",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 20,
-              "formula": "20 + cnt*8",
-              "min": 20
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "gmsAvailable",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "1 = Ground monitoring station available"
-                  },
-                  {
-                    "name": "qzssSvAvailable",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "1 = Correction providing QZSS SV available"
-                  },
-                  {
-                    "name": "testMode",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "1 = Currently used QZSS SV in test mode"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "cnt",
-              "byte_offset": 19,
-              "data_type": "U1",
-              "description": "Number of pseudorange corrections following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "pseudorangeCorrections",
-              "repetition_type": "count_field",
-              "count_field": "cnt",
-              "group_size_bytes": 8,
-              "base_offset": 20,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "reserved2",
-                  "byte_offset": 3,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 3
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "prc",
-                  "byte_offset": 6,
-                  "data_type": "I2",
-                  "description": "Pseudorange correction",
-                  "unit": "cm"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "96896249fd58ccee"
-    },
-    {
-      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "QZSS L1S SLAS status data",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 20,
-              "formula": "20 + cnt - 8"
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "gmsAvailable",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "1 = Ground monitoring station available"
-                  },
-                  {
-                    "name": "qzssSvAvailable",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "1 = Correction providing QZSS SV available"
-                  },
-                  {
-                    "name": "testMode",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "1 = Currently used QZSS SV in test mode"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "cnt",
-              "byte_offset": 19,
-              "data_type": "U1",
-              "description": "Number of pseudorange corrections following"
-            }
-          ]
-        }
-      },
-      "fingerprint": "17f7a690359b68f4"
-    },
-    {
-      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "This message outputs the status of the QZSS L1S SLAS sub system",
-        "message_type": "output",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 20,
-              "formula": "20 + cnt * 8",
-              "min": 20
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              },
-              "unit": "deg"
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "gmsAvailable",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "1 = Ground monitoring station available"
-                  },
-                  {
-                    "name": "qzssSvAvailable",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "1 = Correction providing QZSS SV available"
-                  },
-                  {
-                    "name": "testMode",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "1 = Currently used QZSS SV in test mode"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "cnt",
-              "byte_offset": 19,
-              "data_type": "U1",
-              "description": "Number of pseudorange corrections following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "pseudorangeCorrections",
-              "repetition_type": "count_field",
-              "count_field": "cnt",
-              "group_size_bytes": 8,
-              "base_offset": 20,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 2,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 6
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "a1c1e6163ada0668"
     },
     {
       "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
@@ -1390,167 +1564,7 @@
       "fingerprint": "96896249fd58ccee"
     },
     {
-      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-      "structure": {
-        "name": "UBX-NAV-SLAS",
-        "class_id": "0x01",
-        "message_id": "0x42",
-        "description": "QZSS L1S SLAS status data",
-        "message_type": "periodic_polled",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 20,
-              "formula": "20 + cnt * 8",
-              "min": 20
-            }
-          },
-          "fields": [
-            {
-              "name": "iTOW",
-              "byte_offset": 0,
-              "data_type": "U4",
-              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
-              "unit": "ms"
-            },
-            {
-              "name": "version",
-              "byte_offset": 4,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 5,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "gmsLon",
-              "byte_offset": 8,
-              "data_type": "I4",
-              "description": "Longitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsLat",
-              "byte_offset": 12,
-              "data_type": "I4",
-              "description": "Latitude of the used ground monitoring station",
-              "unit": "deg",
-              "scale": {
-                "raw": "1e-3",
-                "multiplier": 0.001
-              }
-            },
-            {
-              "name": "gmsCode",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
-            },
-            {
-              "name": "qzssSvId",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
-            },
-            {
-              "name": "serviceFlags",
-              "byte_offset": 18,
-              "data_type": "X1",
-              "description": "Flags regarding SLAS service",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "gmsAvailable",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "1 = Ground monitoring station available"
-                  },
-                  {
-                    "name": "qzssSvAvailable",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "1 = Correction providing QZSS SV available"
-                  },
-                  {
-                    "name": "testMode",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "1 = Currently used QZSS SV in test mode"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "cnt",
-              "byte_offset": 19,
-              "data_type": "U1",
-              "description": "Number of pseudorange corrections following"
-            }
-          ],
-          "repeated_groups": [
-            {
-              "name": "corrections",
-              "repetition_type": "count_field",
-              "count_field": "cnt",
-              "group_size_bytes": 8,
-              "base_offset": 20,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "reserved2",
-                  "byte_offset": 3,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 3
-                  },
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "prc",
-                  "byte_offset": 6,
-                  "data_type": "I2",
-                  "description": "Pseudorange correction",
-                  "unit": "cm"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "fingerprint": "96896249fd58ccee"
-    },
-    {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
       "structure": {
         "name": "UBX-NAV-SLAS",
         "class_id": "0x01",
@@ -1559,9 +1573,90 @@
         "message_type": "output",
         "payload": {
           "length": {
+            "fixed": 19
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service"
+            }
+          ]
+        }
+      },
+      "fingerprint": "96ed65b79e96f8c0"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "QZSS L1S SLAS status data",
+        "message_type": "output",
+        "payload": {
+          "length": {
             "variable": {
               "base": 20,
-              "formula": "20 + cnt * 8"
+              "formula": "20 + cnt - 8"
             }
           },
           "fields": [
@@ -1656,57 +1751,113 @@
               "data_type": "U1",
               "description": "Number of pseudorange corrections following"
             }
-          ],
-          "repeated_groups": [
+          ]
+        }
+      },
+      "fingerprint": "17f7a690359b68f4"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "QZSS L1S SLAS status data",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "fixed": 19
+          },
+          "fields": [
             {
-              "name": "pseudorangeCorrections",
-              "repetition_type": "count_field",
-              "count_field": "cnt",
-              "group_size_bytes": 8,
-              "base_offset": 20,
-              "fields": [
-                {
-                  "name": "gnssId",
-                  "byte_offset": 0,
-                  "data_type": "U1",
-                  "description": "GNSS identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "svId",
-                  "byte_offset": 1,
-                  "data_type": "U1",
-                  "description": "Satellite identifier (see Satellite Numbering)"
-                },
-                {
-                  "name": "reserved1",
-                  "byte_offset": 2,
-                  "data_type": "U1",
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "reserved2",
-                  "byte_offset": 3,
-                  "data_type": {
-                    "array_of": "U1",
-                    "count": 3
+              "name": "iTow",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "description": "Longitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "description": "Latitude of the used ground monitoring station",
+              "scale": {
+                "raw": "1e-3",
+                "multiplier": 0.001
+              },
+              "unit": "deg"
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "description": "Flags regarding SLAS service",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = Ground monitoring station available"
                   },
-                  "description": "Reserved",
-                  "reserved": true
-                },
-                {
-                  "name": "prc",
-                  "byte_offset": 6,
-                  "data_type": "I2",
-                  "description": "Pseudorange correction",
-                  "unit": "cm"
-                }
-              ]
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
             }
           ]
         }
       },
-      "fingerprint": "96896249fd58ccee"
+      "fingerprint": "96ed65b79e96f8c0"
     }
   ]
 }

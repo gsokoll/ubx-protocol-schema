@@ -1,0 +1,77 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-RATE",
+  "extraction_timestamp": "2026-01-08T05:46:52.433740+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 271,
+    "end": 272
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-RATE\nExpected IDs: class_id=0x06, message_id=0x08\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-RATE\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-CFG-RATE\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x08\",\n  \"description\": \"Navigation/measurement rate settings\",\n  \"message_type\": \"get_set\",\n  \"supported_versions\": [\n    \"15\",\n    \"15.01\",\n    \"16\",\n    \"17\",\n    \"18\",\n    \"19\",\n    \"19.1\",\n    \"19.2\",\n    \"20\",\n    \"20.01\",\n    \"20.1\",\n    \"20.2\",\n    \"20.3\",\n    \"22\",\n    \"22.01\",\n    \"23\",\n    \"23.01\"\n  ],\n  \"payload_length\": {\n    \"fixed\": 6\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"measRate\",\n      \"data_type\": \"U2\",\n      \"unit\": \"ms\",\n      \"description\": \"The elapsed time between GNSS measurements, which defines the rate, e.g. 100 ms => 10 Hz, 1000 ms => 1 Hz, 10000 ms => 0.1 Hz. Measurement rate should be greater than or equal to 25 ms. (Measurement rate should be greater than or equal to 50 ms in protocol versions less than 24).\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"navRate\",\n      \"data_type\": \"U2\",\n      \"unit\": \"cycles\",\n      \"description\": \"The ratio between the number of measurements and the number of navigation solutions, e.g. 5 means five measurements for every navigation solution. Maximum value is 127. (This parameter is ignored and the navRate is fixed to 1 in protocol versions less than 18).\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"timeRef\",\n      \"data_type\": \"U2\",\n      \"description\": \"The time system to which measurements are aligned: 0: UTC time 1: GPS time 2: GLONASS time (not supported in protocol versions less than 18) 3: BeiDou time (not supported in protocol versions less than 18) 4: Galileo time (not supported in protocol versions less than 18)\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-RATE",
+    "class_id": "0x06",
+    "message_id": "0x08",
+    "description": "Navigation/measurement rate settings",
+    "message_type": "get_set",
+    "supported_versions": [
+      "15",
+      "15.01",
+      "16",
+      "17",
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22",
+      "22.01",
+      "23",
+      "23.01"
+    ],
+    "payload_length": {
+      "fixed": 6
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "name": "measRate",
+        "data_type": "U2",
+        "unit": "ms",
+        "description": "The elapsed time between GNSS measurements, which defines the rate, e.g. 100 ms => 10 Hz, 1000 ms => 1 Hz, 10000 ms => 0.1 Hz. Measurement rate should be greater than or equal to 25 ms. (Measurement rate should be greater than or equal to 50 ms in protocol versions less than 24)."
+      },
+      {
+        "byte_offset": 2,
+        "name": "navRate",
+        "data_type": "U2",
+        "unit": "cycles",
+        "description": "The ratio between the number of measurements and the number of navigation solutions, e.g. 5 means five measurements for every navigation solution. Maximum value is 127. (This parameter is ignored and the navRate is fixed to 1 in protocol versions less than 18)."
+      },
+      {
+        "byte_offset": 4,
+        "name": "timeRef",
+        "data_type": "U2",
+        "description": "The time system to which measurements are aligned: 0: UTC time 1: GPS time 2: GLONASS time (not supported in protocol versions less than 18) 3: BeiDou time (not supported in protocol versions less than 18) 4: Galileo time (not supported in protocol versions less than 18)"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/yxunl7u0hq3d"
+}

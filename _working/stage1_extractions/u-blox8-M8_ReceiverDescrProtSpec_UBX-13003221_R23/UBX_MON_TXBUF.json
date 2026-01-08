@@ -1,0 +1,107 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MON-TXBUF",
+  "extraction_timestamp": "2026-01-08T06:30:39.654267+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 370,
+    "end": 371
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-MON-TXBUF from u-blox PDF manual pages.\n\nThis message has ARRAY fields for 6 targets (DDC, UART1, UART2, USB, SPI, reserved).\n\n**CRITICAL: These fields are ARRAYS, not single values:**\n\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U2[6] | pending | Bytes pending per target (6 x U2 = 12 bytes) |\n| 12 | U1[6] | usage | Buffer usage % per target (6 x U1 = 6 bytes) |\n| 18 | U1[6] | peakUsage | Peak buffer usage % per target (6 x U1 = 6 bytes) |\n| 24 | U1 | tUsage | Total buffer usage % |\n| 25 | U1 | tPeakusage | Total peak buffer usage % |\n| 26 | X1 | errors | Error bitmask |\n| 27 | U1 | reserved0 | Reserved |\n\n**IMPORTANT**: \n- `pending` is U2[6] (array of 6 U2 values), NOT a single U2\n- `usage` is U1[6] (array of 6 U1 values), NOT a single U1\n- `peakUsage` is U1[6] (array of 6 U1 values), NOT a single U1\n\nTotal payload length: 28 bytes.\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MON-TXBUF\",\n    \"message_class\": \"0x0A\",\n    \"message_id\": \"0x08\",\n    \"description\": \"Transmitter buffer status\",\n    \"payload_length_bytes\": 28,\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"pending\",\n        \"type\": \"U2\",\n        \"array_length\": 6,\n        \"unit\": \"bytes\",\n        \"description\": \"Number of bytes pending in transmitter buffer for each target\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"usage\",\n        \"type\": \"U1\",\n        \"array_length\": 6,\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage transmitter buffer during the last sysmon period for each target\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"peakUsage\",\n        \"type\": \"U1\",\n        \"array_length\": 6,\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage transmitter buffer for each target\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"tUsage\",\n        \"type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage of transmitter buffer during the last sysmon period for all targets\"\n      },\n      {\n        \"byte_offset\": 25,\n        \"name\": \"tPeakusage\",\n        \"type\": \"U1\",\n        \"unit\": \"%\",\n        \"description\": \"Maximum usage of transmitter buffer for all targets\"\n      },\n      {\n        \"byte_offset\": 26,\n        \"name\": \"errors\",\n        \"type\": \"X1\",\n        \"description\": \"Error bitmask\",\n        \"bitfields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"alloc\",\n            \"description\": \"Allocation error (TX buffer full)\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"mem\",\n            \"description\": \"Memory Allocation error\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"name\": \"limit\",\n            \"description\": \"Buffer limit of corresponding target reached\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 27,\n        \"name\": \"reserved1\",\n        \"type\": \"U1\",\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-TXBUF",
+      "message_class": "0x0A",
+      "message_id": "0x08",
+      "description": "Transmitter buffer status",
+      "payload_length_bytes": 28,
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "pending",
+          "type": "U2",
+          "array_length": 6,
+          "unit": "bytes",
+          "description": "Number of bytes pending in transmitter buffer for each target"
+        },
+        {
+          "byte_offset": 12,
+          "name": "usage",
+          "type": "U1",
+          "array_length": 6,
+          "unit": "%",
+          "description": "Maximum usage transmitter buffer during the last sysmon period for each target"
+        },
+        {
+          "byte_offset": 18,
+          "name": "peakUsage",
+          "type": "U1",
+          "array_length": 6,
+          "unit": "%",
+          "description": "Maximum usage transmitter buffer for each target"
+        },
+        {
+          "byte_offset": 24,
+          "name": "tUsage",
+          "type": "U1",
+          "unit": "%",
+          "description": "Maximum usage of transmitter buffer during the last sysmon period for all targets"
+        },
+        {
+          "byte_offset": 25,
+          "name": "tPeakusage",
+          "type": "U1",
+          "unit": "%",
+          "description": "Maximum usage of transmitter buffer for all targets"
+        },
+        {
+          "byte_offset": 26,
+          "name": "errors",
+          "type": "X1",
+          "description": "Error bitmask",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "alloc",
+              "description": "Allocation error (TX buffer full)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "mem",
+              "description": "Memory Allocation error"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "limit",
+              "description": "Buffer limit of corresponding target reached"
+            }
+          ]
+        },
+        {
+          "byte_offset": 27,
+          "name": "reserved1",
+          "type": "U1",
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/hkyllgojvhem"
+}

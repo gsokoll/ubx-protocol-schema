@@ -1,0 +1,74 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-TIM-HOC",
+  "extraction_timestamp": "2026-01-08T06:55:00.822148+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 440,
+    "end": 441
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-HOC\nExpected IDs: class_id=0x0D, message_id=0x17\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-HOC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-TIM-HOC\",\n  \"class_id\": \"0x0D\",\n  \"message_id\": \"0x17\",\n  \"message_type\": \"input\",\n  \"description\": \"Host oscillator control\",\n  \"payload_length\": {\n    \"fixed\": 8\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"oscId\",\n      \"data_type\": \"U1\",\n      \"description\": \"Id of oscillator: 0: internal oscillator, 1: external oscillator\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"flags\",\n      \"data_type\": \"U1\",\n      \"description\": \"Flags (see graphic below)\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"reserved1\",\n      \"data_type\": \"U1\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"value\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.00390625,\n        \"raw_string\": \"2^-8\"\n      },\n      \"unit\": \"ppb\",\n      \"description\": \"Required frequency offset or raw output, depending on the flags\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-TIM-HOC",
+    "class_id": "0x0D",
+    "message_id": "0x17",
+    "message_type": "input",
+    "description": "Host oscillator control",
+    "payload_length": {
+      "fixed": 8
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "name": "version",
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "byte_offset": 1,
+        "name": "oscId",
+        "data_type": "U1",
+        "description": "Id of oscillator: 0: internal oscillator, 1: external oscillator"
+      },
+      {
+        "byte_offset": 2,
+        "name": "flags",
+        "data_type": "U1",
+        "description": "Flags (see graphic below)"
+      },
+      {
+        "byte_offset": 3,
+        "name": "reserved1",
+        "data_type": "U1",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "name": "value",
+        "data_type": "I4",
+        "scale": {
+          "multiplier": 0.00390625,
+          "raw_string": "2^-8"
+        },
+        "unit": "ppb",
+        "description": "Required frequency offset or raw output, depending on the flags"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/x4vfj9yuo624"
+}

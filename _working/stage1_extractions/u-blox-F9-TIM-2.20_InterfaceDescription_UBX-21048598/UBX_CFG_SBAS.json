@@ -1,0 +1,302 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-SBAS",
+  "extraction_timestamp": "2026-01-08T03:28:14.809732+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 85,
+    "end": 87
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-SBAS\nExpected IDs: class_id=0x06, message_id=0x16\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-SBAS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_class\": 6,\n  \"message_id\": 22,\n  \"message_name\": \"UBX-CFG-SBAS\",\n  \"message_description\": \"SBAS configuration\",\n  \"message_type\": \"get_set\",\n  \"comment\": \"This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS). See SBAS configuration settings description in the integration manual for a detailed description of how these settings affect receiver operation.\",\n  \"payload_length\": {\n    \"fixed\": 8\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"X1\",\n      \"name\": \"mode\",\n      \"description\": \"SBAS mode\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"enabled\",\n          \"description\": \"SBAS enabled (1) / disabled (0) This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"test\",\n          \"description\": \"SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"X1\",\n      \"name\": \"usage\",\n      \"description\": \"SBAS usage\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"range\",\n          \"description\": \"Use SBAS GEOs as a ranging source (for navigation)\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"diffCorr\",\n          \"description\": \"Use SBAS differential corrections\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"data_type\": \"U1\",\n          \"name\": \"integrity\",\n          \"description\": \"Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available.\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"maxSBAS\",\n      \"description\": \"Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+).\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"X1\",\n      \"name\": \"scanmode2\",\n      \"description\": \"Continuation of scanmode bitmask below\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN152\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN153\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN154\"\n        },\n        {\n          \"bit_offset\": 3,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN155\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN156\"\n        },\n        {\n          \"bit_offset\": 5,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN157\"\n        },\n        {\n          \"bit_offset\": 6,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN158\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"scanmode1\",\n      \"description\": \"Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN120\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN121\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN122\"\n        },\n        {\n          \"bit_offset\": 3,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN123\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN124\"\n        },\n        {\n          \"bit_offset\": 5,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN125\"\n        },\n        {\n          \"bit_offset\": 6,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN126\"\n        },\n        {\n          \"bit_offset\": 7,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN127\"\n        },\n        {\n          \"bit_offset\": 8,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN128\"\n        },\n        {\n          \"bit_offset\": 9,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN129\"\n        },\n        {\n          \"bit_offset\": 10,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN130\"\n        },\n        {\n          \"bit_offset\": 11,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN131\"\n        },\n        {\n          \"bit_offset\": 12,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN132\"\n        },\n        {\n          \"bit_offset\": 13,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN133\"\n        },\n        {\n          \"bit_offset\": 14,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN134\"\n        },\n        {\n          \"bit_offset\": 15,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN135\"\n        },\n        {\n          \"bit_offset\": 16,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN136\"\n        },\n        {\n          \"bit_offset\": 17,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN137\"\n        },\n        {\n          \"bit_offset\": 18,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN138\"\n        },\n        {\n          \"bit_offset\": 19,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN139\"\n        },\n        {\n          \"bit_offset\": 20,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN140\"\n        },\n        {\n          \"bit_offset\": 21,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN141\"\n        },\n        {\n          \"bit_offset\": 22,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN142\"\n        },\n        {\n          \"bit_offset\": 23,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN143\"\n        },\n        {\n          \"bit_offset\": 24,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN144\"\n        },\n        {\n          \"bit_offset\": 25,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN145\"\n        },\n        {\n          \"bit_offset\": 26,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN146\"\n        },\n        {\n          \"bit_offset\": 27,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN147\"\n        },\n        {\n          \"bit_offset\": 28,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN148\"\n        },\n        {\n          \"bit_offset\": 29,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN149\"\n        },\n        {\n          \"bit_offset\": 30,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN150\"\n        },\n        {\n          \"bit_offset\": 31,\n          \"data_type\": \"U1\",\n          \"name\": \"PRN151\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_class": 6,
+    "message_id": 22,
+    "message_name": "UBX-CFG-SBAS",
+    "message_description": "SBAS configuration",
+    "message_type": "get_set",
+    "comment": "This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS). See SBAS configuration settings description in the integration manual for a detailed description of how these settings affect receiver operation.",
+    "payload_length": {
+      "fixed": 8
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "X1",
+        "name": "mode",
+        "description": "SBAS mode",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "enabled",
+            "description": "SBAS enabled (1) / disabled (0) This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "test",
+            "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+          }
+        ]
+      },
+      {
+        "byte_offset": 1,
+        "data_type": "X1",
+        "name": "usage",
+        "description": "SBAS usage",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "range",
+            "description": "Use SBAS GEOs as a ranging source (for navigation)"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "diffCorr",
+            "description": "Use SBAS differential corrections"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "integrity",
+            "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
+          }
+        ]
+      },
+      {
+        "byte_offset": 2,
+        "data_type": "U1",
+        "name": "maxSBAS",
+        "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
+      },
+      {
+        "byte_offset": 3,
+        "data_type": "X1",
+        "name": "scanmode2",
+        "description": "Continuation of scanmode bitmask below",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "PRN152"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "PRN153"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "PRN154"
+          },
+          {
+            "bit_offset": 3,
+            "data_type": "U1",
+            "name": "PRN155"
+          },
+          {
+            "bit_offset": 4,
+            "data_type": "U1",
+            "name": "PRN156"
+          },
+          {
+            "bit_offset": 5,
+            "data_type": "U1",
+            "name": "PRN157"
+          },
+          {
+            "bit_offset": 6,
+            "data_type": "U1",
+            "name": "PRN158"
+          }
+        ]
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "X4",
+        "name": "scanmode1",
+        "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "PRN120"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "PRN121"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "PRN122"
+          },
+          {
+            "bit_offset": 3,
+            "data_type": "U1",
+            "name": "PRN123"
+          },
+          {
+            "bit_offset": 4,
+            "data_type": "U1",
+            "name": "PRN124"
+          },
+          {
+            "bit_offset": 5,
+            "data_type": "U1",
+            "name": "PRN125"
+          },
+          {
+            "bit_offset": 6,
+            "data_type": "U1",
+            "name": "PRN126"
+          },
+          {
+            "bit_offset": 7,
+            "data_type": "U1",
+            "name": "PRN127"
+          },
+          {
+            "bit_offset": 8,
+            "data_type": "U1",
+            "name": "PRN128"
+          },
+          {
+            "bit_offset": 9,
+            "data_type": "U1",
+            "name": "PRN129"
+          },
+          {
+            "bit_offset": 10,
+            "data_type": "U1",
+            "name": "PRN130"
+          },
+          {
+            "bit_offset": 11,
+            "data_type": "U1",
+            "name": "PRN131"
+          },
+          {
+            "bit_offset": 12,
+            "data_type": "U1",
+            "name": "PRN132"
+          },
+          {
+            "bit_offset": 13,
+            "data_type": "U1",
+            "name": "PRN133"
+          },
+          {
+            "bit_offset": 14,
+            "data_type": "U1",
+            "name": "PRN134"
+          },
+          {
+            "bit_offset": 15,
+            "data_type": "U1",
+            "name": "PRN135"
+          },
+          {
+            "bit_offset": 16,
+            "data_type": "U1",
+            "name": "PRN136"
+          },
+          {
+            "bit_offset": 17,
+            "data_type": "U1",
+            "name": "PRN137"
+          },
+          {
+            "bit_offset": 18,
+            "data_type": "U1",
+            "name": "PRN138"
+          },
+          {
+            "bit_offset": 19,
+            "data_type": "U1",
+            "name": "PRN139"
+          },
+          {
+            "bit_offset": 20,
+            "data_type": "U1",
+            "name": "PRN140"
+          },
+          {
+            "bit_offset": 21,
+            "data_type": "U1",
+            "name": "PRN141"
+          },
+          {
+            "bit_offset": 22,
+            "data_type": "U1",
+            "name": "PRN142"
+          },
+          {
+            "bit_offset": 23,
+            "data_type": "U1",
+            "name": "PRN143"
+          },
+          {
+            "bit_offset": 24,
+            "data_type": "U1",
+            "name": "PRN144"
+          },
+          {
+            "bit_offset": 25,
+            "data_type": "U1",
+            "name": "PRN145"
+          },
+          {
+            "bit_offset": 26,
+            "data_type": "U1",
+            "name": "PRN146"
+          },
+          {
+            "bit_offset": 27,
+            "data_type": "U1",
+            "name": "PRN147"
+          },
+          {
+            "bit_offset": 28,
+            "data_type": "U1",
+            "name": "PRN148"
+          },
+          {
+            "bit_offset": 29,
+            "data_type": "U1",
+            "name": "PRN149"
+          },
+          {
+            "bit_offset": 30,
+            "data_type": "U1",
+            "name": "PRN150"
+          },
+          {
+            "bit_offset": 31,
+            "data_type": "U1",
+            "name": "PRN151"
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/esefffmjjiv4"
+}

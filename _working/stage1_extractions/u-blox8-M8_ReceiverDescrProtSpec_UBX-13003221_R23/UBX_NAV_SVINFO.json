@@ -1,0 +1,262 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-SVINFO",
+  "extraction_timestamp": "2026-01-08T06:42:09.822250+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 405,
+    "end": 407
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-SVINFO\nExpected IDs: class_id=0x01, message_id=0x30\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-SVINFO\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-NAV-SVINFO\",\n  \"class_id\": \"0x01\",\n  \"message_id\": \"0x30\",\n  \"description\": \"Space vehicle information\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + N*12\",\n      \"formula_variable_field\": \"numCh\"\n    }\n  },\n  \"supported_versions\": [\n    \"15\",\n    \"15.01\",\n    \"16\",\n    \"17\",\n    \"18\",\n    \"19\",\n    \"19.1\",\n    \"19.2\",\n    \"20\",\n    \"20.01\",\n    \"20.1\",\n    \"20.2\",\n    \"20.3\",\n    \"22\",\n    \"22.01\",\n    \"23\",\n    \"23.01\"\n  ],\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U4\",\n      \"name\": \"iTOW\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"name\": \"numCh\",\n      \"description\": \"Number of channels\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"X1\",\n      \"name\": \"globalFlags\",\n      \"description\": \"Bitmask (see graphic below)\",\n      \"bitfield_fields\": [\n        {\n          \"name\": \"chipGen\",\n          \"bits\": 3,\n          \"description\": \"Chip hardware generation\",\n          \"value_descriptions\": [\n            {\n              \"value\": 0,\n              \"description\": \"Antaris, Antaris 4\"\n            },\n            {\n              \"value\": 1,\n              \"description\": \"u-blox 5\"\n            },\n            {\n              \"value\": 2,\n              \"description\": \"u-blox 6\"\n            },\n            {\n              \"value\": 3,\n              \"description\": \"u-blox 7\"\n            },\n            {\n              \"value\": 4,\n              \"description\": \"u-blox 8/u-blox M8\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ],\n  \"repeated_fields\": {\n    \"num_repeats_field\": \"numCh\",\n    \"block_size\": 12,\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"chn\",\n        \"description\": \"Channel number, 255 for SVs not assigned to a channel\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"name\": \"svid\",\n        \"description\": \"Satellite ID, see Satellite Numbering for assignment\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"X1\",\n        \"name\": \"flags\",\n        \"description\": \"Bitmask (see graphic below)\",\n        \"bitfield_fields\": [\n          {\n            \"name\": \"svUsed\",\n            \"bits\": 1,\n            \"description\": \"SV is used for navigation\"\n          },\n          {\n            \"name\": \"diffCorr\",\n            \"bits\": 1,\n            \"description\": \"Differential correction data is available for this SV\"\n          },\n          {\n            \"name\": \"orbitAvail\",\n            \"bits\": 1,\n            \"description\": \"Orbit information is available for this SV (Ephemeris or Almanac)\"\n          },\n          {\n            \"name\": \"orbitEph\",\n            \"bits\": 1,\n            \"description\": \"Orbit information is Ephemeris\"\n          },\n          {\n            \"name\": \"unhealthy\",\n            \"bits\": 1,\n            \"description\": \"SV is unhealthy / shall not be used\"\n          },\n          {\n            \"name\": \"orbitAlm\",\n            \"bits\": 1,\n            \"description\": \"Orbit information is Almanac Plus\"\n          },\n          {\n            \"name\": \"orbitAop\",\n            \"bits\": 1,\n            \"description\": \"Orbit information is AssistNow Autonomous\"\n          },\n          {\n            \"name\": \"smoothed\",\n            \"bits\": 1,\n            \"description\": \"Carrier smoothed pseudorange used\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 3,\n        \"data_type\": \"X1\",\n        \"name\": \"quality\",\n        \"description\": \"Bitfield (see graphic below)\",\n        \"bitfield_fields\": [\n          {\n            \"name\": \"qualityInd\",\n            \"bits\": 4,\n            \"description\": \"Signal Quality indicator (range 0..7).\",\n            \"value_descriptions\": [\n              {\n                \"value\": 0,\n                \"description\": \"no signal\"\n              },\n              {\n                \"value\": 1,\n                \"description\": \"searching signal\"\n              },\n              {\n                \"value\": 2,\n                \"description\": \"signal acquired\"\n              },\n              {\n                \"value\": 3,\n                \"description\": \"signal detected but unusable\"\n              },\n              {\n                \"value\": 4,\n                \"description\": \"code locked and time synchronized\"\n              },\n              {\n                \"value\": 5,\n                \"description\": \"code and carrier locked and time synchronized\"\n              },\n              {\n                \"value\": 6,\n                \"description\": \"code and carrier locked and time synchronized\"\n              },\n              {\n                \"value\": 7,\n                \"description\": \"code and carrier locked and time synchronized\"\n              }\n            ]\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U1\",\n        \"name\": \"cno\",\n        \"unit\": \"dBHz\",\n        \"description\": \"Carrier to Noise Ratio (Signal Strength)\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"data_type\": \"I1\",\n        \"name\": \"elev\",\n        \"unit\": \"deg\",\n        \"description\": \"Elevation in integer degrees\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"data_type\": \"I2\",\n        \"name\": \"azim\",\n        \"unit\": \"deg\",\n        \"description\": \"Azimuth in integer degrees\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"I4\",\n        \"name\": \"prRes\",\n        \"unit\": \"cm\",\n        \"description\": \"Pseudo range residual in centimeters\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-NAV-SVINFO",
+    "class_id": "0x01",
+    "message_id": "0x30",
+    "description": "Space vehicle information",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + N*12",
+        "formula_variable_field": "numCh"
+      }
+    },
+    "supported_versions": [
+      "15",
+      "15.01",
+      "16",
+      "17",
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22",
+      "22.01",
+      "23",
+      "23.01"
+    ],
+    "repeated_fields": {
+      "num_repeats_field": "numCh",
+      "block_size": 12,
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "chn",
+          "description": "Channel number, 255 for SVs not assigned to a channel"
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "svid",
+          "description": "Satellite ID, see Satellite Numbering for assignment"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Bitmask (see graphic below)",
+          "bitfield_fields": [
+            {
+              "name": "svUsed",
+              "bits": 1,
+              "description": "SV is used for navigation"
+            },
+            {
+              "name": "diffCorr",
+              "bits": 1,
+              "description": "Differential correction data is available for this SV"
+            },
+            {
+              "name": "orbitAvail",
+              "bits": 1,
+              "description": "Orbit information is available for this SV (Ephemeris or Almanac)"
+            },
+            {
+              "name": "orbitEph",
+              "bits": 1,
+              "description": "Orbit information is Ephemeris"
+            },
+            {
+              "name": "unhealthy",
+              "bits": 1,
+              "description": "SV is unhealthy / shall not be used"
+            },
+            {
+              "name": "orbitAlm",
+              "bits": 1,
+              "description": "Orbit information is Almanac Plus"
+            },
+            {
+              "name": "orbitAop",
+              "bits": 1,
+              "description": "Orbit information is AssistNow Autonomous"
+            },
+            {
+              "name": "smoothed",
+              "bits": 1,
+              "description": "Carrier smoothed pseudorange used"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "X1",
+          "name": "quality",
+          "description": "Bitfield (see graphic below)",
+          "bitfield_fields": [
+            {
+              "name": "qualityInd",
+              "bits": 4,
+              "description": "Signal Quality indicator (range 0..7).",
+              "value_descriptions": [
+                {
+                  "value": 0,
+                  "description": "no signal"
+                },
+                {
+                  "value": 1,
+                  "description": "searching signal"
+                },
+                {
+                  "value": 2,
+                  "description": "signal acquired"
+                },
+                {
+                  "value": 3,
+                  "description": "signal detected but unusable"
+                },
+                {
+                  "value": 4,
+                  "description": "code locked and time synchronized"
+                },
+                {
+                  "value": 5,
+                  "description": "code and carrier locked and time synchronized"
+                },
+                {
+                  "value": 6,
+                  "description": "code and carrier locked and time synchronized"
+                },
+                {
+                  "value": 7,
+                  "description": "code and carrier locked and time synchronized"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "cno",
+          "unit": "dBHz",
+          "description": "Carrier to Noise Ratio (Signal Strength)"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "I1",
+          "name": "elev",
+          "unit": "deg",
+          "description": "Elevation in integer degrees"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "I2",
+          "name": "azim",
+          "unit": "deg",
+          "description": "Azimuth in integer degrees"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "prRes",
+          "unit": "cm",
+          "description": "Pseudo range residual in centimeters"
+        }
+      ]
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "iTOW",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "numCh",
+          "description": "Number of channels"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "X1",
+          "name": "globalFlags",
+          "description": "Bitmask (see graphic below)",
+          "bitfield_fields": [
+            {
+              "name": "chipGen",
+              "bits": 3,
+              "description": "Chip hardware generation",
+              "value_descriptions": [
+                {
+                  "value": 0,
+                  "description": "Antaris, Antaris 4"
+                },
+                {
+                  "value": 1,
+                  "description": "u-blox 5"
+                },
+                {
+                  "value": 2,
+                  "description": "u-blox 6"
+                },
+                {
+                  "value": 3,
+                  "description": "u-blox 7"
+                },
+                {
+                  "value": 4,
+                  "description": "u-blox 8/u-blox M8"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/wvd4b0zfeqfz"
+}

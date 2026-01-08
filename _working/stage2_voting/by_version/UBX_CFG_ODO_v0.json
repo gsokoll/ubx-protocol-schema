@@ -1,14 +1,14 @@
 {
   "message_name": "UBX-CFG-ODO",
   "protocol_version": 0,
-  "status": "unanimous",
-  "agreement_ratio": 1.0,
+  "status": "majority",
+  "agreement_ratio": 0.875,
   "winning_structure": {
     "name": "UBX-CFG-ODO",
     "class_id": "0x06",
     "message_id": "0x1e",
     "description": "Odometer, low-speed COG engine settings",
-    "message_type": "get_set",
+    "message_type": "command",
     "payload": {
       "length": {
         "fixed": 20
@@ -95,11 +95,11 @@
           "byte_offset": 12,
           "data_type": "U1",
           "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
-          "unit": "m/s",
           "scale": {
             "raw": "1e-1",
             "multiplier": 0.1
-          }
+          },
+          "unit": "m/s"
         },
         {
           "name": "cogMaxPosAcc",
@@ -145,16 +145,447 @@
   },
   "winning_fingerprint": "41b616fe27bdad0d",
   "agreeing_sources": [
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
     "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
     "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
     "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
-  "disagreeing_sources": [],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598"
+  ],
   "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "ubx_message_extraction": {
+          "message_name": "UBX-CFG-ODO",
+          "class_id": "0x06",
+          "message_id": "0x1e",
+          "message_type": "get_set",
+          "payload_length": {
+            "fixed": 20
+          },
+          "comment": "This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. See the Legacy UBX Message Fields Reference for the corresponding configuration item. This feature is not supported for the FTS product variant.",
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 4,
+              "data_type": "X1",
+              "description": "Odometer/Low-speed COG filter flags",
+              "bitfield": [
+                {
+                  "name": "useODO",
+                  "data_type": "U1",
+                  "position": 0,
+                  "description": "Odometer-enabled flag"
+                },
+                {
+                  "name": "useCOG",
+                  "data_type": "U1",
+                  "position": 1,
+                  "description": "Low-speed COG filter enabled flag"
+                },
+                {
+                  "name": "outLPVel",
+                  "data_type": "U1",
+                  "position": 2,
+                  "description": "Output low-pass filtered velocity flag"
+                },
+                {
+                  "name": "outLPCog",
+                  "data_type": "U1",
+                  "position": 3,
+                  "description": "Output low-pass filtered heading (COG) flag"
+                }
+              ]
+            },
+            {
+              "name": "odoCfg",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Odometer filter settings",
+              "bitfield": [
+                {
+                  "name": "profile",
+                  "data_type": "U3",
+                  "position": 0,
+                  "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
+                }
+              ]
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cogMaxSpeed",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "scale": {
+                "raw": "1e-1",
+                "multiplier": 0.1
+              },
+              "unit": "m/s",
+              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter"
+            },
+            {
+              "name": "cogMaxPosAcc",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "unit": "m",
+              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 14,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "velLpGain",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Velocity low-pass filter level, range 0..255"
+            },
+            {
+              "name": "cogLpGain",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "structure": {
+        "name": "UBX-CFG-ODO",
+        "class_id": "0x06",
+        "message_id": "0x1e",
+        "description": "Odometer, low-speed COG engine settings",
+        "message_type": "command",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 4,
+              "data_type": "X1",
+              "description": "Odometer/Low-speed COG filter flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "useODO",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Odometer-enabled flag"
+                  },
+                  {
+                    "name": "useCOG",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Low-speed COG filter enabled flag"
+                  },
+                  {
+                    "name": "outLPVel",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Output low-pass filtered velocity flag"
+                  },
+                  {
+                    "name": "outLPCog",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Output low-pass filtered heading (COG) flag"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "odoCfg",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Odometer filter settings",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "profile",
+                    "bit_start": 0,
+                    "bit_end": 2,
+                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cogMaxSpeed",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
+              "scale": {
+                "raw": "1e-1",
+                "multiplier": 0.1
+              },
+              "unit": "m/s"
+            },
+            {
+              "name": "cogMaxPosAcc",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
+              "unit": "m"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 14,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "velLpGain",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Velocity low-pass filter level, range 0..255"
+            },
+            {
+              "name": "cogLpGain",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "41b616fe27bdad0d"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-CFG-ODO",
+        "class_id": "0x06",
+        "message_id": "0x1e",
+        "description": "Odometer, low-speed COG engine settings",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 4,
+              "data_type": "X1",
+              "description": "Odometer/Low-speed COG filter flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "useODO",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Odometer-enabled flag"
+                  },
+                  {
+                    "name": "useCOG",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Low-speed COG filter enabled flag"
+                  },
+                  {
+                    "name": "outLPVel",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Output low-pass filtered velocity flag"
+                  },
+                  {
+                    "name": "outLPCog",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Output low-pass filtered heading (COG) flag"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "odoCfg",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Odometer filter settings",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "profile",
+                    "bit_start": 0,
+                    "bit_end": 2,
+                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cogMaxSpeed",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
+              "scale": {
+                "raw": "1e-1",
+                "multiplier": 0.1
+              },
+              "unit": "m/s"
+            },
+            {
+              "name": "cogMaxPosAcc",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
+              "unit": "m"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 14,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "velLpGain",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Velocity low-pass filter level, range 0..255"
+            },
+            {
+              "name": "cogLpGain",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "41b616fe27bdad0d"
+    },
     {
       "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
       "structure": {
@@ -444,6 +875,150 @@
       "fingerprint": "41b616fe27bdad0d"
     },
     {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-ODO",
+        "class_id": "0x06",
+        "message_id": "0x1E",
+        "description": "Odometer, low-speed COG engine settings",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "flags",
+              "byte_offset": 4,
+              "data_type": "X1",
+              "description": "Odometer/Low-speed COG filter flags (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "useODO",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Odometer-enabled flag"
+                  },
+                  {
+                    "name": "useCOG",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Low-speed COG filter enabled flag"
+                  },
+                  {
+                    "name": "outLPVel",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Output low-pass filtered velocity flag"
+                  },
+                  {
+                    "name": "outLPCog",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Output low-pass filtered heading (COG) flag"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "odoCfg",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Odometer filter settings (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "profile",
+                    "bit_start": 0,
+                    "bit_end": 2,
+                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "cogMaxSpeed",
+              "byte_offset": 12,
+              "data_type": "U1",
+              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
+              "unit": "m/s",
+              "scale": {
+                "raw": "1e-1",
+                "multiplier": 0.1
+              }
+            },
+            {
+              "name": "cogMaxPosAcc",
+              "byte_offset": 13,
+              "data_type": "U1",
+              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
+              "unit": "m"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 14,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "velLpGain",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Velocity low-pass filter level, range 0..255"
+            },
+            {
+              "name": "cogLpGain",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
+            },
+            {
+              "name": "reserved4",
+              "byte_offset": 18,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "41b616fe27bdad0d"
+    },
+    {
       "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
       "structure": {
         "name": "UBX-CFG-ODO",
@@ -718,438 +1293,6 @@
             },
             {
               "name": "reserved3",
-              "byte_offset": 18,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "41b616fe27bdad0d"
-    },
-    {
-      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-      "structure": {
-        "name": "UBX-CFG-ODO",
-        "class_id": "0x06",
-        "message_id": "0x1e",
-        "description": "Odometer, low-speed COG engine settings",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 20
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 1,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "flags",
-              "byte_offset": 4,
-              "data_type": "X1",
-              "description": "Odometer/Low-speed COG filter flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "useODO",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Odometer-enabled flag"
-                  },
-                  {
-                    "name": "useCOG",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Low-speed COG filter enabled flag"
-                  },
-                  {
-                    "name": "outLPVel",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Output low-pass filtered velocity flag"
-                  },
-                  {
-                    "name": "outLPCog",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": "Output low-pass filtered heading (COG) flag"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "odoCfg",
-              "byte_offset": 5,
-              "data_type": "X1",
-              "description": "Odometer filter settings",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "profile",
-                    "bit_start": 0,
-                    "bit_end": 2,
-                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 6
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "cogMaxSpeed",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
-              "scale": {
-                "raw": "1e-1",
-                "multiplier": 0.1
-              },
-              "unit": "m/s"
-            },
-            {
-              "name": "cogMaxPosAcc",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
-              "unit": "m"
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 14,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "velLpGain",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Velocity low-pass filter level, range 0..255"
-            },
-            {
-              "name": "cogLpGain",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
-            },
-            {
-              "name": "reserved3",
-              "byte_offset": 18,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "41b616fe27bdad0d"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-      "structure": {
-        "name": "UBX-CFG-ODO",
-        "class_id": "0x06",
-        "message_id": "0x1e",
-        "description": "Odometer, low-speed COG engine settings",
-        "message_type": "command",
-        "payload": {
-          "length": {
-            "fixed": 20
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved0",
-              "byte_offset": 1,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "flags",
-              "byte_offset": 4,
-              "data_type": "X1",
-              "description": "Odometer/Low-speed COG filter flags",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "useODO",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Odometer-enabled flag"
-                  },
-                  {
-                    "name": "useCOG",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Low-speed COG filter enabled flag"
-                  },
-                  {
-                    "name": "outLPVel",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Output low-pass filtered velocity flag"
-                  },
-                  {
-                    "name": "outLPCog",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": "Output low-pass filtered heading (COG) flag"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "odoCfg",
-              "byte_offset": 5,
-              "data_type": "X1",
-              "description": "Odometer filter settings",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "profile",
-                    "bit_start": 0,
-                    "bit_end": 2,
-                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 6
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "cogMaxSpeed",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
-              "scale": {
-                "raw": "1e-1",
-                "multiplier": 0.1
-              },
-              "unit": "m/s"
-            },
-            {
-              "name": "cogMaxPosAcc",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
-              "unit": "m"
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 14,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "velLpGain",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Velocity low-pass filter level, range 0..255"
-            },
-            {
-              "name": "cogLpGain",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
-            },
-            {
-              "name": "reserved3",
-              "byte_offset": 18,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        }
-      },
-      "fingerprint": "41b616fe27bdad0d"
-    },
-    {
-      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-      "structure": {
-        "name": "UBX-CFG-ODO",
-        "class_id": "0x06",
-        "message_id": "0x1E",
-        "description": "Odometer, low-speed COG engine settings",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 20
-          },
-          "fields": [
-            {
-              "name": "version",
-              "byte_offset": 0,
-              "data_type": "U1",
-              "description": "Message version (0x00 for this version)"
-            },
-            {
-              "name": "reserved1",
-              "byte_offset": 1,
-              "data_type": {
-                "array_of": "U1",
-                "count": 3
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "flags",
-              "byte_offset": 4,
-              "data_type": "X1",
-              "description": "Odometer/Low-speed COG filter flags (see graphic below)",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "useODO",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Odometer-enabled flag"
-                  },
-                  {
-                    "name": "useCOG",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Low-speed COG filter enabled flag"
-                  },
-                  {
-                    "name": "outLPVel",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Output low-pass filtered velocity flag"
-                  },
-                  {
-                    "name": "outLPCog",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": "Output low-pass filtered heading (COG) flag"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "odoCfg",
-              "byte_offset": 5,
-              "data_type": "X1",
-              "description": "Odometer filter settings (see graphic below)",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "profile",
-                    "bit_start": 0,
-                    "bit_end": 2,
-                    "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 6,
-              "data_type": {
-                "array_of": "U1",
-                "count": 6
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "cogMaxSpeed",
-              "byte_offset": 12,
-              "data_type": "U1",
-              "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
-              "unit": "m/s",
-              "scale": {
-                "raw": "1e-1",
-                "multiplier": 0.1
-              }
-            },
-            {
-              "name": "cogMaxPosAcc",
-              "byte_offset": 13,
-              "data_type": "U1",
-              "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
-              "unit": "m"
-            },
-            {
-              "name": "reserved3",
-              "byte_offset": 14,
-              "data_type": {
-                "array_of": "U1",
-                "count": 2
-              },
-              "description": "Reserved",
-              "reserved": true
-            },
-            {
-              "name": "velLpGain",
-              "byte_offset": 16,
-              "data_type": "U1",
-              "description": "Velocity low-pass filter level, range 0..255"
-            },
-            {
-              "name": "cogLpGain",
-              "byte_offset": 17,
-              "data_type": "U1",
-              "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
-            },
-            {
-              "name": "reserved4",
               "byte_offset": 18,
               "data_type": {
                 "array_of": "U1",

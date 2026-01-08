@@ -4,1333 +4,582 @@
   "status": "unanimous",
   "agreement_ratio": 1.0,
   "winning_structure": {
-    "name": "UBX-CFG-SBAS",
-    "class_id": "0x06",
-    "message_id": "0x16",
-    "description": "SBAS configuration",
+    "message_class": 6,
+    "message_id": 22,
+    "message_name": "UBX-CFG-SBAS",
+    "message_description": "SBAS configuration",
     "message_type": "get_set",
-    "payload": {
-      "length": {
-        "fixed": 8
+    "comment": "This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS). See SBAS configuration settings description in the integration manual for a detailed description of how these settings affect receiver operation.",
+    "payload_length": {
+      "fixed": 8
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "X1",
+        "name": "mode",
+        "description": "SBAS mode",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "enabled",
+            "description": "SBAS enabled (1) / disabled (0) This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "test",
+            "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+          }
+        ]
       },
-      "fields": [
-        {
-          "name": "mode",
-          "byte_offset": 0,
-          "data_type": "X1",
-          "description": "SBAS mode",
-          "bitfield": {
-            "bits": [
-              {
-                "name": "enabled",
-                "bit_start": 0,
-                "bit_end": 0,
-                "description": "SBAS enabled (1) / disabled (0). This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
-              },
-              {
-                "name": "test",
-                "bit_start": 1,
-                "bit_end": 1,
-                "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
-              }
-            ]
+      {
+        "byte_offset": 1,
+        "data_type": "X1",
+        "name": "usage",
+        "description": "SBAS usage",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "range",
+            "description": "Use SBAS GEOs as a ranging source (for navigation)"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "diffCorr",
+            "description": "Use SBAS differential corrections"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "integrity",
+            "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
           }
-        },
-        {
-          "name": "usage",
-          "byte_offset": 1,
-          "data_type": "X1",
-          "description": "SBAS usage",
-          "bitfield": {
-            "bits": [
-              {
-                "name": "range",
-                "bit_start": 0,
-                "bit_end": 0,
-                "description": "Use SBAS GEOs as a ranging source (for navigation)"
-              },
-              {
-                "name": "diffCorr",
-                "bit_start": 1,
-                "bit_end": 1,
-                "description": "Use SBAS differential corrections"
-              },
-              {
-                "name": "integrity",
-                "bit_start": 2,
-                "bit_end": 2,
-                "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
-              }
-            ]
+        ]
+      },
+      {
+        "byte_offset": 2,
+        "data_type": "U1",
+        "name": "maxSBAS",
+        "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
+      },
+      {
+        "byte_offset": 3,
+        "data_type": "X1",
+        "name": "scanmode2",
+        "description": "Continuation of scanmode bitmask below",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "PRN152"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "PRN153"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "PRN154"
+          },
+          {
+            "bit_offset": 3,
+            "data_type": "U1",
+            "name": "PRN155"
+          },
+          {
+            "bit_offset": 4,
+            "data_type": "U1",
+            "name": "PRN156"
+          },
+          {
+            "bit_offset": 5,
+            "data_type": "U1",
+            "name": "PRN157"
+          },
+          {
+            "bit_offset": 6,
+            "data_type": "U1",
+            "name": "PRN158"
           }
-        },
-        {
-          "name": "maxSBAS",
-          "byte_offset": 2,
-          "data_type": "U1",
-          "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00 and later)."
-        },
-        {
-          "name": "scanmode2",
-          "byte_offset": 3,
-          "data_type": "X1",
-          "description": "Continuation of scanmode bitmask below",
-          "bitfield": {
-            "bits": [
-              {
-                "name": "PRN152",
-                "bit_start": 0,
-                "bit_end": 0,
-                "description": ""
-              },
-              {
-                "name": "PRN153",
-                "bit_start": 1,
-                "bit_end": 1,
-                "description": ""
-              },
-              {
-                "name": "PRN154",
-                "bit_start": 2,
-                "bit_end": 2,
-                "description": ""
-              },
-              {
-                "name": "PRN155",
-                "bit_start": 3,
-                "bit_end": 3,
-                "description": ""
-              },
-              {
-                "name": "PRN156",
-                "bit_start": 4,
-                "bit_end": 4,
-                "description": ""
-              },
-              {
-                "name": "PRN157",
-                "bit_start": 5,
-                "bit_end": 5,
-                "description": ""
-              },
-              {
-                "name": "PRN158",
-                "bit_start": 6,
-                "bit_end": 6,
-                "description": ""
-              }
-            ]
+        ]
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "X4",
+        "name": "scanmode1",
+        "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+        "bit_fields": [
+          {
+            "bit_offset": 0,
+            "data_type": "U1",
+            "name": "PRN120"
+          },
+          {
+            "bit_offset": 1,
+            "data_type": "U1",
+            "name": "PRN121"
+          },
+          {
+            "bit_offset": 2,
+            "data_type": "U1",
+            "name": "PRN122"
+          },
+          {
+            "bit_offset": 3,
+            "data_type": "U1",
+            "name": "PRN123"
+          },
+          {
+            "bit_offset": 4,
+            "data_type": "U1",
+            "name": "PRN124"
+          },
+          {
+            "bit_offset": 5,
+            "data_type": "U1",
+            "name": "PRN125"
+          },
+          {
+            "bit_offset": 6,
+            "data_type": "U1",
+            "name": "PRN126"
+          },
+          {
+            "bit_offset": 7,
+            "data_type": "U1",
+            "name": "PRN127"
+          },
+          {
+            "bit_offset": 8,
+            "data_type": "U1",
+            "name": "PRN128"
+          },
+          {
+            "bit_offset": 9,
+            "data_type": "U1",
+            "name": "PRN129"
+          },
+          {
+            "bit_offset": 10,
+            "data_type": "U1",
+            "name": "PRN130"
+          },
+          {
+            "bit_offset": 11,
+            "data_type": "U1",
+            "name": "PRN131"
+          },
+          {
+            "bit_offset": 12,
+            "data_type": "U1",
+            "name": "PRN132"
+          },
+          {
+            "bit_offset": 13,
+            "data_type": "U1",
+            "name": "PRN133"
+          },
+          {
+            "bit_offset": 14,
+            "data_type": "U1",
+            "name": "PRN134"
+          },
+          {
+            "bit_offset": 15,
+            "data_type": "U1",
+            "name": "PRN135"
+          },
+          {
+            "bit_offset": 16,
+            "data_type": "U1",
+            "name": "PRN136"
+          },
+          {
+            "bit_offset": 17,
+            "data_type": "U1",
+            "name": "PRN137"
+          },
+          {
+            "bit_offset": 18,
+            "data_type": "U1",
+            "name": "PRN138"
+          },
+          {
+            "bit_offset": 19,
+            "data_type": "U1",
+            "name": "PRN139"
+          },
+          {
+            "bit_offset": 20,
+            "data_type": "U1",
+            "name": "PRN140"
+          },
+          {
+            "bit_offset": 21,
+            "data_type": "U1",
+            "name": "PRN141"
+          },
+          {
+            "bit_offset": 22,
+            "data_type": "U1",
+            "name": "PRN142"
+          },
+          {
+            "bit_offset": 23,
+            "data_type": "U1",
+            "name": "PRN143"
+          },
+          {
+            "bit_offset": 24,
+            "data_type": "U1",
+            "name": "PRN144"
+          },
+          {
+            "bit_offset": 25,
+            "data_type": "U1",
+            "name": "PRN145"
+          },
+          {
+            "bit_offset": 26,
+            "data_type": "U1",
+            "name": "PRN146"
+          },
+          {
+            "bit_offset": 27,
+            "data_type": "U1",
+            "name": "PRN147"
+          },
+          {
+            "bit_offset": 28,
+            "data_type": "U1",
+            "name": "PRN148"
+          },
+          {
+            "bit_offset": 29,
+            "data_type": "U1",
+            "name": "PRN149"
+          },
+          {
+            "bit_offset": 30,
+            "data_type": "U1",
+            "name": "PRN150"
+          },
+          {
+            "bit_offset": 31,
+            "data_type": "U1",
+            "name": "PRN151"
           }
-        },
-        {
-          "name": "scanmode1",
-          "byte_offset": 4,
-          "data_type": "X4",
-          "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
-          "bitfield": {
-            "bits": [
-              {
-                "name": "PRN120",
-                "bit_start": 0,
-                "bit_end": 0,
-                "description": ""
-              },
-              {
-                "name": "PRN121",
-                "bit_start": 1,
-                "bit_end": 1,
-                "description": ""
-              },
-              {
-                "name": "PRN122",
-                "bit_start": 2,
-                "bit_end": 2,
-                "description": ""
-              },
-              {
-                "name": "PRN123",
-                "bit_start": 3,
-                "bit_end": 3,
-                "description": ""
-              },
-              {
-                "name": "PRN124",
-                "bit_start": 4,
-                "bit_end": 4,
-                "description": ""
-              },
-              {
-                "name": "PRN125",
-                "bit_start": 5,
-                "bit_end": 5,
-                "description": ""
-              },
-              {
-                "name": "PRN126",
-                "bit_start": 6,
-                "bit_end": 6,
-                "description": ""
-              },
-              {
-                "name": "PRN127",
-                "bit_start": 7,
-                "bit_end": 7,
-                "description": ""
-              },
-              {
-                "name": "PRN128",
-                "bit_start": 8,
-                "bit_end": 8,
-                "description": ""
-              },
-              {
-                "name": "PRN129",
-                "bit_start": 9,
-                "bit_end": 9,
-                "description": ""
-              },
-              {
-                "name": "PRN130",
-                "bit_start": 10,
-                "bit_end": 10,
-                "description": ""
-              },
-              {
-                "name": "PRN131",
-                "bit_start": 11,
-                "bit_end": 11,
-                "description": ""
-              },
-              {
-                "name": "PRN132",
-                "bit_start": 12,
-                "bit_end": 12,
-                "description": ""
-              },
-              {
-                "name": "PRN133",
-                "bit_start": 13,
-                "bit_end": 13,
-                "description": ""
-              },
-              {
-                "name": "PRN134",
-                "bit_start": 14,
-                "bit_end": 14,
-                "description": ""
-              },
-              {
-                "name": "PRN135",
-                "bit_start": 15,
-                "bit_end": 15,
-                "description": ""
-              },
-              {
-                "name": "PRN136",
-                "bit_start": 16,
-                "bit_end": 16,
-                "description": ""
-              },
-              {
-                "name": "PRN137",
-                "bit_start": 17,
-                "bit_end": 17,
-                "description": ""
-              },
-              {
-                "name": "PRN138",
-                "bit_start": 18,
-                "bit_end": 18,
-                "description": ""
-              },
-              {
-                "name": "PRN139",
-                "bit_start": 19,
-                "bit_end": 19,
-                "description": ""
-              },
-              {
-                "name": "PRN140",
-                "bit_start": 20,
-                "bit_end": 20,
-                "description": ""
-              },
-              {
-                "name": "PRN141",
-                "bit_start": 21,
-                "bit_end": 21,
-                "description": ""
-              },
-              {
-                "name": "PRN142",
-                "bit_start": 22,
-                "bit_end": 22,
-                "description": ""
-              },
-              {
-                "name": "PRN143",
-                "bit_start": 23,
-                "bit_end": 23,
-                "description": ""
-              },
-              {
-                "name": "PRN144",
-                "bit_start": 24,
-                "bit_end": 24,
-                "description": ""
-              },
-              {
-                "name": "PRN145",
-                "bit_start": 25,
-                "bit_end": 25,
-                "description": ""
-              },
-              {
-                "name": "PRN146",
-                "bit_start": 26,
-                "bit_end": 26,
-                "description": ""
-              },
-              {
-                "name": "PRN147",
-                "bit_start": 27,
-                "bit_end": 27,
-                "description": ""
-              },
-              {
-                "name": "PRN148",
-                "bit_start": 28,
-                "bit_end": 28,
-                "description": ""
-              },
-              {
-                "name": "PRN149",
-                "bit_start": 29,
-                "bit_end": 29,
-                "description": ""
-              },
-              {
-                "name": "PRN150",
-                "bit_start": 30,
-                "bit_end": 30,
-                "description": ""
-              },
-              {
-                "name": "PRN151",
-                "bit_start": 31,
-                "bit_end": 31,
-                "description": ""
-              }
-            ]
-          }
-        }
-      ]
-    }
+        ]
+      }
+    ]
   },
   "winning_fingerprint": "b6326108aacc97af",
   "agreeing_sources": [
-    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
     "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
     "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-    "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
   ],
   "disagreeing_sources": [],
   "all_extractions": [
     {
-      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
       "structure": {
-        "name": "UBX-CFG-SBAS",
-        "class_id": "0x06",
-        "message_id": "0x16",
-        "description": "SBAS configuration",
+        "message_class": 6,
+        "message_id": 22,
+        "message_name": "UBX-CFG-SBAS",
+        "message_description": "SBAS configuration",
         "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 8
+        "comment": "This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS). See SBAS configuration settings description in the integration manual for a detailed description of how these settings affect receiver operation.",
+        "payload_length": {
+          "fixed": 8
+        },
+        "payload_fields": [
+          {
+            "byte_offset": 0,
+            "data_type": "X1",
+            "name": "mode",
+            "description": "SBAS mode",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "data_type": "U1",
+                "name": "enabled",
+                "description": "SBAS enabled (1) / disabled (0) This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+              },
+              {
+                "bit_offset": 1,
+                "data_type": "U1",
+                "name": "test",
+                "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+              }
+            ]
           },
-          "fields": [
-            {
-              "name": "mode",
-              "byte_offset": 0,
-              "data_type": "X1",
-              "description": "SBAS mode",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "enabled",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "SBAS enabled (1) / disabled (0). This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
-                  },
-                  {
-                    "name": "test",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
-                  }
-                ]
+          {
+            "byte_offset": 1,
+            "data_type": "X1",
+            "name": "usage",
+            "description": "SBAS usage",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "data_type": "U1",
+                "name": "range",
+                "description": "Use SBAS GEOs as a ranging source (for navigation)"
+              },
+              {
+                "bit_offset": 1,
+                "data_type": "U1",
+                "name": "diffCorr",
+                "description": "Use SBAS differential corrections"
+              },
+              {
+                "bit_offset": 2,
+                "data_type": "U1",
+                "name": "integrity",
+                "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
               }
-            },
-            {
-              "name": "usage",
-              "byte_offset": 1,
-              "data_type": "X1",
-              "description": "SBAS usage",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "range",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
-                  },
-                  {
-                    "name": "diffCorr",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Use SBAS differential corrections"
-                  },
-                  {
-                    "name": "integrity",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
-                  }
-                ]
+            ]
+          },
+          {
+            "byte_offset": 2,
+            "data_type": "U1",
+            "name": "maxSBAS",
+            "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
+          },
+          {
+            "byte_offset": 3,
+            "data_type": "X1",
+            "name": "scanmode2",
+            "description": "Continuation of scanmode bitmask below",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "data_type": "U1",
+                "name": "PRN152"
+              },
+              {
+                "bit_offset": 1,
+                "data_type": "U1",
+                "name": "PRN153"
+              },
+              {
+                "bit_offset": 2,
+                "data_type": "U1",
+                "name": "PRN154"
+              },
+              {
+                "bit_offset": 3,
+                "data_type": "U1",
+                "name": "PRN155"
+              },
+              {
+                "bit_offset": 4,
+                "data_type": "U1",
+                "name": "PRN156"
+              },
+              {
+                "bit_offset": 5,
+                "data_type": "U1",
+                "name": "PRN157"
+              },
+              {
+                "bit_offset": 6,
+                "data_type": "U1",
+                "name": "PRN158"
               }
-            },
-            {
-              "name": "maxSBAS",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00 and later)."
-            },
-            {
-              "name": "scanmode2",
-              "byte_offset": 3,
-              "data_type": "X1",
-              "description": "Continuation of scanmode bitmask below",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN152",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN153",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN154",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN155",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN156",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN157",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN158",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  }
-                ]
+            ]
+          },
+          {
+            "byte_offset": 4,
+            "data_type": "X4",
+            "name": "scanmode1",
+            "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "data_type": "U1",
+                "name": "PRN120"
+              },
+              {
+                "bit_offset": 1,
+                "data_type": "U1",
+                "name": "PRN121"
+              },
+              {
+                "bit_offset": 2,
+                "data_type": "U1",
+                "name": "PRN122"
+              },
+              {
+                "bit_offset": 3,
+                "data_type": "U1",
+                "name": "PRN123"
+              },
+              {
+                "bit_offset": 4,
+                "data_type": "U1",
+                "name": "PRN124"
+              },
+              {
+                "bit_offset": 5,
+                "data_type": "U1",
+                "name": "PRN125"
+              },
+              {
+                "bit_offset": 6,
+                "data_type": "U1",
+                "name": "PRN126"
+              },
+              {
+                "bit_offset": 7,
+                "data_type": "U1",
+                "name": "PRN127"
+              },
+              {
+                "bit_offset": 8,
+                "data_type": "U1",
+                "name": "PRN128"
+              },
+              {
+                "bit_offset": 9,
+                "data_type": "U1",
+                "name": "PRN129"
+              },
+              {
+                "bit_offset": 10,
+                "data_type": "U1",
+                "name": "PRN130"
+              },
+              {
+                "bit_offset": 11,
+                "data_type": "U1",
+                "name": "PRN131"
+              },
+              {
+                "bit_offset": 12,
+                "data_type": "U1",
+                "name": "PRN132"
+              },
+              {
+                "bit_offset": 13,
+                "data_type": "U1",
+                "name": "PRN133"
+              },
+              {
+                "bit_offset": 14,
+                "data_type": "U1",
+                "name": "PRN134"
+              },
+              {
+                "bit_offset": 15,
+                "data_type": "U1",
+                "name": "PRN135"
+              },
+              {
+                "bit_offset": 16,
+                "data_type": "U1",
+                "name": "PRN136"
+              },
+              {
+                "bit_offset": 17,
+                "data_type": "U1",
+                "name": "PRN137"
+              },
+              {
+                "bit_offset": 18,
+                "data_type": "U1",
+                "name": "PRN138"
+              },
+              {
+                "bit_offset": 19,
+                "data_type": "U1",
+                "name": "PRN139"
+              },
+              {
+                "bit_offset": 20,
+                "data_type": "U1",
+                "name": "PRN140"
+              },
+              {
+                "bit_offset": 21,
+                "data_type": "U1",
+                "name": "PRN141"
+              },
+              {
+                "bit_offset": 22,
+                "data_type": "U1",
+                "name": "PRN142"
+              },
+              {
+                "bit_offset": 23,
+                "data_type": "U1",
+                "name": "PRN143"
+              },
+              {
+                "bit_offset": 24,
+                "data_type": "U1",
+                "name": "PRN144"
+              },
+              {
+                "bit_offset": 25,
+                "data_type": "U1",
+                "name": "PRN145"
+              },
+              {
+                "bit_offset": 26,
+                "data_type": "U1",
+                "name": "PRN146"
+              },
+              {
+                "bit_offset": 27,
+                "data_type": "U1",
+                "name": "PRN147"
+              },
+              {
+                "bit_offset": 28,
+                "data_type": "U1",
+                "name": "PRN148"
+              },
+              {
+                "bit_offset": 29,
+                "data_type": "U1",
+                "name": "PRN149"
+              },
+              {
+                "bit_offset": 30,
+                "data_type": "U1",
+                "name": "PRN150"
+              },
+              {
+                "bit_offset": 31,
+                "data_type": "U1",
+                "name": "PRN151"
               }
-            },
-            {
-              "name": "scanmode1",
-              "byte_offset": 4,
-              "data_type": "X4",
-              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN120",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN121",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN122",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN123",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN124",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN125",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN126",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN127",
-                    "bit_start": 7,
-                    "bit_end": 7,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN128",
-                    "bit_start": 8,
-                    "bit_end": 8,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN129",
-                    "bit_start": 9,
-                    "bit_end": 9,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN130",
-                    "bit_start": 10,
-                    "bit_end": 10,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN131",
-                    "bit_start": 11,
-                    "bit_end": 11,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN132",
-                    "bit_start": 12,
-                    "bit_end": 12,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN133",
-                    "bit_start": 13,
-                    "bit_end": 13,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN134",
-                    "bit_start": 14,
-                    "bit_end": 14,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN135",
-                    "bit_start": 15,
-                    "bit_end": 15,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN136",
-                    "bit_start": 16,
-                    "bit_end": 16,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN137",
-                    "bit_start": 17,
-                    "bit_end": 17,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN138",
-                    "bit_start": 18,
-                    "bit_end": 18,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN139",
-                    "bit_start": 19,
-                    "bit_end": 19,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN140",
-                    "bit_start": 20,
-                    "bit_end": 20,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN141",
-                    "bit_start": 21,
-                    "bit_end": 21,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN142",
-                    "bit_start": 22,
-                    "bit_end": 22,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN143",
-                    "bit_start": 23,
-                    "bit_end": 23,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN144",
-                    "bit_start": 24,
-                    "bit_end": 24,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN145",
-                    "bit_start": 25,
-                    "bit_end": 25,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN146",
-                    "bit_start": 26,
-                    "bit_end": 26,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN147",
-                    "bit_start": 27,
-                    "bit_end": 27,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN148",
-                    "bit_start": 28,
-                    "bit_end": 28,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN149",
-                    "bit_start": 29,
-                    "bit_end": 29,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN150",
-                    "bit_start": 30,
-                    "bit_end": 30,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN151",
-                    "bit_start": 31,
-                    "bit_end": 31,
-                    "description": ""
-                  }
-                ]
-              }
-            }
-          ]
-        }
+            ]
+          }
+        ]
       },
       "fingerprint": "b6326108aacc97af"
     },
     {
-      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
       "structure": {
         "name": "UBX-CFG-SBAS",
         "class_id": "0x06",
         "message_id": "0x16",
-        "description": "SBAS configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 8
-          },
-          "fields": [
-            {
-              "name": "mode",
-              "byte_offset": 0,
-              "data_type": "X1",
-              "description": "SBAS mode",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "enabled",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
-                  },
-                  {
-                    "name": "test",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "usage",
-              "byte_offset": 1,
-              "data_type": "X1",
-              "description": "SBAS usage",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "range",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
-                  },
-                  {
-                    "name": "diffCorr",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Use SBAS differential corrections"
-                  },
-                  {
-                    "name": "integrity",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
-                  }
-                ]
-              }
-            },
-            {
-              "name": "maxSBAS",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0 - 3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
-            },
-            {
-              "name": "scanmode2",
-              "byte_offset": 3,
-              "data_type": "X1",
-              "description": "Continuation of scanmode bitmask below",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN152",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN153",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN154",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN155",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN156",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN157",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN158",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  }
-                ]
-              }
-            },
-            {
-              "name": "scanmode1",
-              "byte_offset": 4,
-              "data_type": "X4",
-              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN120",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN121",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN122",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN123",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN124",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN125",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN126",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN127",
-                    "bit_start": 7,
-                    "bit_end": 7,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN128",
-                    "bit_start": 8,
-                    "bit_end": 8,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN129",
-                    "bit_start": 9,
-                    "bit_end": 9,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN130",
-                    "bit_start": 10,
-                    "bit_end": 10,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN131",
-                    "bit_start": 11,
-                    "bit_end": 11,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN132",
-                    "bit_start": 12,
-                    "bit_end": 12,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN133",
-                    "bit_start": 13,
-                    "bit_end": 13,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN134",
-                    "bit_start": 14,
-                    "bit_end": 14,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN135",
-                    "bit_start": 15,
-                    "bit_end": 15,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN136",
-                    "bit_start": 16,
-                    "bit_end": 16,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN137",
-                    "bit_start": 17,
-                    "bit_end": 17,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN138",
-                    "bit_start": 18,
-                    "bit_end": 18,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN139",
-                    "bit_start": 19,
-                    "bit_end": 19,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN140",
-                    "bit_start": 20,
-                    "bit_end": 20,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN141",
-                    "bit_start": 21,
-                    "bit_end": 21,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN142",
-                    "bit_start": 22,
-                    "bit_end": 22,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN143",
-                    "bit_start": 23,
-                    "bit_end": 23,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN144",
-                    "bit_start": 24,
-                    "bit_end": 24,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN145",
-                    "bit_start": 25,
-                    "bit_end": 25,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN146",
-                    "bit_start": 26,
-                    "bit_end": 26,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN147",
-                    "bit_start": 27,
-                    "bit_end": 27,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN148",
-                    "bit_start": 28,
-                    "bit_end": 28,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN149",
-                    "bit_start": 29,
-                    "bit_end": 29,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN150",
-                    "bit_start": 30,
-                    "bit_end": 30,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN151",
-                    "bit_start": 31,
-                    "bit_end": 31,
-                    "description": ""
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "fingerprint": "b6326108aacc97af"
-    },
-    {
-      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-      "structure": {
-        "name": "UBX-CFG-SBAS",
-        "class_id": "0x06",
-        "message_id": "0x16",
-        "description": "SBAS configuration",
-        "message_type": "get_set",
-        "payload": {
-          "length": {
-            "fixed": 8
-          },
-          "fields": [
-            {
-              "name": "mode",
-              "byte_offset": 0,
-              "data_type": "X1",
-              "description": "SBAS mode",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "enabled",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
-                  },
-                  {
-                    "name": "test",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "usage",
-              "byte_offset": 1,
-              "data_type": "X1",
-              "description": "SBAS usage",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "range",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
-                  },
-                  {
-                    "name": "diffCorr",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": "Use SBAS differential corrections"
-                  },
-                  {
-                    "name": "integrity",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
-                  }
-                ]
-              }
-            },
-            {
-              "name": "maxSBAS",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
-            },
-            {
-              "name": "scanmode2",
-              "byte_offset": 3,
-              "data_type": "X1",
-              "description": "Continuation of scanmode bitmask below",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN152",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN153",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN154",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN155",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN156",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN157",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN158",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  }
-                ]
-              }
-            },
-            {
-              "name": "scanmode1",
-              "byte_offset": 4,
-              "data_type": "X4",
-              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
-              "bitfield": {
-                "bits": [
-                  {
-                    "name": "PRN120",
-                    "bit_start": 0,
-                    "bit_end": 0,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN121",
-                    "bit_start": 1,
-                    "bit_end": 1,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN122",
-                    "bit_start": 2,
-                    "bit_end": 2,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN123",
-                    "bit_start": 3,
-                    "bit_end": 3,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN124",
-                    "bit_start": 4,
-                    "bit_end": 4,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN125",
-                    "bit_start": 5,
-                    "bit_end": 5,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN126",
-                    "bit_start": 6,
-                    "bit_end": 6,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN127",
-                    "bit_start": 7,
-                    "bit_end": 7,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN128",
-                    "bit_start": 8,
-                    "bit_end": 8,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN129",
-                    "bit_start": 9,
-                    "bit_end": 9,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN130",
-                    "bit_start": 10,
-                    "bit_end": 10,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN131",
-                    "bit_start": 11,
-                    "bit_end": 11,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN132",
-                    "bit_start": 12,
-                    "bit_end": 12,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN133",
-                    "bit_start": 13,
-                    "bit_end": 13,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN134",
-                    "bit_start": 14,
-                    "bit_end": 14,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN135",
-                    "bit_start": 15,
-                    "bit_end": 15,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN136",
-                    "bit_start": 16,
-                    "bit_end": 16,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN137",
-                    "bit_start": 17,
-                    "bit_end": 17,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN138",
-                    "bit_start": 18,
-                    "bit_end": 18,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN139",
-                    "bit_start": 19,
-                    "bit_end": 19,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN140",
-                    "bit_start": 20,
-                    "bit_end": 20,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN141",
-                    "bit_start": 21,
-                    "bit_end": 21,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN142",
-                    "bit_start": 22,
-                    "bit_end": 22,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN143",
-                    "bit_start": 23,
-                    "bit_end": 23,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN144",
-                    "bit_start": 24,
-                    "bit_end": 24,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN145",
-                    "bit_start": 25,
-                    "bit_end": 25,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN146",
-                    "bit_start": 26,
-                    "bit_end": 26,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN147",
-                    "bit_start": 27,
-                    "bit_end": 27,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN148",
-                    "bit_start": 28,
-                    "bit_end": 28,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN149",
-                    "bit_start": 29,
-                    "bit_end": 29,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN150",
-                    "bit_start": 30,
-                    "bit_end": 30,
-                    "description": ""
-                  },
-                  {
-                    "name": "PRN151",
-                    "bit_start": 31,
-                    "bit_end": 31,
-                    "description": ""
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "fingerprint": "b6326108aacc97af"
-    },
-    {
-      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-      "structure": {
-        "name": "UBX-CFG-SBAS",
-        "class_id": "0x06",
-        "message_id": "0x16",
-        "description": "SBAS configuration. This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. It configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS).",
+        "description": "SBAS configuration. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS).",
         "message_type": "get_set",
         "payload": {
           "length": {
@@ -1403,37 +652,44 @@
                   {
                     "name": "PRN152",
                     "bit_start": 0,
-                    "bit_end": 0
+                    "bit_end": 0,
+                    "description": ""
                   },
                   {
                     "name": "PRN153",
                     "bit_start": 1,
-                    "bit_end": 1
+                    "bit_end": 1,
+                    "description": ""
                   },
                   {
                     "name": "PRN154",
                     "bit_start": 2,
-                    "bit_end": 2
+                    "bit_end": 2,
+                    "description": ""
                   },
                   {
                     "name": "PRN155",
                     "bit_start": 3,
-                    "bit_end": 3
+                    "bit_end": 3,
+                    "description": ""
                   },
                   {
                     "name": "PRN156",
                     "bit_start": 4,
-                    "bit_end": 4
+                    "bit_end": 4,
+                    "description": ""
                   },
                   {
                     "name": "PRN157",
                     "bit_start": 5,
-                    "bit_end": 5
+                    "bit_end": 5,
+                    "description": ""
                   },
                   {
                     "name": "PRN158",
                     "bit_start": 6,
-                    "bit_end": 6
+                    "bit_end": 6,
+                    "description": ""
                   }
                 ]
               }
@@ -1448,162 +704,194 @@
                   {
                     "name": "PRN120",
                     "bit_start": 0,
-                    "bit_end": 0
+                    "bit_end": 0,
+                    "description": ""
                   },
                   {
                     "name": "PRN121",
                     "bit_start": 1,
-                    "bit_end": 1
+                    "bit_end": 1,
+                    "description": ""
                   },
                   {
                     "name": "PRN122",
                     "bit_start": 2,
-                    "bit_end": 2
+                    "bit_end": 2,
+                    "description": ""
                   },
                   {
                     "name": "PRN123",
                     "bit_start": 3,
-                    "bit_end": 3
+                    "bit_end": 3,
+                    "description": ""
                   },
                   {
                     "name": "PRN124",
                     "bit_start": 4,
-                    "bit_end": 4
+                    "bit_end": 4,
+                    "description": ""
                   },
                   {
                     "name": "PRN125",
                     "bit_start": 5,
-                    "bit_end": 5
+                    "bit_end": 5,
+                    "description": ""
                   },
                   {
                     "name": "PRN126",
                     "bit_start": 6,
-                    "bit_end": 6
+                    "bit_end": 6,
+                    "description": ""
                   },
                   {
                     "name": "PRN127",
                     "bit_start": 7,
-                    "bit_end": 7
+                    "bit_end": 7,
+                    "description": ""
                   },
                   {
                     "name": "PRN128",
                     "bit_start": 8,
-                    "bit_end": 8
+                    "bit_end": 8,
+                    "description": ""
                   },
                   {
                     "name": "PRN129",
                     "bit_start": 9,
-                    "bit_end": 9
+                    "bit_end": 9,
+                    "description": ""
                   },
                   {
                     "name": "PRN130",
                     "bit_start": 10,
-                    "bit_end": 10
+                    "bit_end": 10,
+                    "description": ""
                   },
                   {
                     "name": "PRN131",
                     "bit_start": 11,
-                    "bit_end": 11
+                    "bit_end": 11,
+                    "description": ""
                   },
                   {
                     "name": "PRN132",
                     "bit_start": 12,
-                    "bit_end": 12
+                    "bit_end": 12,
+                    "description": ""
                   },
                   {
                     "name": "PRN133",
                     "bit_start": 13,
-                    "bit_end": 13
+                    "bit_end": 13,
+                    "description": ""
                   },
                   {
                     "name": "PRN134",
                     "bit_start": 14,
-                    "bit_end": 14
+                    "bit_end": 14,
+                    "description": ""
                   },
                   {
                     "name": "PRN135",
                     "bit_start": 15,
-                    "bit_end": 15
+                    "bit_end": 15,
+                    "description": ""
                   },
                   {
                     "name": "PRN136",
                     "bit_start": 16,
-                    "bit_end": 16
+                    "bit_end": 16,
+                    "description": ""
                   },
                   {
                     "name": "PRN137",
                     "bit_start": 17,
-                    "bit_end": 17
+                    "bit_end": 17,
+                    "description": ""
                   },
                   {
                     "name": "PRN138",
                     "bit_start": 18,
-                    "bit_end": 18
+                    "bit_end": 18,
+                    "description": ""
                   },
                   {
                     "name": "PRN139",
                     "bit_start": 19,
-                    "bit_end": 19
+                    "bit_end": 19,
+                    "description": ""
                   },
                   {
                     "name": "PRN140",
                     "bit_start": 20,
-                    "bit_end": 20
+                    "bit_end": 20,
+                    "description": ""
                   },
                   {
                     "name": "PRN141",
                     "bit_start": 21,
-                    "bit_end": 21
+                    "bit_end": 21,
+                    "description": ""
                   },
                   {
                     "name": "PRN142",
                     "bit_start": 22,
-                    "bit_end": 22
+                    "bit_end": 22,
+                    "description": ""
                   },
                   {
                     "name": "PRN143",
                     "bit_start": 23,
-                    "bit_end": 23
+                    "bit_end": 23,
+                    "description": ""
                   },
                   {
                     "name": "PRN144",
                     "bit_start": 24,
-                    "bit_end": 24
+                    "bit_end": 24,
+                    "description": ""
                   },
                   {
                     "name": "PRN145",
                     "bit_start": 25,
-                    "bit_end": 25
+                    "bit_end": 25,
+                    "description": ""
                   },
                   {
                     "name": "PRN146",
                     "bit_start": 26,
-                    "bit_end": 26
+                    "bit_end": 26,
+                    "description": ""
                   },
                   {
                     "name": "PRN147",
                     "bit_start": 27,
-                    "bit_end": 27
+                    "bit_end": 27,
+                    "description": ""
                   },
                   {
                     "name": "PRN148",
                     "bit_start": 28,
-                    "bit_end": 28
+                    "bit_end": 28,
+                    "description": ""
                   },
                   {
                     "name": "PRN149",
                     "bit_start": 29,
-                    "bit_end": 29
+                    "bit_end": 29,
+                    "description": ""
                   },
                   {
                     "name": "PRN150",
                     "bit_start": 30,
-                    "bit_end": 30
+                    "bit_end": 30,
+                    "description": ""
                   },
                   {
                     "name": "PRN151",
                     "bit_start": 31,
-                    "bit_end": 31
+                    "bit_end": 31,
+                    "description": ""
                   }
                 ]
               }
@@ -2270,12 +1558,340 @@
       "fingerprint": "b6326108aacc97af"
     },
     {
-      "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
       "structure": {
         "name": "UBX-CFG-SBAS",
         "class_id": "0x06",
         "message_id": "0x16",
-        "description": "SBAS configuration. This message configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS).",
+        "description": "SBAS configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 8
+          },
+          "fields": [
+            {
+              "name": "mode",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "SBAS mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "enabled",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "SBAS enabled (1) / disabled (0). This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+                  },
+                  {
+                    "name": "test",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "usage",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "SBAS usage",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "range",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
+                  },
+                  {
+                    "name": "diffCorr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Use SBAS differential corrections"
+                  },
+                  {
+                    "name": "integrity",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "maxSBAS",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00 and later)."
+            },
+            {
+              "name": "scanmode2",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "Continuation of scanmode bitmask below",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN152",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN153",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN154",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN155",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN156",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN157",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN158",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": ""
+                  }
+                ]
+              }
+            },
+            {
+              "name": "scanmode1",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN120",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN121",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN122",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN123",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN124",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN125",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN126",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN127",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN128",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN129",
+                    "bit_start": 9,
+                    "bit_end": 9,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN130",
+                    "bit_start": 10,
+                    "bit_end": 10,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN131",
+                    "bit_start": 11,
+                    "bit_end": 11,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN132",
+                    "bit_start": 12,
+                    "bit_end": 12,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN133",
+                    "bit_start": 13,
+                    "bit_end": 13,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN134",
+                    "bit_start": 14,
+                    "bit_end": 14,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN135",
+                    "bit_start": 15,
+                    "bit_end": 15,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN136",
+                    "bit_start": 16,
+                    "bit_end": 16,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN137",
+                    "bit_start": 17,
+                    "bit_end": 17,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN138",
+                    "bit_start": 18,
+                    "bit_end": 18,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN139",
+                    "bit_start": 19,
+                    "bit_end": 19,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN140",
+                    "bit_start": 20,
+                    "bit_end": 20,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN141",
+                    "bit_start": 21,
+                    "bit_end": 21,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN142",
+                    "bit_start": 22,
+                    "bit_end": 22,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN143",
+                    "bit_start": 23,
+                    "bit_end": 23,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN144",
+                    "bit_start": 24,
+                    "bit_end": 24,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN145",
+                    "bit_start": 25,
+                    "bit_end": 25,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN146",
+                    "bit_start": 26,
+                    "bit_end": 26,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN147",
+                    "bit_start": 27,
+                    "bit_end": 27,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN148",
+                    "bit_start": 28,
+                    "bit_end": 28,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN149",
+                    "bit_start": 29,
+                    "bit_end": 29,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN150",
+                    "bit_start": 30,
+                    "bit_end": 30,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN151",
+                    "bit_start": 31,
+                    "bit_end": 31,
+                    "description": ""
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "b6326108aacc97af"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-CFG-SBAS",
+        "class_id": "0x06",
+        "message_id": "0x16",
+        "description": "SBAS configuration",
         "message_type": "get_set",
         "payload": {
           "length": {
@@ -2336,7 +1952,7 @@
               "name": "maxSBAS",
               "byte_offset": 2,
               "data_type": "U1",
-              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00 and later)."
+              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0 - 3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
             },
             {
               "name": "scanmode2",
@@ -2922,6 +2538,623 @@
                     "bit_start": 31,
                     "bit_end": 31,
                     "description": "Enable PRN151 for search"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "b6326108aacc97af"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-CFG-SBAS",
+        "class_id": "0x06",
+        "message_id": "0x16",
+        "description": "SBAS configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 8
+          },
+          "fields": [
+            {
+              "name": "mode",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "SBAS mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "enabled",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+                  },
+                  {
+                    "name": "test",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "usage",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "SBAS usage",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "range",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
+                  },
+                  {
+                    "name": "diffCorr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Use SBAS differential corrections"
+                  },
+                  {
+                    "name": "integrity",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "maxSBAS",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00+)."
+            },
+            {
+              "name": "scanmode2",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "Continuation of scanmode bitmask below",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN152",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN153",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN154",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN155",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN156",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN157",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN158",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": ""
+                  }
+                ]
+              }
+            },
+            {
+              "name": "scanmode1",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN120",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN121",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN122",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN123",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN124",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN125",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN126",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN127",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN128",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN129",
+                    "bit_start": 9,
+                    "bit_end": 9,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN130",
+                    "bit_start": 10,
+                    "bit_end": 10,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN131",
+                    "bit_start": 11,
+                    "bit_end": 11,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN132",
+                    "bit_start": 12,
+                    "bit_end": 12,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN133",
+                    "bit_start": 13,
+                    "bit_end": 13,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN134",
+                    "bit_start": 14,
+                    "bit_end": 14,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN135",
+                    "bit_start": 15,
+                    "bit_end": 15,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN136",
+                    "bit_start": 16,
+                    "bit_end": 16,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN137",
+                    "bit_start": 17,
+                    "bit_end": 17,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN138",
+                    "bit_start": 18,
+                    "bit_end": 18,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN139",
+                    "bit_start": 19,
+                    "bit_end": 19,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN140",
+                    "bit_start": 20,
+                    "bit_end": 20,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN141",
+                    "bit_start": 21,
+                    "bit_end": 21,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN142",
+                    "bit_start": 22,
+                    "bit_end": 22,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN143",
+                    "bit_start": 23,
+                    "bit_end": 23,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN144",
+                    "bit_start": 24,
+                    "bit_end": 24,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN145",
+                    "bit_start": 25,
+                    "bit_end": 25,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN146",
+                    "bit_start": 26,
+                    "bit_end": 26,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN147",
+                    "bit_start": 27,
+                    "bit_end": 27,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN148",
+                    "bit_start": 28,
+                    "bit_end": 28,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN149",
+                    "bit_start": 29,
+                    "bit_end": 29,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN150",
+                    "bit_start": 30,
+                    "bit_end": 30,
+                    "description": ""
+                  },
+                  {
+                    "name": "PRN151",
+                    "bit_start": 31,
+                    "bit_end": 31,
+                    "description": ""
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "b6326108aacc97af"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-CFG-SBAS",
+        "class_id": "0x06",
+        "message_id": "0x16",
+        "description": "SBAS configuration. This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. It configures the SBAS receiver subsystem (i.e. WAAS, EGNOS, MSAS).",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 8
+          },
+          "fields": [
+            {
+              "name": "mode",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "SBAS mode",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "enabled",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "SBAS enabled (1) / disabled (0) - This field is deprecated; use UBX-CFG-GNSS to enable/disable SBAS operation"
+                  },
+                  {
+                    "name": "test",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "SBAS testbed: Use data anyhow (1)/Ignore data when in test mode (SBAS msg 0)"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "usage",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "SBAS usage",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "range",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Use SBAS GEOs as a ranging source (for navigation)"
+                  },
+                  {
+                    "name": "diffCorr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Use SBAS differential corrections"
+                  },
+                  {
+                    "name": "integrity",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Use SBAS integrity information. If enabled, the receiver will only use GPS satellites for which integrity information is available."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "maxSBAS",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Maximum number of SBAS prioritized tracking channels (valid range: 0-3) to use (obsolete and superseded by UBX-CFG-GNSS for protocol versions 14.00 and later)."
+            },
+            {
+              "name": "scanmode2",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "Continuation of scanmode bitmask below",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN152",
+                    "bit_start": 0,
+                    "bit_end": 0
+                  },
+                  {
+                    "name": "PRN153",
+                    "bit_start": 1,
+                    "bit_end": 1
+                  },
+                  {
+                    "name": "PRN154",
+                    "bit_start": 2,
+                    "bit_end": 2
+                  },
+                  {
+                    "name": "PRN155",
+                    "bit_start": 3,
+                    "bit_end": 3
+                  },
+                  {
+                    "name": "PRN156",
+                    "bit_start": 4,
+                    "bit_end": 4
+                  },
+                  {
+                    "name": "PRN157",
+                    "bit_start": 5,
+                    "bit_end": 5
+                  },
+                  {
+                    "name": "PRN158",
+                    "bit_start": 6,
+                    "bit_end": 6
+                  }
+                ]
+              }
+            },
+            {
+              "name": "scanmode1",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Which SBAS PRN numbers to search for (bitmask). If all bits are set to zero, auto-scan (i.e. all valid PRNs) are searched. Every bit corresponds to a PRN number.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "PRN120",
+                    "bit_start": 0,
+                    "bit_end": 0
+                  },
+                  {
+                    "name": "PRN121",
+                    "bit_start": 1,
+                    "bit_end": 1
+                  },
+                  {
+                    "name": "PRN122",
+                    "bit_start": 2,
+                    "bit_end": 2
+                  },
+                  {
+                    "name": "PRN123",
+                    "bit_start": 3,
+                    "bit_end": 3
+                  },
+                  {
+                    "name": "PRN124",
+                    "bit_start": 4,
+                    "bit_end": 4
+                  },
+                  {
+                    "name": "PRN125",
+                    "bit_start": 5,
+                    "bit_end": 5
+                  },
+                  {
+                    "name": "PRN126",
+                    "bit_start": 6,
+                    "bit_end": 6
+                  },
+                  {
+                    "name": "PRN127",
+                    "bit_start": 7,
+                    "bit_end": 7
+                  },
+                  {
+                    "name": "PRN128",
+                    "bit_start": 8,
+                    "bit_end": 8
+                  },
+                  {
+                    "name": "PRN129",
+                    "bit_start": 9,
+                    "bit_end": 9
+                  },
+                  {
+                    "name": "PRN130",
+                    "bit_start": 10,
+                    "bit_end": 10
+                  },
+                  {
+                    "name": "PRN131",
+                    "bit_start": 11,
+                    "bit_end": 11
+                  },
+                  {
+                    "name": "PRN132",
+                    "bit_start": 12,
+                    "bit_end": 12
+                  },
+                  {
+                    "name": "PRN133",
+                    "bit_start": 13,
+                    "bit_end": 13
+                  },
+                  {
+                    "name": "PRN134",
+                    "bit_start": 14,
+                    "bit_end": 14
+                  },
+                  {
+                    "name": "PRN135",
+                    "bit_start": 15,
+                    "bit_end": 15
+                  },
+                  {
+                    "name": "PRN136",
+                    "bit_start": 16,
+                    "bit_end": 16
+                  },
+                  {
+                    "name": "PRN137",
+                    "bit_start": 17,
+                    "bit_end": 17
+                  },
+                  {
+                    "name": "PRN138",
+                    "bit_start": 18,
+                    "bit_end": 18
+                  },
+                  {
+                    "name": "PRN139",
+                    "bit_start": 19,
+                    "bit_end": 19
+                  },
+                  {
+                    "name": "PRN140",
+                    "bit_start": 20,
+                    "bit_end": 20
+                  },
+                  {
+                    "name": "PRN141",
+                    "bit_start": 21,
+                    "bit_end": 21
+                  },
+                  {
+                    "name": "PRN142",
+                    "bit_start": 22,
+                    "bit_end": 22
+                  },
+                  {
+                    "name": "PRN143",
+                    "bit_start": 23,
+                    "bit_end": 23
+                  },
+                  {
+                    "name": "PRN144",
+                    "bit_start": 24,
+                    "bit_end": 24
+                  },
+                  {
+                    "name": "PRN145",
+                    "bit_start": 25,
+                    "bit_end": 25
+                  },
+                  {
+                    "name": "PRN146",
+                    "bit_start": 26,
+                    "bit_end": 26
+                  },
+                  {
+                    "name": "PRN147",
+                    "bit_start": 27,
+                    "bit_end": 27
+                  },
+                  {
+                    "name": "PRN148",
+                    "bit_start": 28,
+                    "bit_end": 28
+                  },
+                  {
+                    "name": "PRN149",
+                    "bit_start": 29,
+                    "bit_end": 29
+                  },
+                  {
+                    "name": "PRN150",
+                    "bit_start": 30,
+                    "bit_end": 30
+                  },
+                  {
+                    "name": "PRN151",
+                    "bit_start": 31,
+                    "bit_end": 31
                   }
                 ]
               }

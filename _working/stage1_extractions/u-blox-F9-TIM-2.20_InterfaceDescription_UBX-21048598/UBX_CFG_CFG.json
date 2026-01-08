@@ -1,0 +1,64 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-CFG",
+  "extraction_timestamp": "2026-01-08T03:19:39.281914+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 62,
+    "end": 63
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-CFG\nExpected IDs: class_id=0x06, message_id=0x09\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-CFG\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-CFG-CFG\",\n  \"message_class_id\": \"0x06\",\n  \"message_id\": \"0x09\",\n  \"message_type\": \"command\",\n  \"description\": \"Clear, save and load configurations. See Receiver configuration for a detailed description on how receiver configuration should be used. The behavior of this message has changed for protocol versions greater than 23.01. Use UBX-CFG-VALSET and UBX-CFG-VALDEL with the appropriate layers instead. These new messages support selective saving and clearing to retain the behavior removed from this message. The three masks which were used to clear, save and load a subsection of configuration have lost their meaning. It is no longer possible to save or clear a subsection of the configuration using this message. The behavior of the masks is now: if any bit is set in the clearMask: all configuration in the selected non-volatile memory is deleted; if any bit is set in the saveMask: all current configuration is stored (copied) to the selected layers; if any bit is set in the loadMask: The current configuration is discarded and rebuilt from all the lower layers. Note that commands can be combined. The sequence of execution is clear, save, then load. Old functionality of this message is not available in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead.\",\n  \"payload_length\": {\n    \"fixed\": 13\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"X4\",\n      \"name\": \"clearMask\",\n      \"description\": \"Mask for configuration to clear. If bit 31...0 (clearAll) is set, all saved configuration from the selected non-volatile memory will be cleared.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"saveMask\",\n      \"description\": \"Mask for configuration to save. If bit 31...0 (saveAll) is set, all current configuration will be saved to the selected non-volatile memory.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"X4\",\n      \"name\": \"loadMask\",\n      \"description\": \"Mask for configuration to load. If bit 31...0 (loadAll) is set, current configuration will be discarded and rebuilt from lower non-volatile memory layers.\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"X1\",\n      \"name\": \"deviceMask\",\n      \"description\": \"Mask which selects the memory devices for saving and/or clearing operation. Note that if a deviceMask is not provided, the receiver defaults the operation requested to battery-backed RAM (BBR) and Flash (if available). Bit 0 (devBBR): Battery-backed RAM; Bit 1 (devFlash): Flash; Bit 2 (devEEPROM): EEPROM (only supported for protocol versions less than 14.00); Bit 4 (devSpiFlash): SPI Flash (only supported for protocol versions less than 14.00).\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-CFG-CFG",
+    "message_class_id": "0x06",
+    "message_id": "0x09",
+    "message_type": "command",
+    "description": "Clear, save and load configurations. See Receiver configuration for a detailed description on how receiver configuration should be used. The behavior of this message has changed for protocol versions greater than 23.01. Use UBX-CFG-VALSET and UBX-CFG-VALDEL with the appropriate layers instead. These new messages support selective saving and clearing to retain the behavior removed from this message. The three masks which were used to clear, save and load a subsection of configuration have lost their meaning. It is no longer possible to save or clear a subsection of the configuration using this message. The behavior of the masks is now: if any bit is set in the clearMask: all configuration in the selected non-volatile memory is deleted; if any bit is set in the saveMask: all current configuration is stored (copied) to the selected layers; if any bit is set in the loadMask: The current configuration is discarded and rebuilt from all the lower layers. Note that commands can be combined. The sequence of execution is clear, save, then load. Old functionality of this message is not available in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead.",
+    "payload_length": {
+      "fixed": 13
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "X4",
+          "name": "clearMask",
+          "description": "Mask for configuration to clear. If bit 31...0 (clearAll) is set, all saved configuration from the selected non-volatile memory will be cleared."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "saveMask",
+          "description": "Mask for configuration to save. If bit 31...0 (saveAll) is set, all current configuration will be saved to the selected non-volatile memory."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "X4",
+          "name": "loadMask",
+          "description": "Mask for configuration to load. If bit 31...0 (loadAll) is set, current configuration will be discarded and rebuilt from lower non-volatile memory layers."
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "X1",
+          "name": "deviceMask",
+          "description": "Mask which selects the memory devices for saving and/or clearing operation. Note that if a deviceMask is not provided, the receiver defaults the operation requested to battery-backed RAM (BBR) and Flash (if available). Bit 0 (devBBR): Battery-backed RAM; Bit 1 (devFlash): Flash; Bit 2 (devEEPROM): EEPROM (only supported for protocol versions less than 14.00); Bit 4 (devSpiFlash): SPI Flash (only supported for protocol versions less than 14.00)."
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/bwj8dqe5vdcu"
+}

@@ -1,86 +1,95 @@
 {
   "message_name": "UBX-TIM-SVIN",
-  "num_extractions": 1,
+  "num_extractions": 3,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-TIM-SVIN",
       "class_id": "0x0D",
       "message_id": "0x04",
-      "description": "Survey-in data",
       "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "fixed": 28
+      "payload_length": {
+        "fixed": 28
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "dur",
+          "data_type": "U4",
+          "unit": "s",
+          "description": "Passed survey-in observation time"
         },
-        "fields": [
-          {
-            "name": "dur",
-            "byte_offset": 0,
-            "data_type": "U4",
-            "description": "Passed survey-in observation time",
-            "unit": "s"
+        {
+          "byte_offset": 4,
+          "name": "meanX",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF X coordinate"
+        },
+        {
+          "byte_offset": 8,
+          "name": "meanY",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Y coordinate"
+        },
+        {
+          "byte_offset": 12,
+          "name": "meanZ",
+          "data_type": "I4",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Z coordinate"
+        },
+        {
+          "byte_offset": 16,
+          "name": "meanV",
+          "data_type": "U4",
+          "unit": "mm^2",
+          "description": "Current survey-in mean position 3D variance"
+        },
+        {
+          "byte_offset": 20,
+          "name": "obs",
+          "data_type": "U4",
+          "description": "Number of position observations used during survey-in"
+        },
+        {
+          "byte_offset": 24,
+          "name": "valid",
+          "data_type": "U1",
+          "description": "Survey-in position validity flag, 1 = valid, otherwise 0"
+        },
+        {
+          "byte_offset": 25,
+          "name": "active",
+          "data_type": "U1",
+          "description": "Survey-in in progress flag, 1 = in-progress, otherwise 0"
+        },
+        {
+          "byte_offset": 26,
+          "name": "reserved0",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
           },
-          {
-            "name": "meanX",
-            "byte_offset": 4,
-            "data_type": "I4",
-            "description": "Current survey-in mean position ECEF X coordinate",
-            "unit": "cm"
-          },
-          {
-            "name": "meanY",
-            "byte_offset": 8,
-            "data_type": "I4",
-            "description": "Current survey-in mean position ECEF Y coordinate",
-            "unit": "cm"
-          },
-          {
-            "name": "meanZ",
-            "byte_offset": 12,
-            "data_type": "I4",
-            "description": "Current survey-in mean position ECEF Z coordinate",
-            "unit": "cm"
-          },
-          {
-            "name": "meanV",
-            "byte_offset": 16,
-            "data_type": "U4",
-            "description": "Current survey-in mean position 3D variance",
-            "unit": "mm^2"
-          },
-          {
-            "name": "obs",
-            "byte_offset": 20,
-            "data_type": "U4",
-            "description": "Number of position observations used during survey-in"
-          },
-          {
-            "name": "valid",
-            "byte_offset": 24,
-            "data_type": "U1",
-            "description": "Survey-in position validity flag, 1 = valid, otherwise 0"
-          },
-          {
-            "name": "active",
-            "byte_offset": 25,
-            "data_type": "U1",
-            "description": "Survey-in in progress flag, 1 = in-progress, otherwise 0"
-          },
-          {
-            "name": "reserved1",
-            "byte_offset": 26,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
-            "description": "Reserved",
-            "reserved": true
-          }
-        ]
-      }
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": [
+          "Minor casing inconsistency: 'meanY' is capitalized while 'meanx', 'meanz', and 'meanv' are lowercase"
+        ]
+      },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
@@ -88,6 +97,6 @@
       }
     ],
     "valid_variations": [],
-    "reasoning": "The provided extraction accurately reflects the standard UBX-TIM-SVIN message structure for u-blox M8 series receivers. The message length (28 bytes), class/ID (0x0D 0x04), and field definitions (including data types and units) are correct and consistent with the protocol specification."
+    "reasoning": "The UBX-TIM-SVIN message is identical across u-blox 8 and F9 generations. All three extractions correctly identify the 28-byte payload structure and the data types of each field. The variations are purely stylistic or minor typographical differences in field naming (e.g., lowercase 'meanx' vs camelCase 'meanX' or 'reserved0' vs 'reserved1'). The fundamental protocol definition (Class 0x0D, ID 0x04, Length 28) is consistent across all sources."
   }
 }

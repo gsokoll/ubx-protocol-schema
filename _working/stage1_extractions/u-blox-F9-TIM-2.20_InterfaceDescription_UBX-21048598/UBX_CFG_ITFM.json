@@ -1,0 +1,105 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-ITFM",
+  "extraction_timestamp": "2026-01-08T03:23:24.991463+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 68,
+    "end": 69
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-ITFM\nExpected IDs: class_id=0x06, message_id=0x39\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-ITFM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x39\",\n  \"message_name\": \"UBX-CFG-ITFM\",\n  \"description\": \"Jamming/interference monitor configuration\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"fixed\": 8\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"X4\",\n      \"name\": \"config\",\n      \"description\": \"Interference config word\",\n      \"sub_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 4,\n          \"data_type\": \"U:4\",\n          \"name\": \"bbThreshold\",\n          \"description\": \"Broadband jamming detection threshold\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 5,\n          \"data_type\": \"U:5\",\n          \"name\": \"cwThreshold\",\n          \"description\": \"CW jamming detection threshold\"\n        },\n        {\n          \"bit_offset\": 9,\n          \"bit_length\": 22,\n          \"data_type\": \"U:22\",\n          \"name\": \"algorithmBits\",\n          \"description\": \"Reserved algorithm settings - should be set to 0x16B156 in hex for correct settings\"\n        },\n        {\n          \"bit_offset\": 31,\n          \"bit_length\": 1,\n          \"data_type\": \"U:1\",\n          \"name\": \"enable\",\n          \"description\": \"Enable interference detection\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"config2\",\n      \"description\": \"Extra settings for jamming/interference monitor\",\n      \"sub_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 12,\n          \"data_type\": \"U:12\",\n          \"name\": \"generalBits\",\n          \"description\": \"General settings - should be set to 0x31E in hex for correct setting\"\n        },\n        {\n          \"bit_offset\": 12,\n          \"bit_length\": 2,\n          \"data_type\": \"U:2\",\n          \"name\": \"antSetting\",\n          \"description\": \"Antenna setting, 0=unknown, 1=passive, 2=active\"\n        },\n        {\n          \"bit_offset\": 14,\n          \"bit_length\": 1,\n          \"data_type\": \"U:1\",\n          \"name\": \"enable2\",\n          \"description\": \"Set to 1 to scan auxiliary bands (u-blox 8 / u-blox M8 only, otherwise ignored)\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x06",
+    "message_id": "0x39",
+    "message_name": "UBX-CFG-ITFM",
+    "description": "Jamming/interference monitor configuration",
+    "message_type": "get_set",
+    "payload_length": {
+      "fixed": 8
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "X4",
+          "name": "config",
+          "description": "Interference config word",
+          "sub_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 4,
+              "data_type": "U:4",
+              "name": "bbThreshold",
+              "description": "Broadband jamming detection threshold"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 5,
+              "data_type": "U:5",
+              "name": "cwThreshold",
+              "description": "CW jamming detection threshold"
+            },
+            {
+              "bit_offset": 9,
+              "bit_length": 22,
+              "data_type": "U:22",
+              "name": "algorithmBits",
+              "description": "Reserved algorithm settings - should be set to 0x16B156 in hex for correct settings"
+            },
+            {
+              "bit_offset": 31,
+              "bit_length": 1,
+              "data_type": "U:1",
+              "name": "enable",
+              "description": "Enable interference detection"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "config2",
+          "description": "Extra settings for jamming/interference monitor",
+          "sub_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 12,
+              "data_type": "U:12",
+              "name": "generalBits",
+              "description": "General settings - should be set to 0x31E in hex for correct setting"
+            },
+            {
+              "bit_offset": 12,
+              "bit_length": 2,
+              "data_type": "U:2",
+              "name": "antSetting",
+              "description": "Antenna setting, 0=unknown, 1=passive, 2=active"
+            },
+            {
+              "bit_offset": 14,
+              "bit_length": 1,
+              "data_type": "U:1",
+              "name": "enable2",
+              "description": "Set to 1 to scan auxiliary bands (u-blox 8 / u-blox M8 only, otherwise ignored)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/5zbp1r8rcle7"
+}

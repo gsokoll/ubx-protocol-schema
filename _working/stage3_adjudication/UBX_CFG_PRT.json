@@ -1,186 +1,153 @@
 {
   "message_name": "UBX-CFG-PRT",
-  "num_extractions": 8,
+  "num_extractions": 10,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-PRT",
       "class_id": "0x06",
       "message_id": "0x00",
-      "description": "Port configuration for I/O ports (UART, USB, SPI, I2C). Message handles Get/Set (20 bytes) and Poll (0 or 1 byte).",
-      "message_type": "get_set",
+      "message_type": "get_set_poll",
+      "payload_length": {
+        "fixed_single": 20,
+        "fixed_poll": 1,
+        "variable_concatenated": "20 * N"
+      },
       "payload": {
-        "length": {
-          "fixed": 20
-        },
         "fields": [
           {
-            "name": "portID",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Port identifier number (0=I2C, 1=UART1, 2=UART2, 3=USB, 4=SPI)."
+            "name": "portID",
+            "description": "Port identifier number (0: I2C, 1: UART1, 2: UART2, 3: USB, 4: SPI)"
           },
           {
-            "name": "reserved0",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Reserved",
+            "name": "reserved0",
             "reserved": true
           },
           {
-            "name": "txReady",
             "byte_offset": 2,
             "data_type": "X2",
-            "description": "TX ready PIN configuration",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "en",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "Enable TX ready feature"
-                },
-                {
-                  "name": "pol",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Polarity (0=High-active, 1=Low-active)"
-                },
-                {
-                  "name": "pin",
-                  "bit_start": 2,
-                  "bit_end": 6,
-                  "description": "PIO to be used"
-                },
-                {
-                  "name": "thres",
-                  "bit_start": 7,
-                  "bit_end": 15,
-                  "description": "Threshold (multiplied by 8 bytes)"
-                }
-              ]
-            }
+            "name": "txReady",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "num_bits": 1,
+                "name": "en"
+              },
+              {
+                "bit_offset": 1,
+                "num_bits": 1,
+                "name": "pol"
+              },
+              {
+                "bit_offset": 2,
+                "num_bits": 5,
+                "name": "pin"
+              },
+              {
+                "bit_offset": 7,
+                "num_bits": 9,
+                "name": "thres"
+              }
+            ]
           },
           {
-            "name": "mode",
             "byte_offset": 4,
             "data_type": "X4",
-            "description": "Port mode bitmask. Interpretation depends on portID. (UART fields shown below)",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "charLen",
-                  "bit_start": 6,
-                  "bit_end": 7,
-                  "description": "Character length"
-                },
-                {
-                  "name": "parity",
-                  "bit_start": 9,
-                  "bit_end": 11,
-                  "description": "Parity"
-                },
-                {
-                  "name": "nStopBits",
-                  "bit_start": 12,
-                  "bit_end": 13,
-                  "description": "Number of Stop bits"
-                }
-              ]
-            }
+            "name": "mode",
+            "description": "Port mode flags; interpretation varies by portID (definition below is for UART)",
+            "bit_fields": [
+              {
+                "bit_offset": 6,
+                "num_bits": 2,
+                "name": "charLen"
+              },
+              {
+                "bit_offset": 9,
+                "num_bits": 3,
+                "name": "parity"
+              },
+              {
+                "bit_offset": 12,
+                "num_bits": 2,
+                "name": "nStopBits"
+              }
+            ]
           },
           {
-            "name": "baudRate",
             "byte_offset": 8,
             "data_type": "U4",
-            "description": "Baud rate in bits/second (UART only)",
-            "unit": "Bits/s"
+            "name": "baudRate",
+            "unit": "Bits/s",
+            "description": "Baud rate (UART only)"
           },
           {
-            "name": "inProtoMask",
             "byte_offset": 12,
             "data_type": "X2",
-            "description": "Input protocol mask",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "inUbx",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "UBX protocol"
-                },
-                {
-                  "name": "inNmea",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "NMEA protocol"
-                },
-                {
-                  "name": "inRtcm",
-                  "bit_start": 2,
-                  "bit_end": 2,
-                  "description": "RTCM2 protocol"
-                },
-                {
-                  "name": "inRtcm3",
-                  "bit_start": 5,
-                  "bit_end": 5,
-                  "description": "RTCM3 protocol"
-                }
-              ]
-            }
+            "name": "inProtoMask",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "num_bits": 1,
+                "name": "inUbx"
+              },
+              {
+                "bit_offset": 1,
+                "num_bits": 1,
+                "name": "inNmea"
+              },
+              {
+                "bit_offset": 2,
+                "num_bits": 1,
+                "name": "inRtcm"
+              },
+              {
+                "bit_offset": 5,
+                "num_bits": 1,
+                "name": "inRtcm3"
+              }
+            ]
           },
           {
-            "name": "outProtoMask",
             "byte_offset": 14,
             "data_type": "X2",
-            "description": "Output protocol mask",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "outUbx",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "UBX protocol"
-                },
-                {
-                  "name": "outNmea",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "NMEA protocol"
-                },
-                {
-                  "name": "outRtcm3",
-                  "bit_start": 5,
-                  "bit_end": 5,
-                  "description": "RTCM3 protocol"
-                }
-              ]
-            }
+            "name": "outProtoMask",
+            "bit_fields": [
+              {
+                "bit_offset": 0,
+                "num_bits": 1,
+                "name": "outUbx"
+              },
+              {
+                "bit_offset": 1,
+                "num_bits": 1,
+                "name": "outNmea"
+              },
+              {
+                "bit_offset": 5,
+                "num_bits": 1,
+                "name": "outRtcm3"
+              }
+            ]
           },
           {
-            "name": "flags",
             "byte_offset": 16,
             "data_type": "X2",
-            "description": "Flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "extendedTxTimeout",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Extended TX timeout"
-                }
-              ]
-            }
+            "name": "flags",
+            "bit_fields": [
+              {
+                "bit_offset": 1,
+                "num_bits": 1,
+                "name": "extendedTxTimeout"
+              }
+            ]
           },
           {
-            "name": "reserved1",
             "byte_offset": 18,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
-            "description": "Reserved",
+            "data_type": "U1[2]",
+            "name": "reserved1",
             "reserved": true
           }
         ]
@@ -189,24 +156,16 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
-        "issues": []
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "valid_variation",
+        "issues": [
+          "This is the 1-byte Poll Request variant"
+        ]
       },
       {
         "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
@@ -217,18 +176,42 @@
         "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
         "verdict": "extraction_error",
         "issues": [
-          "JSON syntax error in extraction output"
+          "Invalid JSON provided in the extraction"
         ]
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "valid_variation",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
         "issues": [
-          "Represents the 1-byte poll request structure rather than the 20-byte configuration payload"
+          "Very high quality extraction capturing concatenation logic"
+        ]
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": [
+          "Correctly identifies deprecation status"
         ]
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": [
+          "Correctly identifies feature limitations for older protocol versions"
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -239,23 +222,27 @@
           "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815"
         ],
         "structure": {
-          "message_type": "poll_request",
-          "payload": {
-            "length": {
-              "fixed": 1
-            },
-            "fields": [
-              {
-                "name": "portID",
-                "data_type": "U1",
-                "description": "Port identifier for the poll request"
-              }
-            ]
-          }
+          "payload_length": 1,
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "portID"
+            }
+          ]
         },
-        "reason": "UBX-CFG-PRT supports polling for a specific port by sending a 1-byte payload containing the port ID."
+        "reason": "Poll Request variant used to retrieve current configuration for a specific port."
+      },
+      {
+        "sources": [
+          "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231"
+        ],
+        "structure": {
+          "payload_length": "20 * N"
+        },
+        "reason": "Concatenated variant allowing multiple port configurations to be set in a single message."
       }
     ],
-    "reasoning": "The canonical structure is the 20-byte configuration payload universally defined across M8, M9, and F9 generations. All extractions (except the error in #6) correctly identified the 20-byte structure with identical field offsets and data types. Minor naming differences in the final reserved field (reserved1 vs reserved3) are negligible. Extraction #7 is a valid variation because it describes the specific poll mechanism for this message ID (polling by PortID), which is distinct from the configuration payload but part of the message's protocol definition."
+    "reasoning": "UBX-CFG-PRT is a complex, polymorphic message. It has three distinct states: a 1-byte poll request, a 20-byte configuration message (Get/Set), and a concatenated version of the 20-byte message. Furthermore, the interpretation of the 'mode' and 'baudRate' fields (bytes 4-11) depends entirely on the 'portID' value (e.g., UART vs SPI vs I2C). Most extractions focus on the UART interpretation as it is the most common. Extraction 5 provided the most comprehensive technical overview, including the formula for multiple units."
   }
 }

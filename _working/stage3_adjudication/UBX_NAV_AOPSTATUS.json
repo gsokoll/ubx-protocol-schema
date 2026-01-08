@@ -6,7 +6,7 @@
       "name": "UBX-NAV-AOPSTATUS",
       "class_id": "0x01",
       "message_id": "0x60",
-      "description": "This message provides information on the status of the AssistNow Autonomous subsystem on the receiver.",
+      "description": "This message provides information on the status of the AssistNow Autonomous subsystem on the receiver. For example, a host application can determine the optimal time to shut down the receiver by monitoring the status field for a steady 0.",
       "message_type": "periodic_polled",
       "payload": {
         "length": {
@@ -17,8 +17,8 @@
             "name": "iTOW",
             "byte_offset": 0,
             "data_type": "U4",
-            "description": "GPS time of week of the navigation epoch.",
-            "unit": "ms"
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch."
           },
           {
             "name": "aopCfg",
@@ -59,17 +59,8 @@
     "extraction_verdicts": [
       {
         "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "valid_variation",
-        "issues": [
-          "Field 'status' is typed as X1 (Bitfield) in this document version, whereas the canonical definition is U1 (Integer). The binary layout is identical."
-        ]
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "valid_variation",
-        "issues": [
-          "Field 'status' is typed as X1 (Bitfield) instead of U1."
-        ]
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
@@ -77,16 +68,21 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": [
-          "Reserved field is named 'reserved1' instead of 'reserved0'."
-        ]
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "Uses 'reserved1' instead of 'reserved0', common in older protocol specifications"
+        ]
       }
     ],
     "valid_variations": [
@@ -96,20 +92,30 @@
           "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
         ],
         "structure": {
-          "status_data_type": "X1"
+          "fields": [
+            {
+              "name": "status",
+              "data_type": "X1"
+            }
+          ]
         },
-        "reason": "Certain generations of documentation define the 'status' byte as X1 (bitfield) rather than U1 (integer). No specific bits are defined, and the binary layout remains 1 byte, making this a documentation style variation."
+        "reason": "Some manual versions represent the status field as a hex/bitmask type (X1) rather than an unsigned integer (U1), though the binary representation is identical (1 byte)."
       },
       {
         "sources": [
           "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
-          "reserved_field_name": "reserved1"
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 6
+            }
+          ]
         },
-        "reason": "Legacy documentation naming convention for the reserved block."
+        "reason": "Older generations (u-blox 8) often use a different index for reserved fields (reserved1) compared to modern versions (reserved0)."
       }
     ],
-    "reasoning": "The message structure is binary-compatible across all analyzed versions (16 bytes). The 'status' field is the primary point of variation in documentation: M8, M10 (SPG 5.10), and F10 define it as U1, while M9 and M10 (SPG 5.30) define it as X1. Given that F10 (the newest) and M8 (the oldest) both use U1, and the field value is described as '0 or not 0' (integer logic) rather than flag bits, U1 is chosen as canonical. The M8 'reserved1' naming is treated as a valid legacy variation."
+    "reasoning": "All extractions are highly consistent regarding the message structure (16 bytes total, specific offsets for iTOW, aopCfg, and status). The variations observed are purely nomenclature-based (U1 vs X1 for the status byte, or reserved0 vs reserved1 naming), which is common across different generations of u-blox documentation (M8, M9, M10, F10). The message type varies between 'output' and 'periodic_polled' depending on whether the manual uses older or newer classification terminology."
   }
 }

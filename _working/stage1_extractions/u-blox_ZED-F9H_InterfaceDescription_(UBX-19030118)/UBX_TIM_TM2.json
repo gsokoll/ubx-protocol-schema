@@ -1,0 +1,54 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-TIM-TM2",
+  "extraction_timestamp": "2026-01-08T03:00:18.854171+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 150,
+    "end": 151
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TM2\nExpected IDs: class_id=0x0d, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TM2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-TIM-TM2\",\n    \"class_id\": 13,\n    \"message_id\": 3,\n    \"message_type\": \"periodic_polled\",\n    \"comment\": \"This message contains information for high precision time stamping/pulse counting.\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"ch\",\n        \"data_type\": \"U1\",\n        \"description\": \"Channel (i.e. EXTINT) upon which the pulse was measured\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"reserved\": true,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 27\n        }\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-TIM-TM2",
+      "class_id": 13,
+      "message_id": 3,
+      "message_type": "periodic_polled",
+      "comment": "This message contains information for high precision time stamping/pulse counting.",
+      "payload_length": {
+        "fixed": 28
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "ch",
+          "data_type": "U1",
+          "description": "Channel (i.e. EXTINT) upon which the pulse was measured"
+        },
+        {
+          "byte_offset": 1,
+          "reserved": true,
+          "data_type": {
+            "array_of": "U1",
+            "count": 27
+          }
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/tbfk4ummjxe1"
+}

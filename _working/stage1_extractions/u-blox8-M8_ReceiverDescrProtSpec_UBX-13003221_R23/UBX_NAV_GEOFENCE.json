@@ -1,0 +1,119 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-GEOFENCE",
+  "extraction_timestamp": "2026-01-08T06:34:11.080600+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 379,
+    "end": 380
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-GEOFENCE\nExpected IDs: class_id=0x01, message_id=0x39\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-GEOFENCE\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-NAV-GEOFENCE\",\n  \"description\": \"Geofencing status\",\n  \"message_class\": \"0x01\",\n  \"message_id\": \"0x39\",\n  \"message_type\": \"periodic_polled\",\n  \"supported_versions\": [\n    \"18\",\n    \"19\",\n    \"19.1\",\n    \"19.2\",\n    \"20\",\n    \"20.01\",\n    \"20.1\",\n    \"20.2\",\n    \"20.3\",\n    \"22\",\n    \"22.01\",\n    \"23\",\n    \"23.01\"\n  ],\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + 2*numFences\"\n    }\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 0,\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"status\",\n      \"data_type\": \"U1\",\n      \"description\": \"Geofencing status\",\n      \"value_mapping\": {\n        \"0\": \"Geofencing not available or not reliable\",\n        \"1\": \"Geofencing active\"\n      }\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"numFences\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of geofences\"\n    },\n    {\n      \"byte_offset\": 7,\n      \"name\": \"combState\",\n      \"data_type\": \"U1\",\n      \"description\": \"Combined (logical OR) state of all geofences\",\n      \"value_mapping\": {\n        \"0\": \"Unknown\",\n        \"1\": \"Inside\",\n        \"2\": \"Outside\"\n      }\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"geofences\",\n      \"count_field\": \"numFences\",\n      \"array_of_fields\": [\n        {\n          \"name\": \"state\",\n          \"data_type\": \"U1\",\n          \"description\": \"Geofence state\",\n          \"value_mapping\": {\n            \"0\": \"Unknown\",\n            \"1\": \"Inside\",\n            \"2\": \"Outside\"\n          }\n        },\n        {\n          \"name\": \"id\",\n          \"data_type\": \"U1\",\n          \"description\": \"Geofence ID (0 = not available)\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-NAV-GEOFENCE",
+    "description": "Geofencing status",
+    "message_class": "0x01",
+    "message_id": "0x39",
+    "message_type": "periodic_polled",
+    "supported_versions": [
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22",
+      "22.01",
+      "23",
+      "23.01"
+    ],
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + 2*numFences"
+      }
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "name": "iTOW",
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "byte_offset": 4,
+        "name": "version",
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "byte_offset": 5,
+        "name": "status",
+        "data_type": "U1",
+        "description": "Geofencing status",
+        "value_mapping": {
+          "0": "Geofencing not available or not reliable",
+          "1": "Geofencing active"
+        }
+      },
+      {
+        "byte_offset": 6,
+        "name": "numFences",
+        "data_type": "U1",
+        "description": "Number of geofences"
+      },
+      {
+        "byte_offset": 7,
+        "name": "combState",
+        "data_type": "U1",
+        "description": "Combined (logical OR) state of all geofences",
+        "value_mapping": {
+          "0": "Unknown",
+          "1": "Inside",
+          "2": "Outside"
+        }
+      },
+      {
+        "byte_offset": 8,
+        "name": "geofences",
+        "count_field": "numFences",
+        "array_of_fields": [
+          {
+            "name": "state",
+            "data_type": "U1",
+            "description": "Geofence state",
+            "value_mapping": {
+              "0": "Unknown",
+              "1": "Inside",
+              "2": "Outside"
+            }
+          },
+          {
+            "name": "id",
+            "data_type": "U1",
+            "description": "Geofence ID (0 = not available)"
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/keeqb0zn2zwy"
+}

@@ -1,8 +1,8 @@
 {
   "message_name": "UBX-SEC-OSNMA",
   "protocol_version": 3,
-  "status": "single_source",
-  "agreement_ratio": 1.0,
+  "status": "split",
+  "agreement_ratio": 0.5,
   "winning_structure": {
     "name": "UBX-SEC-OSNMA",
     "class_id": "0x27",
@@ -404,7 +404,9 @@
   "agreeing_sources": [
     "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
   ],
-  "disagreeing_sources": [],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231"
+  ],
   "all_extractions": [
     {
       "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
@@ -806,6 +808,131 @@
         }
       },
       "fingerprint": "fb3d38c12c4a1c4d"
+    },
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "class_id": "0x27",
+        "message_id": "0x0a",
+        "message_name": "UBX-SEC-OSNMA",
+        "message_type": "periodic_polled",
+        "description": "Galileo Open Service Navigation Message Authentication (OSNMA) security information. Information related to the execution of OSNMA protocol. Reports periodically the total number of satellites transmitting OSNMA data, the latest authenticated service status and configuration and the authentication results per satellite.",
+        "payload_length": {
+          "variable": {
+            "base": 28,
+            "formula": "28 + authSVs * 4"
+          }
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x03 for this version)",
+              "fixed_value": 3
+            },
+            {
+              "byte_offset": 1,
+              "data_type": "X1",
+              "name": "nmaHeader",
+              "description": "NMA header (status of the OSNMA service: NMA status, chain in force and CPKS).\nBit 0 (U:1): 'headerAuth' - Indicates if the NMA header has been authenticated.\nBits 2-1 (U:2): 'nmaStatus' - Status of OSNMA service (0: Not authenticated yet, 1: In test, 2: Operational, 3: Invalid).\nBits 4-3 (U:2): 'chainInForce' - ID of the TESLA chain in force.\nBits 7-5 (U:3): 'CPKS' - TESLA chain and public key status (0: Data not applicable, 1: Nominal, 2: End of Chain (EOC), 3: Chain revoked (CREV), 4: New public key (NPK), 5: Public key revocation (PKREV), 6: New Merkle tree (NMT), 7: Alert message (AM))."
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "X2",
+              "name": "osnmaMonitoring",
+              "description": "Monitoring information on OSNMA service as observed by the receiver.\nBit 0 (U:1): 'osnmaEnabled' - Flag that indicates whether OSNMA execution is enabled.\nBits 5-1 (U:5): 'numberSVs' - Number of SVs from which OSNMA data is being collected.\nBits 7-6 (U:2): 'nmaHeaderUpdate' - New unauthenticated NMA header (0: Last observed NMA header is the same, 1: New header pending authentication, healthy service, 2: New header pending authentication, problem in service provision).\nBit 8 (U:1): 'noData' - If true, OSNMA data is not available.\nBit 9 (U:1): 'wrongData' - If true, OSNMA data is inconsistent.\nBit 10 (U:1): 'wrongFlxMac' - If true, flexible slots authentication have failed (FLX).\nBit 11 (U:1): 'wrongMaclt' - If true, the tags sequence do not follow the MAC look-up table (MACLT)."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "X1",
+              "name": "timSyncReq",
+              "description": "Information related to OSNMA Time Synchronization requirement status.\nBit 0 (U:1): 'timSyncEnabled' - Flag that indicates if OSNMA must be executed applying the Time Synchronization requirement.\nBits 3-1 (U:3): 'timSyncStatus' - Indicates if the time synchronization check has been applied (0: Not performed, 1: Could not be performed - no trusted time, 2: Could not be performed - trusted time not accurate, 3: Check passed, 4: Check failed - replay attack)."
+            },
+            {
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "I4",
+              "name": "timSyncReqDiff",
+              "unit": "ms",
+              "description": "Time difference from the Time Synchronization requirement."
+            },
+            {
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "name": "reserved1",
+              "reserved": true
+            },
+            {
+              "byte_offset": 16,
+              "data_type": "X4",
+              "name": "dsmAuthentication",
+              "description": "Information related to the DSM authentication.\nBits 5-0 (U:6): 'dsmAuthenticationStatus' (0: No DSM authentication, 1: DSM-KROOT authenticated, 2: DSM-PKR authenticated, 3: OSNMA Alert message, 4: DSM-KROOT authentication failed, 5: DSM-PKR authentication failed, 6: Authentication not performed: Unknown public key, 7: Authentication not performed: Public key decompression failed, 8: Authentication successful but new configuration is not supported, 9: Authentication of a new public key during NMT event, missing future Merkle tree root).\nBits 7-6 (U:2): 'hashFunction' - Last authenticated hash function that must be used.\nBits 9-8 (U:2): 'macFunction' - Last authenticated MAC function that must be used.\nBits 13-10 (U:4): 'pubKeyId' - Last authenticated public key ID for ECDSA verification.\nBits 21-14 (U:8): 'macLookupTable' - Last authenticated MAC Lookup table index.\nBits 25-22 (U:4): 'keySize' - Last authenticated TESLA key size index.\nBits 29-26 (U:4): 'macSize' - Last authenticated MAC size index. Add offset of 5 for OSNMA SIS ICD, Issue 1.1.\nBit 30 (U:1): 'fromNVS' - Last authenticated configuration comes from NVS."
+            },
+            {
+              "byte_offset": 20,
+              "data_type": "X4",
+              "name": "teslaKey",
+              "description": "Information related to the TESLA key authentication.\nBits 2-0 (U:3): 'teslaKeyAuthStatus' (0: No TESLA key authentication, 1: Success against root key, 2: Failed against root key, 3: On-going, 4: Not performed - key in past, 5: Not performed - root key too old).\nBits 14-3 (U:12): 'wnSf' - GST week number of subframe with public key.\nBits 29-15 (U:15): 'towSf' - Seconds of week of GST of subframe (divided by 30s).\nBits 31-30 (U:2): 'chainId' - Chain ID of the TESLA key."
+            },
+            {
+              "byte_offset": 24,
+              "data_type": "U1",
+              "name": "authSVs",
+              "description": "Total number of SVs for which orbit/clocks data authentication has been performed (ADKD types 0 or 12). This field corresponds to bits 5-0 of the original X4 field 'generalAndTiming'."
+            },
+            {
+              "byte_offset": 25,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "name": "generalAndTiming_reserved",
+              "reserved": true,
+              "description": "Remaining part of the original X4 'generalAndTiming' field."
+            },
+            {
+              "byte_offset": 28,
+              "is_repeated": true,
+              "repeated_by": "authSVs",
+              "name": "authSVs_info",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "X2",
+                  "name": "bitfield1",
+                  "description": "Bitfield: Issue of data, authenticated ephemeris.\nBits 9-0 (U:10): 'IODE' - Issue of data, authenticated ephemeris.\nBits 14-10 (U:5): 'authNum' - Number of times same block of navigation data authenticated.\nBit 15 (U:1): 'authStatus' - Authentication result for current SV's data (0: Failed, 1: Successful)."
+                },
+                {
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "name": "svId",
+                  "description": "Satellite identifier whose data gets authenticated (see Satellite Numbering)."
+                },
+                {
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "name": "reserved2",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "02ec2d21d5d38362"
     }
   ]
 }

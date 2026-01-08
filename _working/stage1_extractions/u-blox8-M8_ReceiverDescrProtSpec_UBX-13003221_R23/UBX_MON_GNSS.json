@@ -1,0 +1,141 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MON-GNSS",
+  "extraction_timestamp": "2026-01-08T06:26:29.430055+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 355,
+    "end": 357
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-MON-GNSS from u-blox PDF manual pages.\n\nThis message has TWO different structures depending on receiver:\n\n**UBX-MON-GNSS-V0 (Standard, 8 bytes):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x00) |\n| 1 | X1 | supported | Supported GNSS bitfield |\n| 2 | X1 | defaultGnss | Default GNSS bitfield |\n| 3 | X1 | enabled | Enabled GNSS bitfield |\n| 4 | U1 | simultaneous | Max simultaneous GNSS |\n| 5 | U1[3] | reserved0 | Reserved |\n\n**UBX-MON-GNSS-V1 (X20 with signal plans, variable):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x01) |\n| 1 | U1 | numPlans | Number of signal plans |\n| 2 | X2 | activePlanInfo | Active plan info bitfield |\n| 4+ | ... | (repeated group) | Signal plan details |\n\nCheck for \"numPlans\" field to determine version:\n- If field at offset 1 is \"supported\" (X1) \u2192 V0 (version=0x00)\n- If field at offset 1 is \"numPlans\" (U1) \u2192 V1 (version=0x01)\n\nIMPORTANT: Name the message based on which version the PDF documents:\n- If 8 bytes with \"supported\" field: name = \"UBX-MON-GNSS-V0\"\n- If variable with \"numPlans\" field: name = \"UBX-MON-GNSS-V1\"\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MON-GNSS-V0\",\n    \"description\": \"Information message major GNSS selection\",\n    \"firmware_supported\": \"u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01\",\n    \"type\": \"Polled\",\n    \"class\": \"0x0A\",\n    \"id\": \"0x28\",\n    \"length\": 8,\n    \"payload_contents\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"version\",\n        \"format\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"name\": \"supported\",\n        \"format\": \"X1\",\n        \"description\": \"A bit mask showing the major GNSS that can be supported by this receiver\",\n        \"bitfields\": [\n          {\n            \"bit\": 0,\n            \"name\": \"GPSSup\",\n            \"description\": \"GPS is supported\"\n          },\n          {\n            \"bit\": 1,\n            \"name\": \"GlonassSup\",\n            \"description\": \"GLONASS is supported\"\n          },\n          {\n            \"bit\": 2,\n            \"name\": \"BeidouSup\",\n            \"description\": \"BeiDou is supported\"\n          },\n          {\n            \"bit\": 3,\n            \"name\": \"GalileoSup\",\n            \"description\": \"Galileo is supported\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 2,\n        \"name\": \"defaultGnss\",\n        \"format\": \"X1\",\n        \"description\": \"A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.\",\n        \"bitfields\": [\n          {\n            \"bit\": 0,\n            \"name\": \"GPSDef\",\n            \"description\": \"GPS is default-enabled\"\n          },\n          {\n            \"bit\": 1,\n            \"name\": \"GlonassDef\",\n            \"description\": \"GLONASS is default-enabled\"\n          },\n          {\n            \"bit\": 2,\n            \"name\": \"BeidouDef\",\n            \"description\": \"BeiDou is default-enabled\"\n          },\n          {\n            \"bit\": 3,\n            \"name\": \"GalileoDef\",\n            \"description\": \"Galileo is default-enabled\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 3,\n        \"name\": \"enabled\",\n        \"format\": \"X1\",\n        \"description\": \"A bit mask showing the current major GNSS selection enabled for this receiver\",\n        \"bitfields\": [\n          {\n            \"bit\": 0,\n            \"name\": \"GPSEna\",\n            \"description\": \"GPS is enabled\"\n          },\n          {\n            \"bit\": 1,\n            \"name\": \"GlonassEna\",\n            \"description\": \"GLONASS is enabled\"\n          },\n          {\n            \"bit\": 2,\n            \"name\": \"BeidouEna\",\n            \"description\": \"BeiDou is enabled\"\n          },\n          {\n            \"bit\": 3,\n            \"name\": \"GalileoEna\",\n            \"description\": \"Galileo is enabled\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"simultaneous\",\n        \"format\": \"U1\",\n        \"description\": \"Maximum number of concurrent major GNSS that can be supported by this receiver\"\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"reserved1\",\n        \"format\": \"U1[3]\",\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-GNSS-V0",
+      "description": "Information message major GNSS selection",
+      "firmware_supported": "u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01",
+      "type": "Polled",
+      "class": "0x0A",
+      "id": "0x28",
+      "length": 8,
+      "payload_contents": [
+        {
+          "byte_offset": 0,
+          "name": "version",
+          "format": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 1,
+          "name": "supported",
+          "format": "X1",
+          "description": "A bit mask showing the major GNSS that can be supported by this receiver",
+          "bitfields": [
+            {
+              "bit": 0,
+              "name": "GPSSup",
+              "description": "GPS is supported"
+            },
+            {
+              "bit": 1,
+              "name": "GlonassSup",
+              "description": "GLONASS is supported"
+            },
+            {
+              "bit": 2,
+              "name": "BeidouSup",
+              "description": "BeiDou is supported"
+            },
+            {
+              "bit": 3,
+              "name": "GalileoSup",
+              "description": "Galileo is supported"
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "name": "defaultGnss",
+          "format": "X1",
+          "description": "A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.",
+          "bitfields": [
+            {
+              "bit": 0,
+              "name": "GPSDef",
+              "description": "GPS is default-enabled"
+            },
+            {
+              "bit": 1,
+              "name": "GlonassDef",
+              "description": "GLONASS is default-enabled"
+            },
+            {
+              "bit": 2,
+              "name": "BeidouDef",
+              "description": "BeiDou is default-enabled"
+            },
+            {
+              "bit": 3,
+              "name": "GalileoDef",
+              "description": "Galileo is default-enabled"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "name": "enabled",
+          "format": "X1",
+          "description": "A bit mask showing the current major GNSS selection enabled for this receiver",
+          "bitfields": [
+            {
+              "bit": 0,
+              "name": "GPSEna",
+              "description": "GPS is enabled"
+            },
+            {
+              "bit": 1,
+              "name": "GlonassEna",
+              "description": "GLONASS is enabled"
+            },
+            {
+              "bit": 2,
+              "name": "BeidouEna",
+              "description": "BeiDou is enabled"
+            },
+            {
+              "bit": 3,
+              "name": "GalileoEna",
+              "description": "Galileo is enabled"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "name": "simultaneous",
+          "format": "U1",
+          "description": "Maximum number of concurrent major GNSS that can be supported by this receiver"
+        },
+        {
+          "byte_offset": 5,
+          "name": "reserved1",
+          "format": "U1[3]",
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/5t6lrv2ojjs0"
+}

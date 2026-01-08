@@ -1,0 +1,89 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-CFG-CFG",
+  "extraction_timestamp": "2026-01-08T04:05:28.706880+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 60,
+    "end": 61
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-CFG\nExpected IDs: class_id=0x06, message_id=0x09\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-CFG\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-CFG-CFG\",\n  \"message_class\": \"0x06\",\n  \"message_id\": \"0x09\",\n  \"message_type\": \"command\",\n  \"payload_length\": {\n    \"fixed\": 13\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"X4\",\n      \"name\": \"clearMask\",\n      \"description\": \"Mask for configuration to clear. If any bit is set, all saved configuration from the selected non-volatile memory is deleted.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"X4\",\n      \"name\": \"saveMask\",\n      \"description\": \"Mask for configuration to save. If any bit is set, all current configuration is stored (copied) to the selected layers.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"X4\",\n      \"name\": \"loadMask\",\n      \"description\": \"Mask for configuration to load. If any bit is set, the current configuration is discarded and rebuilt from all the lower layers.\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"X1\",\n      \"name\": \"deviceMask\",\n      \"description\": \"Mask which selects the memory devices for saving and/or clearing operation. This is an optional field. If not provided, the receiver defaults the operation requested to battery-backed RAM (BBR) and Flash (if available).\",\n      \"bit_fields\": [\n        {\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"name\": \"devBBR\",\n          \"description\": \"Battery-backed RAM\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"name\": \"devFlash\",\n          \"description\": \"Flash\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"bit_length\": 1,\n          \"name\": \"devEEPROM\",\n          \"description\": \"EEPROM (only supported for protocol versions less than 14.00)\"\n        },\n        {\n          \"bit_offset\": 4,\n          \"bit_length\": 1,\n          \"name\": \"devSpiFlash\",\n          \"description\": \"SPI Flash (only supported for protocol versions less than 14.00)\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-CFG-CFG",
+    "message_class": "0x06",
+    "message_id": "0x09",
+    "message_type": "command",
+    "payload_length": {
+      "fixed": 13
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "X4",
+          "name": "clearMask",
+          "description": "Mask for configuration to clear. If any bit is set, all saved configuration from the selected non-volatile memory is deleted."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "saveMask",
+          "description": "Mask for configuration to save. If any bit is set, all current configuration is stored (copied) to the selected layers."
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "X4",
+          "name": "loadMask",
+          "description": "Mask for configuration to load. If any bit is set, the current configuration is discarded and rebuilt from all the lower layers."
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "X1",
+          "name": "deviceMask",
+          "description": "Mask which selects the memory devices for saving and/or clearing operation. This is an optional field. If not provided, the receiver defaults the operation requested to battery-backed RAM (BBR) and Flash (if available).",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "devBBR",
+              "description": "Battery-backed RAM"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "devFlash",
+              "description": "Flash"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "devEEPROM",
+              "description": "EEPROM (only supported for protocol versions less than 14.00)"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "devSpiFlash",
+              "description": "SPI Flash (only supported for protocol versions less than 14.00)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/hxm4nvxwh5st"
+}

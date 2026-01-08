@@ -1,0 +1,206 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-TIM-TOS",
+  "extraction_timestamp": "2026-01-08T06:59:36.094571+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 445,
+    "end": 447
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TOS\nExpected IDs: class_id=0x0D, message_id=0x12\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TOS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-TIM-TOS\",\n    \"class_id\": \"0x0D\",\n    \"message_id\": \"0x12\",\n    \"description\": \"Time pulse time and frequency data\",\n    \"message_type\": \"periodic\",\n    \"payload_length\": {\n      \"fixed\": 56\n    },\n    \"firmware_supported\": [\n      \"u-blox 8/u-blox M8 protocol versions 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with Time & Frequency Sync products)\"\n    ],\n    \"comment\": \"This message contains information about the time pulse that has just happened and the state of the disciplined oscillators(s) at the time of the pulse. It gives the UTC and GNSS times and time uncertainty of the pulse together with frequency and frequency uncertainty of the disciplined oscillators. It also supplies leap second information.\",\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"version\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"name\": \"gnssId\",\n        \"description\": \"GNSS system used for reporting GNSS time (see Satellite Numbering)\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved1\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"X4\",\n        \"name\": \"flags\",\n        \"description\": \"Flags (see graphic below)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U2\",\n        \"name\": \"year\",\n        \"unit\": \"y\",\n        \"description\": \"Year of UTC time\"\n      },\n      {\n        \"byte_offset\": 10,\n        \"data_type\": \"U1\",\n        \"name\": \"month\",\n        \"unit\": \"month\",\n        \"description\": \"Month of UTC time\"\n      },\n      {\n        \"byte_offset\": 11,\n        \"data_type\": \"U1\",\n        \"name\": \"day\",\n        \"unit\": \"d\",\n        \"description\": \"Day of UTC time\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"U1\",\n        \"name\": \"hour\",\n        \"unit\": \"h\",\n        \"description\": \"Hour of UTC time\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"data_type\": \"U1\",\n        \"name\": \"minute\",\n        \"unit\": \"min\",\n        \"description\": \"Minute of UTC time\"\n      },\n      {\n        \"byte_offset\": 14,\n        \"data_type\": \"U1\",\n        \"name\": \"second\",\n        \"unit\": \"s\",\n        \"description\": \"Second of UTC time\"\n      },\n      {\n        \"byte_offset\": 15,\n        \"data_type\": \"U1\",\n        \"name\": \"utcStandard\",\n        \"description\": \"UTC standard identifier: 0: unknown, 3: UTC as operated by the U.S. Naval Observatory (USNO), 6: UTC as operated by the former Soviet Union, 7: UTC as operated by the National Time Service Center (NTSC), China\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"I4\",\n        \"name\": \"utcOffset\",\n        \"unit\": \"ns\",\n        \"description\": \"Time offset between the preceding pulse and UTC top of second\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"U4\",\n        \"name\": \"utcUncertainty\",\n        \"unit\": \"ns\",\n        \"description\": \"Uncertainty of utcOffset\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": \"U4\",\n        \"name\": \"week\",\n        \"description\": \"GNSS week number\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"data_type\": \"U4\",\n        \"name\": \"TOW\",\n        \"unit\": \"s\",\n        \"description\": \"GNSS time of week\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"data_type\": \"I4\",\n        \"name\": \"gnssOffset\",\n        \"unit\": \"ns\",\n        \"description\": \"Time offset between the preceding pulse and GNSS top of second\"\n      },\n      {\n        \"byte_offset\": 36,\n        \"data_type\": \"U4\",\n        \"name\": \"gnssUncertainty\",\n        \"unit\": \"ns\",\n        \"description\": \"Uncertainty of gnssOffset\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"data_type\": \"I4\",\n        \"name\": \"intOscOffset\",\n        \"unit\": \"ppb\",\n        \"scale\": {\n          \"multiplier\": 0.00390625,\n          \"raw_units\": \"ppb\"\n        },\n        \"description\": \"Internal oscillator frequency offset\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"data_type\": \"U4\",\n        \"name\": \"intOscUncertainty\",\n        \"unit\": \"ppb\",\n        \"scale\": {\n          \"multiplier\": 0.00390625,\n          \"raw_units\": \"ppb\"\n        },\n        \"description\": \"Internal oscillator frequency uncertainty\"\n      },\n      {\n        \"byte_offset\": 48,\n        \"data_type\": \"I4\",\n        \"name\": \"extOscOffset\",\n        \"unit\": \"ppb\",\n        \"scale\": {\n          \"multiplier\": 0.00390625,\n          \"raw_units\": \"ppb\"\n        },\n        \"description\": \"External oscillator frequency offset\"\n      },\n      {\n        \"byte_offset\": 52,\n        \"data_type\": \"U4\",\n        \"name\": \"extOscUncertainty\",\n        \"unit\": \"ppb\",\n        \"scale\": {\n          \"multiplier\": 0.00390625,\n          \"raw_units\": \"ppb\"\n        },\n        \"description\": \"External oscillator frequency uncertainty\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-TIM-TOS",
+      "class_id": "0x0D",
+      "message_id": "0x12",
+      "description": "Time pulse time and frequency data",
+      "message_type": "periodic",
+      "payload_length": {
+        "fixed": 56
+      },
+      "firmware_supported": [
+        "u-blox 8/u-blox M8 protocol versions 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with Time & Frequency Sync products)"
+      ],
+      "comment": "This message contains information about the time pulse that has just happened and the state of the disciplined oscillators(s) at the time of the pulse. It gives the UTC and GNSS times and time uncertainty of the pulse together with frequency and frequency uncertainty of the disciplined oscillators. It also supplies leap second information.",
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "gnssId",
+          "description": "GNSS system used for reporting GNSS time (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "X4",
+          "name": "flags",
+          "description": "Flags (see graphic below)"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U2",
+          "name": "year",
+          "unit": "y",
+          "description": "Year of UTC time"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U1",
+          "name": "month",
+          "unit": "month",
+          "description": "Month of UTC time"
+        },
+        {
+          "byte_offset": 11,
+          "data_type": "U1",
+          "name": "day",
+          "unit": "d",
+          "description": "Day of UTC time"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U1",
+          "name": "hour",
+          "unit": "h",
+          "description": "Hour of UTC time"
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "U1",
+          "name": "minute",
+          "unit": "min",
+          "description": "Minute of UTC time"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "U1",
+          "name": "second",
+          "unit": "s",
+          "description": "Second of UTC time"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "U1",
+          "name": "utcStandard",
+          "description": "UTC standard identifier: 0: unknown, 3: UTC as operated by the U.S. Naval Observatory (USNO), 6: UTC as operated by the former Soviet Union, 7: UTC as operated by the National Time Service Center (NTSC), China"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "I4",
+          "name": "utcOffset",
+          "unit": "ns",
+          "description": "Time offset between the preceding pulse and UTC top of second"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "utcUncertainty",
+          "unit": "ns",
+          "description": "Uncertainty of utcOffset"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U4",
+          "name": "week",
+          "description": "GNSS week number"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": "U4",
+          "name": "TOW",
+          "unit": "s",
+          "description": "GNSS time of week"
+        },
+        {
+          "byte_offset": 32,
+          "data_type": "I4",
+          "name": "gnssOffset",
+          "unit": "ns",
+          "description": "Time offset between the preceding pulse and GNSS top of second"
+        },
+        {
+          "byte_offset": 36,
+          "data_type": "U4",
+          "name": "gnssUncertainty",
+          "unit": "ns",
+          "description": "Uncertainty of gnssOffset"
+        },
+        {
+          "byte_offset": 40,
+          "data_type": "I4",
+          "name": "intOscOffset",
+          "unit": "ppb",
+          "scale": {
+            "multiplier": 0.00390625,
+            "raw_units": "ppb"
+          },
+          "description": "Internal oscillator frequency offset"
+        },
+        {
+          "byte_offset": 44,
+          "data_type": "U4",
+          "name": "intOscUncertainty",
+          "unit": "ppb",
+          "scale": {
+            "multiplier": 0.00390625,
+            "raw_units": "ppb"
+          },
+          "description": "Internal oscillator frequency uncertainty"
+        },
+        {
+          "byte_offset": 48,
+          "data_type": "I4",
+          "name": "extOscOffset",
+          "unit": "ppb",
+          "scale": {
+            "multiplier": 0.00390625,
+            "raw_units": "ppb"
+          },
+          "description": "External oscillator frequency offset"
+        },
+        {
+          "byte_offset": 52,
+          "data_type": "U4",
+          "name": "extOscUncertainty",
+          "unit": "ppb",
+          "scale": {
+            "multiplier": 0.00390625,
+            "raw_units": "ppb"
+          },
+          "description": "External oscillator frequency uncertainty"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/th6xcxc45hdy"
+}

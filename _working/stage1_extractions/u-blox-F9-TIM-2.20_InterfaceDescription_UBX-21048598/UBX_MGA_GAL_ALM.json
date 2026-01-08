@@ -1,0 +1,209 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MGA-GAL-ALM",
+  "extraction_timestamp": "2026-01-08T03:37:57.017775+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 108,
+    "end": 112
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GAL-ALM\nExpected IDs: class_id=0x13, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GAL-ALM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-GAL-ALM\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x02\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 32\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"type\",\n      \"description\": \"Message type (0x02 for this type)\",\n      \"fixed_value\": 2\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": \"U1\",\n      \"name\": \"svId\",\n      \"description\": \"Galileo Satellite identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"data_type\": \"U1\",\n      \"name\": \"reserved0\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"U1\",\n      \"name\": \"ioda\",\n      \"description\": \"Almanac Issue of Data\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"U1\",\n      \"name\": \"almWNa\",\n      \"unit\": \"week\",\n      \"description\": \"Almanac reference week number\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"U2\",\n      \"name\": \"toa\",\n      \"scale\": {\n        \"multiplier\": 600.0\n      },\n      \"unit\": \"s\",\n      \"description\": \"Almanac reference time\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I2\",\n      \"name\": \"deltaSqrtA\",\n      \"scale\": {\n        \"multiplier\": 0.001953125,\n        \"raw\": \"2^-9\"\n      },\n      \"unit\": \"m^0.5\",\n      \"description\": \"Difference with respect to the square root of the nominal semi-major axis (29 600 km)\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"U2\",\n      \"name\": \"e\",\n      \"scale\": {\n        \"multiplier\": 0.0000152587890625,\n        \"raw\": \"2^-16\"\n      },\n      \"description\": \"Eccentricity\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"I2\",\n      \"name\": \"deltaI\",\n      \"scale\": {\n        \"multiplier\": 0.00006103515625,\n        \"raw\": \"2^-14\"\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Inclination at reference time relative to i0 = 56 degree\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"I2\",\n      \"name\": \"omega0\",\n      \"scale\": {\n        \"multiplier\": 0.000030517578125,\n        \"raw\": \"2^-15\"\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Longitude of ascending node of orbital plane at weekly epoch\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"I2\",\n      \"name\": \"omegaDot\",\n      \"scale\": {\n        \"multiplier\": 0.00000000011641532182693481,\n        \"raw\": \"2^-33\"\n      },\n      \"unit\": \"semi-circles/s\",\n      \"description\": \"Rate of change of right ascension\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"data_type\": \"I2\",\n      \"name\": \"omega\",\n      \"scale\": {\n        \"multiplier\": 0.000030517578125,\n        \"raw\": \"2^-15\"\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Argument of perigee\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"I2\",\n      \"name\": \"m0\",\n      \"scale\": {\n        \"multiplier\": 0.000030517578125,\n        \"raw\": \"2^-15\"\n      },\n      \"unit\": \"semi-circles\",\n      \"description\": \"Satellite mean anomaly at reference time\"\n    },\n    {\n      \"byte_offset\": 22,\n      \"data_type\": \"I2\",\n      \"name\": \"af0\",\n      \"scale\": {\n        \"multiplier\": 0.0000019073486328125,\n        \"raw\": \"2^-19\"\n      },\n      \"unit\": \"s\",\n      \"description\": \"Satellite clock correction bias 'truncated'\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"I2\",\n      \"name\": \"af1\",\n      \"scale\": {\n        \"multiplier\": 0.000000000003637978807091713,\n        \"raw\": \"2^-38\"\n      },\n      \"unit\": \"s/s\",\n      \"description\": \"Satellite clock correction linear 'truncated'\"\n    },\n    {\n      \"byte_offset\": 26,\n      \"data_type\": \"U1\",\n      \"name\": \"healthE1B\",\n      \"description\": \"Satellite E1-B signal health status\"\n    },\n    {\n      \"byte_offset\": 27,\n      \"data_type\": \"U1\",\n      \"name\": \"healthE5b\",\n      \"description\": \"Satellite E5b signal health status\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-GAL-ALM",
+    "class_id": "0x13",
+    "message_id": "0x02",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 32
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "type",
+          "description": "Message type (0x02 for this type)",
+          "fixed_value": 2
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "U1",
+          "name": "svId",
+          "description": "Galileo Satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "U1",
+          "name": "reserved0",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "ioda",
+          "description": "Almanac Issue of Data"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": "U1",
+          "name": "almWNa",
+          "unit": "week",
+          "description": "Almanac reference week number"
+        },
+        {
+          "byte_offset": 6,
+          "data_type": "U2",
+          "name": "toa",
+          "scale": {
+            "multiplier": 600.0
+          },
+          "unit": "s",
+          "description": "Almanac reference time"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I2",
+          "name": "deltaSqrtA",
+          "scale": {
+            "multiplier": 0.001953125,
+            "raw": "2^-9"
+          },
+          "unit": "m^0.5",
+          "description": "Difference with respect to the square root of the nominal semi-major axis (29 600 km)"
+        },
+        {
+          "byte_offset": 10,
+          "data_type": "U2",
+          "name": "e",
+          "scale": {
+            "multiplier": 1.52587890625e-05,
+            "raw": "2^-16"
+          },
+          "description": "Eccentricity"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I2",
+          "name": "deltaI",
+          "scale": {
+            "multiplier": 6.103515625e-05,
+            "raw": "2^-14"
+          },
+          "unit": "semi-circles",
+          "description": "Inclination at reference time relative to i0 = 56 degree"
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "I2",
+          "name": "omega0",
+          "scale": {
+            "multiplier": 3.0517578125e-05,
+            "raw": "2^-15"
+          },
+          "unit": "semi-circles",
+          "description": "Longitude of ascending node of orbital plane at weekly epoch"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "I2",
+          "name": "omegaDot",
+          "scale": {
+            "multiplier": 1.1641532182693481e-10,
+            "raw": "2^-33"
+          },
+          "unit": "semi-circles/s",
+          "description": "Rate of change of right ascension"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "I2",
+          "name": "omega",
+          "scale": {
+            "multiplier": 3.0517578125e-05,
+            "raw": "2^-15"
+          },
+          "unit": "semi-circles",
+          "description": "Argument of perigee"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "I2",
+          "name": "m0",
+          "scale": {
+            "multiplier": 3.0517578125e-05,
+            "raw": "2^-15"
+          },
+          "unit": "semi-circles",
+          "description": "Satellite mean anomaly at reference time"
+        },
+        {
+          "byte_offset": 22,
+          "data_type": "I2",
+          "name": "af0",
+          "scale": {
+            "multiplier": 1.9073486328125e-06,
+            "raw": "2^-19"
+          },
+          "unit": "s",
+          "description": "Satellite clock correction bias 'truncated'"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "I2",
+          "name": "af1",
+          "scale": {
+            "multiplier": 3.637978807091713e-12,
+            "raw": "2^-38"
+          },
+          "unit": "s/s",
+          "description": "Satellite clock correction linear 'truncated'"
+        },
+        {
+          "byte_offset": 26,
+          "data_type": "U1",
+          "name": "healthE1B",
+          "description": "Satellite E1-B signal health status"
+        },
+        {
+          "byte_offset": 27,
+          "data_type": "U1",
+          "name": "healthE5b",
+          "description": "Satellite E5b signal health status"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/70o5z03o61ax"
+}

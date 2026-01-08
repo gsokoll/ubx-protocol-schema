@@ -1,6 +1,6 @@
 {
   "message_name": "UBX-CFG-ODO",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-ODO",
@@ -8,142 +8,158 @@
       "message_id": "0x1e",
       "description": "Odometer, low-speed COG engine settings",
       "message_type": "get_set",
-      "payload": {
-        "length": {
-          "fixed": 20
+      "payload_length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
         },
-        "fields": [
-          {
-            "name": "version",
-            "byte_offset": 0,
-            "data_type": "U1",
-            "description": "Message version (0x00 or 0x01)"
+        {
+          "name": "reserved0",
+          "byte_offset": 1,
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
           },
-          {
-            "name": "reserved0",
-            "byte_offset": 1,
-            "data_type": {
-              "array_of": "U1",
-              "count": 3
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "flags",
+          "byte_offset": 4,
+          "data_type": "X1",
+          "description": "Odometer/Low-speed COG filter flags",
+          "bitfield": [
+            {
+              "name": "useODO",
+              "bit_start": 0,
+              "bit_end": 0,
+              "description": "Odometer-enabled flag"
             },
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "flags",
-            "byte_offset": 4,
-            "data_type": "X1",
-            "description": "Odometer/Low-speed COG filter flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "useODO",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "Odometer-enabled flag"
-                },
-                {
-                  "name": "useCOG",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Low-speed COG filter enabled flag"
-                },
-                {
-                  "name": "outLPVel",
-                  "bit_start": 2,
-                  "bit_end": 2,
-                  "description": "Output low-pass filtered velocity flag"
-                },
-                {
-                  "name": "outLPCog",
-                  "bit_start": 3,
-                  "bit_end": 3,
-                  "description": "Output low-pass filtered heading (COG) flag"
-                }
-              ]
+            {
+              "name": "useCOG",
+              "bit_start": 1,
+              "bit_end": 1,
+              "description": "Low-speed COG filter enabled flag"
+            },
+            {
+              "name": "outLPVel",
+              "bit_start": 2,
+              "bit_end": 2,
+              "description": "Output low-pass filtered velocity flag"
+            },
+            {
+              "name": "outLPCog",
+              "bit_start": 3,
+              "bit_end": 3,
+              "description": "Output low-pass filtered heading (COG) flag"
             }
-          },
-          {
-            "name": "odoCfg",
-            "byte_offset": 5,
-            "data_type": "X1",
-            "description": "Odometer filter settings",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "profile",
-                  "bit_start": 0,
-                  "bit_end": 2,
-                  "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
-                }
-              ]
+          ]
+        },
+        {
+          "name": "odoCfg",
+          "byte_offset": 5,
+          "data_type": "X1",
+          "description": "Odometer filter settings",
+          "bitfield": [
+            {
+              "name": "profile",
+              "bit_start": 0,
+              "bit_end": 2,
+              "description": "Profile type (0=running, 1=cycling, 2=swimming, 3=car, 4=custom)"
             }
+          ]
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 6
           },
-          {
-            "name": "reserved1",
-            "byte_offset": 6,
-            "data_type": {
-              "array_of": "U1",
-              "count": 6
-            },
-            "description": "Reserved",
-            "reserved": true
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "cogMaxSpeed",
+          "byte_offset": 12,
+          "data_type": "U1",
+          "scale": 0.1,
+          "unit": "m/s",
+          "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter"
+        },
+        {
+          "name": "cogMaxPosAcc",
+          "byte_offset": 13,
+          "data_type": "U1",
+          "unit": "m",
+          "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter"
+        },
+        {
+          "name": "reserved2",
+          "byte_offset": 14,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
           },
-          {
-            "name": "cogMaxSpeed",
-            "byte_offset": 12,
-            "data_type": "U1",
-            "description": "Speed below which course-over-ground (COG) is computed with the low-speed COG filter",
-            "unit": "m/s",
-            "scale": {
-              "raw": "1e-1",
-              "multiplier": 0.1
-            }
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "velLpGain",
+          "byte_offset": 16,
+          "data_type": "U1",
+          "description": "Velocity low-pass filter level, range 0..255"
+        },
+        {
+          "name": "cogLpGain",
+          "byte_offset": 17,
+          "data_type": "U1",
+          "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
+        },
+        {
+          "name": "reserved3",
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
           },
-          {
-            "name": "cogMaxPosAcc",
-            "byte_offset": 13,
-            "data_type": "U1",
-            "description": "Maximum acceptable position accuracy for computing COG with the low-speed COG filter",
-            "unit": "m"
-          },
-          {
-            "name": "reserved2",
-            "byte_offset": 14,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "velLpGain",
-            "byte_offset": 16,
-            "data_type": "U1",
-            "description": "Velocity low-pass filter level, range 0..255"
-          },
-          {
-            "name": "cogLpGain",
-            "byte_offset": 17,
-            "data_type": "U1",
-            "description": "COG low-pass filter level (at speed < 8 m/s), range 0..255"
-          },
-          {
-            "name": "reserved3",
-            "byte_offset": 18,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
-            "description": "Reserved",
-            "reserved": true
-          }
-        ]
-      }
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrect message_type: labeled as 'command' but should be 'get_set'"
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents Version 0x01 of the message"
+        ]
+      },
       {
         "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
@@ -151,6 +167,11 @@
       },
       {
         "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": []
       },
@@ -163,60 +184,25 @@
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+          "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124"
         ],
         "structure": {
-          "fields_diff": [
+          "fields": [
             {
-              "name": "reserved1",
-              "byte_offset": 1,
-              "description": "Corresponds to reserved0 in canonical"
-            },
-            {
-              "name": "reserved2",
-              "byte_offset": 6,
-              "description": "Corresponds to reserved1 in canonical"
-            },
-            {
-              "name": "reserved3",
-              "byte_offset": 14,
-              "description": "Corresponds to reserved2 in canonical"
-            },
-            {
-              "name": "reserved4",
-              "byte_offset": 18,
-              "description": "Corresponds to reserved3 in canonical"
+              "name": "version",
+              "byte_offset": 0,
+              "fixed_value": 1
             }
           ]
         },
-        "reason": "Legacy M8 documentation uses 1-based indexing for reserved fields (reserved1..reserved4) instead of the 0-based indexing (reserved0..reserved3) used in modern F9/M9 documentation."
+        "reason": "Protocol version update: Some firmware versions increment the message version byte to 0x01 while maintaining the 20-byte structure."
       }
     ],
-    "reasoning": "The UBX-CFG-ODO message structure is extremely stable across M8, M9, and F9 generations, maintaining a fixed length of 20 bytes and identical field layouts. The primary canonical structure is based on the modern F9/M9 documentation which uses 0-based indexing for reserved fields. \n\nTwo minor deviations exist:\n1. **Version Field**: Most documents specify Version 0x00. The HPG 1.51 documentation (Extraction 6) specifies Version 0x01, but the message structure remains identical to Version 0x00. This is considered a correct extraction of a firmware-specific default value rather than a structural change.\n2. **Field Naming**: The M8 documentation (Extraction 8) uses `reserved1` through `reserved4` instead of `reserved0` through `reserved3`. This is a valid documentation variation for the older generation, structurally equivalent to the canonical definition.\n\nExtraction 7 lists `message_type` as 'command', which is technically imprecise (standard is 'get_set' for CFG messages), but the payload definition is correct."
+    "reasoning": "The message UBX-CFG-ODO is highly consistent across almost all u-blox generations (M8, M9, F9). It consists of a fixed 20-byte payload. The primary version used is 0x00, but Extraction 4 correctly identifies a 0x01 version which is documented in newer HPG (High Precision GNSS) manuals. Extraction 2 is marked as having an error because it identifies the message as a 'command' only, whereas UBX-CFG messages are 'get_set' (Input/Output)."
   }
 }

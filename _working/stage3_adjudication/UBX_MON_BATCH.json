@@ -4,10 +4,10 @@
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-MON-BATCH",
-      "class_id": "0x0a",
+      "class_id": "0x0A",
       "message_id": "0x32",
       "description": "Data batching buffer status",
-      "message_type": "periodic/polled",
+      "message_type": "output",
       "payload": {
         "length": {
           "fixed": 12
@@ -39,7 +39,7 @@
             "name": "dropsAll",
             "byte_offset": 6,
             "data_type": "U2",
-            "description": "Number of dropped epochs since startup"
+            "description": "Number of dropped epochs since startup. Note: changing the batching configuration will reset this counter."
           },
           {
             "name": "dropsSinceMon",
@@ -51,7 +51,7 @@
             "name": "nextMsgCnt",
             "byte_offset": 10,
             "data_type": "U2",
-            "description": "The next retrieved UBX-LOG-BATCH will have this msgCnt value"
+            "description": "The next retrieved UBX-LOG-BATCH will have this msgCnt value."
           }
         ]
       }
@@ -64,19 +64,17 @@
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
         "verdict": "correct",
-        "issues": [
-          "Uses 'reserved1' for the first reserved field where others use 'reserved0'. This is a minor naming difference likely found in the specific document version."
-        ]
+        "issues": []
       },
       {
-        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "All three extractions define an identical binary structure (length 12, identical field offsets and data types). The differences are cosmetic: Extraction 2 names the reserved field 'reserved1' while others use 'reserved0', and descriptions in Extractions 2 and 3 include usage notes absent in Extraction 1. The structural definition is consistent across M8, M9, and M10 generations."
+    "reasoning": "The message structure is identical across all generations (M8, M9, and M10). All three extractions correctly identify the 12-byte payload and field offsets. Minor differences in reserved field naming (reserved0 vs reserved1) and description length (some include the config-reset note, some do not) are documentation artifacts rather than protocol changes. The message type fluctuates between 'periodic_polled' and 'output' depending on the manual's taxonomy, but they describe the same behavior for a MON class message."
   }
 }

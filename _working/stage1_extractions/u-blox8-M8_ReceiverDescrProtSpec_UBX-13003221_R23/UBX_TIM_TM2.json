@@ -1,0 +1,152 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-TIM-TM2",
+  "extraction_timestamp": "2026-01-08T06:58:57.482983+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 444,
+    "end": 445
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TM2\nExpected IDs: class_id=0x0D, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TM2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-TIM-TM2\",\n  \"class_id\": \"0x0D\",\n  \"message_id\": \"0x03\",\n  \"description\": \"Time mark data\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 28\n  },\n  \"comment\": \"This message contains information for high precision time stamping / pulse counting. The delay figures and timebase given in UBX-CFG-TP5 are also applied to the time results output in this message.\",\n  \"firmware_supported\": \"u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01\",\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"ch\",\n      \"data_type\": \"U1\",\n      \"description\": \"Channel (i.e. EXTINT) upon which the pulse was measured\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"flags\",\n      \"data_type\": \"X1\",\n      \"description\": \"Bitmask (see graphic below)\",\n      \"bitfield_flags\": [\n        {\n          \"name\": \"mode\",\n          \"position\": 0,\n          \"length\": 1,\n          \"description\": \"0=single, 1=running\"\n        },\n        {\n          \"name\": \"run\",\n          \"position\": 1,\n          \"length\": 1,\n          \"description\": \"0=armed, 1=stopped\"\n        },\n        {\n          \"name\": \"reserved1\",\n          \"position\": 2,\n          \"length\": 1,\n          \"description\": \"Reserved\",\n          \"reserved\": true\n        },\n        {\n          \"name\": \"newFallingEdge\",\n          \"position\": 3,\n          \"length\": 1,\n          \"description\": \"New falling edge detected\"\n        },\n        {\n          \"name\": \"timeBase\",\n          \"position\": 4,\n          \"length\": 2,\n          \"description\": \"0=Time base is Receiver time, 1=Time base is GNSS time (the system according to the configuration in UBX-CFG-TP5 for tpldx=0), 2=Time base is UTC (the variant according to the configuration in UBX-CFG-NAV5)\"\n        },\n        {\n          \"name\": \"time\",\n          \"position\": 6,\n          \"length\": 1,\n          \"description\": \"0=Time is not valid, 1=Time is valid (Valid GNSS fix)\"\n        },\n        {\n          \"name\": \"newRisingEdge\",\n          \"position\": 7,\n          \"length\": 1,\n          \"description\": \"New rising edge detected\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"count\",\n      \"data_type\": \"U2\",\n      \"description\": \"Rising edge counter\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"wnR\",\n      \"data_type\": \"U2\",\n      \"description\": \"Week number of last rising edge\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"wnF\",\n      \"data_type\": \"U2\",\n      \"description\": \"Week number of last falling edge\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"towMsR\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"Tow of rising edge\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"towSubMsR\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Millisecond fraction of tow of rising edge in nanoseconds\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"towMsF\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"Tow of falling edge\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"towSubMsF\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Millisecond fraction of tow of falling edge in nanoseconds\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"accEst\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ns\",\n      \"description\": \"Accuracy estimate\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-TIM-TM2",
+    "class_id": "0x0D",
+    "message_id": "0x03",
+    "description": "Time mark data",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 28
+    },
+    "comment": "This message contains information for high precision time stamping / pulse counting. The delay figures and timebase given in UBX-CFG-TP5 are also applied to the time results output in this message.",
+    "firmware_supported": "u-blox 8 / u-blox M8 protocol versions 15, 15.01, 16, 17, 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01",
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "ch",
+          "data_type": "U1",
+          "description": "Channel (i.e. EXTINT) upon which the pulse was measured"
+        },
+        {
+          "byte_offset": 1,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Bitmask (see graphic below)",
+          "bitfield_flags": [
+            {
+              "name": "mode",
+              "position": 0,
+              "length": 1,
+              "description": "0=single, 1=running"
+            },
+            {
+              "name": "run",
+              "position": 1,
+              "length": 1,
+              "description": "0=armed, 1=stopped"
+            },
+            {
+              "name": "reserved1",
+              "position": 2,
+              "length": 1,
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "newFallingEdge",
+              "position": 3,
+              "length": 1,
+              "description": "New falling edge detected"
+            },
+            {
+              "name": "timeBase",
+              "position": 4,
+              "length": 2,
+              "description": "0=Time base is Receiver time, 1=Time base is GNSS time (the system according to the configuration in UBX-CFG-TP5 for tpldx=0), 2=Time base is UTC (the variant according to the configuration in UBX-CFG-NAV5)"
+            },
+            {
+              "name": "time",
+              "position": 6,
+              "length": 1,
+              "description": "0=Time is not valid, 1=Time is valid (Valid GNSS fix)"
+            },
+            {
+              "name": "newRisingEdge",
+              "position": 7,
+              "length": 1,
+              "description": "New rising edge detected"
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "name": "count",
+          "data_type": "U2",
+          "description": "Rising edge counter"
+        },
+        {
+          "byte_offset": 4,
+          "name": "wnR",
+          "data_type": "U2",
+          "description": "Week number of last rising edge"
+        },
+        {
+          "byte_offset": 6,
+          "name": "wnF",
+          "data_type": "U2",
+          "description": "Week number of last falling edge"
+        },
+        {
+          "byte_offset": 8,
+          "name": "towMsR",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Tow of rising edge"
+        },
+        {
+          "byte_offset": 12,
+          "name": "towSubMsR",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Millisecond fraction of tow of rising edge in nanoseconds"
+        },
+        {
+          "byte_offset": 16,
+          "name": "towMsF",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "Tow of falling edge"
+        },
+        {
+          "byte_offset": 20,
+          "name": "towSubMsF",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Millisecond fraction of tow of falling edge in nanoseconds"
+        },
+        {
+          "byte_offset": 24,
+          "name": "accEst",
+          "data_type": "U4",
+          "unit": "ns",
+          "description": "Accuracy estimate"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/zi7q4p4azcbn"
+}

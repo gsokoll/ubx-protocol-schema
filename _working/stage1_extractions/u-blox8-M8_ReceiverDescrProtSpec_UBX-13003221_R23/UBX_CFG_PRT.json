@@ -1,0 +1,120 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-PRT",
+  "extraction_timestamp": "2026-01-08T05:46:09.763356+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 260,
+    "end": 265
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-PRT\nExpected IDs: class_id=0x06, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-PRT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\nARRAY DETECTION (CRITICAL):\n- Type column shows arrays: \"U1[6]\", \"U1 x 6\", \"CH[30]\" = {{\"array_of\": \"U1\", \"count\": 6}}\n- Offset gaps reveal arrays: offset 4 to 8 with U1 type = {{\"array_of\": \"U1\", \"count\": 4}}\n- Reserved fields often span multiple bytes - verify size from offset difference\n- String fields (CH) are usually arrays: {{\"array_of\": \"CH\", \"count\": N}}\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x00\",\n  \"name\": \"UBX-CFG-PRT\",\n  \"message_type\": \"polled_get_set\",\n  \"description\": \"Polls the configuration for one I/O port, or sets/gets the configuration for UART, USB, and SPI ports. When polling, a 1-byte message containing only the portID is sent as input, and the full 20-byte configuration unit is returned. For set/get operations, several 20-byte configuration units can be concatenated to one input message. Output messages from the module always contain only one 20-byte configuration unit. This message can affect baud rate and other transmission parameters. Changes may cause messages queued for transmission to be corrupted due to protocol changes; host data reception parameters may need adjustment to receive future messages including acknowledge messages.\",\n  \"supported_protocols\": [\n    \"u-blox 8 / u-blox M8 protocol versions 15\",\n    \"u-blox 8 / u-blox M8 protocol versions 15.01\",\n    \"u-blox 8 / u-blox M8 protocol versions 16\",\n    \"u-blox 8 / u-blox M8 protocol versions 17\",\n    \"u-blox 8 / u-blox M8 protocol versions 18\",\n    \"u-blox 8 / u-blox M8 protocol versions 19\",\n    \"u-blox 8 / u-blox M8 protocol versions 19.1\",\n    \"u-blox 8 / u-blox M8 protocol versions 19.2\",\n    \"u-blox 8 / u-blox M8 protocol versions 20\",\n    \"u-blox 8 / u-blox M8 protocol versions 20.01\",\n    \"u-blox 8 / u-blox M8 protocol versions 20.1\",\n    \"u-blox 8 / u-blox M8 protocol versions 20.2\",\n    \"u-blox 8 / u-blox M8 protocol versions 20.3\",\n    \"u-blox 8 / u-blox M8 protocol versions 22\",\n    \"u-blox 8 / u-blox M8 protocol versions 22.01\",\n    \"u-blox 8 / u-blox M8 protocol versions 23\",\n    \"u-blox 8 / u-blox M8 protocol versions 23.01\"\n  ],\n  \"payload_length\": {\n    \"variable\": {\n      \"formula\": \"N * 20\",\n      \"description\": \"N is the number of concatenated configuration units (each 20 bytes long). A 1-byte payload is used for poll requests.\"\n    }\n  },\n  \"payload\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"portID\",\n      \"data_type\": \"U1\",\n      \"description\": \"Port identifier number (see Integration manual for valid port IDs). For USB, value is 3; for SPI, value is 4.\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"reserved1\",\n      \"data_type\": \"U1\",\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"txReady\",\n      \"data_type\": \"X2\",\n      \"description\": \"TX ready PIN configuration (bitfield): bit 0 (en): Enable TX ready; bit 1 (pol): Polarity (0=High-active, 1=Low-active); bits 2-4 (pin): PIO to be used; bits 5-15 (thres): Threshold (multiplied by 8 bytes, e.g., 0x000=no threshold, 0x001=8byte, 0x1FF=4088byte).\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"mode\",\n      \"data_type\": \"X4\",\n      \"description\": \"A bit mask describing the UART mode (bitfield): bits 0-1 (charLen): Character length (e.g., 00=5bit, 11=8bit); bits 2-4 (parity): Parity (e.g., 000=Even, 10X=No parity); bits 6-7 (nStopBits): Number of Stop bits (e.g., 00=1 Stop bit, 11=0.5 Stop bit).\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"baudRate\",\n      \"data_type\": \"U4\",\n      \"unit\": \"Bits/s\",\n      \"description\": \"Baud rate in bits/second\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"inProtoMask\",\n      \"data_type\": \"X2\",\n      \"description\": \"A mask describing which input protocols are active (bitfield): bit 0 (inUbx): UBX protocol; bit 1 (inNmea): NMEA protocol; bit 2 (inRtcm): RTCM2 protocol; bit 5 (inRtcm3): RTCM3 protocol (not supported in protocol versions less than 20).\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"name\": \"outProtoMask\",\n      \"data_type\": \"X2\",\n      \"description\": \"A mask describing which output protocols are active (bitfield): bit 0 (outUbx): UBX protocol; bit 1 (outNmea): NMEA protocol; bit 5 (outRtcm3): RTCM3 protocol (not supported in protocol versions less than 20).\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"flags\",\n      \"data_type\": \"X2\",\n      \"description\": \"Flags bit mask (bitfield): bit 1 (extendedTxTimeout): Extended TX timeout (if set, port times out if TX memory >=4 kB and no activity for 1.5s; if not set, port times out if no activity for 1.5s regardless of allocated TX memory).\"\n    },\n    {\n      \"byte_offset\": 18,\n      \"name\": \"reserved2\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x06",
+    "message_id": "0x00",
+    "name": "UBX-CFG-PRT",
+    "message_type": "polled_get_set",
+    "description": "Polls the configuration for one I/O port, or sets/gets the configuration for UART, USB, and SPI ports. When polling, a 1-byte message containing only the portID is sent as input, and the full 20-byte configuration unit is returned. For set/get operations, several 20-byte configuration units can be concatenated to one input message. Output messages from the module always contain only one 20-byte configuration unit. This message can affect baud rate and other transmission parameters. Changes may cause messages queued for transmission to be corrupted due to protocol changes; host data reception parameters may need adjustment to receive future messages including acknowledge messages.",
+    "supported_protocols": [
+      "u-blox 8 / u-blox M8 protocol versions 15",
+      "u-blox 8 / u-blox M8 protocol versions 15.01",
+      "u-blox 8 / u-blox M8 protocol versions 16",
+      "u-blox 8 / u-blox M8 protocol versions 17",
+      "u-blox 8 / u-blox M8 protocol versions 18",
+      "u-blox 8 / u-blox M8 protocol versions 19",
+      "u-blox 8 / u-blox M8 protocol versions 19.1",
+      "u-blox 8 / u-blox M8 protocol versions 19.2",
+      "u-blox 8 / u-blox M8 protocol versions 20",
+      "u-blox 8 / u-blox M8 protocol versions 20.01",
+      "u-blox 8 / u-blox M8 protocol versions 20.1",
+      "u-blox 8 / u-blox M8 protocol versions 20.2",
+      "u-blox 8 / u-blox M8 protocol versions 20.3",
+      "u-blox 8 / u-blox M8 protocol versions 22",
+      "u-blox 8 / u-blox M8 protocol versions 22.01",
+      "u-blox 8 / u-blox M8 protocol versions 23",
+      "u-blox 8 / u-blox M8 protocol versions 23.01"
+    ],
+    "payload_length": {
+      "variable": {
+        "formula": "N * 20",
+        "description": "N is the number of concatenated configuration units (each 20 bytes long). A 1-byte payload is used for poll requests."
+      }
+    },
+    "payload": [
+      {
+        "byte_offset": 0,
+        "name": "portID",
+        "data_type": "U1",
+        "description": "Port identifier number (see Integration manual for valid port IDs). For USB, value is 3; for SPI, value is 4."
+      },
+      {
+        "byte_offset": 1,
+        "name": "reserved1",
+        "data_type": "U1",
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "byte_offset": 2,
+        "name": "txReady",
+        "data_type": "X2",
+        "description": "TX ready PIN configuration (bitfield): bit 0 (en): Enable TX ready; bit 1 (pol): Polarity (0=High-active, 1=Low-active); bits 2-4 (pin): PIO to be used; bits 5-15 (thres): Threshold (multiplied by 8 bytes, e.g., 0x000=no threshold, 0x001=8byte, 0x1FF=4088byte)."
+      },
+      {
+        "byte_offset": 4,
+        "name": "mode",
+        "data_type": "X4",
+        "description": "A bit mask describing the UART mode (bitfield): bits 0-1 (charLen): Character length (e.g., 00=5bit, 11=8bit); bits 2-4 (parity): Parity (e.g., 000=Even, 10X=No parity); bits 6-7 (nStopBits): Number of Stop bits (e.g., 00=1 Stop bit, 11=0.5 Stop bit)."
+      },
+      {
+        "byte_offset": 8,
+        "name": "baudRate",
+        "data_type": "U4",
+        "unit": "Bits/s",
+        "description": "Baud rate in bits/second"
+      },
+      {
+        "byte_offset": 12,
+        "name": "inProtoMask",
+        "data_type": "X2",
+        "description": "A mask describing which input protocols are active (bitfield): bit 0 (inUbx): UBX protocol; bit 1 (inNmea): NMEA protocol; bit 2 (inRtcm): RTCM2 protocol; bit 5 (inRtcm3): RTCM3 protocol (not supported in protocol versions less than 20)."
+      },
+      {
+        "byte_offset": 14,
+        "name": "outProtoMask",
+        "data_type": "X2",
+        "description": "A mask describing which output protocols are active (bitfield): bit 0 (outUbx): UBX protocol; bit 1 (outNmea): NMEA protocol; bit 5 (outRtcm3): RTCM3 protocol (not supported in protocol versions less than 20)."
+      },
+      {
+        "byte_offset": 16,
+        "name": "flags",
+        "data_type": "X2",
+        "description": "Flags bit mask (bitfield): bit 1 (extendedTxTimeout): Extended TX timeout (if set, port times out if TX memory >=4 kB and no activity for 1.5s; if not set, port times out if no activity for 1.5s regardless of allocated TX memory)."
+      },
+      {
+        "byte_offset": 18,
+        "name": "reserved2",
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/8hcubdifs5kf"
+}

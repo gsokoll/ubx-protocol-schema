@@ -20,55 +20,60 @@
             "name": "version",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Message version (0x01)"
+            "description": "Message version (0x01 for this version)"
           },
           {
             "name": "numSensor",
             "byte_offset": 1,
             "data_type": "U1",
-            "description": "Number of sensors"
+            "description": "Number of sensors reported in this message"
           },
           {
             "name": "numRes",
             "byte_offset": 2,
             "data_type": "U1",
-            "description": "Number of result items"
+            "description": "Number of result items reported in this message"
           },
           {
             "name": "reserved0",
             "byte_offset": 3,
             "data_type": "U1",
-            "reserved": true
+            "reserved": true,
+            "description": "Reserved"
           }
         ],
         "repeated_groups": [
           {
-            "name": "sensor_info",
+            "name": "sensor_status",
             "repetition_type": "count_field",
             "count_field": "numSensor",
-            "base_offset": 4,
             "group_size_bytes": 4,
+            "base_offset": 4,
             "fields": [
               {
                 "name": "sensorId",
                 "byte_offset": 0,
-                "data_type": "U1"
+                "data_type": "U1",
+                "description": "Sensor ID"
               },
               {
                 "name": "drvVer",
                 "byte_offset": 1,
                 "data_type": "X1",
+                "description": "Version information",
                 "bitfield": {
                   "bits": [
                     {
                       "name": "drvVerMaj",
                       "bit_start": 0,
-                      "bit_end": 3
+                      "bit_end": 3,
+                      "description": "Driver major version"
                     },
                     {
                       "name": "drvVerMin",
                       "bit_start": 4,
-                      "bit_end": 7
+                      "bit_end": 7,
+                      "description": "Driver minor version"
                     }
                   ]
                 }
@@ -76,36 +81,41 @@
               {
                 "name": "testState",
                 "byte_offset": 2,
-                "data_type": "U1"
+                "data_type": "U1",
+                "description": "State of one sensor's test"
               },
               {
                 "name": "drvFileName",
                 "byte_offset": 3,
-                "data_type": "U1"
+                "data_type": "U1",
+                "description": "0 if the active driver is loaded from image, last character of the file name if it is loaded from separate file."
               }
             ]
           },
           {
-            "name": "sensor_results",
+            "name": "result_items",
             "repetition_type": "count_field",
             "count_field": "numRes",
-            "base_offset": "4 + numSensor*4",
             "group_size_bytes": 12,
+            "base_offset": "4 + (numSensor * 4)",
             "fields": [
               {
                 "name": "sensorIdRes",
                 "byte_offset": 0,
-                "data_type": "U2"
+                "data_type": "U2",
+                "description": "Sensor ID"
               },
               {
                 "name": "sensorType",
                 "byte_offset": 2,
-                "data_type": "U2"
+                "data_type": "U2",
+                "description": "Sensor type and axis (if applicable) to which the result refers"
               },
               {
                 "name": "resType",
                 "byte_offset": 4,
-                "data_type": "U2"
+                "data_type": "U2",
+                "description": "The type of result stored in the value field"
               },
               {
                 "name": "reserved1",
@@ -114,12 +124,14 @@
                   "array_of": "U1",
                   "count": 2
                 },
-                "reserved": true
+                "reserved": true,
+                "description": "Reserved"
               },
               {
                 "name": "value",
                 "byte_offset": 8,
-                "data_type": "I4"
+                "data_type": "I4",
+                "description": "Value of the specific test result"
               }
             ]
           }
@@ -129,7 +141,12 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "correct",
         "issues": []
       },
@@ -137,35 +154,34 @@
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "extraction_error",
         "issues": [
-          "Incorrect base_offset for the second repeated group ('results'). It is statically set to 4, which causes it to overlap with the first group. It must be a formula dependent on 'numSensor'."
+          "Incorrect base_offset for results group: listed as 4, which would overlap with the sensor group. Must be 4 + (numSensor * 4)."
         ]
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
       },
       {
         "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
         "verdict": "correct",
+        "issues": [
+          "Minor typo in drvFileName description ('O' instead of '0')."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "valid_variation",
+        "issues": [
+          "drvVer bitfield order (Min 0-3, Maj 4-7) differs from F9 generation (Maj 0-3, Min 4-7)."
+        ]
       },
       {
         "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
         "verdict": "extraction_error",
         "issues": [
-          "Incorrect base_offset for the second repeated group ('result_items'). It is statically set to 4, causing overlap with the first group."
+          "Incorrect base_offset for result_items group: listed as 4, which would overlap with the sensor group."
         ]
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [
@@ -174,26 +190,22 @@
           "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
-          "bitfield": {
-            "drvVer": {
-              "bits": [
-                {
-                  "name": "drvVerMin",
-                  "bit_start": 0,
-                  "bit_end": 3
-                },
-                {
-                  "name": "drvVerMaj",
-                  "bit_start": 4,
-                  "bit_end": 7
-                }
-              ]
+          "sensor_group": {
+            "drvVer_bitfield": {
+              "drvVerMin": {
+                "bit_start": 0,
+                "bit_end": 3
+              },
+              "drvVerMaj": {
+                "bit_start": 4,
+                "bit_end": 7
+              }
             }
           }
         },
-        "reason": "Legacy u-blox M8 documentation defines the driver version nibbles swapped compared to modern F9/M9 documentation."
+        "reason": "In the u-blox M8 protocol generation, the nibbles for the driver major and minor versions are swapped compared to the M9 and F9 protocol generations."
       }
     ],
-    "reasoning": "The message structure consists of two sequential repeated blocks. The first block ('sensors') starts immediately after the header (offset 4) and has a size determined by 'numSensor'. The second block ('results') starts immediately after the first block ends. Therefore, the base offset of the second block must be calculated dynamically (4 + numSensor * 4). Extractions 2 and 5 incorrectly assign a static base offset of 4 to the second block, which is physically impossible as it overlaps the first block. Extraction 6 (M8) presents a valid variation where the version bitfield definitions are swapped (Major/Minor) compared to the F9/M9 extractions."
+    "reasoning": "The UBX-MON-SPT message consists of a fixed 4-byte header followed by two dynamic repeated blocks. The first block tracks sensors (4 bytes each) and the second tracks test results (12 bytes each). Extractions 1, 2, 4, 5, and 6 are structurally correct regarding offsets. Extractions 3 and 7 fail to account for the first repeated group in the base offset of the second group. A consistent variation exists in the bitfield definition of 'drvVer' between the M8 generation (Extraction 6) and the F9/M9 generations (Extractions 1, 2, 4, 5, 7), which is a known evolution in u-blox documentation."
   }
 }

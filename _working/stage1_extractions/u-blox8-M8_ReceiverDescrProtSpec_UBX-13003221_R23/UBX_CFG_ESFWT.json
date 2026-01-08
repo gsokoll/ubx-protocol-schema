@@ -1,0 +1,191 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-ESFWT",
+  "extraction_timestamp": "2026-01-08T05:35:55.082573+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 218,
+    "end": 221
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-ESFWT\nExpected IDs: class_id=0x06, message_id=0x82\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-ESFWT\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-CFG-ESFWT\",\n    \"message_class\": \"0x06\",\n    \"message_id\": \"0x82\",\n    \"message_type\": \"get_set\",\n    \"description\": \"Get/set wheel-tick configuration\",\n    \"payload_length\": {\n      \"fixed\": 32\n    },\n    \"payload_content\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"version\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"name\": \"flags1\",\n        \"description\": \"Flags (see graphic below)\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"combineTicks\",\n            \"description\": \"Use combined rear wheel-ticks instead of the single tick\"\n          },\n          {\n            \"bit_offset\": 4,\n            \"bit_length\": 1,\n            \"name\": \"useWtSpeed\",\n            \"description\": \"Use speed measurements (data type 11 in ESF-MEAS) instead of single ticks (data type 10)\"\n          },\n          {\n            \"bit_offset\": 5,\n            \"bit_length\": 1,\n            \"name\": \"dirPinPol\",\n            \"description\": \"Direction pin polarity. 0: High signal level means forward direction, 1: High signal level means backward direction.\"\n          },\n          {\n            \"bit_offset\": 6,\n            \"bit_length\": 1,\n            \"name\": \"useWtPin\",\n            \"description\": \"Use wheel-tick pin for speed measurement.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": \"X1\",\n        \"name\": \"flags2\",\n        \"description\": \"Flags (see graphic below)\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"name\": \"autoWtCountMaxOff\",\n            \"description\": \"Disable automatic estimation of maximum absolute wheel-tick counter value (0: enabled, 1: disabled). See wtCountMax field description for more details. (Not supported in protocol versions less than 19)\"\n          },\n          {\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"name\": \"autoDirPinPolOff\",\n            \"description\": \"Disable automatic wheel-tick direction pin polarity detection (0: enabled, 1: disabled). See dirPinPol field description for more details. (Not supported in protocol versions less than 19)\"\n          },\n          {\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"name\": \"autoSoftwareWtOff\",\n            \"description\": \"Disable automatic use of wheel-tick or speed data received over the software interface if available (0: enabled, 1: disabled). In this case, data coming from the hardware interface (wheel-tick pins) will automatically be ignored if wheel-tick/speed data are available from the software interface. See useWtPin field description for more details. (Not supported in protocol versions less than 19)\"\n          },\n          {\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"name\": \"autoUseWtSpeedOff\",\n            \"description\": \"Disable automatic receiver reconfiguration for processing speed data instead of wheel-tick data if no wheel-tick data are available but speed data were detected (0: enabled, 1: disabled). See useWtSpeed field description for more details. (Not supported in protocol versions less than 19)\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 3,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 1\n        },\n        \"name\": \"reserved1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"name\": \"wtFactor\",\n        \"scale\": {\n          \"multiplier\": 1e-6\n        },\n        \"description\": \"Wheel-tick scale factor to obtain distance [m] from wheel-ticks (0 = not set)\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"U4\",\n        \"name\": \"wtQuantError\",\n        \"scale\": {\n          \"multiplier\": 1e-6\n        },\n        \"unit\": \"m (or m/s)\",\n        \"description\": \"Wheel-tick quantization. If useWtSpeed is set then this is interpreted as the speed measurement error RMS.\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"U4\",\n        \"name\": \"wtCountMax\",\n        \"description\": \"Wheel-tick counter maximum value (rollover - 1). If null, relative wheel-tick counts are assumed (and therefore no rollover). If not null, absolute wheel-tick counts are assumed and the value corresponds to the highest tick count value before rollover happens. If useWtSpeed is set then this value is ignored. If value is set to 1, absolute wheel-tick counts are assumed and the value will be automatic calculated if possible. It is only possible for automatic calibration to calculate wtCntMax if it can be represented as a number of set bits (i.e. 2^N). If it cannot be represented in this way it must be set to the correct absolute tick value manually.\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U2\",\n        \"name\": \"wtLatency\",\n        \"unit\": \"ms\",\n        \"description\": \"Wheel-tick data latency due to e.g. CAN bus\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"data_type\": \"U1\",\n        \"name\": \"wtFrequency\",\n        \"unit\": \"Hz\",\n        \"description\": \"Nominal wheel-tick data frequency (0 = not set)\"\n      },\n      {\n        \"byte_offset\": 19,\n        \"data_type\": \"X1\",\n        \"name\": \"flags3\",\n        \"description\": \"Flags (see graphic below)\",\n        \"bit_fields\": [\n          {\n            \"bit_offset\": 4,\n            \"bit_length\": 1,\n            \"name\": \"cntBothEdges\",\n            \"description\": \"Count both rising and falling edges on wheel-tick signal (only relevant if wheel-tick is measured by the u-blox receiver). Only turn on this feature if the wheel-tick signal has 50% duty cycle. Turning on this feature with fixed-width pulses can lead to severe degradation of performance. Use wheel-tick pin for speed measurement. This field can only be used with modules supporting analog wheel-tick signals.\"\n          }\n        ]\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"U2\",\n        \"name\": \"speedDeadBand\",\n        \"unit\": \"cm/s\",\n        \"description\": \"Speed sensor dead band (0 = not set)\"\n      },\n      {\n        \"byte_offset\": 22,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 10\n        },\n        \"name\": \"reserved2\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-CFG-ESFWT",
+      "message_class": "0x06",
+      "message_id": "0x82",
+      "message_type": "get_set",
+      "description": "Get/set wheel-tick configuration",
+      "payload_length": {
+        "fixed": 32
+      },
+      "payload_content": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "X1",
+          "name": "flags1",
+          "description": "Flags (see graphic below)",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "combineTicks",
+              "description": "Use combined rear wheel-ticks instead of the single tick"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "useWtSpeed",
+              "description": "Use speed measurements (data type 11 in ESF-MEAS) instead of single ticks (data type 10)"
+            },
+            {
+              "bit_offset": 5,
+              "bit_length": 1,
+              "name": "dirPinPol",
+              "description": "Direction pin polarity. 0: High signal level means forward direction, 1: High signal level means backward direction."
+            },
+            {
+              "bit_offset": 6,
+              "bit_length": 1,
+              "name": "useWtPin",
+              "description": "Use wheel-tick pin for speed measurement."
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X1",
+          "name": "flags2",
+          "description": "Flags (see graphic below)",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "autoWtCountMaxOff",
+              "description": "Disable automatic estimation of maximum absolute wheel-tick counter value (0: enabled, 1: disabled). See wtCountMax field description for more details. (Not supported in protocol versions less than 19)"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "autoDirPinPolOff",
+              "description": "Disable automatic wheel-tick direction pin polarity detection (0: enabled, 1: disabled). See dirPinPol field description for more details. (Not supported in protocol versions less than 19)"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "autoSoftwareWtOff",
+              "description": "Disable automatic use of wheel-tick or speed data received over the software interface if available (0: enabled, 1: disabled). In this case, data coming from the hardware interface (wheel-tick pins) will automatically be ignored if wheel-tick/speed data are available from the software interface. See useWtPin field description for more details. (Not supported in protocol versions less than 19)"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "autoUseWtSpeedOff",
+              "description": "Disable automatic receiver reconfiguration for processing speed data instead of wheel-tick data if no wheel-tick data are available but speed data were detected (0: enabled, 1: disabled). See useWtSpeed field description for more details. (Not supported in protocol versions less than 19)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "data_type": {
+            "array_of": "U1",
+            "count": 1
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U4",
+          "name": "wtFactor",
+          "scale": {
+            "multiplier": 1e-06
+          },
+          "description": "Wheel-tick scale factor to obtain distance [m] from wheel-ticks (0 = not set)"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "U4",
+          "name": "wtQuantError",
+          "scale": {
+            "multiplier": 1e-06
+          },
+          "unit": "m (or m/s)",
+          "description": "Wheel-tick quantization. If useWtSpeed is set then this is interpreted as the speed measurement error RMS."
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "U4",
+          "name": "wtCountMax",
+          "description": "Wheel-tick counter maximum value (rollover - 1). If null, relative wheel-tick counts are assumed (and therefore no rollover). If not null, absolute wheel-tick counts are assumed and the value corresponds to the highest tick count value before rollover happens. If useWtSpeed is set then this value is ignored. If value is set to 1, absolute wheel-tick counts are assumed and the value will be automatic calculated if possible. It is only possible for automatic calibration to calculate wtCntMax if it can be represented as a number of set bits (i.e. 2^N). If it cannot be represented in this way it must be set to the correct absolute tick value manually."
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U2",
+          "name": "wtLatency",
+          "unit": "ms",
+          "description": "Wheel-tick data latency due to e.g. CAN bus"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "U1",
+          "name": "wtFrequency",
+          "unit": "Hz",
+          "description": "Nominal wheel-tick data frequency (0 = not set)"
+        },
+        {
+          "byte_offset": 19,
+          "data_type": "X1",
+          "name": "flags3",
+          "description": "Flags (see graphic below)",
+          "bit_fields": [
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "cntBothEdges",
+              "description": "Count both rising and falling edges on wheel-tick signal (only relevant if wheel-tick is measured by the u-blox receiver). Only turn on this feature if the wheel-tick signal has 50% duty cycle. Turning on this feature with fixed-width pulses can lead to severe degradation of performance. Use wheel-tick pin for speed measurement. This field can only be used with modules supporting analog wheel-tick signals."
+            }
+          ]
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U2",
+          "name": "speedDeadBand",
+          "unit": "cm/s",
+          "description": "Speed sensor dead band (0 = not set)"
+        },
+        {
+          "byte_offset": 22,
+          "data_type": {
+            "array_of": "U1",
+            "count": 10
+          },
+          "name": "reserved2",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/gm17yo02kb4b"
+}

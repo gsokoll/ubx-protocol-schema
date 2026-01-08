@@ -1,0 +1,160 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MGA-GPS-IONO",
+  "extraction_timestamp": "2026-01-08T06:18:47.308241+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 339,
+    "end": 344
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GPS-IONO\nExpected IDs: class_id=0x13, message_id=0x00\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GPS-IONO\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-GPS-IONO\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x00\",\n  \"description\": \"GPS ionosphere assistance\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 16\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"type\",\n      \"description\": \"Message type (0x06 for this type)\",\n      \"fixed_value\": 6\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoAlpha0\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"s\",\n      \"description\": \"Ionospheric parameter alpha0 [s]\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoAlpha1\",\n      \"scale\": {\n        \"raw\": \"2^-27\",\n        \"multiplier\": 7.450580596923828e-09\n      },\n      \"unit\": \"s/semi-circle\",\n      \"description\": \"Ionospheric parameter alpha1 [s/semi-circle]\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoAlpha2\",\n      \"scale\": {\n        \"raw\": \"2^-24\",\n        \"multiplier\": 5.9604644775390625e-08\n      },\n      \"unit\": \"s/(semi-circle^2)\",\n      \"description\": \"Ionospheric parameter alpha2 [s/semi-circle^2]\"\n    },\n    {\n      \"byte_offset\": 7,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoAlpha3\",\n      \"scale\": {\n        \"raw\": \"2^-24\",\n        \"multiplier\": 5.9604644775390625e-08\n      },\n      \"unit\": \"s/(semi-circle^3)\",\n      \"description\": \"Ionospheric parameter alpha3 [s/semi-circle^3]\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoBeta0\",\n      \"scale\": {\n        \"raw\": \"2^11\",\n        \"multiplier\": 2048.0\n      },\n      \"unit\": \"s\",\n      \"description\": \"Ionospheric parameter beta0 [s]\"\n    },\n    {\n      \"byte_offset\": 9,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoBeta1\",\n      \"scale\": {\n        \"raw\": \"2^14\",\n        \"multiplier\": 16384.0\n      },\n      \"unit\": \"s/semi-circle\",\n      \"description\": \"Ionospheric parameter beta1 [s/semi-circle]\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoBeta2\",\n      \"scale\": {\n        \"raw\": \"2^16\",\n        \"multiplier\": 65536.0\n      },\n      \"unit\": \"s/(semi-circle^2)\",\n      \"description\": \"Ionospheric parameter beta2 [s/semi-circle^2]\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"data_type\": \"I1\",\n      \"name\": \"ionoBeta3\",\n      \"scale\": {\n        \"raw\": \"2^16\",\n        \"multiplier\": 65536.0\n      },\n      \"unit\": \"s/(semi-circle^3)\",\n      \"description\": \"Ionospheric parameter beta3 [s/semi-circle^3]\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved2\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-GPS-IONO",
+    "class_id": "0x13",
+    "message_id": "0x00",
+    "description": "GPS ionosphere assistance",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 16
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "U1",
+        "name": "type",
+        "description": "Message type (0x06 for this type)",
+        "fixed_value": 6
+      },
+      {
+        "byte_offset": 1,
+        "data_type": "U1",
+        "name": "version",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "name": "reserved1",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "I1",
+        "name": "ionoAlpha0",
+        "scale": {
+          "raw": "2^-30",
+          "multiplier": 9.313225746154785e-10
+        },
+        "unit": "s",
+        "description": "Ionospheric parameter alpha0 [s]"
+      },
+      {
+        "byte_offset": 5,
+        "data_type": "I1",
+        "name": "ionoAlpha1",
+        "scale": {
+          "raw": "2^-27",
+          "multiplier": 7.450580596923828e-09
+        },
+        "unit": "s/semi-circle",
+        "description": "Ionospheric parameter alpha1 [s/semi-circle]"
+      },
+      {
+        "byte_offset": 6,
+        "data_type": "I1",
+        "name": "ionoAlpha2",
+        "scale": {
+          "raw": "2^-24",
+          "multiplier": 5.960464477539063e-08
+        },
+        "unit": "s/(semi-circle^2)",
+        "description": "Ionospheric parameter alpha2 [s/semi-circle^2]"
+      },
+      {
+        "byte_offset": 7,
+        "data_type": "I1",
+        "name": "ionoAlpha3",
+        "scale": {
+          "raw": "2^-24",
+          "multiplier": 5.960464477539063e-08
+        },
+        "unit": "s/(semi-circle^3)",
+        "description": "Ionospheric parameter alpha3 [s/semi-circle^3]"
+      },
+      {
+        "byte_offset": 8,
+        "data_type": "I1",
+        "name": "ionoBeta0",
+        "scale": {
+          "raw": "2^11",
+          "multiplier": 2048.0
+        },
+        "unit": "s",
+        "description": "Ionospheric parameter beta0 [s]"
+      },
+      {
+        "byte_offset": 9,
+        "data_type": "I1",
+        "name": "ionoBeta1",
+        "scale": {
+          "raw": "2^14",
+          "multiplier": 16384.0
+        },
+        "unit": "s/semi-circle",
+        "description": "Ionospheric parameter beta1 [s/semi-circle]"
+      },
+      {
+        "byte_offset": 10,
+        "data_type": "I1",
+        "name": "ionoBeta2",
+        "scale": {
+          "raw": "2^16",
+          "multiplier": 65536.0
+        },
+        "unit": "s/(semi-circle^2)",
+        "description": "Ionospheric parameter beta2 [s/semi-circle^2]"
+      },
+      {
+        "byte_offset": 11,
+        "data_type": "I1",
+        "name": "ionoBeta3",
+        "scale": {
+          "raw": "2^16",
+          "multiplier": 65536.0
+        },
+        "unit": "s/(semi-circle^3)",
+        "description": "Ionospheric parameter beta3 [s/semi-circle^3]"
+      },
+      {
+        "byte_offset": 12,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "name": "reserved2",
+        "description": "Reserved",
+        "reserved": true
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/l1ne6t71iz32"
+}

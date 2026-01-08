@@ -1,0 +1,179 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-AID-HUI",
+  "extraction_timestamp": "2026-01-08T05:29:55.966728+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 203,
+    "end": 205
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-AID-HUI\nExpected IDs: class_id=0x0B, message_id=0x02\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-AID-HUI\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-AID-HUI\",\n  \"class_id\": \"0x0B\",\n  \"message_id\": \"0x02\",\n  \"description\": \"GPS health, UTC and ionosphere parameters\",\n  \"message_type\": \"input_output\",\n  \"payload_length\": {\n    \"fixed\": 72\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"health\",\n      \"data_type\": \"X4\",\n      \"description\": \"Bitmask, every bit represenst a GPS SV (1-32). If the bit is set the SV is healthy.\"\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"utcA0\",\n      \"data_type\": \"R8\",\n      \"description\": \"UTC - parameter A0\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"utcA1\",\n      \"data_type\": \"R8\",\n      \"description\": \"UTC - parameter A1\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"utcTOW\",\n      \"data_type\": \"I4\",\n      \"description\": \"UTC - reference time of week\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"utcWNT\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - reference week number\"\n    },\n    {\n      \"byte_offset\": 26,\n      \"name\": \"utcLS\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - time difference due to leap seconds before event\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"utcWNF\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - week number when next leap second event occurs\"\n    },\n    {\n      \"byte_offset\": 30,\n      \"name\": \"utcDN\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - day of week when next leap second event occurs\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"utcLSF\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - time difference due to leap seconds after event\"\n    },\n    {\n      \"byte_offset\": 34,\n      \"name\": \"utcSpare\",\n      \"data_type\": \"I2\",\n      \"description\": \"UTC - Spare to ensure structure is a multiple of 4 bytes\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"name\": \"klobA0\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s\",\n      \"description\": \"Klobuchar - alpha 0\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"name\": \"klobA1\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle\",\n      \"description\": \"Klobuchar - alpha 1\"\n    },\n    {\n      \"byte_offset\": 44,\n      \"name\": \"klobA2\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle^2\",\n      \"description\": \"Klobuchar - alpha 2\"\n    },\n    {\n      \"byte_offset\": 48,\n      \"name\": \"klobA3\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle^3\",\n      \"description\": \"Klobuchar - alpha 3\"\n    },\n    {\n      \"byte_offset\": 52,\n      \"name\": \"klobB0\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s\",\n      \"description\": \"Klobuchar - beta 0\"\n    },\n    {\n      \"byte_offset\": 56,\n      \"name\": \"klobB1\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle\",\n      \"description\": \"Klobuchar - beta 1\"\n    },\n    {\n      \"byte_offset\": 60,\n      \"name\": \"klobB2\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle^2\",\n      \"description\": \"Klobuchar - beta 2\"\n    },\n    {\n      \"byte_offset\": 64,\n      \"name\": \"klobB3\",\n      \"data_type\": \"R4\",\n      \"unit\": \"s/semi circle^3\",\n      \"description\": \"Klobuchar - beta 3\"\n    },\n    {\n      \"byte_offset\": 68,\n      \"name\": \"flags\",\n      \"data_type\": \"X4\",\n      \"description\": \"flags (see graphic below)\",\n      \"bitfields\": [\n        {\n          \"bit_offset\": 0,\n          \"name\": \"healthValid\",\n          \"description\": \"Healthmask field in this message is valid\"\n        },\n        {\n          \"bit_offset\": 1,\n          \"name\": \"utcValid\",\n          \"description\": \"UTC parameter fields in this message are valid\"\n        },\n        {\n          \"bit_offset\": 2,\n          \"name\": \"klobValid\",\n          \"description\": \"Klobuchar parameter fields in this message are valid\"\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-AID-HUI",
+    "class_id": "0x0B",
+    "message_id": "0x02",
+    "description": "GPS health, UTC and ionosphere parameters",
+    "message_type": "input_output",
+    "payload_length": {
+      "fixed": 72
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "health",
+          "data_type": "X4",
+          "description": "Bitmask, every bit represenst a GPS SV (1-32). If the bit is set the SV is healthy."
+        },
+        {
+          "byte_offset": 4,
+          "name": "utcA0",
+          "data_type": "R8",
+          "description": "UTC - parameter A0"
+        },
+        {
+          "byte_offset": 12,
+          "name": "utcA1",
+          "data_type": "R8",
+          "description": "UTC - parameter A1"
+        },
+        {
+          "byte_offset": 20,
+          "name": "utcTOW",
+          "data_type": "I4",
+          "description": "UTC - reference time of week"
+        },
+        {
+          "byte_offset": 24,
+          "name": "utcWNT",
+          "data_type": "I2",
+          "description": "UTC - reference week number"
+        },
+        {
+          "byte_offset": 26,
+          "name": "utcLS",
+          "data_type": "I2",
+          "description": "UTC - time difference due to leap seconds before event"
+        },
+        {
+          "byte_offset": 28,
+          "name": "utcWNF",
+          "data_type": "I2",
+          "description": "UTC - week number when next leap second event occurs"
+        },
+        {
+          "byte_offset": 30,
+          "name": "utcDN",
+          "data_type": "I2",
+          "description": "UTC - day of week when next leap second event occurs"
+        },
+        {
+          "byte_offset": 32,
+          "name": "utcLSF",
+          "data_type": "I2",
+          "description": "UTC - time difference due to leap seconds after event"
+        },
+        {
+          "byte_offset": 34,
+          "name": "utcSpare",
+          "data_type": "I2",
+          "description": "UTC - Spare to ensure structure is a multiple of 4 bytes"
+        },
+        {
+          "byte_offset": 36,
+          "name": "klobA0",
+          "data_type": "R4",
+          "unit": "s",
+          "description": "Klobuchar - alpha 0"
+        },
+        {
+          "byte_offset": 40,
+          "name": "klobA1",
+          "data_type": "R4",
+          "unit": "s/semi circle",
+          "description": "Klobuchar - alpha 1"
+        },
+        {
+          "byte_offset": 44,
+          "name": "klobA2",
+          "data_type": "R4",
+          "unit": "s/semi circle^2",
+          "description": "Klobuchar - alpha 2"
+        },
+        {
+          "byte_offset": 48,
+          "name": "klobA3",
+          "data_type": "R4",
+          "unit": "s/semi circle^3",
+          "description": "Klobuchar - alpha 3"
+        },
+        {
+          "byte_offset": 52,
+          "name": "klobB0",
+          "data_type": "R4",
+          "unit": "s",
+          "description": "Klobuchar - beta 0"
+        },
+        {
+          "byte_offset": 56,
+          "name": "klobB1",
+          "data_type": "R4",
+          "unit": "s/semi circle",
+          "description": "Klobuchar - beta 1"
+        },
+        {
+          "byte_offset": 60,
+          "name": "klobB2",
+          "data_type": "R4",
+          "unit": "s/semi circle^2",
+          "description": "Klobuchar - beta 2"
+        },
+        {
+          "byte_offset": 64,
+          "name": "klobB3",
+          "data_type": "R4",
+          "unit": "s/semi circle^3",
+          "description": "Klobuchar - beta 3"
+        },
+        {
+          "byte_offset": 68,
+          "name": "flags",
+          "data_type": "X4",
+          "description": "flags (see graphic below)",
+          "bitfields": [
+            {
+              "bit_offset": 0,
+              "name": "healthValid",
+              "description": "Healthmask field in this message is valid"
+            },
+            {
+              "bit_offset": 1,
+              "name": "utcValid",
+              "description": "UTC parameter fields in this message are valid"
+            },
+            {
+              "bit_offset": 2,
+              "name": "klobValid",
+              "description": "Klobuchar parameter fields in this message are valid"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/09uo5tifza82"
+}

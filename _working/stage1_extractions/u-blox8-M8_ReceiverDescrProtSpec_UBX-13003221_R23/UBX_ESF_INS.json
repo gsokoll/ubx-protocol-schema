@@ -1,0 +1,181 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-ESF-INS",
+  "extraction_timestamp": "2026-01-08T05:53:01.053355+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 295,
+    "end": 297
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-ESF-INS\nExpected IDs: class_id=0x10, message_id=0x15\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-ESF-INS\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-ESF-INS\",\n  \"class_id\": \"0x10\",\n  \"message_id\": \"0x15\",\n  \"description\": \"Vehicle dynamics information\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"fixed\": 36\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"bitfield0\",\n      \"data_type\": \"U4\",\n      \"description\": \"Bitfield\",\n      \"bitfields\": [\n        {\n          \"bits_offset\": 0,\n          \"num_bits\": 8,\n          \"name\": \"version\",\n          \"description\": \"Message version (0x01 for this version)\",\n          \"data_type\": \"U1\",\n          \"fixed_value\": 1\n        },\n        {\n          \"bits_offset\": 8,\n          \"num_bits\": 1,\n          \"name\": \"xAngRateValid\",\n          \"description\": \"Compensated x-axis angular rate data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        },\n        {\n          \"bits_offset\": 9,\n          \"num_bits\": 1,\n          \"name\": \"yAngRateValid\",\n          \"description\": \"Compensated y-axis angular rate data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        },\n        {\n          \"bits_offset\": 10,\n          \"num_bits\": 1,\n          \"name\": \"zAngRateValid\",\n          \"description\": \"Compensated z-axis angular rate data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        },\n        {\n          \"bits_offset\": 11,\n          \"num_bits\": 1,\n          \"name\": \"xAccelValid\",\n          \"description\": \"Compensated x-axis acceleration data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        },\n        {\n          \"bits_offset\": 12,\n          \"num_bits\": 1,\n          \"name\": \"yAccelValid\",\n          \"description\": \"Compensated y-axis acceleration data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        },\n        {\n          \"bits_offset\": 13,\n          \"num_bits\": 1,\n          \"name\": \"zAccelValid\",\n          \"description\": \"Compensated z-axis acceleration data validity flag (0: not valid, 1: valid).\",\n          \"data_type\": \"U1\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"iTOW\",\n      \"data_type\": \"U4\",\n      \"unit\": \"ms\",\n      \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"xAngRate\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.001,\n        \"raw_as_string\": \"1e-3\"\n      },\n      \"unit\": \"deg/s\",\n      \"description\": \"Compensated x-axis angular rate.\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"yAngRate\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.001,\n        \"raw_as_string\": \"1e-3\"\n      },\n      \"unit\": \"deg/s\",\n      \"description\": \"Compensated y-axis angular rate.\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"zAngRate\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.001,\n        \"raw_as_string\": \"1e-3\"\n      },\n      \"unit\": \"deg/s\",\n      \"description\": \"Compensated z-axis angular rate.\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"xAccel\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.01,\n        \"raw_as_string\": \"1e-2\"\n      },\n      \"unit\": \"m/s^2\",\n      \"description\": \"Compensated x-axis acceleration (gravity-free).\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"yAccel\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.01,\n        \"raw_as_string\": \"1e-2\"\n      },\n      \"unit\": \"m/s^2\",\n      \"description\": \"Compensated y-axis acceleration (gravity-free).\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"zAccel\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"multiplier\": 0.01,\n        \"raw_as_string\": \"1e-2\"\n      },\n      \"unit\": \"m/s^2\",\n      \"description\": \"Compensated z-axis acceleration (gravity-free).\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-ESF-INS",
+    "class_id": "0x10",
+    "message_id": "0x15",
+    "description": "Vehicle dynamics information",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "fixed": 36
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "bitfield0",
+          "data_type": "U4",
+          "description": "Bitfield",
+          "bitfields": [
+            {
+              "bits_offset": 0,
+              "num_bits": 8,
+              "name": "version",
+              "description": "Message version (0x01 for this version)",
+              "data_type": "U1",
+              "fixed_value": 1
+            },
+            {
+              "bits_offset": 8,
+              "num_bits": 1,
+              "name": "xAngRateValid",
+              "description": "Compensated x-axis angular rate data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            },
+            {
+              "bits_offset": 9,
+              "num_bits": 1,
+              "name": "yAngRateValid",
+              "description": "Compensated y-axis angular rate data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            },
+            {
+              "bits_offset": 10,
+              "num_bits": 1,
+              "name": "zAngRateValid",
+              "description": "Compensated z-axis angular rate data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            },
+            {
+              "bits_offset": 11,
+              "num_bits": 1,
+              "name": "xAccelValid",
+              "description": "Compensated x-axis acceleration data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            },
+            {
+              "bits_offset": 12,
+              "num_bits": 1,
+              "name": "yAccelValid",
+              "description": "Compensated y-axis acceleration data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            },
+            {
+              "bits_offset": 13,
+              "num_bits": 1,
+              "name": "zAccelValid",
+              "description": "Compensated z-axis acceleration data validity flag (0: not valid, 1: valid).",
+              "data_type": "U1"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 8,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 12,
+          "name": "xAngRate",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.001,
+            "raw_as_string": "1e-3"
+          },
+          "unit": "deg/s",
+          "description": "Compensated x-axis angular rate."
+        },
+        {
+          "byte_offset": 16,
+          "name": "yAngRate",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.001,
+            "raw_as_string": "1e-3"
+          },
+          "unit": "deg/s",
+          "description": "Compensated y-axis angular rate."
+        },
+        {
+          "byte_offset": 20,
+          "name": "zAngRate",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.001,
+            "raw_as_string": "1e-3"
+          },
+          "unit": "deg/s",
+          "description": "Compensated z-axis angular rate."
+        },
+        {
+          "byte_offset": 24,
+          "name": "xAccel",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.01,
+            "raw_as_string": "1e-2"
+          },
+          "unit": "m/s^2",
+          "description": "Compensated x-axis acceleration (gravity-free)."
+        },
+        {
+          "byte_offset": 28,
+          "name": "yAccel",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.01,
+            "raw_as_string": "1e-2"
+          },
+          "unit": "m/s^2",
+          "description": "Compensated y-axis acceleration (gravity-free)."
+        },
+        {
+          "byte_offset": 32,
+          "name": "zAccel",
+          "data_type": "I4",
+          "scale": {
+            "multiplier": 0.01,
+            "raw_as_string": "1e-2"
+          },
+          "unit": "m/s^2",
+          "description": "Compensated z-axis acceleration (gravity-free)."
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/uvgft4438ni3"
+}

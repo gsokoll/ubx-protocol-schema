@@ -1,0 +1,159 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-NAV-COV",
+  "extraction_timestamp": "2026-01-08T06:32:18.589354+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 375,
+    "end": 376
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-NAV-COV\nExpected IDs: class_id=0x01, message_id=0x36\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-NAV-COV\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-NAV-COV\",\n    \"class_id\": \"0x01\",\n    \"message_id\": \"0x36\",\n    \"description\": \"Covariance matrices\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 64\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"iTOW\",\n        \"data_type\": \"U4\",\n        \"unit\": \"ms\",\n        \"description\": \"GPS time of week of the navigation epoch. See the description of iTOW for details.\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"version\",\n        \"data_type\": \"U1\",\n        \"description\": \"Message version (0x00 for this version)\",\n        \"fixed_value\": 0\n      },\n      {\n        \"byte_offset\": 5,\n        \"name\": \"posCovValid\",\n        \"data_type\": \"U1\",\n        \"description\": \"Position covariance matrix validity flag\"\n      },\n      {\n        \"byte_offset\": 6,\n        \"name\": \"velCovValid\",\n        \"data_type\": \"U1\",\n        \"description\": \"Velocity covariance matrix validity flag\"\n      },\n      {\n        \"byte_offset\": 7,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 9\n        },\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"posCovNN\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_NN\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"posCovNE\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_NE\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"posCovND\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_ND\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"posCovEE\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_EE\"\n      },\n      {\n        \"byte_offset\": 32,\n        \"name\": \"posCovED\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_ED\"\n      },\n      {\n        \"byte_offset\": 36,\n        \"name\": \"posCovDD\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2\",\n        \"description\": \"Position covariance matrix value p_DD\"\n      },\n      {\n        \"byte_offset\": 40,\n        \"name\": \"velCovNN\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_NN\"\n      },\n      {\n        \"byte_offset\": 44,\n        \"name\": \"velCovNE\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_NE\"\n      },\n      {\n        \"byte_offset\": 48,\n        \"name\": \"velCovND\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_ND\"\n      },\n      {\n        \"byte_offset\": 52,\n        \"name\": \"velCovEE\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_EE\"\n      },\n      {\n        \"byte_offset\": 56,\n        \"name\": \"velCovED\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_ED\"\n      },\n      {\n        \"byte_offset\": 60,\n        \"name\": \"velCovDD\",\n        \"data_type\": \"R4\",\n        \"unit\": \"m^2/s^2\",\n        \"description\": \"Velocity covariance matrix value v_DD\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-NAV-COV",
+      "class_id": "0x01",
+      "message_id": "0x36",
+      "description": "Covariance matrices",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 64
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "name": "iTOW",
+          "data_type": "U4",
+          "unit": "ms",
+          "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+        },
+        {
+          "byte_offset": 4,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "byte_offset": 5,
+          "name": "posCovValid",
+          "data_type": "U1",
+          "description": "Position covariance matrix validity flag"
+        },
+        {
+          "byte_offset": 6,
+          "name": "velCovValid",
+          "data_type": "U1",
+          "description": "Velocity covariance matrix validity flag"
+        },
+        {
+          "byte_offset": 7,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 9
+          },
+          "reserved": true
+        },
+        {
+          "byte_offset": 16,
+          "name": "posCovNN",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_NN"
+        },
+        {
+          "byte_offset": 20,
+          "name": "posCovNE",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_NE"
+        },
+        {
+          "byte_offset": 24,
+          "name": "posCovND",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_ND"
+        },
+        {
+          "byte_offset": 28,
+          "name": "posCovEE",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_EE"
+        },
+        {
+          "byte_offset": 32,
+          "name": "posCovED",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_ED"
+        },
+        {
+          "byte_offset": 36,
+          "name": "posCovDD",
+          "data_type": "R4",
+          "unit": "m^2",
+          "description": "Position covariance matrix value p_DD"
+        },
+        {
+          "byte_offset": 40,
+          "name": "velCovNN",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_NN"
+        },
+        {
+          "byte_offset": 44,
+          "name": "velCovNE",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_NE"
+        },
+        {
+          "byte_offset": 48,
+          "name": "velCovND",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_ND"
+        },
+        {
+          "byte_offset": 52,
+          "name": "velCovEE",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_EE"
+        },
+        {
+          "byte_offset": 56,
+          "name": "velCovED",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_ED"
+        },
+        {
+          "byte_offset": 60,
+          "name": "velCovDD",
+          "data_type": "R4",
+          "unit": "m^2/s^2",
+          "description": "Velocity covariance matrix value v_DD"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/vpe2ip4g0bar"
+}

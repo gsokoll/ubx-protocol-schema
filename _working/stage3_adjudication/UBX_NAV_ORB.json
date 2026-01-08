@@ -1,186 +1,168 @@
 {
   "message_name": "UBX-NAV-ORB",
-  "num_extractions": 15,
+  "num_extractions": 18,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-NAV-ORB",
       "class_id": "0x01",
       "message_id": "0x34",
+      "description": "GNSS orbit database info",
+      "message_type": "periodic_polled",
       "payload": {
         "length": {
-          "variable": {
-            "base": 8,
-            "formula": "8 + numSv * 6",
-            "min": 8
-          }
+          "base": 8,
+          "formula": "8 + numSv * 6"
         },
-        "fields": [
+        "header_fields": [
           {
-            "name": "iTOW",
             "byte_offset": 0,
+            "name": "iTOW",
             "data_type": "U4",
             "unit": "ms",
-            "description": "GPS time of week of the navigation epoch"
+            "description": "GPS time of week of the navigation epoch."
           },
           {
-            "name": "version",
             "byte_offset": 4,
+            "name": "version",
             "data_type": "U1",
-            "description": "Message version (0x01)"
+            "fixed_value": 1,
+            "description": "Message version (0x01 for this version)"
           },
           {
-            "name": "numSv",
             "byte_offset": 5,
+            "name": "numSv",
             "data_type": "U1",
             "description": "Number of SVs in the database"
           },
           {
-            "name": "reserved0",
             "byte_offset": 6,
-            "data_type": {
-              "array_of": "U1",
-              "count": 2
-            },
+            "name": "reserved0",
+            "data_type": "U1[2]",
+            "reserved": true,
             "description": "Reserved"
           }
         ],
-        "repeated_groups": [
-          {
-            "name": "sv_info",
-            "repetition_type": "count_field",
-            "count_field": "numSv",
-            "group_size_bytes": 6,
-            "base_offset": 8,
-            "fields": [
-              {
-                "name": "gnssId",
-                "byte_offset": 0,
-                "data_type": "U1"
-              },
-              {
-                "name": "svId",
-                "byte_offset": 1,
-                "data_type": "U1"
-              },
-              {
-                "name": "svFlag",
-                "byte_offset": 2,
-                "data_type": "X1",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "health",
-                      "bit_start": 0,
-                      "bit_end": 1
-                    },
-                    {
-                      "name": "visibility",
-                      "bit_start": 2,
-                      "bit_end": 3
-                    }
-                  ]
+        "repeated_group": {
+          "name": "sv_info",
+          "count_field": "numSv",
+          "group_size_bytes": 6,
+          "fields": [
+            {
+              "relative_offset": 0,
+              "name": "gnssId",
+              "data_type": "U1",
+              "description": "GNSS ID"
+            },
+            {
+              "relative_offset": 1,
+              "name": "svId",
+              "data_type": "U1",
+              "description": "Satellite ID"
+            },
+            {
+              "relative_offset": 2,
+              "name": "svFlag",
+              "data_type": "X1",
+              "description": "Information Flags",
+              "bitfield": [
+                {
+                  "bits": "0-1",
+                  "name": "health",
+                  "values": {
+                    "0": "unknown",
+                    "1": "healthy",
+                    "2": "not healthy"
+                  }
+                },
+                {
+                  "bits": "2-3",
+                  "name": "visibility",
+                  "values": {
+                    "0": "unknown",
+                    "1": "below horizon",
+                    "2": "above horizon",
+                    "3": "above elevation mask"
+                  }
                 }
-              },
-              {
-                "name": "eph",
-                "byte_offset": 3,
-                "data_type": "X1",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "ephUsability",
-                      "bit_start": 0,
-                      "bit_end": 4
-                    },
-                    {
-                      "name": "ephSource",
-                      "bit_start": 5,
-                      "bit_end": 7
-                    }
-                  ]
+              ]
+            },
+            {
+              "relative_offset": 3,
+              "name": "eph",
+              "data_type": "X1",
+              "description": "Ephemeris data info",
+              "bitfield": [
+                {
+                  "bits": "0-4",
+                  "name": "ephUsability",
+                  "description": "Usability period in minutes (n*15)"
+                },
+                {
+                  "bits": "5-7",
+                  "name": "ephSource",
+                  "values": {
+                    "0": "not available",
+                    "1": "GNSS transmission",
+                    "2": "external aiding",
+                    "3-7": "other"
+                  }
                 }
-              },
-              {
-                "name": "alm",
-                "byte_offset": 4,
-                "data_type": "X1",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "almUsability",
-                      "bit_start": 0,
-                      "bit_end": 4
-                    },
-                    {
-                      "name": "almSource",
-                      "bit_start": 5,
-                      "bit_end": 7
-                    }
-                  ]
+              ]
+            },
+            {
+              "relative_offset": 4,
+              "name": "alm",
+              "data_type": "X1",
+              "description": "Almanac data info",
+              "bitfield": [
+                {
+                  "bits": "0-4",
+                  "name": "almUsability",
+                  "description": "Usability period in days"
+                },
+                {
+                  "bits": "5-7",
+                  "name": "almSource",
+                  "values": {
+                    "0": "not available",
+                    "1": "GNSS transmission",
+                    "2": "external aiding",
+                    "3-7": "other"
+                  }
                 }
-              },
-              {
-                "name": "otherOrb",
-                "byte_offset": 5,
-                "data_type": "X1",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "anoAopUsability",
-                      "bit_start": 0,
-                      "bit_end": 4
-                    },
-                    {
-                      "name": "type",
-                      "bit_start": 5,
-                      "bit_end": 7
-                    }
-                  ]
+              ]
+            },
+            {
+              "relative_offset": 5,
+              "name": "otherOrb",
+              "data_type": "X1",
+              "description": "Other orbit data info",
+              "bitfield": [
+                {
+                  "bits": "0-4",
+                  "name": "anoAopUsability",
+                  "description": "Usability period in days"
+                },
+                {
+                  "bits": "5-7",
+                  "name": "type",
+                  "values": {
+                    "0": "none",
+                    "1": "AssistNow Offline",
+                    "2": "AssistNow Autonomous",
+                    "3-7": "other"
+                  }
                 }
-              }
-            ]
-          }
-        ]
+              ]
+            }
+          ]
+        }
       }
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect offsets in repeated group: uses absolute offsets (8, 9, 10...) instead of relative offsets (0, 1, 2...) for the field definitions within the repeating block."
-        ]
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
-        "verdict": "valid_variation",
-        "issues": [
-          "Uses algebraic string formulas for offsets (e.g., '8 + n*6') instead of relative integer offsets."
-        ]
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -190,7 +172,41 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "extraction_error",
+        "issues": [
+          "almSource bitfield description truncated (only shows value 0)"
+        ]
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "extraction_error",
+        "issues": [
+          "almSource value mapping truncated (only shows value 0)"
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "correct",
         "issues": []
       },
@@ -200,22 +216,19 @@
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": [
-          "Legacy field naming: 'reserved1' instead of 'reserved0'.",
-          "Explicit definition of reserved bits 4-7 in svFlag (correct but often implicit in newer docs)."
-        ]
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
@@ -223,11 +236,24 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "extraction_error",
-        "issues": [
-          "Truncated description for 'almSource' bitfield (lists only '0 = not available')."
-        ]
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
     "valid_variations": [
@@ -236,34 +262,25 @@
           "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
         ],
         "structure": {
-          "payload": {
-            "fields": [
-              {
-                "name": "iTOW",
-                "byte_offset": 0
-              },
-              {
-                "name": "version",
-                "byte_offset": 4
-              },
-              {
-                "name": "numSv",
-                "byte_offset": 5
-              },
-              {
-                "name": "reserved1",
-                "byte_offset": 6,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 2
-                }
-              }
-            ]
+          "svFlag": {
+            "bits_4_7": "reserved"
           }
         },
-        "reason": "Older generation (M8) documentation uses 'reserved1' for the header padding field and explicitly documents reserved bits in svFlag."
+        "reason": "Older protocol versions (M8) explicitly label bits 4-7 of the svFlag byte as reserved, whereas newer documents simply ignore them."
+      },
+      {
+        "sources": [
+          "u-blox-F9-HPG-1.13",
+          "u-blox-F9-LAP-1.50",
+          "u-blox-M10-SPG-5.10",
+          "u-blox-X20-HPG-2.02"
+        ],
+        "structure": {
+          "eph_description": "contains note about L5 signals"
+        },
+        "reason": "Receiver versions supporting L5 signals (M9, M10, F9, X20) add a specific note explaining that multiple ephemeris sets may be stored per satellite, but only one is reported."
       }
     ],
-    "reasoning": "The message structure is extremely stable across all generations (M8 to F10/M10). The payload consists of an 8-byte header followed by a variable number of 6-byte satellite info blocks. Most verdicts reflect 'correct' extraction. Extraction 1 (M10-SPG-5.30) incorrectly used absolute offsets (starting at 8) inside a repeated group, which typically requires relative offsets (0-5) in this schema format. Extraction 3 used algebraic formulas for offsets, which is semantically valid but non-standard for the schema. Extraction 15 had a text truncation error in a bitfield description. Extraction 13 represents a valid legacy variation for M8 receivers."
+    "reasoning": "The UBX-NAV-ORB message structure is remarkably stable across hardware generations from u-blox 8 through F10. All extractions identified the 8-byte header and 6-byte repeating payload. The primary differences involve text-based descriptions of the bitfields (e.g., naming 'anoAopUsability' vs 'anoAop') or documentation formatting. Extractions 6 and 8 were marked as errors due to truncated value lists for almanac sources. All others are logically identical despite minor terminology variations."
   }
 }

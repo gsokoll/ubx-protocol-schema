@@ -1,131 +1,87 @@
 {
   "message_name": "UBX-MON-TXBUF",
-  "num_extractions": 12,
+  "num_extractions": 15,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-MON-TXBUF",
-      "class_id": "0x0a",
+      "class_id": "0x0A",
       "message_id": "0x08",
       "description": "Transmitter buffer status",
-      "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "fixed": 28
+      "payload_length": 28,
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "pending",
+          "type": "U2",
+          "array_length": 6,
+          "description": "Number of bytes pending in transmitter buffer for each target",
+          "unit": "bytes"
         },
-        "fields": [
-          {
-            "name": "pending",
-            "byte_offset": 0,
-            "data_type": {
-              "array_of": "U2",
-              "count": 6
+        {
+          "byte_offset": 12,
+          "name": "usage",
+          "type": "U1",
+          "array_length": 6,
+          "description": "Maximum usage transmitter buffer during the last sysmon period for each target",
+          "unit": "%"
+        },
+        {
+          "byte_offset": 18,
+          "name": "peakUsage",
+          "type": "U1",
+          "array_length": 6,
+          "description": "Maximum usage transmitter buffer for each target",
+          "unit": "%"
+        },
+        {
+          "byte_offset": 24,
+          "name": "tUsage",
+          "type": "U1",
+          "description": "Maximum usage of transmitter buffer during the last sysmon period for all targets",
+          "unit": "%"
+        },
+        {
+          "byte_offset": 25,
+          "name": "tPeakusage",
+          "type": "U1",
+          "description": "Maximum usage of transmitter buffer for all targets",
+          "unit": "%"
+        },
+        {
+          "byte_offset": 26,
+          "name": "errors",
+          "type": "X1",
+          "description": "Error bitmask",
+          "bitmask_fields": [
+            {
+              "name": "limit",
+              "bits": "5:0",
+              "description": "Buffer limit of corresponding target reached"
             },
-            "description": "Number of bytes pending in transmitter buffer for each target",
-            "unit": "bytes"
-          },
-          {
-            "name": "usage",
-            "byte_offset": 12,
-            "data_type": {
-              "array_of": "U1",
-              "count": 6
+            {
+              "name": "mem",
+              "bits": "6",
+              "description": "Memory Allocation error"
             },
-            "description": "Maximum usage transmitter buffer during the last sysmon period for each target",
-            "unit": "%"
-          },
-          {
-            "name": "peakUsage",
-            "byte_offset": 18,
-            "data_type": {
-              "array_of": "U1",
-              "count": 6
-            },
-            "description": "Maximum usage transmitter buffer for each target",
-            "unit": "%"
-          },
-          {
-            "name": "tUsage",
-            "byte_offset": 24,
-            "data_type": "U1",
-            "description": "Maximum usage of transmitter buffer during the last sysmon period for all targets",
-            "unit": "%"
-          },
-          {
-            "name": "tPeakusage",
-            "byte_offset": 25,
-            "data_type": "U1",
-            "description": "Maximum usage of transmitter buffer for all targets",
-            "unit": "%"
-          },
-          {
-            "name": "errors",
-            "byte_offset": 26,
-            "data_type": "X1",
-            "description": "Error bitmask",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "limit",
-                  "bit_start": 0,
-                  "bit_end": 5,
-                  "description": "Buffer limit of corresponding target reached"
-                },
-                {
-                  "name": "mem",
-                  "bit_start": 6,
-                  "bit_end": 6,
-                  "description": "Memory Allocation error"
-                },
-                {
-                  "name": "alloc",
-                  "bit_start": 7,
-                  "bit_end": 7,
-                  "description": "Allocation error (TX buffer full)"
-                }
-              ]
+            {
+              "name": "alloc",
+              "bits": "7",
+              "description": "Allocation error (TX buffer full)"
             }
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 27,
-            "data_type": "U1",
-            "description": "Reserved",
-            "reserved": true
-          }
-        ]
-      }
+          ]
+        },
+        {
+          "byte_offset": 27,
+          "name": "reserved0",
+          "type": "U1",
+          "description": "Reserved"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrectly merged fields 'tUsage', 'tPeakusage', and 'errors' (bytes 24-26) into a single reserved block"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
@@ -135,7 +91,27 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "correct",
         "issues": []
       },
@@ -145,24 +121,61 @@
         "issues": []
       },
       {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "extraction_error",
+        "issues": [
+          "Truncated field list; identified bytes 24-27 as a single reserved block instead of tUsage, tPeakusage, and errors."
+        ]
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "extraction_error",
+        "verdict": "valid_variation",
         "issues": [
-          "Incorrect bitfield definition for 'errors': 'limit' should cover bits 0-5 to correspond with the 6 targets, but was extracted as only bit 5"
+          "Legacy bitmask definition: limit is bit 5 only, whereas newer versions use bits 0-5 for target-specific limits."
         ]
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "The canonical structure is supported by 10 out of 12 extractions across multiple device generations (M9, F9, M10). Extraction 5 incorrectly groups bytes 24-27 as reserved, missing the 'tUsage', 'tPeakusage', and 'errors' fields present in both older (M8) and newer (F9 HPG 1.32) manuals. Extraction 11 identifies the structure correctly but contains a logical error in the bitfield parsing: it assigns the 'limit' flag to bit 5 only, whereas the description 'corresponding target' and the array size of 6 imply that 'limit' corresponds to bits 0-5 (one per target), as seen in all other correct extractions."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "errors_bitmask": {
+            "bits_0_4": "Reserved",
+            "bit_5": "limit",
+            "bit_6": "mem",
+            "bit_7": "alloc"
+          }
+        },
+        "reason": "Legacy u-blox 8 protocol definition where the 'limit' bit was a singular flag rather than a 6-bit field mapped to 6 targets."
+      }
+    ],
+    "reasoning": "The UBX-MON-TXBUF message has a highly consistent 28-byte structure across M8, M9, F9, and M10 generations. The primary evolution is in the 'errors' bitmask (byte 26), where newer generations use a bit-per-target mapping for the 'limit' field (bits 0-5), while older generations (u-blox 8) treat bits 0-4 as reserved. Extraction 10 failed to parse the specific status bytes at the end of the message, incorrectly grouping them as 'Reserved'. Several manuals note that this message is deprecated in favor of UBX-MON-COMMS in newer firmware."
   }
 }

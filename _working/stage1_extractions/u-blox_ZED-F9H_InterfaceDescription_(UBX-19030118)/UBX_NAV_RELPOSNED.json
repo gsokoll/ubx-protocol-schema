@@ -1,0 +1,281 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-NAV-RELPOSNED",
+  "extraction_timestamp": "2026-01-08T02:51:45.604393+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 130,
+    "end": 132
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-NAV-RELPOSNED from u-blox PDF manual pages.\n\nThis message has TWO different structures:\n\n**UBX-NAV-RELPOSNED-V0 (40 bytes, M8/older):**\n| Offset | Type | Name |\n|--------|------|------|\n| 0 | U1 | version (0x00) |\n| 1 | U1 | reserved1 |\n| 2 | U2 | refStationId |\n| 4 | U4 | iTOW |\n| 8 | I4 | relPosN |\n| 12 | I4 | relPosE |\n| 16 | I4 | relPosD |\n| 20 | I1 | relPosHPN |\n| 21 | I1 | relPosHPE |\n| 22 | I1 | relPosHPD |\n| 23 | U1 | reserved2 |\n| 24 | U4 | accN |\n| 28 | U4 | accE |\n| 32 | U4 | accD |\n| 36 | X4 | flags |\n\n**UBX-NAV-RELPOSNED-V1 (64 bytes, F9/newer):**\n| Offset | Type | Name |\n|--------|------|------|\n| 0 | U1 | version (0x01) |\n| 1 | U1 | reserved0 |\n| 2 | U2 | refStationId |\n| 4 | U4 | iTOW |\n| 8 | I4 | relPosN |\n| 12 | I4 | relPosE |\n| 16 | I4 | relPosD |\n| 20 | I4 | relPosLength |\n| 24 | I4 | relPosHeading |\n| 28 | U4 | reserved1 |\n| 32 | I1 | relPosHPN |\n| 33 | I1 | relPosHPE |\n| 34 | I1 | relPosHPD |\n| 35 | I1 | relPosHPLength |\n| 36 | U4 | accN |\n| 40 | U4 | accE |\n| 44 | U4 | accD |\n| 48 | U4 | accLength |\n| 52 | U4 | accHeading |\n| 56 | U4 | reserved2 |\n| 60 | X4 | flags |\n\nCheck payload length: 40 bytes = V0, 64 bytes = V1.\n\nIMPORTANT: Name the message based on which version the PDF documents:\n- If payload is 40 bytes: name = \"UBX-NAV-RELPOSNED-V0\"\n- If payload is 64 bytes: name = \"UBX-NAV-RELPOSNED-V1\"\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": [\n    {\n      \"name\": \"UBX-NAV-RELPOSNED-V1\",\n      \"description\": \"Relative positioning information in NED frame\",\n      \"message_class\": \"0x01\",\n      \"message_id\": \"0x3c\",\n      \"payload_length\": 64,\n      \"fields\": [\n        {\n          \"offset\": 0,\n          \"type\": \"U1\",\n          \"name\": \"version\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Message version (0x01 for this version)\"\n        },\n        {\n          \"offset\": 1,\n          \"type\": \"U1\",\n          \"name\": \"reserved0\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Reserved\"\n        },\n        {\n          \"offset\": 2,\n          \"type\": \"U2\",\n          \"name\": \"refStationId\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Reference station ID. Must be in the range 0..4095.\"\n        },\n        {\n          \"offset\": 4,\n          \"type\": \"U4\",\n          \"name\": \"iTOW\",\n          \"scale\": null,\n          \"unit\": \"ms\",\n          \"description\": \"GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.\"\n        },\n        {\n          \"offset\": 8,\n          \"type\": \"I4\",\n          \"name\": \"relPosN\",\n          \"scale\": null,\n          \"unit\": \"cm\",\n          \"description\": \"North component of relative position vector\"\n        },\n        {\n          \"offset\": 12,\n          \"type\": \"I4\",\n          \"name\": \"relPosE\",\n          \"scale\": null,\n          \"unit\": \"cm\",\n          \"description\": \"East component of relative position vector\"\n        },\n        {\n          \"offset\": 16,\n          \"type\": \"I4\",\n          \"name\": \"relPosD\",\n          \"scale\": null,\n          \"unit\": \"cm\",\n          \"description\": \"Down component of relative position vector\"\n        },\n        {\n          \"offset\": 20,\n          \"type\": \"I4\",\n          \"name\": \"relPosLength\",\n          \"scale\": null,\n          \"unit\": \"cm\",\n          \"description\": \"Length of the relative position vector\"\n        },\n        {\n          \"offset\": 24,\n          \"type\": \"I4\",\n          \"name\": \"relPosHeading\",\n          \"scale\": \"1e-5\",\n          \"unit\": \"deg\",\n          \"description\": \"Heading of the relative position vector\"\n        },\n        {\n          \"offset\": 28,\n          \"type\": \"U1[4]\",\n          \"name\": \"reserved1\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Reserved\"\n        },\n        {\n          \"offset\": 32,\n          \"type\": \"I1\",\n          \"name\": \"relPosHPN\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"High-precision North component of relative position vector. Must be in the range -99 to +99. The full North component of the relative position vector, in units of cm, is given by relPosN + (relPosHPN * 1e-2)\"\n        },\n        {\n          \"offset\": 33,\n          \"type\": \"I1\",\n          \"name\": \"relPosHPE\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"High-precision East component of relative position vector. Must be in the range -99 to +99. The full East component of the relative position vector, in units of cm, is given by relPosE + (relPosHPE * 1e-2)\"\n        },\n        {\n          \"offset\": 34,\n          \"type\": \"I1\",\n          \"name\": \"relPosHPD\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"High-precision Down component of relative position vector. Must be in the range -99 to +99. The full Down component of the relative position vector, in units of cm, is given by relPosD + (relPosHPD * 1e-2)\"\n        },\n        {\n          \"offset\": 35,\n          \"type\": \"I1\",\n          \"name\": \"relPosHPLength\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"High-precision component of the length of the relative position vector. Must be in the range -99 to +99. The full length of the relative position vector, in units of cm, is given by relPosLength + (relPosHPLength * 1e-2)\"\n        },\n        {\n          \"offset\": 36,\n          \"type\": \"U4\",\n          \"name\": \"accN\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"Accuracy of relative position North component\"\n        },\n        {\n          \"offset\": 40,\n          \"type\": \"U4\",\n          \"name\": \"accE\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"Accuracy of relative position East component\"\n        },\n        {\n          \"offset\": 44,\n          \"type\": \"U4\",\n          \"name\": \"accD\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"Accuracy of relative position Down component\"\n        },\n        {\n          \"offset\": 48,\n          \"type\": \"U4\",\n          \"name\": \"accLength\",\n          \"scale\": \"0.1\",\n          \"unit\": \"mm\",\n          \"description\": \"Accuracy of length of the relative position vector\"\n        },\n        {\n          \"offset\": 52,\n          \"type\": \"U4\",\n          \"name\": \"accHeading\",\n          \"scale\": \"1e-5\",\n          \"unit\": \"deg\",\n          \"description\": \"Accuracy of heading of the relative position vector\"\n        },\n        {\n          \"offset\": 56,\n          \"type\": \"U1[4]\",\n          \"name\": \"reserved2\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Reserved\"\n        },\n        {\n          \"offset\": 60,\n          \"type\": \"X4\",\n          \"name\": \"flags\",\n          \"scale\": null,\n          \"unit\": null,\n          \"description\": \"Flags\",\n          \"sub_fields\": [\n            {\n              \"bit\": 0,\n              \"type\": \"U:1\",\n              \"name\": \"gnssFixOK\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"A valid fix (i.e within DOP & accuracy masks)\"\n            },\n            {\n              \"bit\": 1,\n              \"type\": \"U:1\",\n              \"name\": \"diffSoln\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if differential corrections were applied\"\n            },\n            {\n              \"bit\": 2,\n              \"type\": \"U:1\",\n              \"name\": \"relPosValid\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if relative position components and accuracies are valid and, in moving base mode only, if baseline is valid\"\n            },\n            {\n              \"bit\": \"4..3\",\n              \"type\": \"U:2\",\n              \"name\": \"carrSoln\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"Carrier phase range solution status: 0 = no carrier phase range solution, 1 = carrier phase range solution with floating ambiguities, 2 = carrier phase range solution with fixed ambiguities\"\n            },\n            {\n              \"bit\": 5,\n              \"type\": \"U:1\",\n              \"name\": \"isMoving\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if the receiver is operating in moving base mode\"\n            },\n            {\n              \"bit\": 6,\n              \"type\": \"U:1\",\n              \"name\": \"refPosMiss\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if extrapolated reference position was used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)\"\n            },\n            {\n              \"bit\": 7,\n              \"type\": \"U:1\",\n              \"name\": \"refObsMiss\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if extrapolated reference observations were used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)\"\n            },\n            {\n              \"bit\": 8,\n              \"type\": \"U:1\",\n              \"name\": \"relPosHeadingValid\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if relPosHeading is valid\"\n            },\n            {\n              \"bit\": 9,\n              \"type\": \"U:1\",\n              \"name\": \"relPosNormalized\",\n              \"scale\": null,\n              \"unit\": null,\n              \"description\": \"1 if the components of the relative position vector (including the high-precision parts) are normalized\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": [
+      {
+        "name": "UBX-NAV-RELPOSNED-V1",
+        "description": "Relative positioning information in NED frame",
+        "message_class": "0x01",
+        "message_id": "0x3c",
+        "payload_length": 64,
+        "fields": [
+          {
+            "offset": 0,
+            "type": "U1",
+            "name": "version",
+            "scale": null,
+            "unit": null,
+            "description": "Message version (0x01 for this version)"
+          },
+          {
+            "offset": 1,
+            "type": "U1",
+            "name": "reserved0",
+            "scale": null,
+            "unit": null,
+            "description": "Reserved"
+          },
+          {
+            "offset": 2,
+            "type": "U2",
+            "name": "refStationId",
+            "scale": null,
+            "unit": null,
+            "description": "Reference station ID. Must be in the range 0..4095."
+          },
+          {
+            "offset": 4,
+            "type": "U4",
+            "name": "iTOW",
+            "scale": null,
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details."
+          },
+          {
+            "offset": 8,
+            "type": "I4",
+            "name": "relPosN",
+            "scale": null,
+            "unit": "cm",
+            "description": "North component of relative position vector"
+          },
+          {
+            "offset": 12,
+            "type": "I4",
+            "name": "relPosE",
+            "scale": null,
+            "unit": "cm",
+            "description": "East component of relative position vector"
+          },
+          {
+            "offset": 16,
+            "type": "I4",
+            "name": "relPosD",
+            "scale": null,
+            "unit": "cm",
+            "description": "Down component of relative position vector"
+          },
+          {
+            "offset": 20,
+            "type": "I4",
+            "name": "relPosLength",
+            "scale": null,
+            "unit": "cm",
+            "description": "Length of the relative position vector"
+          },
+          {
+            "offset": 24,
+            "type": "I4",
+            "name": "relPosHeading",
+            "scale": "1e-5",
+            "unit": "deg",
+            "description": "Heading of the relative position vector"
+          },
+          {
+            "offset": 28,
+            "type": "U1[4]",
+            "name": "reserved1",
+            "scale": null,
+            "unit": null,
+            "description": "Reserved"
+          },
+          {
+            "offset": 32,
+            "type": "I1",
+            "name": "relPosHPN",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "High-precision North component of relative position vector. Must be in the range -99 to +99. The full North component of the relative position vector, in units of cm, is given by relPosN + (relPosHPN * 1e-2)"
+          },
+          {
+            "offset": 33,
+            "type": "I1",
+            "name": "relPosHPE",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "High-precision East component of relative position vector. Must be in the range -99 to +99. The full East component of the relative position vector, in units of cm, is given by relPosE + (relPosHPE * 1e-2)"
+          },
+          {
+            "offset": 34,
+            "type": "I1",
+            "name": "relPosHPD",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "High-precision Down component of relative position vector. Must be in the range -99 to +99. The full Down component of the relative position vector, in units of cm, is given by relPosD + (relPosHPD * 1e-2)"
+          },
+          {
+            "offset": 35,
+            "type": "I1",
+            "name": "relPosHPLength",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "High-precision component of the length of the relative position vector. Must be in the range -99 to +99. The full length of the relative position vector, in units of cm, is given by relPosLength + (relPosHPLength * 1e-2)"
+          },
+          {
+            "offset": 36,
+            "type": "U4",
+            "name": "accN",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "Accuracy of relative position North component"
+          },
+          {
+            "offset": 40,
+            "type": "U4",
+            "name": "accE",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "Accuracy of relative position East component"
+          },
+          {
+            "offset": 44,
+            "type": "U4",
+            "name": "accD",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "Accuracy of relative position Down component"
+          },
+          {
+            "offset": 48,
+            "type": "U4",
+            "name": "accLength",
+            "scale": "0.1",
+            "unit": "mm",
+            "description": "Accuracy of length of the relative position vector"
+          },
+          {
+            "offset": 52,
+            "type": "U4",
+            "name": "accHeading",
+            "scale": "1e-5",
+            "unit": "deg",
+            "description": "Accuracy of heading of the relative position vector"
+          },
+          {
+            "offset": 56,
+            "type": "U1[4]",
+            "name": "reserved2",
+            "scale": null,
+            "unit": null,
+            "description": "Reserved"
+          },
+          {
+            "offset": 60,
+            "type": "X4",
+            "name": "flags",
+            "scale": null,
+            "unit": null,
+            "description": "Flags",
+            "sub_fields": [
+              {
+                "bit": 0,
+                "type": "U:1",
+                "name": "gnssFixOK",
+                "scale": null,
+                "unit": null,
+                "description": "A valid fix (i.e within DOP & accuracy masks)"
+              },
+              {
+                "bit": 1,
+                "type": "U:1",
+                "name": "diffSoln",
+                "scale": null,
+                "unit": null,
+                "description": "1 if differential corrections were applied"
+              },
+              {
+                "bit": 2,
+                "type": "U:1",
+                "name": "relPosValid",
+                "scale": null,
+                "unit": null,
+                "description": "1 if relative position components and accuracies are valid and, in moving base mode only, if baseline is valid"
+              },
+              {
+                "bit": "4..3",
+                "type": "U:2",
+                "name": "carrSoln",
+                "scale": null,
+                "unit": null,
+                "description": "Carrier phase range solution status: 0 = no carrier phase range solution, 1 = carrier phase range solution with floating ambiguities, 2 = carrier phase range solution with fixed ambiguities"
+              },
+              {
+                "bit": 5,
+                "type": "U:1",
+                "name": "isMoving",
+                "scale": null,
+                "unit": null,
+                "description": "1 if the receiver is operating in moving base mode"
+              },
+              {
+                "bit": 6,
+                "type": "U:1",
+                "name": "refPosMiss",
+                "scale": null,
+                "unit": null,
+                "description": "1 if extrapolated reference position was used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)"
+              },
+              {
+                "bit": 7,
+                "type": "U:1",
+                "name": "refObsMiss",
+                "scale": null,
+                "unit": null,
+                "description": "1 if extrapolated reference observations were used to compute moving base solution this epoch. (Flag set for protocol versions 27.10, and 27.11, and 31.11)"
+              },
+              {
+                "bit": 8,
+                "type": "U:1",
+                "name": "relPosHeadingValid",
+                "scale": null,
+                "unit": null,
+                "description": "1 if relPosHeading is valid"
+              },
+              {
+                "bit": 9,
+                "type": "U:1",
+                "name": "relPosNormalized",
+                "scale": null,
+                "unit": null,
+                "description": "1 if the components of the relative position vector (including the high-precision parts) are normalized"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/gsrklwyr3r7k"
+}

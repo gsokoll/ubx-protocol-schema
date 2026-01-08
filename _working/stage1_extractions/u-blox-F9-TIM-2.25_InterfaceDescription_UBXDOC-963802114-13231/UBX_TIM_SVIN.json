@@ -1,0 +1,102 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-TIM-SVIN",
+  "extraction_timestamp": "2026-01-08T04:39:48.706735+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 166,
+    "end": 166
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-SVIN\nExpected IDs: class_id=0x0d, message_id=0x04\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-SVIN\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-TIM-SVIN\",\n    \"class_id\": \"0x0d\",\n    \"message_id\": \"0x04\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"Survey-in data\\nThis message contains information about survey-in parameters. For details about the Time mode see section Time mode configuration.\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"name\": \"dur\",\n        \"unit\": \"S\",\n        \"description\": \"Passed survey-in observation time\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"I4\",\n        \"name\": \"meanx\",\n        \"unit\": \"cm\",\n        \"description\": \"Current survey-in mean position ECEF X coordinate\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"I4\",\n        \"name\": \"meanY\",\n        \"unit\": \"cm\",\n        \"description\": \"Current survey-in mean position ECEF Y coordinate\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"I4\",\n        \"name\": \"meanz\",\n        \"unit\": \"cm\",\n        \"description\": \"Current survey-in mean position ECEF Z coordinate\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U4\",\n        \"name\": \"meanv\",\n        \"unit\": \"mm^2\",\n        \"description\": \"Current survey-in mean position 3D variance\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"data_type\": \"U4\",\n        \"name\": \"obs\",\n        \"description\": \"Number of position observations used during survey-in\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"data_type\": \"U1\",\n        \"name\": \"valid\",\n        \"description\": \"Survey-in position validity flag, 1 = valid, otherwise 0\"\n      },\n      {\n        \"byte_offset\": 25,\n        \"data_type\": \"U1\",\n        \"name\": \"active\",\n        \"description\": \"Survey-in in progress flag, 1 = in-progress, otherwise 0\"\n      },\n      {\n        \"byte_offset\": 26,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved0\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-TIM-SVIN",
+      "class_id": "0x0d",
+      "message_id": "0x04",
+      "message_type": "periodic_polled",
+      "description": "Survey-in data\nThis message contains information about survey-in parameters. For details about the Time mode see section Time mode configuration.",
+      "payload_length": {
+        "fixed": 28
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U4",
+          "name": "dur",
+          "unit": "S",
+          "description": "Passed survey-in observation time"
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "I4",
+          "name": "meanx",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF X coordinate"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "meanY",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Y coordinate"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I4",
+          "name": "meanz",
+          "unit": "cm",
+          "description": "Current survey-in mean position ECEF Z coordinate"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U4",
+          "name": "meanv",
+          "unit": "mm^2",
+          "description": "Current survey-in mean position 3D variance"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U4",
+          "name": "obs",
+          "description": "Number of position observations used during survey-in"
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "U1",
+          "name": "valid",
+          "description": "Survey-in position validity flag, 1 = valid, otherwise 0"
+        },
+        {
+          "byte_offset": 25,
+          "data_type": "U1",
+          "name": "active",
+          "description": "Survey-in in progress flag, 1 = in-progress, otherwise 0"
+        },
+        {
+          "byte_offset": 26,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved0",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/dcmv2mfz3zy6"
+}

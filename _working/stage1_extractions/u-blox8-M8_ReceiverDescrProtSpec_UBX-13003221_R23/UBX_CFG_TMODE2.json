@@ -1,0 +1,110 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-TMODE2",
+  "extraction_timestamp": "2026-01-08T05:50:24.582809+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 283,
+    "end": 285
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-TMODE2\nExpected IDs: class_id=0x06, message_id=0x3D\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-TMODE2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-CFG-TMODE2\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x3D\",\n  \"description\": \"Time mode settings 2\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"fixed\": 28\n  },\n  \"payload_contents\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"timeMode\",\n      \"data_type\": \"U1\",\n      \"unit\": null,\n      \"description\": \"Time Transfer Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true position information required), 3-255 Reserved\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"reserved1\",\n      \"data_type\": \"U1\",\n      \"unit\": null,\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"flags\",\n      \"data_type\": \"X2\",\n      \"unit\": null,\n      \"description\": \"Time mode flags (see graphic below)\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"ecefXOrLat\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm_or_deg*1e-7\",\n      \"description\": \"WGS84 ECEF X coordinate or latitude, depending on flags above\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"ecefYOrLon\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm_or_deg*1e-7\",\n      \"description\": \"WGS84 ECEF Y coordinate or longitude, depending on flags above\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"ecefZOrAlt\",\n      \"data_type\": \"I4\",\n      \"unit\": \"cm\",\n      \"description\": \"WGS84 ECEF Z coordinate or altitude, depending on flags above\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"fixedPosAcc\",\n      \"data_type\": \"U4\",\n      \"unit\": \"mm\",\n      \"description\": \"Fixed position 3D accuracy\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"svinMinDur\",\n      \"data_type\": \"U4\",\n      \"unit\": \"s\",\n      \"description\": \"Survey-in minimum duration\",\n      \"reserved\": false\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"svinAccLimit\",\n      \"data_type\": \"U4\",\n      \"unit\": \"mm\",\n      \"description\": \"Survey-in position accuracy limit\",\n      \"reserved\": false\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-TMODE2",
+    "class_id": "0x06",
+    "message_id": "0x3D",
+    "description": "Time mode settings 2",
+    "message_type": "get_set",
+    "payload_length": {
+      "fixed": 28
+    },
+    "payload_contents": [
+      {
+        "byte_offset": 0,
+        "name": "timeMode",
+        "data_type": "U1",
+        "unit": null,
+        "description": "Time Transfer Mode: 0 Disabled, 1 Survey In, 2 Fixed Mode (true position information required), 3-255 Reserved",
+        "reserved": false
+      },
+      {
+        "byte_offset": 1,
+        "name": "reserved1",
+        "data_type": "U1",
+        "unit": null,
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 2,
+        "name": "flags",
+        "data_type": "X2",
+        "unit": null,
+        "description": "Time mode flags (see graphic below)",
+        "reserved": false
+      },
+      {
+        "byte_offset": 4,
+        "name": "ecefXOrLat",
+        "data_type": "I4",
+        "unit": "cm_or_deg*1e-7",
+        "description": "WGS84 ECEF X coordinate or latitude, depending on flags above",
+        "reserved": false
+      },
+      {
+        "byte_offset": 8,
+        "name": "ecefYOrLon",
+        "data_type": "I4",
+        "unit": "cm_or_deg*1e-7",
+        "description": "WGS84 ECEF Y coordinate or longitude, depending on flags above",
+        "reserved": false
+      },
+      {
+        "byte_offset": 12,
+        "name": "ecefZOrAlt",
+        "data_type": "I4",
+        "unit": "cm",
+        "description": "WGS84 ECEF Z coordinate or altitude, depending on flags above",
+        "reserved": false
+      },
+      {
+        "byte_offset": 16,
+        "name": "fixedPosAcc",
+        "data_type": "U4",
+        "unit": "mm",
+        "description": "Fixed position 3D accuracy",
+        "reserved": false
+      },
+      {
+        "byte_offset": 20,
+        "name": "svinMinDur",
+        "data_type": "U4",
+        "unit": "s",
+        "description": "Survey-in minimum duration",
+        "reserved": false
+      },
+      {
+        "byte_offset": 24,
+        "name": "svinAccLimit",
+        "data_type": "U4",
+        "unit": "mm",
+        "description": "Survey-in position accuracy limit",
+        "reserved": false
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/cv6cnzlvboha"
+}

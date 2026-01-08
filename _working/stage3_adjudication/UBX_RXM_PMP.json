@@ -12,9 +12,7 @@
         "length": {
           "variable": {
             "base": 24,
-            "formula": "24 + numBytesUserData",
-            "min": 24,
-            "max": 528
+            "count_field": "numBytesUserData"
           }
         },
         "fields": [
@@ -22,7 +20,7 @@
             "name": "version",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Message version"
+            "description": "Message version (0x01 for this version)"
           },
           {
             "name": "reserved0",
@@ -41,8 +39,8 @@
             "name": "timeTag",
             "byte_offset": 4,
             "data_type": "U4",
-            "unit": "ms",
-            "description": "Time since startup when frame started"
+            "description": "Time since startup when frame started",
+            "unit": "ms"
           },
           {
             "name": "uniqueWord",
@@ -81,12 +79,12 @@
             "name": "ebno",
             "byte_offset": 22,
             "data_type": "U1",
+            "description": "Energy per bit to noise power spectral density ratio",
+            "unit": "dB",
             "scale": {
               "raw": "2^-3",
               "multiplier": 0.125
-            },
-            "unit": "dB",
-            "description": "Energy per bit to noise power spectral density ratio"
+            }
           },
           {
             "name": "reserved1",
@@ -110,17 +108,22 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect payload structure. The extraction describes satellite measurements (gnssId, svId, doppler, codePhase) which are typical of UBX-RXM-RAWX or similar, rather than the PMP data frame.",
-          "Incorrect reserved field sizing (22 bytes) and missing critical PMP fields like timeTag and uniqueWord."
-        ]
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
         "verdict": "correct",
         "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "extraction_error",
+        "issues": [
+          "The message structure extracted (gnssId, svId, codePhase, etc.) belongs to raw measurement messages (like UBX-RXM-RAWX), not UBX-RXM-PMP.",
+          "The header fields and logic are completely incorrect for the Point to Multipoint (LBAND) protocol."
+        ]
       },
       {
         "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
@@ -131,14 +134,9 @@
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "Extractions 2, 3, 4, and 5 are highly consistent, defining RXM-PMP as a message containing a 24-byte header (with Eb/No, FEC bits, and Time Tag) followed by a variable-length userData block. This matches the standard purpose of the PMP (Point-to-Multipoint) message which delivers L-Band correction data frames. Extraction 1 is fundamentally flawed; it identifies the same message ID (0x02 0x72) but populates it with satellite measurement fields (GNSS ID, Code Phase, etc.) which are not part of the PMP protocol specification. The variations between extractions 2-5 are purely representational (e.g., using a repeated group vs. an array field) and do not indicate protocol changes."
+    "reasoning": "Extractions 1, 2, 4, and 5 all correctly identify UBX-RXM-PMP (0x02 0x72) as the message used to input L-Band correction data into the receiver. They share a consistent 24-byte header followed by a variable-length user data buffer. Extraction 3 is a hallucinated or mis-mapped entry; it uses the correct name and ID but describes satellite observation data fields that are found in raw measurement messages, which is physically impossible for the PMP bitstream message."
   }
 }

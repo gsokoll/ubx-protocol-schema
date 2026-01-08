@@ -1,0 +1,90 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MON-VER",
+  "extraction_timestamp": "2026-01-08T04:25:14.327281+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 107,
+    "end": 108
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-VER\nExpected IDs: class_id=0x0a, message_id=0x04\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-VER\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MON-VER\",\n    \"class_id\": \"0x0a\",\n    \"message_id\": \"0x04\",\n    \"message_type\": \"polled\",\n    \"description\": \"Poll receiver and software version / Receiver and software version\",\n    \"request_payload\": {\n      \"payload_length\": {\n        \"fixed\": 0\n      },\n      \"fields\": []\n    },\n    \"response_payload\": {\n      \"payload_length\": {\n        \"variable\": {\n          \"base\": 40,\n          \"formula\": \"40 + N * 30\"\n        }\n      },\n      \"fields\": [\n        {\n          \"byte_offset\": 0,\n          \"name\": \"swVersion\",\n          \"data_type\": {\n            \"array_of\": \"CH\",\n            \"count\": 30\n          },\n          \"description\": \"Nul-terminated software version string.\"\n        },\n        {\n          \"byte_offset\": 30,\n          \"name\": \"hwVersion\",\n          \"data_type\": {\n            \"array_of\": \"CH\",\n            \"count\": 10\n          },\n          \"description\": \"Nul-terminated hardware version string\"\n        },\n        {\n          \"byte_offset\": 40,\n          \"name\": \"extension_group\",\n          \"repeated_group\": {\n            \"id\": \"extension_fields\",\n            \"name\": \"extension\",\n            \"count_field\": \"N\",\n            \"description\": \"Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long. 'N' is the number of extension strings, implicitly derived from the total message length: N = (payload_length - 40) / 30.\",\n            \"fields\": [\n              {\n                \"byte_offset\": 0,\n                \"name\": \"extension_string\",\n                \"data_type\": {\n                  \"array_of\": \"CH\",\n                  \"count\": 30\n                },\n                \"description\": \"Extended software information string.\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-VER",
+      "class_id": "0x0a",
+      "message_id": "0x04",
+      "message_type": "polled",
+      "description": "Poll receiver and software version / Receiver and software version",
+      "request_payload": {
+        "payload_length": {
+          "fixed": 0
+        },
+        "fields": []
+      },
+      "response_payload": {
+        "payload_length": {
+          "variable": {
+            "base": 40,
+            "formula": "40 + N * 30"
+          }
+        },
+        "fields": [
+          {
+            "byte_offset": 0,
+            "name": "swVersion",
+            "data_type": {
+              "array_of": "CH",
+              "count": 30
+            },
+            "description": "Nul-terminated software version string."
+          },
+          {
+            "byte_offset": 30,
+            "name": "hwVersion",
+            "data_type": {
+              "array_of": "CH",
+              "count": 10
+            },
+            "description": "Nul-terminated hardware version string"
+          },
+          {
+            "byte_offset": 40,
+            "name": "extension_group",
+            "repeated_group": {
+              "id": "extension_fields",
+              "name": "extension",
+              "count_field": "N",
+              "description": "Extended software information strings. A series of nul-terminated strings. Each extension field is 30 characters long. 'N' is the number of extension strings, implicitly derived from the total message length: N = (payload_length - 40) / 30.",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "extension_string",
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 30
+                  },
+                  "description": "Extended software information string."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ci386giojs4v"
+}

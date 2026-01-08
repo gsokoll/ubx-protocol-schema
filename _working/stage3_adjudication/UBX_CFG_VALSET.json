@@ -1,132 +1,79 @@
 {
   "message_name": "UBX-CFG-VALSET",
-  "num_extractions": 23,
+  "num_extractions": 25,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-VALSET",
-      "class_id": "0x06",
-      "message_id": "0x8a",
+      "class": "0x06",
+      "id": "0x8a",
       "description": "Set configuration item values",
-      "payload": {
-        "header": [
-          {
-            "name": "version",
-            "type": "U1",
-            "value": "0x01",
-            "offset": 0
-          },
-          {
-            "name": "layers",
-            "type": "X1",
-            "description": "Bitfield: RAM, BBR, Flash",
-            "offset": 1
-          },
-          {
-            "name": "transaction",
-            "type": "U1/X1",
-            "description": "Transaction action (0-3)",
-            "offset": 2
-          },
-          {
-            "name": "reserved0",
-            "type": "U1",
-            "offset": 3
-          }
-        ],
-        "body": {
+      "payload": [
+        {
+          "name": "version",
+          "offset": 0,
+          "type": "U1",
+          "description": "Message version (0x01 for transactional version)"
+        },
+        {
+          "name": "layers",
+          "offset": 1,
+          "type": "X1",
+          "description": "The layers where the configuration should be applied",
+          "fields": [
+            {
+              "name": "ram",
+              "bit_offset": 0,
+              "bit_length": 1
+            },
+            {
+              "name": "bbr",
+              "bit_offset": 1,
+              "bit_length": 1
+            },
+            {
+              "name": "flash",
+              "bit_offset": 2,
+              "bit_length": 1
+            }
+          ]
+        },
+        {
+          "name": "transaction",
+          "offset": 2,
+          "type": "X1",
+          "description": "Transaction action to be applied",
+          "fields": [
+            {
+              "name": "action",
+              "bit_offset": 0,
+              "bit_length": 2,
+              "description": "0: Transactionless, 1: (Re)Start, 2: Ongoing, 3: Apply and end"
+            }
+          ]
+        },
+        {
+          "name": "reserved0",
+          "offset": 3,
+          "type": "U1",
+          "description": "Reserved"
+        },
+        {
           "name": "cfgData",
-          "type": "variable",
           "offset": 4,
-          "description": "Sequence of Key(U4)+Value(variable)"
+          "type": "U1[]",
+          "description": "Configuration data as a sequence of key-value pairs (U4 key followed by variable length value)"
         }
-      },
-      "message_type": "set"
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect fields extracted. The structure matches UBX-CFG-VALGET (layer, position), not VALSET."
-        ]
-      },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect field structure. Defines 'transaction' at byte 2 and 'flags' at byte 3. Standard definition is 'transaction' at byte 2 (containing flags) and 'reserved' at byte 3."
-        ]
-      },
-      {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect fields extracted. The structure matches UBX-CFG-VALGET (layer, position), not VALSET."
-        ]
-      },
-      {
-        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
-        "verdict": "correct",
         "issues": []
       },
       {
         "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
         "verdict": "correct",
         "issues": []
       },
@@ -136,20 +83,89 @@
         "issues": []
       },
       {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
         "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
-        "verdict": "correct",
+        "verdict": "extraction_error",
         "issues": [
-          "Payload defined as fixed 8-byte repetition (U4 Key + U4 Value). This is technically inaccurate as UBX values are variable length (1, 2, 4, 8 bytes), but the header structure is correct."
+          "Incorrectly defines cfgData as fixed 8-byte repeated group; cfgData values are variable length."
         ]
       },
       {
-        "source": "LAP120_Interfacedescription_UBX-20046191",
-        "verdict": "valid_variation",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "extraction_error",
+        "issues": [
+          "Confuses VALSET with VALGET/VALDEL structure; VALSET does not have 'position' or singular 'layer' fields."
+        ]
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+        "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
         "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "extraction_error",
+        "issues": [
+          "Incorrectly identifies byte 3 as 'flags' containing transaction bits; bits are in byte 2, and byte 3 is reserved."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "valid_variation",
         "issues": []
       },
       {
@@ -163,7 +179,24 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "LAP120_Interfacedescription_UBX-20046191",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "extraction_error",
+        "issues": [
+          "Confuses VALSET with VALGET/VALDEL structure (fields layer and position)."
+        ]
+      },
+      {
+        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
       }
@@ -171,41 +204,24 @@
     "valid_variations": [
       {
         "sources": [
-          "u-blox-X20-HPG-2.02",
-          "u-blox-F9-LAP-1.50",
-          "u-blox-F9-LAP-1.30",
-          "u-blox-M9-MDR-2.16",
-          "u-blox-F9-HPG-1.50",
-          "LAP120"
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+          "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+          "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+          "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+          "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+          "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+          "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+          "LAP120_Interfacedescription_UBX-20046191"
         ],
         "structure": {
           "version": "0x00",
-          "fields": [
-            {
-              "name": "version",
-              "offset": 0,
-              "size": 1,
-              "value": "0x00"
-            },
-            {
-              "name": "layers",
-              "offset": 1,
-              "size": 1
-            },
-            {
-              "name": "reserved0",
-              "offset": 2,
-              "size": 2
-            },
-            {
-              "name": "cfgData",
-              "offset": 4
-            }
-          ]
+          "layers": "X1 (Byte 1)",
+          "reserved0": "U1[2] (Bytes 2-3)",
+          "cfgData": "U1[] (Byte 4+)"
         },
-        "reason": "Version 0x00 of the message, used in older or specific firmware variants (e.g., LAP, HPG 1.50), lacks the transaction mechanism field present in Version 0x01."
+        "reason": "This is Version 0 of the message, which lacks transaction support. Byte 2 and 3 are combined into a 2-byte reserved field."
       }
     ],
-    "reasoning": "The analysis reveals two distinct valid structures for UBX-CFG-VALSET. The modern and most common is Version 0x01, which includes a 'transaction' field at byte offset 2 and 'reserved' at offset 3. This is correctly identified in the majority of extractions. A valid older/alternative Variation is Version 0x00, which has a 2-byte 'reserved' block at offset 2 and no transaction field; this is consistent across several X20, LAP, and older HPG manuals. \n\nTwo extractions (1 and 8) contain severe errors where the structure of UBX-CFG-VALGET (fields 'layer' and 'position') was extracted instead of VALSET. Extraction 2 contains a hallucinated 'flags' field at offset 3 where 'reserved' should be, likely confusing the bitfield description of the transaction field."
+    "reasoning": "The UBX-CFG-VALSET message exists in two versions. Version 0x01 (the canonical choice) introduces 'transactional' support using byte 2 as an action field. Version 0x00 is a legacy or transactionless version where bytes 2 and 3 are simply reserved. Several extractions failed by confusing the input VALSET with the response/output structures of VALGET/VALDEL (which include a 'position' field), or by assuming the cfgData items are a fixed width (they are variable based on the Key ID)."
   }
 }

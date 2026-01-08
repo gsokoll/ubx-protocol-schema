@@ -81,7 +81,8 @@
             "name": "reserved1",
             "byte_offset": 7,
             "data_type": "U1",
-            "description": "Reserved"
+            "description": "Reserved",
+            "reserved": true
           }
         ]
       }
@@ -105,55 +106,49 @@
           "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
         ],
         "structure": {
-          "name": "UBX-CFG-BATCH",
-          "class_id": "0x06",
-          "message_id": "0x93",
-          "payload": {
-            "length": {
-              "fixed": 8
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1"
             },
-            "fields": [
-              {
-                "name": "version",
-                "data_type": "U1"
-              },
-              {
-                "name": "flags",
-                "data_type": "X1",
-                "bitfield": {
-                  "bits": [
-                    {
-                      "name": "enable",
-                      "bit_start": 0,
-                      "bit_end": 0
-                    },
-                    {
-                      "name": "extraPvt",
-                      "bit_start": 2,
-                      "bit_end": 2
-                    },
-                    {
-                      "name": "extraOdo",
-                      "bit_start": 3,
-                      "bit_end": 3
-                    }
-                  ]
-                }
-              },
-              {
-                "name": "reserved1",
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 6
-                },
-                "description": "Reserved block (covers bufSize, notifThrs, pioId in M8)"
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "enable",
+                    "bit_start": 0,
+                    "bit_end": 0
+                  },
+                  {
+                    "name": "extraPvt",
+                    "bit_start": 2,
+                    "bit_end": 2
+                  },
+                  {
+                    "name": "extraOdo",
+                    "bit_start": 3,
+                    "bit_end": 3
+                  }
+                ]
               }
-            ]
-          }
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              }
+            }
+          ]
         },
-        "reason": "The u-blox M9 generation deprecated the PIO notification and explicit buffer size configuration via this legacy message, marking bytes 2-7 as reserved. The M8 generation (Extraction 2) defines the full schema for this message ID."
+        "reason": "In newer generations (M9), legacy configuration fields like bufSize and PIO settings are deprecated in this message structure in favor of the new Configuration Interface (VALSET). Consequently, the M9 manual defines bytes 2-7 as reserved."
       }
     ],
-    "reasoning": "Extraction 2 (M8) provides the superset definition, identifying specific configuration fields (bufSize, notifThrs, pioId). Extraction 1 (M9) is a valid variation where these specific features were deprecated or handled internally, resulting in those fields being marked as a single reserved block of 6 bytes. Both extractions are faithful to their respective manuals, but Extraction 2 is chosen as canonical because it describes the underlying data layout that Extraction 1 masks as reserved."
+    "reasoning": "The two extractions represent the evolution of the UBX-CFG-BATCH message. Extraction 2 (u-blox 8) provides the full set of parameters used to configure the batch buffer. Extraction 1 (u-blox M9) shows a simplified version where the buffer size and notification settings are removed (reserved), which is consistent with u-blox's transition to the key-value configuration system in Gen 9+ receivers. Both are correct for their respective hardware."
   }
 }

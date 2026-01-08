@@ -1,0 +1,101 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-CFG-ESFA",
+  "extraction_timestamp": "2026-01-08T05:34:45.375241+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 217,
+    "end": 218
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-ESFA\nExpected IDs: class_id=0x06, message_id=0x4C\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-ESFA\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-CFG-ESFA\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x4C\",\n  \"description\": \"Get/set the Accelerometer (A) sensor configuration\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"fixed\": 20\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 9\n      },\n      \"name\": \"reserved1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 10,\n      \"data_type\": \"U1\",\n      \"name\": \"accelRmsThdl\",\n      \"scale\": {\n        \"raw\": \"2^-6\",\n        \"multiplier\": 0.015625\n      },\n      \"unit\": \"m/s^2\",\n      \"description\": \"Accelerometer RMS threshold below which automatically estimated accelerometer noise-level (accuracy) is updated.\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"data_type\": \"U1\",\n      \"name\": \"frequency\",\n      \"unit\": \"Hz\",\n      \"description\": \"Nominal accelerometer sensor data sampling frequency.\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U2\",\n      \"name\": \"latency\",\n      \"unit\": \"ms\",\n      \"description\": \"Accelerometer sensor data latency due to e.g. CAN bus.\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"data_type\": \"U2\",\n      \"name\": \"accuracy\",\n      \"scale\": {\n        \"raw\": \"1e-4\",\n        \"multiplier\": 0.0001\n      },\n      \"unit\": \"m/s^2\",\n      \"description\": \"Accelerometer sensor data accuracy.\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"name\": \"reserved2\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-CFG-ESFA",
+    "class_id": "0x06",
+    "message_id": "0x4C",
+    "description": "Get/set the Accelerometer (A) sensor configuration",
+    "message_type": "get_set",
+    "payload_length": {
+      "fixed": 20
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "U1",
+        "name": "version",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "byte_offset": 1,
+        "data_type": {
+          "array_of": "U1",
+          "count": 9
+        },
+        "name": "reserved1",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "byte_offset": 10,
+        "data_type": "U1",
+        "name": "accelRmsThdl",
+        "scale": {
+          "raw": "2^-6",
+          "multiplier": 0.015625
+        },
+        "unit": "m/s^2",
+        "description": "Accelerometer RMS threshold below which automatically estimated accelerometer noise-level (accuracy) is updated."
+      },
+      {
+        "byte_offset": 11,
+        "data_type": "U1",
+        "name": "frequency",
+        "unit": "Hz",
+        "description": "Nominal accelerometer sensor data sampling frequency."
+      },
+      {
+        "byte_offset": 12,
+        "data_type": "U2",
+        "name": "latency",
+        "unit": "ms",
+        "description": "Accelerometer sensor data latency due to e.g. CAN bus."
+      },
+      {
+        "byte_offset": 14,
+        "data_type": "U2",
+        "name": "accuracy",
+        "scale": {
+          "raw": "1e-4",
+          "multiplier": 0.0001
+        },
+        "unit": "m/s^2",
+        "description": "Accelerometer sensor data accuracy."
+      },
+      {
+        "byte_offset": 16,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "name": "reserved2",
+        "description": "Reserved",
+        "reserved": true
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/h8hz9oikw9ln"
+}

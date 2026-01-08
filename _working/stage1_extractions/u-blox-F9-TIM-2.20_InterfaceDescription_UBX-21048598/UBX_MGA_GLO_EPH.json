@@ -1,0 +1,249 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-MGA-GLO-EPH",
+  "extraction_timestamp": "2026-01-08T03:39:55.627300+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 112,
+    "end": 114
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-GLO-EPH\nExpected IDs: class_id=0x13, message_id=0x06\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-GLO-EPH\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MGA-GLO-EPH\",\n  \"class_id\": \"0x13\",\n  \"message_id\": \"0x06\",\n  \"description\": \"GLONASS ephemeris assistance\",\n  \"message_type\": \"input\",\n  \"payload_length\": {\n    \"fixed\": 48\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"type\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message type (0x01 for this type)\",\n      \"fixed_value\": 1\n    },\n    {\n      \"byte_offset\": 1,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x00 for this version)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"name\": \"svId\",\n      \"data_type\": \"U1\",\n      \"description\": \"GLONASS Satellite identifier (see Satellite Numbering)\"\n    },\n    {\n      \"byte_offset\": 3,\n      \"name\": \"reserved0\",\n      \"data_type\": \"U1\",\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"name\": \"FT\",\n      \"data_type\": \"U1\",\n      \"description\": \"User range accuracy\"\n    },\n    {\n      \"byte_offset\": 5,\n      \"name\": \"B\",\n      \"data_type\": \"U1\",\n      \"description\": \"Health flag from string 2\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"name\": \"M\",\n      \"data_type\": \"U1\",\n      \"description\": \"Type of GLONASS satellite (1 indicates GLONASS-M)\"\n    },\n    {\n      \"byte_offset\": 7,\n      \"name\": \"H\",\n      \"data_type\": \"I1\",\n      \"description\": \"Carrier frequency number of navigation RF signal, Range=(-7.. 6), -128 for unknown\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"X\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-11\",\n        \"multiplier\": 4.8828125e-4\n      },\n      \"unit\": \"km\",\n      \"description\": \"X component of the SV position in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"Y\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-11\",\n        \"multiplier\": 4.8828125e-4\n      },\n      \"unit\": \"km\",\n      \"description\": \"Y component of the SV position in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"Z\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-11\",\n        \"multiplier\": 4.8828125e-4\n      },\n      \"unit\": \"km\",\n      \"description\": \"Z component of the SV position in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"name\": \"dx\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-20\",\n        \"multiplier\": 9.5367431640625e-7\n      },\n      \"unit\": \"km/s\",\n      \"description\": \"X component of the SV velocity in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"name\": \"dy\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-20\",\n        \"multiplier\": 9.5367431640625e-7\n      },\n      \"unit\": \"km/s\",\n      \"description\": \"Y component of the SV velocity in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"name\": \"dz\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-20\",\n        \"multiplier\": 9.5367431640625e-7\n      },\n      \"unit\": \"km/s\",\n      \"description\": \"Z component of the SV velocity in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 32,\n      \"name\": \"ddx\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"km/s^2\",\n      \"description\": \"X component of the SV acceleration in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 33,\n      \"name\": \"ddy\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"km/s^2\",\n      \"description\": \"Y component of the SV acceleration in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 34,\n      \"name\": \"ddz\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"km/s^2\",\n      \"description\": \"Z component of the SV acceleration in PZ-90.02 coordinate System\"\n    },\n    {\n      \"byte_offset\": 35,\n      \"name\": \"tb\",\n      \"data_type\": \"U1\",\n      \"scale\": {\n        \"raw\": \"15\",\n        \"multiplier\": 15\n      },\n      \"unit\": \"minutes\",\n      \"description\": \"Index of a time interval within current day according to UTC(SU)\"\n    },\n    {\n      \"byte_offset\": 36,\n      \"name\": \"gamma\",\n      \"data_type\": \"I2\",\n      \"scale\": {\n        \"raw\": \"2^-40\",\n        \"multiplier\": 9.094947017729282e-13\n      },\n      \"description\": \"Relative carrier frequency deviation\"\n    },\n    {\n      \"byte_offset\": 38,\n      \"name\": \"E\",\n      \"data_type\": \"U1\",\n      \"unit\": \"days\",\n      \"description\": \"Ephemeris data age indicator\"\n    },\n    {\n      \"byte_offset\": 39,\n      \"name\": \"deltaTau\",\n      \"data_type\": \"I1\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"s\",\n      \"description\": \"Time difference between L2 and L1 band\"\n    },\n    {\n      \"byte_offset\": 40,\n      \"name\": \"tau\",\n      \"data_type\": \"I4\",\n      \"scale\": {\n        \"raw\": \"2^-30\",\n        \"multiplier\": 9.313225746154785e-10\n      },\n      \"unit\": \"s\",\n      \"description\": \"SV clock bias\"\n    },\n    {\n      \"byte_offset\": 44,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"description\": \"Reserved\",\n      \"reserved\": true\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MGA-GLO-EPH",
+    "class_id": "0x13",
+    "message_id": "0x06",
+    "description": "GLONASS ephemeris assistance",
+    "message_type": "input",
+    "payload_length": {
+      "fixed": 48
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "type",
+          "data_type": "U1",
+          "description": "Message type (0x01 for this type)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "name": "version",
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 2,
+          "name": "svId",
+          "data_type": "U1",
+          "description": "GLONASS Satellite identifier (see Satellite Numbering)"
+        },
+        {
+          "byte_offset": 3,
+          "name": "reserved0",
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "name": "FT",
+          "data_type": "U1",
+          "description": "User range accuracy"
+        },
+        {
+          "byte_offset": 5,
+          "name": "B",
+          "data_type": "U1",
+          "description": "Health flag from string 2"
+        },
+        {
+          "byte_offset": 6,
+          "name": "M",
+          "data_type": "U1",
+          "description": "Type of GLONASS satellite (1 indicates GLONASS-M)"
+        },
+        {
+          "byte_offset": 7,
+          "name": "H",
+          "data_type": "I1",
+          "description": "Carrier frequency number of navigation RF signal, Range=(-7.. 6), -128 for unknown"
+        },
+        {
+          "byte_offset": 8,
+          "name": "X",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-11",
+            "multiplier": 0.00048828125
+          },
+          "unit": "km",
+          "description": "X component of the SV position in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 12,
+          "name": "Y",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-11",
+            "multiplier": 0.00048828125
+          },
+          "unit": "km",
+          "description": "Y component of the SV position in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 16,
+          "name": "Z",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-11",
+            "multiplier": 0.00048828125
+          },
+          "unit": "km",
+          "description": "Z component of the SV position in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 20,
+          "name": "dx",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "km/s",
+          "description": "X component of the SV velocity in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 24,
+          "name": "dy",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "km/s",
+          "description": "Y component of the SV velocity in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 28,
+          "name": "dz",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-20",
+            "multiplier": 9.5367431640625e-07
+          },
+          "unit": "km/s",
+          "description": "Z component of the SV velocity in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 32,
+          "name": "ddx",
+          "data_type": "I1",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "km/s^2",
+          "description": "X component of the SV acceleration in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 33,
+          "name": "ddy",
+          "data_type": "I1",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "km/s^2",
+          "description": "Y component of the SV acceleration in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 34,
+          "name": "ddz",
+          "data_type": "I1",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "km/s^2",
+          "description": "Z component of the SV acceleration in PZ-90.02 coordinate System"
+        },
+        {
+          "byte_offset": 35,
+          "name": "tb",
+          "data_type": "U1",
+          "scale": {
+            "raw": "15",
+            "multiplier": 15
+          },
+          "unit": "minutes",
+          "description": "Index of a time interval within current day according to UTC(SU)"
+        },
+        {
+          "byte_offset": 36,
+          "name": "gamma",
+          "data_type": "I2",
+          "scale": {
+            "raw": "2^-40",
+            "multiplier": 9.094947017729282e-13
+          },
+          "description": "Relative carrier frequency deviation"
+        },
+        {
+          "byte_offset": 38,
+          "name": "E",
+          "data_type": "U1",
+          "unit": "days",
+          "description": "Ephemeris data age indicator"
+        },
+        {
+          "byte_offset": 39,
+          "name": "deltaTau",
+          "data_type": "I1",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "s",
+          "description": "Time difference between L2 and L1 band"
+        },
+        {
+          "byte_offset": 40,
+          "name": "tau",
+          "data_type": "I4",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 9.313225746154785e-10
+          },
+          "unit": "s",
+          "description": "SV clock bias"
+        },
+        {
+          "byte_offset": 44,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/u3taekva3069"
+}

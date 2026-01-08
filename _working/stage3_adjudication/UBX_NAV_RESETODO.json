@@ -1,13 +1,13 @@
 {
   "message_name": "UBX-NAV-RESETODO",
-  "num_extractions": 9,
+  "num_extractions": 11,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-NAV-RESETODO",
       "class_id": "0x01",
       "message_id": "0x10",
-      "description": "Reset odometer",
       "message_type": "command",
+      "description": "Reset odometer. This message resets the traveled distance computed by the odometer. UBX-ACK-ACK or UBX-ACK-NAK are returned to indicate success or failure.",
       "payload": {
         "length": {
           "fixed": 0
@@ -18,7 +18,33 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "extraction_error",
+        "issues": [
+          "Used integer class_id and message_id instead of hex strings",
+          "Used non-standard schema (ubx_message wrapper and payload_fields instead of payload object)"
+        ]
+      },
+      {
+        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
         "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "extraction_error",
+        "issues": [
+          "Schema mismatch: payload_length is at top level",
+          "Schema mismatch: payload is an array instead of an object containing fields"
+        ]
+      },
+      {
+        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
         "verdict": "correct",
         "issues": []
       },
@@ -28,12 +54,17 @@
         "issues": []
       },
       {
-        "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": []
       },
@@ -46,24 +77,9 @@
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [],
-    "reasoning": "All 9 provided extractions describe the exact same structure: a command message UBX-NAV-RESETODO (0x01 0x10) with an empty payload (length 0). The differences are solely in the text description fields (some mentioning ACK/NAK behavior explicitly), but the protocol definition (ID, length, fields) is consistent across all generations."
+    "reasoning": "The UBX-NAV-RESETODO message is structurally simple and consistent across all examined receiver generations (u-blox 8 through F10). It is a zero-length command with Class 0x01 and ID 0x10. All extractions correctly identified these values. Variances in the extractions are purely related to the LLM's chosen output schema (e.g., nesting of length/fields) or the verbosity of the description text extracted from the document body, rather than differences in the protocol itself. Extraction 1 and 4 are marked as errors due to deviation from the most common and structurally robust schema found in the majority of extractions."
   }
 }

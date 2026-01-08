@@ -1,0 +1,157 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-MGA-BDS-UTC",
+  "extraction_timestamp": "2026-01-08T06:11:14.280606+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 325,
+    "end": 329
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MGA-BDS-UTC\nExpected IDs: class_id=0x13, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MGA-BDS-UTC\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-MGA-BDS-UTC\",\n    \"class_id\": \"0x13\",\n    \"message_id\": \"0x03\",\n    \"message_type\": \"input\",\n    \"description\": \"BeiDou UTC assistance\",\n    \"firmware_support\": [\n      \"15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ],\n    \"comment\": \"This message allows the delivery of BeiDou UTC assistance to a receiver. See the description of AssistNow Online for details.\",\n    \"payload_length\": {\n      \"fixed\": 20\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"type\",\n        \"description\": \"Message type (0x05 for this type)\",\n        \"fixed_value\": 5\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"U1\",\n        \"name\": \"version\",\n        \"description\": \"Message version (0x00 for this version)\"\n      },\n      {\n        \"byte_offset\": 2,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"I4\",\n        \"name\": \"a0UTC\",\n        \"scale\": {\n          \"raw\": \"2^-30\",\n          \"multiplier\": 2.3283064365386963e-10\n        },\n        \"unit\": \"s\",\n        \"description\": \"BDT clock bias relative to UTC\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": \"I4\",\n        \"name\": \"a1UTC\",\n        \"scale\": {\n          \"raw\": \"2^-50\",\n          \"multiplier\": 8.881784197001252e-16\n        },\n        \"unit\": \"s/s\",\n        \"description\": \"BDT clock rate relative to UTC\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"data_type\": \"I1\",\n        \"name\": \"dtLS\",\n        \"unit\": \"s\",\n        \"description\": \"Delta time due to leap seconds before the new leap second effective\"\n      },\n      {\n        \"byte_offset\": 13,\n        \"data_type\": \"U1\",\n        \"name\": \"reserved2\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"byte_offset\": 14,\n        \"data_type\": \"U1\",\n        \"name\": \"wnRec\",\n        \"unit\": \"week\",\n        \"description\": \"BeiDou week number of reception of this UTC parameter set (8-bit truncated)\"\n      },\n      {\n        \"byte_offset\": 15,\n        \"data_type\": \"U1\",\n        \"name\": \"wnLSF\",\n        \"unit\": \"week\",\n        \"description\": \"Week number of the new leap second\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"data_type\": \"U1\",\n        \"name\": \"dN\",\n        \"unit\": \"day\",\n        \"description\": \"Day number of the new leap second\"\n      },\n      {\n        \"byte_offset\": 17,\n        \"data_type\": \"I1\",\n        \"name\": \"dtLSF\",\n        \"unit\": \"s\",\n        \"description\": \"Delta time due to leap seconds after the new leap second effective\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"name\": \"reserved3\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-MGA-BDS-UTC",
+      "class_id": "0x13",
+      "message_id": "0x03",
+      "message_type": "input",
+      "description": "BeiDou UTC assistance",
+      "firmware_support": [
+        "15",
+        "15.01",
+        "16",
+        "17",
+        "18",
+        "19",
+        "19.1",
+        "19.2",
+        "20",
+        "20.01",
+        "20.1",
+        "20.2",
+        "20.3",
+        "22",
+        "22.01",
+        "23",
+        "23.01"
+      ],
+      "comment": "This message allows the delivery of BeiDou UTC assistance to a receiver. See the description of AssistNow Online for details.",
+      "payload_length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "type",
+          "description": "Message type (0x05 for this type)",
+          "fixed_value": 5
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "I4",
+          "name": "a0UTC",
+          "scale": {
+            "raw": "2^-30",
+            "multiplier": 2.3283064365386963e-10
+          },
+          "unit": "s",
+          "description": "BDT clock bias relative to UTC"
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "I4",
+          "name": "a1UTC",
+          "scale": {
+            "raw": "2^-50",
+            "multiplier": 8.881784197001252e-16
+          },
+          "unit": "s/s",
+          "description": "BDT clock rate relative to UTC"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "I1",
+          "name": "dtLS",
+          "unit": "s",
+          "description": "Delta time due to leap seconds before the new leap second effective"
+        },
+        {
+          "byte_offset": 13,
+          "data_type": "U1",
+          "name": "reserved2",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "byte_offset": 14,
+          "data_type": "U1",
+          "name": "wnRec",
+          "unit": "week",
+          "description": "BeiDou week number of reception of this UTC parameter set (8-bit truncated)"
+        },
+        {
+          "byte_offset": 15,
+          "data_type": "U1",
+          "name": "wnLSF",
+          "unit": "week",
+          "description": "Week number of the new leap second"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U1",
+          "name": "dN",
+          "unit": "day",
+          "description": "Day number of the new leap second"
+        },
+        {
+          "byte_offset": 17,
+          "data_type": "I1",
+          "name": "dtLSF",
+          "unit": "s",
+          "description": "Delta time due to leap seconds after the new leap second effective"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved3",
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/aobcofbt7jlu"
+}

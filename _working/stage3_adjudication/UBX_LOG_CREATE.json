@@ -1,12 +1,12 @@
 {
   "message_name": "UBX-LOG-CREATE",
-  "num_extractions": 11,
+  "num_extractions": 12,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-LOG-CREATE",
       "class_id": "0x21",
       "message_id": "0x07",
-      "description": "This message is used to create an initial logging file and activate the logging subsystem.",
+      "description": "Create log file and activate the logging subsystem.",
       "message_type": "command",
       "payload": {
         "length": {
@@ -46,13 +46,13 @@
             "name": "logSize",
             "byte_offset": 3,
             "data_type": "U1",
-            "description": "Indicates the size of the log: 0=Maximum safe size, 1=Minimum size, 2=User-defined size (see userDefinedSize)"
+            "description": "Indicates the size of the log: 0 (maximum safe size), 1 (minimum size), 2 (user-defined)"
           },
           {
             "name": "userDefinedSize",
             "byte_offset": 4,
             "data_type": "U4",
-            "description": "Sets the maximum amount of space in the filestore that can be used by the logging task. Only applicable if logSize is set to user-defined.",
+            "description": "Sets the maximum amount of space in the filestore that can be used by the logging task. This field is only applicable if logSize is set to user-defined.",
             "unit": "bytes"
           }
         ]
@@ -61,12 +61,19 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "extraction_error",
+        "issues": [
+          "Failed to identify message fields, labeling the entire 8-byte payload as reserved."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -76,26 +83,9 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "correct",
-        "issues": [
-          "Field at offset 4 named 'userDefined' instead of 'userDefinedSize'"
-        ]
       },
       {
         "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
@@ -106,39 +96,40 @@
         "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
         "verdict": "extraction_error",
         "issues": [
-          "Fields array is empty despite message having known payload"
+          "Fields list is empty despite fixed length of 8 bytes."
         ]
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "valid_variation",
-        "issues": []
-      }
-    ],
-    "valid_variations": [
+        "verdict": "correct",
+        "issues": [
+          "Field at offset 2 named 'reserved1' instead of 'reserved0', which is a minor naming convention difference."
+        ]
+      },
       {
-        "sources": [
-          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
-        ],
-        "structure": {
-          "fields": [
-            {
-              "name": "reserved1",
-              "byte_offset": 2,
-              "data_type": "U1",
-              "description": "Reserved",
-              "reserved": true
-            }
-          ]
-        },
-        "reason": "Older generation documentation (M8) labeled the reserved field at offset 2 as 'reserved1' rather than 'reserved0'. The binary structure is identical."
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": [
+          "Field at offset 4 named 'userDefined' instead of 'userDefinedSize'."
+        ]
       }
     ],
-    "reasoning": "10 out of 11 extractions agree on the exact 8-byte structure. Extraction 9 failed to parse fields entirely. Extraction 7 had a minor naming truncation on 'userDefinedSize'. Extraction 11 (M8 generation) used a slightly different naming convention for the reserved field ('reserved1' vs 'reserved0'), which is a known documentation variance between u-blox generations."
+    "valid_variations": [],
+    "reasoning": "The UBX-LOG-CREATE message is highly stable across multiple u-blox generations (M8, M9, M10, and F9 series). It consistently uses an 8-byte payload containing a version, a bitfield, a reserved byte, a size-mode selector, and a 4-byte custom size field. Extractions 2 and 7 were identified as errors because they failed to parse the field-level detail that is clearly present in all other sources. Minor differences in field naming (e.g., 'reserved1' vs 'reserved0' or 'userDefined' vs 'userDefinedSize') do not represent protocol variations but rather minor documentation or extraction labeling choices."
   }
 }

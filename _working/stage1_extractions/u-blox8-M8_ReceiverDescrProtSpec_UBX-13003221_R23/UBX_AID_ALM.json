@@ -1,0 +1,57 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-AID-ALM",
+  "extraction_timestamp": "2026-01-08T05:28:33.030059+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 197,
+    "end": 199
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-AID-ALM\nExpected IDs: class_id=0x0B, message_id=0x30\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-AID-ALM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"message_name\": \"UBX-AID-ALM\",\n    \"class_id\": \"0x0B\",\n    \"message_id\": \"0x30\",\n    \"description\": \"Poll GPS aiding almanac data for all SVs\",\n    \"message_type\": \"get\",\n    \"payload_length\": {\n      \"fixed\": 0\n    },\n    \"payload_fields\": [],\n    \"comment\": \"Poll GPS aiding data (Almanac) for all 32 SVs by sending this message to the receiver without any payload. The receiver will return 32 messages of type AID-ALM. All UBX-AID messages are deprecated; use UBX-MGA messages instead.\",\n    \"supported_versions\": [\n      \"15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ]\n  },\n  {\n    \"message_name\": \"UBX-AID-ALM\",\n    \"class_id\": \"0x0B\",\n    \"message_id\": \"0x30\",\n    \"description\": \"Poll GPS aiding almanac data for a SV\",\n    \"message_type\": \"get\",\n    \"payload_length\": {\n      \"fixed\": 1\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"svid\",\n        \"unit\": null,\n        \"description\": \"SV ID for which the receiver shall return its Almanac Data (Valid Range: 1 .. 32 or 51, 56, 63).\",\n        \"scale\": null,\n        \"reserved\": false,\n        \"fixed_value\": null\n      }\n    ],\n    \"comment\": \"Poll GPS aiding data (Almanac) for an SV by sending this message to the receiver. The receiver will return one message of type AID-ALM. All UBX-AID messages are deprecated; use UBX-MGA messages instead.\",\n    \"supported_versions\": [\n      \"15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ]\n  },\n  {\n    \"message_name\": \"UBX-AID-ALM\",\n    \"class_id\": \"0x0B\",\n    \"message_id\": \"0x30\",\n    \"description\": \"GPS aiding almanac input/output message\",\n    \"message_type\": \"set_get\",\n    \"payload_length\": {\n      \"fixed\": 40\n    },\n    \"payload_fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U4\",\n        \"name\": \"svid\",\n        \"unit\": null,\n        \"description\": \"SV ID for which this Almanac Data is (Valid Range: 1 .. 32 or 51, 56, 63).\",\n        \"scale\": null,\n        \"reserved\": false,\n        \"fixed_value\": null\n      },\n      {\n        \"byte_offset\": 4,\n        \"data_type\": \"U4\",\n        \"name\": \"week\",\n        \"unit\": null,\n        \"description\": \"Issue Date of Almanac (GPS week number). If this value is 0, the 'dwrd' field is not sent by the receiver, and the message length is 8 bytes instead of 40.\",\n        \"scale\": null,\n        \"reserved\": false,\n        \"fixed_value\": null\n      },\n      {\n        \"byte_offset\": 8,\n        \"data_type\": {\n          \"array_of\": \"U4\",\n          \"count\": 8\n        },\n        \"name\": \"dwrd\",\n        \"unit\": null,\n        \"description\": \"Almanac Words (DWRD0-DWRD7). These 8 words follow the Hand-Over Word (HOW) from the GPS navigation message (sub-frame 5, pages 1-24 or subframe 4, pages 2-10). The parity bits have been removed; data is in Bits 0 to 23. Bits 24 to 31 shall be ignored. This block is only present if 'week' is non-zero. See IS-GPS-200 for full description of Almanac contents.\",\n        \"scale\": null,\n        \"reserved\": false,\n        \"fixed_value\": null\n      }\n    ],\n    \"comment\": \"All UBX-AID messages are deprecated; use UBX-MGA messages instead. This message can be sent or received with a payload length of 8 bytes (svid, week only) or 40 bytes (svid, week, and dwrd[8]). The dwrd block is optional and not sent if 'week' is 0, indicating almanac not available.\",\n    \"supported_versions\": [\n      \"15\",\n      \"15.01\",\n      \"16\",\n      \"17\",\n      \"18\",\n      \"19\",\n      \"19.1\",\n      \"19.2\",\n      \"20\",\n      \"20.01\",\n      \"20.1\",\n      \"20.2\",\n      \"20.3\",\n      \"22\",\n      \"22.01\",\n      \"23\",\n      \"23.01\"\n    ]\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-AID-ALM",
+    "class_id": "0x0B",
+    "message_id": "0x30",
+    "description": "Poll GPS aiding almanac data for all SVs",
+    "message_type": "get",
+    "payload_length": {
+      "fixed": 0
+    },
+    "payload_fields": [],
+    "comment": "Poll GPS aiding data (Almanac) for all 32 SVs by sending this message to the receiver without any payload. The receiver will return 32 messages of type AID-ALM. All UBX-AID messages are deprecated; use UBX-MGA messages instead.",
+    "supported_versions": [
+      "15",
+      "15.01",
+      "16",
+      "17",
+      "18",
+      "19",
+      "19.1",
+      "19.2",
+      "20",
+      "20.01",
+      "20.1",
+      "20.2",
+      "20.3",
+      "22",
+      "22.01",
+      "23",
+      "23.01"
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/85wr2hocb93w"
+}

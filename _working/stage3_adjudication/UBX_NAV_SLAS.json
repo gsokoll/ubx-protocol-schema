@@ -1,265 +1,249 @@
 {
   "message_name": "UBX-NAV-SLAS",
-  "num_extractions": 12,
-  "adjudication": {
-    "canonical_structure": {
-      "name": "UBX-NAV-SLAS",
-      "class_id": "0x01",
-      "message_id": "0x42",
-      "description": "QZSS L1S SLAS status data",
-      "message_type": "periodic_polled",
-      "payload": {
-        "length": {
-          "variable": {
-            "base": 20,
-            "formula": "20 + (cnt * 8)",
-            "min": 20
-          }
-        },
-        "fields": [
-          {
-            "name": "iTOW",
-            "byte_offset": 0,
-            "data_type": "U4",
-            "description": "GPS time of week of the navigation epoch",
-            "unit": "ms"
+  "num_extractions": 13,
+  "adjudication": [
+    {
+      "canonical_structure": {
+        "name": "UBX-NAV-SLAS",
+        "class_id": "0x01",
+        "message_id": "0x42",
+        "description": "QZSS L1S SLAS status data",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 20,
+              "formula": "20 + cnt * 8",
+              "min": 20
+            }
           },
-          {
-            "name": "version",
-            "byte_offset": 4,
-            "data_type": "U1",
-            "description": "Message version (0x00)"
-          },
-          {
-            "name": "reserved0",
-            "byte_offset": 5,
-            "data_type": {
-              "array_of": "U1",
-              "count": 3
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch"
             },
-            "description": "Reserved",
-            "reserved": true
-          },
-          {
-            "name": "gmsLon",
-            "byte_offset": 8,
-            "data_type": "I4",
-            "description": "Longitude of the used ground monitoring station",
-            "unit": "deg",
-            "scale": {
-              "multiplier": 0.001
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00)"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "reserved": true
+            },
+            {
+              "name": "gmsLon",
+              "byte_offset": 8,
+              "data_type": "I4",
+              "unit": "deg",
+              "scale": 0.001,
+              "description": "Longitude of the used ground monitoring station"
+            },
+            {
+              "name": "gmsLat",
+              "byte_offset": 12,
+              "data_type": "I4",
+              "unit": "deg",
+              "scale": 0.001,
+              "description": "Latitude of the used ground monitoring station"
+            },
+            {
+              "name": "gmsCode",
+              "byte_offset": 16,
+              "data_type": "U1",
+              "description": "Code of the used ground monitoring station"
+            },
+            {
+              "name": "qzssSvId",
+              "byte_offset": 17,
+              "data_type": "U1",
+              "description": "Satellite identifier of the QZS/GEO whose correction data is used"
+            },
+            {
+              "name": "serviceFlags",
+              "byte_offset": 18,
+              "data_type": "X1",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gmsAvailable",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Ground monitoring station available"
+                  },
+                  {
+                    "name": "qzssSvAvailable",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Correction providing QZSS SV available"
+                  },
+                  {
+                    "name": "testMode",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Currently used QZSS SV in test mode"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "cnt",
+              "byte_offset": 19,
+              "data_type": "U1",
+              "description": "Number of pseudorange corrections following"
             }
-          },
-          {
-            "name": "gmsLat",
-            "byte_offset": 12,
-            "data_type": "I4",
-            "description": "Latitude of the used ground monitoring station",
-            "unit": "deg",
-            "scale": {
-              "multiplier": 0.001
-            }
-          },
-          {
-            "name": "gmsCode",
-            "byte_offset": 16,
-            "data_type": "U1",
-            "description": "Code of the used ground monitoring station"
-          },
-          {
-            "name": "qzssSvId",
-            "byte_offset": 17,
-            "data_type": "U1",
-            "description": "Satellite identifier of the QZS/GEO used"
-          },
-          {
-            "name": "serviceFlags",
-            "byte_offset": 18,
-            "data_type": "X1",
-            "description": "Flags regarding SLAS service",
-            "bitfield": {
-              "bits": [
+          ],
+          "repeated_groups": [
+            {
+              "name": "pseudorangeCorrections",
+              "repetition_type": "count_field",
+              "count_field": "cnt",
+              "group_size_bytes": 8,
+              "fields": [
                 {
-                  "name": "gmsAvailable",
-                  "bit_start": 0,
-                  "bit_end": 0
+                  "name": "gnssId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "GNSS identifier"
                 },
                 {
-                  "name": "qzssSvAvailable",
-                  "bit_start": 1,
-                  "bit_end": 1
+                  "name": "svId",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Satellite identifier"
                 },
                 {
-                  "name": "testMode",
-                  "bit_start": 2,
-                  "bit_end": 2
+                  "name": "reserved1",
+                  "byte_offset": 2,
+                  "data_type": "U1",
+                  "reserved": true
+                },
+                {
+                  "name": "reserved2",
+                  "byte_offset": 3,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "reserved": true
+                },
+                {
+                  "name": "prc",
+                  "byte_offset": 6,
+                  "data_type": "I2",
+                  "unit": "cm",
+                  "description": "Pseudorange correction"
                 }
               ]
             }
-          },
-          {
-            "name": "cnt",
-            "byte_offset": 19,
-            "data_type": "U1",
-            "description": "Number of pseudorange corrections following"
-          }
-        ],
-        "repeated_groups": [
-          {
-            "name": "corrections",
-            "repetition_type": "count_field",
-            "count_field": "cnt",
-            "group_size_bytes": 8,
-            "base_offset": 20,
-            "fields": [
-              {
-                "name": "gnssId",
-                "byte_offset": 0,
-                "data_type": "U1"
-              },
-              {
-                "name": "svId",
-                "byte_offset": 1,
-                "data_type": "U1"
-              },
-              {
-                "name": "reserved1",
-                "byte_offset": 2,
-                "data_type": "U1",
-                "reserved": true
-              },
-              {
-                "name": "reserved2",
-                "byte_offset": 3,
-                "data_type": {
-                  "array_of": "U1",
-                  "count": 3
-                },
-                "reserved": true
-              },
-              {
-                "name": "prc",
-                "byte_offset": 6,
-                "data_type": "I2",
-                "description": "Pseudorange correction",
-                "unit": "cm"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "canonical_confidence": "high",
-    "extraction_verdicts": [
-      {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "extraction_error",
-        "issues": [
-          "Incorrect payload length (12 vs 20)",
-          "Missing all fields"
-        ]
+          ]
+        }
       },
-      {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
-        "verdict": "valid_variation",
-        "issues": [
-          "Repeated group not defined in documentation (explicit note in manual)",
-          "Length specified as fixed 20 despite having a count field"
-        ]
-      },
-      {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missing 'cnt' field at offset 19",
-          "Missing repeated group 'corrections'",
-          "Incorrect length (19 vs 20+)"
-        ]
-      },
-      {
-        "source": "F9-HPS120_Interfacedescription_UBX-19056845",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "extraction_error",
-        "issues": [
-          "Missing 'cnt' field at offset 19",
-          "Missing repeated group 'corrections'",
-          "Incorrect length (19 vs 20+)"
-        ]
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
-        "verdict": "extraction_error",
-        "issues": [
-          "Malformed length formula (cnt - 8)",
-          "Missing repeated group definition"
-        ]
-      },
-      {
-        "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-        "verdict": "valid_variation",
-        "issues": [
-          "Repeated group fields 2-7 are marked as reserved (array of 6) instead of reserved+prc"
-        ]
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-        "verdict": "correct",
-        "issues": []
-      }
-    ],
-    "valid_variations": [
-      {
-        "sources": [
-          "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436"
-        ],
-        "structure": {
-          "payload_length": "Fixed 20 (Header only)",
-          "missing_fields": [
-            "repeated_group"
+      "canonical_confidence": "high",
+      "extraction_verdicts": [
+        {
+          "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+          "verdict": "extraction_error",
+          "issues": [
+            "Incorrect base length (12 instead of 19/20)",
+            "Missing all payload fields"
           ]
         },
-        "reason": "The documentation for this specific version explicitly states that the structure of the corrections is not defined."
-      },
-      {
-        "sources": [
-          "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975"
-        ],
-        "structure": {
-          "repeated_group": {
-            "fields": [
-              "gnssId",
-              "svId",
-              "reserved[6]"
-            ]
-          }
+        {
+          "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "verdict": "correct",
+          "issues": []
         },
-        "reason": "In this firmware version, the pseudorange correction (prc) field is either not supported or marked as reserved in the documentation."
-      }
-    ],
-    "reasoning": "The consensus structure (Header of 20 bytes + Repeated group of 8 bytes) is supported by 6 correct extractions across M8, M10, and F9 generations. Two sources (Ext 4, 6) exhibit a specific truncation error at 19 bytes, missing the `cnt` field and body, likely due to pagination or formatting in the source PDF. Two sources (Ext 2, 9) represent valid variations where the repeated body is either undocumented or fields are reserved. Ext 1 and 8 contain significant structural errors (missing fields or malformed formulas)."
-  }
+        {
+          "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+          "verdict": "extraction_error",
+          "issues": [
+            "The 'prc' field (bytes 6-7 of the repeated group) was incorrectly merged into 'reserved1' with a count of 6 bytes."
+          ]
+        },
+        {
+          "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+          "verdict": "extraction_error",
+          "issues": [
+            "Identified 'cnt' field but failed to extract the repeated group structure."
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+          "verdict": "correct",
+          "issues": []
+        },
+        {
+          "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+          "verdict": "valid_variation",
+          "issues": [
+            "Represents a truncated 19-byte version of the message ending at serviceFlags."
+          ]
+        },
+        {
+          "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+          "verdict": "extraction_error",
+          "issues": [
+            "Nonsense length formula: 20 + cnt - 8",
+            "Missing repeated group"
+          ]
+        },
+        {
+          "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+          "verdict": "valid_variation",
+          "issues": [
+            "Represents a truncated 19-byte version of the message."
+          ]
+        }
+      ],
+      "valid_variations": [
+        {
+          "sources": [
+            "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+            "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+          ],
+          "structure": {
+            "length": 19,
+            "description": "A variant of the NAV-SLAS message that terminates after the serviceFlags byte, omitting the 'cnt' field and the subsequent pseudorange corrections."
+          },
+          "reason": "Specific high-precision firmware versions (HPG) sometimes document a shortened version of the status message that provides station identifiers without per-satellite corrections."
+        }
+      ],
+      "reasoning": "The message UBX-NAV-SLAS typically follows a standard UBX pattern: a fixed header followed by a repeating group count ('cnt') and the group itself. The primary version used across M8, M9, M10, and F9 series is 20 bytes + N*8. Some extractions (11, 13) showed a 19-byte version which appears to be a legitimate protocol variation for specific firmware. Extraction 5 failed by misidentifying the 'prc' field as part of a larger 'reserved' array. Extractions 7 and 12 acknowledged the count field but failed to parse the following block."
+    }
+  ]
 }

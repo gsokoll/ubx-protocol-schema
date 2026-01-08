@@ -1,0 +1,93 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-RXM-PMREQ-CMD",
+  "extraction_timestamp": "2026-01-08T06:47:16.700381+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 422,
+    "end": 424
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-RXM-PMREQ from u-blox PDF manual pages.\n\nThis message has TWO payload structures based on firmware version:\n\n**UBX-RXM-PMREQ-V0 (8 bytes, older firmware):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U4 | duration | Duration of power save mode (ms) |\n| 4 | X4 | flags | Task flags |\n\n**UBX-RXM-PMREQ-V1 (16 bytes, newer firmware):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x00) |\n| 1 | U1[3] | reserved0 | Reserved |\n| 4 | U4 | duration | Duration of power save mode (ms) |\n| 8 | X4 | flags | Task flags |\n| 12 | X4 | wakeupSources | Wakeup sources |\n\nCRITICAL: V0 has NO version field - it starts with duration!\nCRITICAL: flags is X4 (bitfield), NOT U4!\n\nExtract based on message name suffix or payload length:\n- \"UBX-RXM-PMREQ-V0\" or 8-byte payload \u2192 V0 structure\n- \"UBX-RXM-PMREQ-V1\" or 16-byte payload \u2192 V1 structure\n\nDo NOT merge both structures. Return using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "[\n  {\n    \"tool_code\": \"ubx_message_extraction\",\n    \"ubx_message\": {\n      \"name\": \"UBX-RXM-PMREQ-V0\",\n      \"description\": \"Power management request\",\n      \"supported_firmware\": [\n        \"u-blox 8/u-blox M8 protocol versions 15\",\n        \"15.01\",\n        \"16\",\n        \"17\",\n        \"18\",\n        \"19\",\n        \"19.1\",\n        \"19.2\",\n        \"20\",\n        \"20.01\",\n        \"20.1\",\n        \"20.2\",\n        \"20.3\",\n        \"22\",\n        \"22.01\",\n        \"23\",\n        \"23.01\"\n      ],\n      \"header\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Header\",\n        \"value\": \"0xB5 0x62\"\n      },\n      \"message_id\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Message ID\",\n        \"class_id\": \"0x02\",\n        \"message_id\": \"0x41\"\n      },\n      \"payload_length\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Length\",\n        \"value\": 8\n      },\n      \"payload_structure\": [\n        {\n          \"byte_offset\": 0,\n          \"type\": \"U4\",\n          \"name\": \"duration\",\n          \"unit\": \"ms\",\n          \"description\": \"Duration of the requested task, set to zero for infinite duration. The maximum supported time is 12 days.\"\n        },\n        {\n          \"byte_offset\": 4,\n          \"type\": \"X4\",\n          \"name\": \"flags\",\n          \"description\": \"Task flags\",\n          \"bitfields\": [\n            {\n              \"bit\": 1,\n              \"name\": \"backup\",\n              \"description\": \"The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  {\n    \"tool_code\": \"ubx_message_extraction\",\n    \"ubx_message\": {\n      \"name\": \"UBX-RXM-PMREQ-V1\",\n      \"description\": \"Power management request\",\n      \"supported_firmware\": [\n        \"u-blox 8/u-blox M8 protocol versions 18\",\n        \"19\",\n        \"19.1\",\n        \"19.2\",\n        \"20\",\n        \"20.01\",\n        \"20.1\",\n        \"20.2\",\n        \"20.3\",\n        \"22\",\n        \"22.01\",\n        \"23\",\n        \"23.01\"\n      ],\n      \"header\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Header\",\n        \"value\": \"0xB5 0x62\"\n      },\n      \"message_id\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Message ID\",\n        \"class_id\": \"0x02\",\n        \"message_id\": \"0x41\"\n      },\n      \"payload_length\": {\n        \"byte_offset\": \"N/A\",\n        \"type\": \"N/A\",\n        \"name\": \"Length\",\n        \"value\": 16\n      },\n      \"payload_structure\": [\n        {\n          \"byte_offset\": 0,\n          \"type\": \"U1\",\n          \"name\": \"version\",\n          \"description\": \"Message version (0x00 for this version)\"\n        },\n        {\n          \"byte_offset\": 1,\n          \"type\": \"U1[3]\",\n          \"name\": \"reserved0\",\n          \"description\": \"Reserved\"\n        },\n        {\n          \"byte_offset\": 4,\n          \"type\": \"U4\",\n          \"name\": \"duration\",\n          \"unit\": \"ms\",\n          \"description\": \"Duration of the requested task, set to zero for infinite duration. The maximum supported time is 12 days.\"\n        },\n        {\n          \"byte_offset\": 8,\n          \"type\": \"X4\",\n          \"name\": \"flags\",\n          \"description\": \"Task flags\",\n          \"bitfields\": [\n            {\n              \"bit\": 1,\n              \"name\": \"backup\",\n              \"description\": \"The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB\"\n            },\n            {\n              \"bit\": 2,\n              \"name\": \"force\",\n              \"description\": \"Force receiver backup while USB is connected. USB interface will be disabled.\"\n            }\n          ]\n        },\n        {\n          \"byte_offset\": 12,\n          \"type\": \"X4\",\n          \"name\": \"wakeupSources\",\n          \"description\": \"Configure pins to wake up the receiver. The receiver wakes up if there is either a falling or a rising edge on one of the configured pins.\",\n          \"bitfields\": [\n            {\n              \"bit\": 3,\n              \"name\": \"uartrx\",\n              \"description\": \"Wake up the receiver if there is an edge on the UART RX pin\"\n            },\n            {\n              \"bit\": 5,\n              \"name\": \"extint0\",\n              \"description\": \"Wake up the receiver if there is an edge on the EXTINTO pin\"\n            },\n            {\n              \"bit\": 6,\n              \"name\": \"extint1\",\n              \"description\": \"Wake up the receiver if there is an edge on the EXTINT1 pin\"\n            },\n            {\n              \"bit\": 7,\n              \"name\": \"spics\",\n              \"description\": \"Wake up the receiver if there is an edge on the SPI CS pin\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "tool_code": "ubx_message_extraction",
+    "ubx_message": {
+      "name": "UBX-RXM-PMREQ-V0",
+      "description": "Power management request",
+      "supported_firmware": [
+        "u-blox 8/u-blox M8 protocol versions 15",
+        "15.01",
+        "16",
+        "17",
+        "18",
+        "19",
+        "19.1",
+        "19.2",
+        "20",
+        "20.01",
+        "20.1",
+        "20.2",
+        "20.3",
+        "22",
+        "22.01",
+        "23",
+        "23.01"
+      ],
+      "header": {
+        "byte_offset": "N/A",
+        "type": "N/A",
+        "name": "Header",
+        "value": "0xB5 0x62"
+      },
+      "message_id": {
+        "byte_offset": "N/A",
+        "type": "N/A",
+        "name": "Message ID",
+        "class_id": "0x02",
+        "message_id": "0x41"
+      },
+      "payload_length": {
+        "byte_offset": "N/A",
+        "type": "N/A",
+        "name": "Length",
+        "value": 8
+      },
+      "payload_structure": [
+        {
+          "byte_offset": 0,
+          "type": "U4",
+          "name": "duration",
+          "unit": "ms",
+          "description": "Duration of the requested task, set to zero for infinite duration. The maximum supported time is 12 days."
+        },
+        {
+          "byte_offset": 4,
+          "type": "X4",
+          "name": "flags",
+          "description": "Task flags",
+          "bitfields": [
+            {
+              "bit": 1,
+              "name": "backup",
+              "description": "The receiver goes into backup mode for a time period defined by duration, provided that it is not connected to USB"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/4ytzxntis2d2"
+}

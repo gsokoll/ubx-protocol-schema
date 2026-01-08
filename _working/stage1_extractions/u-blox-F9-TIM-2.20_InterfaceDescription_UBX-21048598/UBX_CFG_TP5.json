@@ -1,0 +1,172 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-CFG-TP5",
+  "extraction_timestamp": "2026-01-08T03:29:14.719836+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 88,
+    "end": 89
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-CFG-TP5\nExpected IDs: class_id=0x06, message_id=0x31\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-CFG-TP5\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-CFG-TP5\",\n  \"class_id\": \"0x06\",\n  \"message_id\": \"0x31\",\n  \"message_type\": \"get_set\",\n  \"payload_length\": {\n    \"fixed\": 32\n  },\n  \"payload_fields\": [\n    {\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"name\": \"tpIdx\",\n      \"description\": \"Time pulse selection (0 = TIMEPULSE, 1 = TIMEPULSE2)\"\n    },\n    {\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"name\": \"version\",\n      \"fixed_value\": 1,\n      \"description\": \"Message version (0x01 for this version)\"\n    },\n    {\n      \"byte_offset\": 2,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"name\": \"reserved0\",\n      \"reserved\": true\n    },\n    {\n      \"byte_offset\": 4,\n      \"data_type\": \"I2\",\n      \"name\": \"antCableDelay\",\n      \"unit\": \"ns\",\n      \"description\": \"Antenna cable delay\"\n    },\n    {\n      \"byte_offset\": 6,\n      \"data_type\": \"I2\",\n      \"name\": \"rfGroupDelay\",\n      \"unit\": \"ns\",\n      \"description\": \"RF group delay\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"data_type\": \"U4\",\n      \"name\": \"freqPeriod\",\n      \"unit\": \"Hz_or_us\",\n      \"description\": \"Frequency or period time, depending on setting of bit 'isFreq'\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"data_type\": \"U4\",\n      \"name\": \"freqPeriodLock\",\n      \"unit\": \"Hz_or_us\",\n      \"description\": \"Frequency or period time when locked to GNSS time, only used if 'lockedOtherSet' is set\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"data_type\": \"U4\",\n      \"name\": \"pulseLenRatio\",\n      \"unit\": \"us_or_2^-32\",\n      \"description\": \"Pulse length or duty cycle, depending on 'isLength'\"\n    },\n    {\n      \"byte_offset\": 20,\n      \"data_type\": \"U4\",\n      \"name\": \"pulseLenRatioLock\",\n      \"unit\": \"us_or_2^-32\",\n      \"description\": \"Pulse length or duty cycle when locked to GNSS time, only used if 'lockedOtherSet' is set\"\n    },\n    {\n      \"byte_offset\": 24,\n      \"data_type\": \"I4\",\n      \"name\": \"userConfigDelay\",\n      \"unit\": \"ns\",\n      \"description\": \"User-configurable time pulse delay\"\n    },\n    {\n      \"byte_offset\": 28,\n      \"data_type\": \"X4\",\n      \"name\": \"flags\",\n      \"description\": \"Configuration flags\",\n      \"flags\": [\n        {\n          \"name\": \"active\",\n          \"mask\": 1,\n          \"description\": \"If set enable time pulse; if pin assigned to another function, other function takes precedence. Must be set for FTS variant.\"\n        },\n        {\n          \"name\": \"lockGnssFreq\",\n          \"mask\": 2,\n          \"description\": \"If set, synchronize time pulse to GNSS as soon as GNSS time is valid. If not set, or before GNSS time is valid, use local clock. This flag is ignored by the FTS product variant; in this case the receiver always locks to the best available time/frequency reference (which is not necessarily GNSS). This flag can be unset only in Timing product variants.\"\n        },\n        {\n          \"name\": \"lockedOtherSet\",\n          \"mask\": 4,\n          \"description\": \"If set the receiver switches between the timepulse settings given by 'freqPeriodLocked' & 'pulseLenLocked' and those given by 'freqPeriod' & 'pulseLen'. The 'Locked' settings are used where the receiver has an accurate sense of time. For non-FTS products, this occurs when GNSS solution with a reliable time is available, but for FTS products the setting syncMode field governs behavior. In all cases, the receiver only uses 'freqPeriod' & 'pulseLen' when the flag is unset.\"\n        },\n        {\n          \"name\": \"isFreq\",\n          \"mask\": 8,\n          \"description\": \"If set 'freqPeriodLock' and 'freqPeriod' are interpreted as frequency, otherwise interpreted as period.\"\n        },\n        {\n          \"name\": \"isLength\",\n          \"mask\": 16,\n          \"description\": \"If set 'pulseLenRatioLock' and 'pulseLenRatio' interpreted as pulse length, otherwise interpreted as duty cycle.\"\n        },\n        {\n          \"name\": \"alignToTow\",\n          \"mask\": 32,\n          \"description\": \"Align pulse to top of second (period time must be integer fraction of 1s). Also set 'lockGnssFreq' to use this feature. This flag is ignored by the FTS product variant; it is assumed to be always set (as is lockGnssFreq). Set maxSlewRate and maxPhaseCorrRate fields of UBX-CFG-SMGR to 0 to disable alignment.\"\n        },\n        {\n          \"name\": \"polarity\",\n          \"mask\": 64,\n          \"description\": \"Pulse polarity: 0 = falling edge at top of second, 1 = rising edge at top of second\"\n        },\n        {\n          \"name\": \"gridUtcGnss\",\n          \"mask\": 1920,\n          \"description\": \"Timegrid to use. This flag is only relevant if 'lockGnssFreq' and 'alignToTow' are set. Note that configured GNSS time is estimated by the receiver if locked to any GNSS system. If the receiver has a valid GNSS fix it will attempt to steer the TP to the specified time grid even if the specified time is not based on information from the constellation's satellites. To ensure timing based purely on a given GNSS, restrict the supported constellations in UBX-CFG-GNSS.\",\n          \"values\": {\n            \"0\": \"UTC\",\n            \"1\": \"GPS\",\n            \"2\": \"GLONASS\",\n            \"3\": \"BeiDou\",\n            \"4\": \"Galileo (not supported for protocol versions less than 18.00)\"\n          }\n        },\n        {\n          \"name\": \"syncMode\",\n          \"mask\": 14336,\n          \"description\": \"Sync Manager lock mode to use. This field is only relevant for the FTS product variant. This field is only relevant if the flag 'lockedOtherSet' is set.\",\n          \"values\": {\n            \"0\": \"switch to 'freqPeriodLock' and 'pulseLenRatioLock' as soon as Sync Manager has an accurate time, never switch back to 'freqPeriod' and 'pulseLenRatio'\",\n            \"1\": \"switch to 'freqPeriodLock' and 'pulseLenRatioLock' as soon as Sync Manager has an accurate time, and switch back to 'freqPeriod' and 'pulseLenRatio' as soon as time gets inaccurate\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-CFG-TP5",
+    "class_id": "0x06",
+    "message_id": "0x31",
+    "message_type": "get_set",
+    "payload_length": {
+      "fixed": 32
+    },
+    "payload_fields": [
+      {
+        "byte_offset": 0,
+        "data_type": "U1",
+        "name": "tpIdx",
+        "description": "Time pulse selection (0 = TIMEPULSE, 1 = TIMEPULSE2)"
+      },
+      {
+        "byte_offset": 1,
+        "data_type": "U1",
+        "name": "version",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "name": "reserved0",
+        "reserved": true
+      },
+      {
+        "byte_offset": 4,
+        "data_type": "I2",
+        "name": "antCableDelay",
+        "unit": "ns",
+        "description": "Antenna cable delay"
+      },
+      {
+        "byte_offset": 6,
+        "data_type": "I2",
+        "name": "rfGroupDelay",
+        "unit": "ns",
+        "description": "RF group delay"
+      },
+      {
+        "byte_offset": 8,
+        "data_type": "U4",
+        "name": "freqPeriod",
+        "unit": "Hz_or_us",
+        "description": "Frequency or period time, depending on setting of bit 'isFreq'"
+      },
+      {
+        "byte_offset": 12,
+        "data_type": "U4",
+        "name": "freqPeriodLock",
+        "unit": "Hz_or_us",
+        "description": "Frequency or period time when locked to GNSS time, only used if 'lockedOtherSet' is set"
+      },
+      {
+        "byte_offset": 16,
+        "data_type": "U4",
+        "name": "pulseLenRatio",
+        "unit": "us_or_2^-32",
+        "description": "Pulse length or duty cycle, depending on 'isLength'"
+      },
+      {
+        "byte_offset": 20,
+        "data_type": "U4",
+        "name": "pulseLenRatioLock",
+        "unit": "us_or_2^-32",
+        "description": "Pulse length or duty cycle when locked to GNSS time, only used if 'lockedOtherSet' is set"
+      },
+      {
+        "byte_offset": 24,
+        "data_type": "I4",
+        "name": "userConfigDelay",
+        "unit": "ns",
+        "description": "User-configurable time pulse delay"
+      },
+      {
+        "byte_offset": 28,
+        "data_type": "X4",
+        "name": "flags",
+        "description": "Configuration flags",
+        "flags": [
+          {
+            "name": "active",
+            "mask": 1,
+            "description": "If set enable time pulse; if pin assigned to another function, other function takes precedence. Must be set for FTS variant."
+          },
+          {
+            "name": "lockGnssFreq",
+            "mask": 2,
+            "description": "If set, synchronize time pulse to GNSS as soon as GNSS time is valid. If not set, or before GNSS time is valid, use local clock. This flag is ignored by the FTS product variant; in this case the receiver always locks to the best available time/frequency reference (which is not necessarily GNSS). This flag can be unset only in Timing product variants."
+          },
+          {
+            "name": "lockedOtherSet",
+            "mask": 4,
+            "description": "If set the receiver switches between the timepulse settings given by 'freqPeriodLocked' & 'pulseLenLocked' and those given by 'freqPeriod' & 'pulseLen'. The 'Locked' settings are used where the receiver has an accurate sense of time. For non-FTS products, this occurs when GNSS solution with a reliable time is available, but for FTS products the setting syncMode field governs behavior. In all cases, the receiver only uses 'freqPeriod' & 'pulseLen' when the flag is unset."
+          },
+          {
+            "name": "isFreq",
+            "mask": 8,
+            "description": "If set 'freqPeriodLock' and 'freqPeriod' are interpreted as frequency, otherwise interpreted as period."
+          },
+          {
+            "name": "isLength",
+            "mask": 16,
+            "description": "If set 'pulseLenRatioLock' and 'pulseLenRatio' interpreted as pulse length, otherwise interpreted as duty cycle."
+          },
+          {
+            "name": "alignToTow",
+            "mask": 32,
+            "description": "Align pulse to top of second (period time must be integer fraction of 1s). Also set 'lockGnssFreq' to use this feature. This flag is ignored by the FTS product variant; it is assumed to be always set (as is lockGnssFreq). Set maxSlewRate and maxPhaseCorrRate fields of UBX-CFG-SMGR to 0 to disable alignment."
+          },
+          {
+            "name": "polarity",
+            "mask": 64,
+            "description": "Pulse polarity: 0 = falling edge at top of second, 1 = rising edge at top of second"
+          },
+          {
+            "name": "gridUtcGnss",
+            "mask": 1920,
+            "description": "Timegrid to use. This flag is only relevant if 'lockGnssFreq' and 'alignToTow' are set. Note that configured GNSS time is estimated by the receiver if locked to any GNSS system. If the receiver has a valid GNSS fix it will attempt to steer the TP to the specified time grid even if the specified time is not based on information from the constellation's satellites. To ensure timing based purely on a given GNSS, restrict the supported constellations in UBX-CFG-GNSS.",
+            "values": {
+              "0": "UTC",
+              "1": "GPS",
+              "2": "GLONASS",
+              "3": "BeiDou",
+              "4": "Galileo (not supported for protocol versions less than 18.00)"
+            }
+          },
+          {
+            "name": "syncMode",
+            "mask": 14336,
+            "description": "Sync Manager lock mode to use. This field is only relevant for the FTS product variant. This field is only relevant if the flag 'lockedOtherSet' is set.",
+            "values": {
+              "0": "switch to 'freqPeriodLock' and 'pulseLenRatioLock' as soon as Sync Manager has an accurate time, never switch back to 'freqPeriod' and 'pulseLenRatio'",
+              "1": "switch to 'freqPeriodLock' and 'pulseLenRatioLock' as soon as Sync Manager has an accurate time, and switch back to 'freqPeriod' and 'pulseLenRatio' as soon as time gets inaccurate"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "review": null,
+  "uploaded_file_name": "files/ch7jxpldidti"
+}

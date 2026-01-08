@@ -1,0 +1,75 @@
+{
+  "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598.pdf",
+  "message_name": "UBX-TIM-TM2",
+  "extraction_timestamp": "2026-01-08T04:03:04.317271+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 183,
+    "end": 184
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-TIM-TM2\nExpected IDs: class_id=0x0d, message_id=0x03\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-TIM-TM2\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"name\": \"UBX-TIM-TM2\",\n    \"class_id\": \"0x0d\",\n    \"message_id\": \"0x03\",\n    \"description\": \"Time mark data\",\n    \"message_type\": \"periodic_polled\",\n    \"payload_length\": {\n      \"fixed\": 28\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"data_type\": \"U1\",\n        \"name\": \"ch\",\n        \"description\": \"Channel (i.e. EXTINT) upon which the pulse was measured\"\n      },\n      {\n        \"byte_offset\": 1,\n        \"data_type\": \"X1\",\n        \"name\": \"flags\",\n        \"description\": \"Bitmask\",\n        \"bit_fields\": [\n          {\n            \"name\": \"mode\",\n            \"bits\": {\n              \"position\": 0,\n              \"length\": 1\n            },\n            \"description_mapping\": {\n              \"0\": \"single\",\n              \"1\": \"running\"\n            }\n          },\n          {\n            \"name\": \"run\",\n            \"bits\": {\n              \"position\": 1,\n              \"length\": 1\n            },\n            \"description_mapping\": {\n              \"0\": \"armed\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "name": "UBX-TIM-TM2",
+      "class_id": "0x0d",
+      "message_id": "0x03",
+      "description": "Time mark data",
+      "message_type": "periodic_polled",
+      "payload_length": {
+        "fixed": 28
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "ch",
+          "description": "Channel (i.e. EXTINT) upon which the pulse was measured"
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Bitmask",
+          "bit_fields": [
+            {
+              "name": "mode",
+              "bits": {
+                "position": 0,
+                "length": 1
+              },
+              "description_mapping": {
+                "0": "single",
+                "1": "running"
+              }
+            },
+            {
+              "name": "run",
+              "bits": {
+                "position": 1,
+                "length": 1
+              },
+              "description_mapping": {
+                "0": "armed"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/v9fto2bmb7lh"
+}

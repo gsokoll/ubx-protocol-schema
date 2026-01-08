@@ -1,0 +1,162 @@
+{
+  "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118).pdf",
+  "message_name": "UBX-MON-GNSS",
+  "extraction_timestamp": "2026-01-08T02:43:57.845541+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 113,
+    "end": 114
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting UBX-MON-GNSS from u-blox PDF manual pages.\n\nThis message has TWO different structures depending on receiver:\n\n**UBX-MON-GNSS-V0 (Standard, 8 bytes):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x00) |\n| 1 | X1 | supported | Supported GNSS bitfield |\n| 2 | X1 | defaultGnss | Default GNSS bitfield |\n| 3 | X1 | enabled | Enabled GNSS bitfield |\n| 4 | U1 | simultaneous | Max simultaneous GNSS |\n| 5 | U1[3] | reserved0 | Reserved |\n\n**UBX-MON-GNSS-V1 (X20 with signal plans, variable):**\n| Offset | Type | Name | Description |\n|--------|------|------|-------------|\n| 0 | U1 | version | Message version (0x01) |\n| 1 | U1 | numPlans | Number of signal plans |\n| 2 | X2 | activePlanInfo | Active plan info bitfield |\n| 4+ | ... | (repeated group) | Signal plan details |\n\nCheck for \"numPlans\" field to determine version:\n- If field at offset 1 is \"supported\" (X1) \u2192 V0 (version=0x00)\n- If field at offset 1 is \"numPlans\" (U1) \u2192 V1 (version=0x01)\n\nIMPORTANT: Name the message based on which version the PDF documents:\n- If 8 bytes with \"supported\" field: name = \"UBX-MON-GNSS-V0\"\n- If variable with \"numPlans\" field: name = \"UBX-MON-GNSS-V1\"\n\nReturn using ubx_message_extraction tool.\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message_extraction\": {\n    \"name\": \"UBX-MON-GNSS-V0\",\n    \"class\": \"0x0a\",\n    \"id\": \"0x28\",\n    \"length\": 8,\n    \"fields\": [\n      {\n        \"name\": \"version\",\n        \"offset\": 0,\n        \"type\": \"U1\",\n        \"description\": \"Message version (0x01 for this version)\"\n      },\n      {\n        \"name\": \"supported\",\n        \"offset\": 1,\n        \"type\": \"X1\",\n        \"description\": \"A bit mask showing the major GNSS that can be supported by this receiver\",\n        \"sub_fields\": [\n          {\n            \"name\": \"GPSSup\",\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GPS is supported\"\n          },\n          {\n            \"name\": \"GlonassSup\",\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GLONASS is supported\"\n          },\n          {\n            \"name\": \"BeidouSup\",\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"BeiDou is supported\"\n          },\n          {\n            \"name\": \"GalileoSup\",\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Galileo is supported\"\n          }\n        ]\n      },\n      {\n        \"name\": \"defaultGnss\",\n        \"offset\": 2,\n        \"type\": \"X1\",\n        \"description\": \"A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.\",\n        \"sub_fields\": [\n          {\n            \"name\": \"GPSDef\",\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GPS is default-enabled\"\n          },\n          {\n            \"name\": \"GlonassDef\",\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GLONASS is default-enabled\"\n          },\n          {\n            \"name\": \"BeidouDef\",\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"BeiDou is default-enabled\"\n          },\n          {\n            \"name\": \"GalileoDef\",\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Galileo is default-enabled\"\n          }\n        ]\n      },\n      {\n        \"name\": \"enabled\",\n        \"offset\": 3,\n        \"type\": \"X1\",\n        \"description\": \"A bit mask showing the current major GNSS selection enabled for this receiver\",\n        \"sub_fields\": [\n          {\n            \"name\": \"GPSEna\",\n            \"bit_offset\": 0,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GPS is enabled\"\n          },\n          {\n            \"name\": \"GlonassEna\",\n            \"bit_offset\": 1,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"GLONASS is enabled\"\n          },\n          {\n            \"name\": \"BeidouEna\",\n            \"bit_offset\": 2,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"BeiDou is enabled\"\n          },\n          {\n            \"name\": \"GalileoEna\",\n            \"bit_offset\": 3,\n            \"bit_length\": 1,\n            \"type\": \"U:1\",\n            \"description\": \"Galileo is enabled\"\n          }\n        ]\n      },\n      {\n        \"name\": \"simultaneous\",\n        \"offset\": 4,\n        \"type\": \"U1\",\n        \"description\": \"Maximum number of concurrent major GNSS that can be supported by this receiver\"\n      },\n      {\n        \"name\": \"reserved0\",\n        \"offset\": 5,\n        \"type\": \"U1[3]\",\n        \"description\": \"Reserved\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message_extraction": {
+      "name": "UBX-MON-GNSS-V0",
+      "class": "0x0a",
+      "id": "0x28",
+      "length": 8,
+      "fields": [
+        {
+          "name": "version",
+          "offset": 0,
+          "type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "supported",
+          "offset": 1,
+          "type": "X1",
+          "description": "A bit mask showing the major GNSS that can be supported by this receiver",
+          "sub_fields": [
+            {
+              "name": "GPSSup",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GPS is supported"
+            },
+            {
+              "name": "GlonassSup",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GLONASS is supported"
+            },
+            {
+              "name": "BeidouSup",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "BeiDou is supported"
+            },
+            {
+              "name": "GalileoSup",
+              "bit_offset": 3,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "Galileo is supported"
+            }
+          ]
+        },
+        {
+          "name": "defaultGnss",
+          "offset": 2,
+          "type": "X1",
+          "description": "A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.",
+          "sub_fields": [
+            {
+              "name": "GPSDef",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GPS is default-enabled"
+            },
+            {
+              "name": "GlonassDef",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GLONASS is default-enabled"
+            },
+            {
+              "name": "BeidouDef",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "BeiDou is default-enabled"
+            },
+            {
+              "name": "GalileoDef",
+              "bit_offset": 3,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "Galileo is default-enabled"
+            }
+          ]
+        },
+        {
+          "name": "enabled",
+          "offset": 3,
+          "type": "X1",
+          "description": "A bit mask showing the current major GNSS selection enabled for this receiver",
+          "sub_fields": [
+            {
+              "name": "GPSEna",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GPS is enabled"
+            },
+            {
+              "name": "GlonassEna",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "GLONASS is enabled"
+            },
+            {
+              "name": "BeidouEna",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "BeiDou is enabled"
+            },
+            {
+              "name": "GalileoEna",
+              "bit_offset": 3,
+              "bit_length": 1,
+              "type": "U:1",
+              "description": "Galileo is enabled"
+            }
+          ]
+        },
+        {
+          "name": "simultaneous",
+          "offset": 4,
+          "type": "U1",
+          "description": "Maximum number of concurrent major GNSS that can be supported by this receiver"
+        },
+        {
+          "name": "reserved0",
+          "offset": 5,
+          "type": "U1[3]",
+          "description": "Reserved"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/322py01f8f5k"
+}

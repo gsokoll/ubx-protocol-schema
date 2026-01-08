@@ -1,19 +1,18 @@
 {
   "message_name": "UBX-SEC-SIG",
-  "num_extractions": 8,
+  "num_extractions": 10,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-SEC-SIG",
       "class_id": "0x27",
       "message_id": "0x09",
-      "description": "Signal security information providing high-level jamming and spoofing detector information, with per-frequency details in later versions.",
-      "message_type": "poll_request",
+      "description": "Signal security information providing jamming and spoofing detector status, including per-frequency details in later versions.",
+      "message_type": "periodic_polled",
       "payload": {
         "length": {
           "variable": {
             "base": 4,
-            "formula": "4 + jamNumCentFreqs * 4",
-            "min": 4
+            "formula": "4 + jamNumCentFreqs * 4"
           }
         },
         "fields": [
@@ -40,7 +39,7 @@
                   "name": "jamState",
                   "bit_start": 1,
                   "bit_end": 2,
-                  "description": "Jamming state (0: Unknown, 1: No jamming, 2: Warning)"
+                  "description": "Jamming state (0:Unknown, 1:No jamming, 2:Warning)"
                 },
                 {
                   "name": "spfDetEnabled",
@@ -52,7 +51,7 @@
                   "name": "spfState",
                   "bit_start": 4,
                   "bit_end": 6,
-                  "description": "Spoofing state (0: Unknown, 1: No spoofing, 2: Spoofing indicated, 3: Spoofing affirmed)"
+                  "description": "Spoofing state (0:Unknown, 1:No spoofing, 2:Spoofing indicated, 3:Spoofing affirmed)"
                 }
               ]
             }
@@ -61,14 +60,13 @@
             "name": "reserved0",
             "byte_offset": 2,
             "data_type": "U1",
-            "description": "Reserved",
             "reserved": true
           },
           {
             "name": "jamNumCentFreqs",
             "byte_offset": 3,
             "data_type": "U1",
-            "description": "Number of center frequencies provided in the repeated group"
+            "description": "Number of center frequencies provided"
           }
         ],
         "repeated_groups": [
@@ -76,7 +74,6 @@
             "name": "jamStateCentFreqs",
             "repetition_type": "count_field",
             "count_field": "jamNumCentFreqs",
-            "group_size_bytes": 4,
             "fields": [
               {
                 "name": "jamStateCentFreq",
@@ -88,14 +85,14 @@
                       "name": "centFreq",
                       "bit_start": 0,
                       "bit_end": 23,
-                      "description": "Center frequency in kHz",
-                      "unit": "kHz"
+                      "unit": "kHz",
+                      "description": "Center frequency"
                     },
                     {
                       "name": "jammed",
                       "bit_start": 24,
                       "bit_end": 24,
-                      "description": "Signals on this frequency considered jammed"
+                      "description": "Frequency considered jammed"
                     }
                   ]
                 }
@@ -108,8 +105,8 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
-        "verdict": "correct",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "valid_variation",
         "issues": []
       },
       {
@@ -118,22 +115,12 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-        "verdict": "valid_variation",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
         "verdict": "valid_variation",
         "issues": []
       },
@@ -143,7 +130,27 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+        "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+        "verdict": "valid_variation",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "valid_variation",
         "issues": []
       }
@@ -151,58 +158,59 @@
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
-          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
           "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
-          "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+          "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+          "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
         ],
         "structure": {
-          "version": "0x01",
-          "length": 12,
+          "version": 1,
+          "payload_length": 12,
           "fields": [
             {
+              "byte_offset": 0,
               "name": "version",
-              "offset": 0,
-              "type": "U1"
+              "data_type": "U1"
             },
             {
+              "byte_offset": 1,
               "name": "reserved0",
-              "offset": 1,
-              "type": "U1[3]"
+              "data_type": "U1[3]"
             },
             {
+              "byte_offset": 4,
               "name": "jamFlags",
-              "offset": 4,
-              "type": "X1",
-              "bits": {
-                "jamDetEnabled": 0,
-                "jammingState": "1-2"
+              "data_type": "X1",
+              "bitfield": {
+                "jamDetEnabled": "bit 0",
+                "jammingState": "bits 1-2"
               }
             },
             {
+              "byte_offset": 5,
               "name": "reserved1",
-              "offset": 5,
-              "type": "U1[3]"
+              "data_type": "U1[3]"
             },
             {
+              "byte_offset": 8,
               "name": "spfFlags",
-              "offset": 8,
-              "type": "X1",
-              "bits": {
-                "spfDetEnabled": 0,
-                "spoofingState": "1-3"
+              "data_type": "X1",
+              "bitfield": {
+                "spfDetEnabled": "bit 0",
+                "spoofingState": "bits 1-3"
               }
             },
             {
+              "byte_offset": 9,
               "name": "reserved2",
-              "offset": 9,
-              "type": "U1[3]"
+              "data_type": "U1[3]"
             }
           ]
         },
-        "reason": "Protocol version 0x01 used in standard and high-precision variants (F9 HPG/HPS/DBD and F10 SPG). It provides a fixed-length summary rather than per-frequency details."
+        "reason": "Protocol Version 0x01: A fixed-length 12-byte message used in earlier firmware or specific product lines (F9/F10) that separates jamming and spoofing flags into distinct bytes with padding."
       }
     ],
-    "reasoning": "The UBX-SEC-SIG message exists in two distinct versions. Version 0x02 (Extractions 1-4) is a variable-length message that provides a count of center frequencies and then a repeated block for each, detailing specific jamming states per frequency. Version 0x01 (Extractions 5-8) is a legacy or simpler fixed-length version (12 bytes) that provides aggregate jamming and spoofing states. The variation depends on the specific u-blox chip generation and firmware profile (e.g., M10 vs F9 HPG vs F9 LAP). Both are valid implementations."
+    "reasoning": "The message UBX-SEC-SIG exists in two primary forms across the u-blox documentation. Version 0x01 (fixed 12-byte) provides basic flags with significant reserved padding between fields. Version 0x02 (variable length) consolidates status flags into a single byte and introduces a repeating group that identifies specific jammed center frequencies. Both are valid depending on the receiver generation and firmware version. All extractions accurately captured the structure corresponding to their respective version identifiers."
   }
 }

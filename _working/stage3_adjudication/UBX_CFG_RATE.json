@@ -1,6 +1,6 @@
 {
   "message_name": "UBX-CFG-RATE",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
       "name": "UBX-CFG-RATE",
@@ -8,36 +8,58 @@
       "message_id": "0x08",
       "description": "Navigation/measurement rate settings",
       "message_type": "get_set",
-      "payload": {
-        "length": {
-          "fixed": 6
+      "payload_length": {
+        "fixed": 6
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U2",
+          "name": "measRate",
+          "unit": "ms",
+          "description": "The elapsed time between GNSS measurements, which defines the rate, e.g. 100 ms => 10 Hz. Measurement rate should be greater than or equal to 25 ms (50 ms for protocol versions < 24.00)."
         },
-        "fields": [
-          {
-            "name": "measRate",
-            "byte_offset": 0,
-            "data_type": "U2",
-            "description": "The elapsed time between GNSS measurements (ms). Defines the measurement rate (e.g. 100 ms = 10 Hz).",
-            "unit": "ms"
-          },
-          {
-            "name": "navRate",
-            "byte_offset": 2,
-            "data_type": "U2",
-            "description": "The ratio between the number of measurements and the number of navigation solutions. Maximum value 127.",
-            "unit": "cycles"
-          },
-          {
-            "name": "timeRef",
-            "byte_offset": 4,
-            "data_type": "U2",
-            "description": "The time system to which measurements are aligned. 0: UTC, 1: GPS, 2: GLONASS, 3: BeiDou, 4: Galileo, 5: NavIC."
-          }
-        ]
-      }
+        {
+          "byte_offset": 2,
+          "data_type": "U2",
+          "name": "navRate",
+          "unit": "cycles",
+          "description": "The ratio between the number of measurements and the number of navigation solutions. Max value 127."
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U2",
+          "name": "timeRef",
+          "description": "The time system to which measurements are aligned: 0 = UTC, 1 = GPS, 2 = GLONASS, 3 = BeiDou, 4 = Galileo, 5 = NavIC"
+        }
+      ]
     },
     "canonical_confidence": "high",
     "extraction_verdicts": [
+      {
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+        "verdict": "extraction_error",
+        "issues": [
+          "Labeled byte offset 4 as 'reserved0' instead of 'timeRef'. Given the protocol version 24.00 reference in the description, this field is defined in this manual version."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents an older protocol version where NavIC (timeRef 5) was not yet supported/documented."
+        ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+        "verdict": "correct",
+        "issues": []
+      },
       {
         "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
         "verdict": "correct",
@@ -45,6 +67,13 @@
       },
       {
         "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "valid_variation",
+        "issues": [
+          "Represents an older protocol version without NavIC support in timeRef."
+        ]
+      },
+      {
+        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
         "verdict": "correct",
         "issues": []
       },
@@ -57,40 +86,26 @@
         "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
         "verdict": "correct",
         "issues": []
-      },
-      {
-        "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
-        "issues": []
       }
     ],
     "valid_variations": [
       {
         "sources": [
-          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
+          "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+          "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318"
         ],
         "structure": {
-          "note": "timeRef enumeration omits value 5 (NavIC)"
+          "fields": [
+            {
+              "byte_offset": 4,
+              "name": "timeRef",
+              "description": "Values 0-4 (UTC, GPS, GLONASS, BeiDou, Galileo)"
+            }
+          ]
         },
-        "reason": "Older firmware/protocol versions documented in these manuals did not yet support NavIC (value 5) for time alignment."
+        "reason": "Protocol versions prior to 29.00 do not support NavIC (value 5) as a time reference."
       }
     ],
-    "reasoning": "All 8 extractions agree on the binary structure (3 fields of U2 type, total length 6 bytes). The only differences are in the description text for 'timeRef', where older documents (HPG 1.13, ZED-F9H) list values 0-4, and newer documents include 0-5 (adding NavIC). Extraction 8 (M8) includes NavIC in the description, which is unusual for M8 but structurally consistent. The canonical structure uses the superset of features (including NavIC)."
+    "reasoning": "The message UBX-CFG-RATE is highly consistent across generations (M8, M9, F9). It is always 6 bytes. The primary evolution is in the 'timeRef' field at offset 4, which expanded to include NavIC in protocol version 29.00. Extraction 1 failed to identify 'timeRef', likely treating it as reserved due to a parsing error or a simplified source table, despite the text referencing protocol versions that clearly support it. Extractions 3 and 6 correctly reflect the state of the protocol at their respective publication times (pre-NavIC)."
   }
 }

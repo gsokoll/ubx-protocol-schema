@@ -1,0 +1,169 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-RXM-TM",
+  "extraction_timestamp": "2026-01-08T04:36:57.127879+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 158,
+    "end": 159
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-RXM-TM\nExpected IDs: class_id=0x02, message_id=0x74\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-RXM-TM\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"class_id\": \"0x02\",\n  \"message_id\": \"0x74\",\n  \"name\": \"UBX-RXM-TM\",\n  \"description\": \"Time mark data for UBX-RXM-RAWX\",\n  \"message_type\": \"periodic_polled\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 8,\n      \"formula\": \"8 + numMeas*24\"\n    }\n  },\n  \"fields\": [\n    {\n      \"name\": \"version\",\n      \"byte_offset\": 0,\n      \"data_type\": \"U1\",\n      \"description\": \"Message version (0x00 for this version)\",\n      \"fixed_value\": 0\n    },\n    {\n      \"name\": \"numMeas\",\n      \"byte_offset\": 1,\n      \"data_type\": \"U1\",\n      \"description\": \"Number of measurements\"\n    },\n    {\n      \"name\": \"reserved0\",\n      \"byte_offset\": 2,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true\n    },\n    {\n      \"name\": \"reserved1\",\n      \"byte_offset\": 4,\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 4\n      },\n      \"reserved\": true\n    },\n    {\n      \"name\": \"measurements\",\n      \"byte_offset\": 8,\n      \"data_type\": {\n        \"array_of_structs\": {\n          \"count_field\": \"numMeas\"\n        }\n      },\n      \"fields\": [\n        {\n          \"name\": \"edgeInfo\",\n          \"byte_offset\": 0,\n          \"data_type\": \"X4\",\n          \"description\": \"Detailed edge measurement information\",\n          \"bit_fields\": [\n            {\n              \"name\": \"channel\",\n              \"data_type\": {\n                \"bitfield\": {\n                  \"base_type\": \"U4\",\n                  \"position\": 0,\n                  \"size\": 4\n                }\n              },\n              \"description\": \"EXTINT channel number\"\n            },\n            {\n              \"name\": \"edgeType\",\n              \"data_type\": {\n                \"bitfield\": {\n                  \"base_type\": \"U4\",\n                  \"position\": 4,\n                  \"size\": 1\n                }\n              },\n              \"description\": \"Edge type\",\n              \"enum_values\": [\n                {\n                  \"value\": 0,\n                  \"description\": \"rising edge\"\n                },\n                {\n                  \"value\": 1,\n                  \"description\": \"falling edge\"\n                }\n              ]\n            }\n          ]\n        },\n        {\n          \"name\": \"count\",\n          \"byte_offset\": 4,\n          \"data_type\": \"U2\",\n          \"description\": \"Rising edge count. It is zero for falling edges.\"\n        },\n        {\n          \"name\": \"wno\",\n          \"byte_offset\": 6,\n          \"data_type\": \"U2\",\n          \"description\": \"Week number\"\n        },\n        {\n          \"name\": \"towMs\",\n          \"byte_offset\": 8,\n          \"data_type\": \"U4\",\n          \"unit\": \"ms\",\n          \"description\": \"Time of Week (ToW)\"\n        },\n        {\n          \"name\": \"towSubMsR\",\n          \"byte_offset\": 12,\n          \"data_type\": \"U4\",\n          \"unit\": \"ps\",\n          \"description\": \"Sub-millisecond part of ToW\"\n        },\n        {\n          \"name\": \"reserved2\",\n          \"byte_offset\": 16,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 4\n          },\n          \"reserved\": true\n        },\n        {\n          \"name\": \"reserved3\",\n          \"byte_offset\": 20,\n          \"data_type\": {\n            \"array_of\": \"U1\",\n            \"count\": 4\n          },\n          \"reserved\": true\n        }\n      ]\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "class_id": "0x02",
+    "message_id": "0x74",
+    "name": "UBX-RXM-TM",
+    "description": "Time mark data for UBX-RXM-RAWX",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numMeas*24"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)",
+          "fixed_value": 0
+        },
+        {
+          "name": "numMeas",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of measurements"
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "reserved": true
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 4,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "reserved": true
+        },
+        {
+          "name": "measurements",
+          "byte_offset": 8,
+          "data_type": {
+            "array_of_structs": {
+              "count_field": "numMeas"
+            }
+          },
+          "fields": [
+            {
+              "name": "edgeInfo",
+              "byte_offset": 0,
+              "data_type": "X4",
+              "description": "Detailed edge measurement information",
+              "bit_fields": [
+                {
+                  "name": "channel",
+                  "data_type": {
+                    "bitfield": {
+                      "base_type": "U4",
+                      "position": 0,
+                      "size": 4
+                    }
+                  },
+                  "description": "EXTINT channel number"
+                },
+                {
+                  "name": "edgeType",
+                  "data_type": {
+                    "bitfield": {
+                      "base_type": "U4",
+                      "position": 4,
+                      "size": 1
+                    }
+                  },
+                  "description": "Edge type",
+                  "enum_values": [
+                    {
+                      "value": 0,
+                      "description": "rising edge"
+                    },
+                    {
+                      "value": 1,
+                      "description": "falling edge"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "count",
+              "byte_offset": 4,
+              "data_type": "U2",
+              "description": "Rising edge count. It is zero for falling edges."
+            },
+            {
+              "name": "wno",
+              "byte_offset": 6,
+              "data_type": "U2",
+              "description": "Week number"
+            },
+            {
+              "name": "towMs",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "Time of Week (ToW)"
+            },
+            {
+              "name": "towSubMsR",
+              "byte_offset": 12,
+              "data_type": "U4",
+              "unit": "ps",
+              "description": "Sub-millisecond part of ToW"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 16,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "reserved": true
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 20,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ngm6kgnozdqp"
+}

@@ -1,0 +1,150 @@
+{
+  "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231.pdf",
+  "message_name": "UBX-MON-HW",
+  "extraction_timestamp": "2026-01-08T04:20:53.569349+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 98,
+    "end": 99
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-HW\nExpected IDs: class_id=0x0a, message_id=0x09\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-HW\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"ubx_message\": {\n    \"message_name\": \"UBX-MON-HW\",\n    \"class_id\": \"0x0a\",\n    \"message_id\": \"0x09\",\n    \"message_type\": \"periodic_polled\",\n    \"description\": \"Status of different aspects of the hardware, such as antenna, PIO/peripheral pins, noise level, automatic gain control (AGC). This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead.\",\n    \"payload_length\": {\n      \"fixed\": 60\n    },\n    \"fields\": [\n      {\n        \"byte_offset\": 0,\n        \"name\": \"pinSel\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as peripheral/PIO\"\n      },\n      {\n        \"byte_offset\": 4,\n        \"name\": \"pinBank\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as bank A/B\"\n      },\n      {\n        \"byte_offset\": 8,\n        \"name\": \"pinDir\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as input/output\"\n      },\n      {\n        \"byte_offset\": 12,\n        \"name\": \"pinVal\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value low/high\"\n      },\n      {\n        \"byte_offset\": 16,\n        \"name\": \"noisePerMS\",\n        \"data_type\": \"U2\",\n        \"description\": \"Noise level as measured by the GPS core\"\n      },\n      {\n        \"byte_offset\": 18,\n        \"name\": \"agcCnt\",\n        \"data_type\": \"U2\",\n        \"description\": \"AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)\"\n      },\n      {\n        \"byte_offset\": 20,\n        \"name\": \"aStatus\",\n        \"data_type\": \"U1\",\n        \"description\": \"Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)\"\n      },\n      {\n        \"byte_offset\": 21,\n        \"name\": \"aPower\",\n        \"data_type\": \"U1\",\n        \"description\": \"Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)\"\n      },\n      {\n        \"byte_offset\": 22,\n        \"name\": \"flags\",\n        \"data_type\": \"X1\",\n        \"description\": \"Flags:\\n- bit 0: rtcCalib (RTC is calibrated)\\n- bit 1: safeBoot (Safeboot mode (0 = inactive, 1 = active))\\n- bits 3..2: jammingState (Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored.)\\n- bit 4: xtalAbsent (RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00))\"\n      },\n      {\n        \"byte_offset\": 23,\n        \"name\": \"reserved0\",\n        \"data_type\": \"U1\",\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 24,\n        \"name\": \"usedMask\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins that are used by the virtual pin manager\"\n      },\n      {\n        \"byte_offset\": 28,\n        \"name\": \"VP\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 17\n        },\n        \"description\": \"Array of pin mappings for each of the 17 physical pins\"\n      },\n      {\n        \"byte_offset\": 45,\n        \"name\": \"cwSuppression\",\n        \"data_type\": \"U1\",\n        \"description\": \"CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)\"\n      },\n      {\n        \"byte_offset\": 46,\n        \"name\": \"reserved1\",\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"reserved\": true,\n        \"description\": \"Reserved\"\n      },\n      {\n        \"byte_offset\": 48,\n        \"name\": \"pinIrq\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO Irq\"\n      },\n      {\n        \"byte_offset\": 52,\n        \"name\": \"pullH\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO pull high resistor\"\n      },\n      {\n        \"byte_offset\": 56,\n        \"name\": \"pullL\",\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO pull low resistor\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "ubx_message": {
+      "message_name": "UBX-MON-HW",
+      "class_id": "0x0a",
+      "message_id": "0x09",
+      "message_type": "periodic_polled",
+      "description": "Status of different aspects of the hardware, such as antenna, PIO/peripheral pins, noise level, automatic gain control (AGC). This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead.",
+      "payload_length": {
+        "fixed": 60
+      },
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "pinSel",
+          "data_type": "X4",
+          "description": "Mask of pins set as peripheral/PIO"
+        },
+        {
+          "byte_offset": 4,
+          "name": "pinBank",
+          "data_type": "X4",
+          "description": "Mask of pins set as bank A/B"
+        },
+        {
+          "byte_offset": 8,
+          "name": "pinDir",
+          "data_type": "X4",
+          "description": "Mask of pins set as input/output"
+        },
+        {
+          "byte_offset": 12,
+          "name": "pinVal",
+          "data_type": "X4",
+          "description": "Mask of pins value low/high"
+        },
+        {
+          "byte_offset": 16,
+          "name": "noisePerMS",
+          "data_type": "U2",
+          "description": "Noise level as measured by the GPS core"
+        },
+        {
+          "byte_offset": 18,
+          "name": "agcCnt",
+          "data_type": "U2",
+          "description": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+        },
+        {
+          "byte_offset": 20,
+          "name": "aStatus",
+          "data_type": "U1",
+          "description": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+        },
+        {
+          "byte_offset": 21,
+          "name": "aPower",
+          "data_type": "U1",
+          "description": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+        },
+        {
+          "byte_offset": 22,
+          "name": "flags",
+          "data_type": "X1",
+          "description": "Flags:\n- bit 0: rtcCalib (RTC is calibrated)\n- bit 1: safeBoot (Safeboot mode (0 = inactive, 1 = active))\n- bits 3..2: jammingState (Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored.)\n- bit 4: xtalAbsent (RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00))"
+        },
+        {
+          "byte_offset": 23,
+          "name": "reserved0",
+          "data_type": "U1",
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 24,
+          "name": "usedMask",
+          "data_type": "X4",
+          "description": "Mask of pins that are used by the virtual pin manager"
+        },
+        {
+          "byte_offset": 28,
+          "name": "VP",
+          "data_type": {
+            "array_of": "U1",
+            "count": 17
+          },
+          "description": "Array of pin mappings for each of the 17 physical pins"
+        },
+        {
+          "byte_offset": 45,
+          "name": "cwSuppression",
+          "data_type": "U1",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        },
+        {
+          "byte_offset": 46,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 48,
+          "name": "pinIrq",
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO Irq"
+        },
+        {
+          "byte_offset": 52,
+          "name": "pullH",
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO pull high resistor"
+        },
+        {
+          "byte_offset": 56,
+          "name": "pullL",
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO pull low resistor"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/ynb0x33w0m70"
+}

@@ -2,18 +2,18 @@
   "message_name": "UBX-CFG-OTP",
   "protocol_version": 0,
   "status": "split",
-  "agreement_ratio": 0.7142857142857143,
+  "agreement_ratio": 0.625,
   "winning_structure": {
     "name": "UBX-CFG-OTP",
     "class_id": "0x06",
     "message_id": "0x41",
-    "description": "Writes configuration data (key ID and value pairs) for one or more configuration items to the OTP memory.",
-    "message_type": "set",
+    "description": "Write file 0xA4: receiver configuration items",
+    "message_type": "input",
     "payload": {
       "length": {
         "variable": {
           "base": 12,
-          "formula": "12 + n",
+          "formula": "12 + n_cfgData_bytes",
           "min": 12
         }
       },
@@ -41,30 +41,31 @@
   },
   "winning_fingerprint": "b4351040c0a86168",
   "agreeing_sources": [
-    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
     "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
     "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-    "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
-    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984"
+    "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138"
   ],
   "disagreeing_sources": [
     "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
     "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052"
   ],
   "all_extractions": [
     {
-      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
       "structure": {
         "name": "UBX-CFG-OTP",
         "class_id": "0x06",
         "message_id": "0x41",
-        "description": "Writes configuration data (key ID and value pairs) for one or more configuration items to the OTP memory.",
-        "message_type": "set",
+        "description": "Write file 0xA4: receiver configuration items",
+        "message_type": "input",
         "payload": {
           "length": {
             "variable": {
               "base": 12,
-              "formula": "12 + n",
+              "formula": "12 + n_cfgData_bytes",
               "min": 12
             }
           },
@@ -139,6 +140,165 @@
         }
       },
       "fingerprint": "05948baaf6a9fbf5"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-CFG-OTP",
+        "class_id": "0x06",
+        "message_id": "0x41",
+        "description": "Writes configuration data (key ID and value pairs) for one or more configuration items to the OTP memory.",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 12,
+              "formula": "12 + n",
+              "min": 12
+            }
+          },
+          "fields": [
+            {
+              "name": "cfgHeader",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "File header: use u-center tool to compose the message"
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "b4351040c0a86168"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-CFG-OTP",
+        "class_id": "0x06",
+        "message_id": "0x41",
+        "description": "Writes the configuration data (key ID and value) for one or more configuration items to the OTP memory.",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 12,
+              "formula": "12 + N",
+              "min": 12,
+              "description": "Length of cfgHeader (12 bytes) + length of cfgData (N bytes)"
+            }
+          },
+          "fields": [
+            {
+              "name": "cfgHeader",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "File header: use u-center tool to compose the message."
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs). Fills the remaining bytes of the payload."
+            }
+          ]
+        }
+      },
+      "fingerprint": "b4351040c0a86168"
+    },
+    {
+      "source": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "structure": {
+        "message_name": "UBX-CFG-OTP",
+        "class_id": "0x06",
+        "message_id": "0x41",
+        "message_type": "set",
+        "payload_length": {
+          "variable": {
+            "base": 12,
+            "formula": "12 + num_cfg_bytes"
+          }
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "cfgHeader",
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "File header: use u-center tool to compose the message."
+            },
+            {
+              "byte_offset": 12,
+              "name": "cfgData",
+              "data_type": {
+                "array_of": "U1",
+                "count": "num_cfg_bytes"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "fc274ddec7689726"
+    },
+    {
+      "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "structure": {
+        "name": "UBX-CFG-OTP",
+        "class_id": "0x06",
+        "message_id": "0x41",
+        "description": "Write file 0xA4: receiver configuration items",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 12,
+              "formula": "12 + N",
+              "min": 12
+            }
+          },
+          "fields": [
+            {
+              "name": "cfgHeader",
+              "byte_offset": 0,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "File header: use u-center tool to compose the message"
+            },
+            {
+              "name": "cfgData",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Configuration data (key and value pairs)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "b4351040c0a86168"
     },
     {
       "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
@@ -245,86 +405,6 @@
       "fingerprint": "b9055b74234eac22"
     },
     {
-      "source": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
-      "structure": {
-        "name": "UBX-CFG-OTP",
-        "class_id": "0x06",
-        "message_id": "0x41",
-        "description": "Write file 0xA4: receiver configuration items",
-        "message_type": "input",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 12,
-              "formula": "12 + n_cfgData_bytes",
-              "min": 12
-            }
-          },
-          "fields": [
-            {
-              "name": "cfgHeader",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "U1",
-                "count": 12
-              },
-              "description": "File header: use u-center tool to compose the message"
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 12,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "b4351040c0a86168"
-    },
-    {
-      "source": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
-      "structure": {
-        "name": "UBX-CFG-OTP",
-        "class_id": "0x06",
-        "message_id": "0x41",
-        "description": "Write file 0xA4: receiver configuration items",
-        "message_type": "set",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 12,
-              "formula": "12 + N",
-              "min": 12
-            }
-          },
-          "fields": [
-            {
-              "name": "cfgHeader",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "U1",
-                "count": 12
-              },
-              "description": "File header: use u-center tool to compose the message"
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 12,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "b4351040c0a86168"
-    },
-    {
       "source": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
       "structure": {
         "name": "UBX-CFG-OTP",
@@ -358,47 +438,6 @@
                 "count": "N"
               },
               "description": "Configuration data (key and value pairs)"
-            }
-          ]
-        }
-      },
-      "fingerprint": "b4351040c0a86168"
-    },
-    {
-      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
-      "structure": {
-        "name": "UBX-CFG-OTP",
-        "class_id": "0x06",
-        "message_id": "0x41",
-        "description": "Writes the configuration data (key ID and value) for one or more configuration items to the OTP memory.",
-        "message_type": "input",
-        "payload": {
-          "length": {
-            "variable": {
-              "base": 12,
-              "formula": "12 + N",
-              "min": 12,
-              "description": "Length of cfgHeader (12 bytes) + length of cfgData (N bytes)"
-            }
-          },
-          "fields": [
-            {
-              "name": "cfgHeader",
-              "byte_offset": 0,
-              "data_type": {
-                "array_of": "U1",
-                "count": 12
-              },
-              "description": "File header: use u-center tool to compose the message."
-            },
-            {
-              "name": "cfgData",
-              "byte_offset": 12,
-              "data_type": {
-                "array_of": "U1",
-                "count": "N"
-              },
-              "description": "Configuration data (key and value pairs). Fills the remaining bytes of the payload."
             }
           ]
         }

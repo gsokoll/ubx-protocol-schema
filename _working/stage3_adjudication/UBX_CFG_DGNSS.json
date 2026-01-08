@@ -17,7 +17,7 @@
             "name": "dgnssMode",
             "byte_offset": 0,
             "data_type": "U1",
-            "description": "Specifies differential mode: 2 = RTK float, 3 = RTK fixed"
+            "description": "Specifies differential mode: 2 = RTK float: No attempts are made to fix ambiguities. 3 = RTK fixed: Ambiguities are fixed whenever possible."
           },
           {
             "name": "reserved0",
@@ -35,17 +35,7 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -60,19 +50,56 @@
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
         "verdict": "correct",
         "issues": []
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "correct",
+        "verdict": "valid_variation",
         "issues": [
-          "Minor naming inconsistency on reserved field ('reserved1' vs canonical 'reserved0')"
+          "Uses nomenclature 'reserved1' instead of 'reserved0' for the padding field"
         ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "All 7 extractions describe an identical binary structure (1 byte mode, 3 bytes reserved). There is a high degree of consensus. The M8 extraction (#7) names the reserved field 'reserved1' while all F9 extractions name it 'reserved0', but the data types and offsets are identical. As this is a reserved field, this is considered a valid extraction of a minor source variation rather than a protocol error."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "payload": {
+            "fields": [
+              {
+                "name": "dgnssMode",
+                "byte_offset": 0,
+                "data_type": "U1"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 1,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 3
+                },
+                "reserved": true
+              }
+            ]
+          }
+        },
+        "reason": "The u-blox 8 (M8) generation documentation frequently uses slightly different indexing for reserved fields (reserved1 vs reserved0) even though the binary structure is identical to the F9 series."
+      }
+    ],
+    "reasoning": "The message UBX-CFG-DGNSS is highly stable across receiver generations (M8 and F9). All extractions correctly identified the 4-byte payload consisting of a 1-byte mode and 3 bytes of padding. The differences are purely cosmetic (description formatting) or minor nomenclature changes in the reserved field name. The F9 documentation style is used for the canonical version as it is the most recent and consistent across the majority of extractions."
   }
 }

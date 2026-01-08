@@ -1,48 +1,46 @@
 {
   "message_name": "UBX-CFG-RINV",
-  "num_extractions": 8,
+  "num_extractions": 9,
   "adjudication": {
     "canonical_structure": {
-      "name": "UBX-CFG-RINV",
-      "class_id": "0x06",
-      "message_id": "0x34",
-      "description": "Contents of remote inventory. This message is deprecated in protocol versions greater than 23.01. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead. If N is greater than 30, the excess bytes are discarded.",
-      "message_type": "get_set",
-      "payload": {
-        "length": {
+      "ubx_message": {
+        "name": "UBX-CFG-RINV",
+        "class_id": "0x06",
+        "message_id": "0x34",
+        "message_type": "get_set",
+        "description": "Contents of remote inventory",
+        "comment": "This message is deprecated in protocol versions greater than 23.01. If N is greater than 30, the excess bytes are discarded.",
+        "payload_length": {
           "variable": {
             "base": 1,
             "formula": "1 + N",
-            "min": 1,
             "max": 31
           }
         },
-        "fields": [
+        "payload_fields": [
           {
-            "name": "flags",
             "byte_offset": 0,
+            "name": "flags",
             "data_type": "X1",
             "description": "Flags",
-            "bitfield": {
-              "bits": [
-                {
-                  "name": "dump",
-                  "bit_start": 0,
-                  "bit_end": 0,
-                  "description": "Dump data at startup. Does not work if flag binary is set."
-                },
-                {
-                  "name": "binary",
-                  "bit_start": 1,
-                  "bit_end": 1,
-                  "description": "Data is binary."
-                }
-              ]
-            }
+            "bit_fields": [
+              {
+                "name": "dump",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Dump data at startup. Does not work if flag binary is set."
+              },
+              {
+                "name": "binary",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Data is binary."
+              }
+            ]
           },
           {
-            "name": "data",
             "byte_offset": 1,
+            "name": "data",
             "data_type": {
               "array_of": "U1",
               "count": "N"
@@ -55,22 +53,12 @@
     "canonical_confidence": "high",
     "extraction_verdicts": [
       {
-        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
         "verdict": "correct",
         "issues": []
       },
       {
-        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
-        "verdict": "correct",
-        "issues": []
-      },
-      {
-        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
         "verdict": "correct",
         "issues": []
       },
@@ -83,25 +71,68 @@
         "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
         "verdict": "extraction_error",
         "issues": [
-          "Missing bitfield definitions for 'flags' field."
+          "Missing bitfield definitions for the flags field."
         ]
       },
       {
-        "source": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
-        "verdict": "extraction_error",
-        "issues": [
-          "Uses 'explicit_count' referencing 'N', but 'N' is not defined as a field in the payload. Should use 'fill_remaining' or 'array_of' with implicit length."
-        ]
+        "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+        "verdict": "correct",
+        "issues": []
       },
       {
         "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
-        "verdict": "extraction_error",
+        "verdict": "valid_variation",
         "issues": [
-          "Bitfield definition swapped. Standard is 'dump' at bit 0 and 'binary' at bit 1. This extraction has 'binary' at 0 and 'dump' at 1."
+          "Bitfield definitions for flags (bit 0 and bit 1) are swapped compared to F9/M9 documentation."
         ]
+      },
+      {
+        "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+        "verdict": "correct",
+        "issues": []
+      },
+      {
+        "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+        "verdict": "correct",
+        "issues": []
       }
     ],
-    "valid_variations": [],
-    "reasoning": "The message structure is consistent across generations: a 1-byte flag field followed by N bytes of data. The canonical flag definition puts 'dump' at bit 0 and 'binary' at bit 1, supported by 7 of the 8 sources. Extraction 8 (M8) shows a swapped bitfield, which is likely an error in reading the manual table rather than a protocol change. Extraction 6 is incomplete (missing bits). Extraction 7 uses a modeling construct ('explicit_count: N') that refers to a non-existent field variable, whereas others correctly identify the variable data nature via arrays or 'fill_remaining' semantics."
+    "valid_variations": [
+      {
+        "sources": [
+          "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+        ],
+        "structure": {
+          "payload_fields": [
+            {
+              "byte_offset": 0,
+              "name": "flags",
+              "data_type": "X1",
+              "bit_fields": [
+                {
+                  "name": "binary",
+                  "bit_start": 0,
+                  "bit_end": 0,
+                  "description": "Data is binary."
+                },
+                {
+                  "name": "dump",
+                  "bit_start": 1,
+                  "bit_end": 1,
+                  "description": "Dump data at startup. Does not work if flag binary is set."
+                }
+              ]
+            }
+          ]
+        },
+        "reason": "The u-blox 8 generation of receivers used a different bit mapping for the flags field in this message compared to the later u-blox 9/F9 generations."
+      }
+    ],
+    "reasoning": "The message UBX-CFG-RINV is a legacy configuration message. Analysis across nine extractions shows it contains a 1-byte flag field and an array of up to 30 bytes of data. A significant protocol variation exists: in u-blox 8 (Extraction 7), bit 0 is 'binary' and bit 1 is 'dump', whereas in u-blox 9/F9 (all other extractions), bit 0 is 'dump' and bit 1 is 'binary'. Most modern manuals also emphasize that the message is deprecated in favor of VALSET/VALGET/VALDEL for protocol versions above 23.01."
   }
 }

@@ -1,0 +1,249 @@
+{
+  "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23.pdf",
+  "message_name": "UBX-RXM-RAWX",
+  "extraction_timestamp": "2026-01-08T06:48:33.751186+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 424,
+    "end": 429
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-RXM-RAWX\nExpected IDs: class_id=0x02, message_id=0x15\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-RXM-RAWX\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool."
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"message_name\": \"UBX-RXM-RAWX\",\n  \"class_id\": \"0x02\",\n  \"message_id\": \"0x15\",\n  \"message_type\": \"periodic_polled\",\n  \"description\": \"Multi-GNSS raw measurement data\",\n  \"supported_versions\": \"u-blox 8 / u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with ADR or High Precision GNSS or Time Sync products)\",\n  \"payload_length\": {\n    \"variable\": {\n      \"base\": 16,\n      \"formula\": \"16 + N*32\",\n      \"ref_field\": \"numMeas\"\n    }\n  },\n  \"fields\": [\n    {\n      \"byte_offset\": 0,\n      \"name\": \"rcvTow\",\n      \"data_type\": \"R8\",\n      \"unit\": \"s\",\n      \"description\": \"Measurement time of week in receiver local time approximately aligned to the GPS time system. The receiver local time of week, week number and leap second information can be used to translate the time to other time systems. More information about the difference in time systems can be found in the RINEX 3 format documentation. For a receiver operating in GLONASS only mode, UTC time can be determined by subtracting the leaps field from GPS time regardless of whether the GPS leap seconds are valid.\"\n    },\n    {\n      \"byte_offset\": 8,\n      \"name\": \"week\",\n      \"data_type\": \"U2\",\n      \"unit\": \"weeks\",\n      \"description\": \"GPS week number in receiver local time.\"\n    },\n    {\n      \"byte_offset\": 10,\n      \"name\": \"leaps\",\n      \"data_type\": \"I1\",\n      \"unit\": \"s\",\n      \"description\": \"GPS leap seconds (GPS-UTC). This field represents the receiver's best knowledge of the leap seconds offset. A flag is given in the recStat bitfield to indicate if the leap seconds are known.\"\n    },\n    {\n      \"byte_offset\": 11,\n      \"name\": \"numMeas\",\n      \"data_type\": \"U1\",\n      \"description\": \"Number of measurements to follow\"\n    },\n    {\n      \"byte_offset\": 12,\n      \"name\": \"recStat\",\n      \"data_type\": \"X1\",\n      \"description\": \"Receiver tracking status bitfield (see graphic below)\",\n      \"bitfield_members\": [\n        {\n          \"name\": \"leapSec\",\n          \"bit_offset\": 0,\n          \"bit_length\": 1,\n          \"description\": \"Leap seconds have been determined\"\n        },\n        {\n          \"name\": \"clkReset\",\n          \"bit_offset\": 1,\n          \"bit_length\": 1,\n          \"description\": \"Clock reset applied. Typically the receiver clock is changed in increments of integer milliseconds.\"\n        }\n      ]\n    },\n    {\n      \"byte_offset\": 13,\n      \"name\": \"version\",\n      \"data_type\": \"U1\",\n      \"fixed_value\": 1,\n      \"description\": \"Message version (0x01 for this version)\"\n    },\n    {\n      \"byte_offset\": 14,\n      \"name\": \"reserved1\",\n      \"data_type\": {\n        \"array_of\": \"U1\",\n        \"count\": 2\n      },\n      \"reserved\": true,\n      \"description\": \"Reserved\"\n    },\n    {\n      \"byte_offset\": 16,\n      \"name\": \"measurements\",\n      \"data_type\": {\n        \"array_of\": {\n          \"fields\": [\n            {\n              \"byte_offset\": 0,\n              \"name\": \"prMes\",\n              \"data_type\": \"R8\",\n              \"unit\": \"m\",\n              \"description\": \"Pseudorange measurement [m]. GLONASS inter frequency channel delays are compensated with an internal calibration table.\"\n            },\n            {\n              \"byte_offset\": 8,\n              \"name\": \"cpMes\",\n              \"data_type\": \"R8\",\n              \"unit\": \"cycles\",\n              \"description\": \"Carrier phase measurement [cycles]. The carrier phase initial ambiguity is initialized using an approximate value to make the magnitude of the phase close to the pseudorange measurement. Clock resets are applied to both phase and code measurements in accordance with the RINEX specification.\"\n            },\n            {\n              \"byte_offset\": 16,\n              \"name\": \"doMes\",\n              \"data_type\": \"R4\",\n              \"unit\": \"Hz\",\n              \"description\": \"Doppler measurement (positive sign for approaching satellites) [Hz]\"\n            },\n            {\n              \"byte_offset\": 20,\n              \"name\": \"gnssId\",\n              \"data_type\": \"U1\",\n              \"description\": \"GNSS identifier (see Satellite Numbering for a list of identifiers)\"\n            },\n            {\n              \"byte_offset\": 21,\n              \"name\": \"svId\",\n              \"data_type\": \"U1\",\n              \"description\": \"Satellite identifier (see Satellite Numbering)\"\n            },\n            {\n              \"byte_offset\": 22,\n              \"name\": \"sigId\",\n              \"data_type\": \"U1\",\n              \"description\": \"New style signal identifier (see Signal Identifiers).(not supported in protocol versions less than 27)\"\n            },\n            {\n              \"byte_offset\": 23,\n              \"name\": \"freqId\",\n              \"data_type\": \"U1\",\n              \"description\": \"Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)\"\n            },\n            {\n              \"byte_offset\": 24,\n              \"name\": \"locktime\",\n              \"data_type\": \"U2\",\n              \"unit\": \"ms\",\n              \"description\": \"Carrier phase locktime counter (maximum 64500ms)\"\n            },\n            {\n              \"byte_offset\": 26,\n              \"name\": \"cno\",\n              \"data_type\": \"U1\",\n              \"unit\": \"dBHz\",\n              \"description\": \"Carrier-to-noise density ratio (signal strength) [dB-Hz]\"\n            },\n            {\n              \"byte_offset\": 27,\n              \"name\": \"prStdev\",\n              \"data_type\": \"X1\",\n              \"unit\": \"m\",\n              \"scaling\": {\n                \"raw\": \"0.01*2^n\"\n              },\n              \"description\": \"Estimated pseudorange measurement standard deviation (see graphic below)\"\n            },\n            {\n              \"byte_offset\": 28,\n              \"name\": \"cpStdev\",\n              \"data_type\": \"X1\",\n              \"unit\": \"cycles\",\n              \"scaling\": {\n                \"multiplier\": 0.004\n              },\n              \"description\": \"Estimated carrier phase measurement standard deviation (note a raw value of 0x0F indicates the value is invalid) (see graphic below)\"\n            },\n            {\n              \"byte_offset\": 29,\n              \"name\": \"doStdev\",\n              \"data_type\": \"X1\",\n              \"unit\": \"Hz\",\n              \"scaling\": {\n                \"raw\": \"0.002*2^n\"\n              },\n              \"description\": \"Estimated Doppler measurement standard deviation. (see graphic below)\"\n            },\n            {\n              \"byte_offset\": 30,\n              \"name\": \"trkStat\",\n              \"data_type\": \"X1\",\n              \"description\": \"Tracking status bitfield (see graphic below)\",\n              \"bitfield_members\": [\n                {\n                  \"name\": \"prValid\",\n                  \"bit_offset\": 0,\n                  \"bit_length\": 1,\n                  \"description\": \"Pseudorange valid\"\n                },\n                {\n                  \"name\": \"cpValid\",\n                  \"bit_offset\": 1,\n                  \"bit_length\": 1,\n                  \"description\": \"Carrier phase valid\"\n                },\n                {\n                  \"name\": \"halfCyc\",\n                  \"bit_offset\": 2,\n                  \"bit_length\": 1,\n                  \"description\": \"Half cycle valid\"\n                },\n                {\n                  \"name\": \"subHalfCyc\",\n                  \"bit_offset\": 3,\n                  \"bit_length\": 1,\n                  \"description\": \"Half cycle subtracted from phase\"\n                }\n              ]\n            },\n            {\n              \"byte_offset\": 31,\n              \"name\": \"reserved2\",\n              \"data_type\": \"U1\",\n              \"reserved\": true,\n              \"description\": \"Reserved\"\n            }\n          ]\n        },\n        \"count_field\": \"numMeas\"\n      },\n      \"description\": \"Array of measurements\"\n    }\n  ]\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "message_name": "UBX-RXM-RAWX",
+    "class_id": "0x02",
+    "message_id": "0x15",
+    "message_type": "periodic_polled",
+    "description": "Multi-GNSS raw measurement data",
+    "supported_versions": "u-blox 8 / u-blox M8 protocol versions 18, 19, 19.1, 19.2, 20, 20.01, 20.1, 20.2, 20.3, 22, 22.01, 23 and 23.01 (only with ADR or High Precision GNSS or Time Sync products)",
+    "payload_length": {
+      "variable": {
+        "base": 16,
+        "formula": "16 + N*32",
+        "ref_field": "numMeas"
+      }
+    },
+    "payload": {
+      "fields": [
+        {
+          "byte_offset": 0,
+          "name": "rcvTow",
+          "data_type": "R8",
+          "unit": "s",
+          "description": "Measurement time of week in receiver local time approximately aligned to the GPS time system. The receiver local time of week, week number and leap second information can be used to translate the time to other time systems. More information about the difference in time systems can be found in the RINEX 3 format documentation. For a receiver operating in GLONASS only mode, UTC time can be determined by subtracting the leaps field from GPS time regardless of whether the GPS leap seconds are valid."
+        },
+        {
+          "byte_offset": 8,
+          "name": "week",
+          "data_type": "U2",
+          "unit": "weeks",
+          "description": "GPS week number in receiver local time."
+        },
+        {
+          "byte_offset": 10,
+          "name": "leaps",
+          "data_type": "I1",
+          "unit": "s",
+          "description": "GPS leap seconds (GPS-UTC). This field represents the receiver's best knowledge of the leap seconds offset. A flag is given in the recStat bitfield to indicate if the leap seconds are known."
+        },
+        {
+          "byte_offset": 11,
+          "name": "numMeas",
+          "data_type": "U1",
+          "description": "Number of measurements to follow"
+        },
+        {
+          "byte_offset": 12,
+          "name": "recStat",
+          "data_type": "X1",
+          "description": "Receiver tracking status bitfield (see graphic below)",
+          "bitfield_members": [
+            {
+              "name": "leapSec",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "description": "Leap seconds have been determined"
+            },
+            {
+              "name": "clkReset",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "description": "Clock reset applied. Typically the receiver clock is changed in increments of integer milliseconds."
+            }
+          ]
+        },
+        {
+          "byte_offset": 13,
+          "name": "version",
+          "data_type": "U1",
+          "fixed_value": 1,
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "byte_offset": 14,
+          "name": "reserved1",
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "reserved": true,
+          "description": "Reserved"
+        },
+        {
+          "byte_offset": 16,
+          "name": "measurements",
+          "data_type": {
+            "array_of": {
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "prMes",
+                  "data_type": "R8",
+                  "unit": "m",
+                  "description": "Pseudorange measurement [m]. GLONASS inter frequency channel delays are compensated with an internal calibration table."
+                },
+                {
+                  "byte_offset": 8,
+                  "name": "cpMes",
+                  "data_type": "R8",
+                  "unit": "cycles",
+                  "description": "Carrier phase measurement [cycles]. The carrier phase initial ambiguity is initialized using an approximate value to make the magnitude of the phase close to the pseudorange measurement. Clock resets are applied to both phase and code measurements in accordance with the RINEX specification."
+                },
+                {
+                  "byte_offset": 16,
+                  "name": "doMes",
+                  "data_type": "R4",
+                  "unit": "Hz",
+                  "description": "Doppler measurement (positive sign for approaching satellites) [Hz]"
+                },
+                {
+                  "byte_offset": 20,
+                  "name": "gnssId",
+                  "data_type": "U1",
+                  "description": "GNSS identifier (see Satellite Numbering for a list of identifiers)"
+                },
+                {
+                  "byte_offset": 21,
+                  "name": "svId",
+                  "data_type": "U1",
+                  "description": "Satellite identifier (see Satellite Numbering)"
+                },
+                {
+                  "byte_offset": 22,
+                  "name": "sigId",
+                  "data_type": "U1",
+                  "description": "New style signal identifier (see Signal Identifiers).(not supported in protocol versions less than 27)"
+                },
+                {
+                  "byte_offset": 23,
+                  "name": "freqId",
+                  "data_type": "U1",
+                  "description": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+                },
+                {
+                  "byte_offset": 24,
+                  "name": "locktime",
+                  "data_type": "U2",
+                  "unit": "ms",
+                  "description": "Carrier phase locktime counter (maximum 64500ms)"
+                },
+                {
+                  "byte_offset": 26,
+                  "name": "cno",
+                  "data_type": "U1",
+                  "unit": "dBHz",
+                  "description": "Carrier-to-noise density ratio (signal strength) [dB-Hz]"
+                },
+                {
+                  "byte_offset": 27,
+                  "name": "prStdev",
+                  "data_type": "X1",
+                  "unit": "m",
+                  "scaling": {
+                    "raw": "0.01*2^n"
+                  },
+                  "description": "Estimated pseudorange measurement standard deviation (see graphic below)"
+                },
+                {
+                  "byte_offset": 28,
+                  "name": "cpStdev",
+                  "data_type": "X1",
+                  "unit": "cycles",
+                  "scaling": {
+                    "multiplier": 0.004
+                  },
+                  "description": "Estimated carrier phase measurement standard deviation (note a raw value of 0x0F indicates the value is invalid) (see graphic below)"
+                },
+                {
+                  "byte_offset": 29,
+                  "name": "doStdev",
+                  "data_type": "X1",
+                  "unit": "Hz",
+                  "scaling": {
+                    "raw": "0.002*2^n"
+                  },
+                  "description": "Estimated Doppler measurement standard deviation. (see graphic below)"
+                },
+                {
+                  "byte_offset": 30,
+                  "name": "trkStat",
+                  "data_type": "X1",
+                  "description": "Tracking status bitfield (see graphic below)",
+                  "bitfield_members": [
+                    {
+                      "name": "prValid",
+                      "bit_offset": 0,
+                      "bit_length": 1,
+                      "description": "Pseudorange valid"
+                    },
+                    {
+                      "name": "cpValid",
+                      "bit_offset": 1,
+                      "bit_length": 1,
+                      "description": "Carrier phase valid"
+                    },
+                    {
+                      "name": "halfCyc",
+                      "bit_offset": 2,
+                      "bit_length": 1,
+                      "description": "Half cycle valid"
+                    },
+                    {
+                      "name": "subHalfCyc",
+                      "bit_offset": 3,
+                      "bit_length": 1,
+                      "description": "Half cycle subtracted from phase"
+                    }
+                  ]
+                },
+                {
+                  "byte_offset": 31,
+                  "name": "reserved2",
+                  "data_type": "U1",
+                  "reserved": true,
+                  "description": "Reserved"
+                }
+              ]
+            },
+            "count_field": "numMeas"
+          },
+          "description": "Array of measurements"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/bumpd5aqmgcn"
+}
