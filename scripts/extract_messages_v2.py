@@ -49,12 +49,65 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-# Import from existing extraction script
-from extract_messages_with_gemini import (
-    build_extraction_prompt,
-    post_process_message,
-    validate_message,
-)
+# Import from src modules
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from src.extraction.prompts import build_extraction_prompt
+from src.validation.structural import validate_message_structure
+
+
+def post_process_message(message: dict) -> dict:
+    """Post-process extracted message (normalize fields, fix common issues)."""
+    if not message:
+        return message
+    # Ensure payload structure exists
+    if 'fields' in message and 'payload' not in message:
+        message['payload'] = {'fields': message.pop('fields')}
+    return message
+
+
+def validate_message(message: dict) -> bool:
+    """Validate message structure, return True if valid."""
+    if not message:
+        return False
+    result = validate_message_structure(message)
+    return result.is_valid
+
+
+def count_fields(extracted: dict) -> int:
+    """Count fields from extracted message, handling various Gemini output formats.
+    
+    Gemini may return fields in different structures:
+    - payload.fields
+    - payload_fields (at root or nested)
+    - ubx_message.payload.fields
+    - ubx_message.payload_fields
+    - fields (at root)
+    """
+    if not isinstance(extracted, dict):
+        return 0
+    
+    # Unwrap ubx_message if present
+    if "ubx_message" in extracted:
+        extracted = extracted["ubx_message"]
+    
+    # Try various field locations
+    fields = []
+    
+    # Check payload.fields
+    payload = extracted.get("payload")
+    if isinstance(payload, dict):
+        fields = payload.get("fields", [])
+    
+    # Check payload_fields at root
+    if not fields:
+        fields = extracted.get("payload_fields", [])
+    
+    # Check fields at root
+    if not fields:
+        fields = extracted.get("fields", [])
+    
+    return len(fields) if isinstance(fields, list) else 0
 
 # Available models
 GEMINI_MODELS = {
@@ -540,9 +593,7 @@ def extract_message_with_conversation(
             # Apply post-processing fixes
             extracted = post_process_message(extracted)
             
-            payload = extracted.get("payload") or {}
-            fields = payload.get("fields", []) if isinstance(payload, dict) else []
-            field_count = len(fields)
+            field_count = count_fields(extracted)
             if verbose:
                 print(f"✓ {field_count} fields ({elapsed:.1f}s)")
                 

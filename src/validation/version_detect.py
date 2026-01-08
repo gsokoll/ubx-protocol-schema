@@ -56,9 +56,20 @@ def detect_version_field(message: dict) -> VersionFieldInfo:
     Returns:
         VersionFieldInfo with detection result
     """
+    # Unwrap ubx_message if present (Gemini output variation)
+    if 'ubx_message' in message:
+        message = message['ubx_message']
+    
     fields = message.get('fields', [])
-    if not fields and message.get('payload'):
-        fields = message['payload'].get('fields', [])
+    
+    # Try payload.fields
+    payload = message.get('payload')
+    if not fields and isinstance(payload, dict):
+        fields = payload.get('fields', [])
+    
+    # Try payload_fields (Gemini output variation)
+    if not fields:
+        fields = message.get('payload_fields', [])
     
     if not fields:
         return VersionFieldInfo(

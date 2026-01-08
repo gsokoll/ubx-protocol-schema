@@ -167,22 +167,30 @@ def generate_collection(adjudicated_dir: Path, output_file: Path, metadata_file:
                 errors += 1
                 continue
             
+            # Unwrap ubx_message if present (Gemini output variation)
+            if "ubx_message" in canonical and isinstance(canonical["ubx_message"], dict):
+                canonical = canonical["ubx_message"]
+            
             # Validate required fields per schema
             message = {}
             
             # Required: name
             message["name"] = canonical.get("name", msg_name)
             
-            # Required: class_id
-            class_id = canonical.get("class_id")
+            # Required: class_id (handle Gemini output variations)
+            class_id = (canonical.get("class_id") or canonical.get("ubx_class") or 
+                        canonical.get("classId") or canonical.get("message_class") or
+                        canonical.get("message_class_id") or canonical.get("class"))
             if not class_id:
                 print(f"  {msg_name}: SKIP - no class_id")
                 errors += 1
                 continue
             message["class_id"] = class_id
             
-            # Required: message_id
-            message_id = canonical.get("message_id")
+            # Required: message_id (handle Gemini output variations)
+            message_id = (canonical.get("message_id") or canonical.get("ubx_id") or 
+                          canonical.get("messageId") or canonical.get("msg_id") or
+                          canonical.get("id"))
             if not message_id:
                 print(f"  {msg_name}: SKIP - no message_id")
                 errors += 1
@@ -217,11 +225,36 @@ def generate_collection(adjudicated_dir: Path, output_file: Path, metadata_file:
             
             # Payload - normalize structure (handle fields at wrong level)
             payload = canonical.get("payload", {})
+            
+            # Handle case where payload is a list of fields directly (Gemini output variation)
+            if isinstance(payload, list):
+                payload = {
+                    "length": canonical.get("payload_length", {}),
+                    "fields": payload,
+                    "repeated_groups": []
+                }
+            
             # If payload is empty but fields exist at top level, normalize
             if not payload.get("fields") and canonical.get("fields"):
                 payload = {
                     "length": canonical.get("length", {}),
                     "fields": canonical.get("fields", []),
+                    "repeated_groups": canonical.get("repeated_groups", [])
+                }
+            
+            # Handle payload_fields at root level (Gemini output variation)
+            if not payload.get("fields") and canonical.get("payload_fields"):
+                payload = {
+                    "length": canonical.get("payload_length", {}),
+                    "fields": canonical.get("payload_fields", []),
+                    "repeated_groups": canonical.get("repeated_groups", [])
+                }
+            
+            # Handle payload_structure at root level (Gemini output variation)
+            if not payload.get("fields") and canonical.get("payload_structure"):
+                payload = {
+                    "length": canonical.get("length_bytes", canonical.get("payload_length", {})),
+                    "fields": canonical.get("payload_structure", []),
                     "repeated_groups": canonical.get("repeated_groups", [])
                 }
             if payload or canonical.get("fields"):
@@ -243,12 +276,15 @@ def generate_collection(adjudicated_dir: Path, output_file: Path, metadata_file:
                         schema_payload["length"] = {"variable": var_length}
                     else:
                         schema_payload["length"] = {"fixed": 0}
-                else:
+                elif isinstance(length, list):
+                    # Handle list of valid lengths like [8, 40] - treat as variable with min/max
+                    sorted_lengths = sorted(length)
+                    schema_payload["length"] = {"variable": {"min": sorted_lengths[0], "max": sorted_lengths[-1]}}
+                elif isinstance(length, str):
                     # Handle string formula like "4 + 4*N"
-                    if isinstance(length, str):
-                        schema_payload["length"] = {"variable": {"base": 0, "formula": length}}
-                    else:
-                        schema_payload["length"] = {"fixed": int(length) if length else 0}
+                    schema_payload["length"] = {"variable": {"base": 0, "formula": length}}
+                else:
+                    schema_payload["length"] = {"fixed": int(length) if length else 0}
                 
                 # Fields (required in payload)
                 fields = payload.get("fields", [])
@@ -269,8 +305,8 @@ def generate_collection(adjudicated_dir: Path, output_file: Path, metadata_file:
                         byte_offset = field.get("offset", 0)
                     schema_field["byte_offset"] = byte_offset
                     
-                    # Required: data_type
-                    data_type = field.get("data_type", field.get("type", "U1"))
+                    # Required: data_type (handle Gemini variations: type, dataType)
+                    data_type = field.get("data_type") or field.get("type") or field.get("dataType") or "U1"
                     schema_field["data_type"] = data_type
                     
                     # Preserve fixed_value if already set, or extract from description

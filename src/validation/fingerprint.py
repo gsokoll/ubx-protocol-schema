@@ -146,14 +146,24 @@ def compute_message_fingerprint(message: dict) -> str:
     Returns:
         Hex string fingerprint (SHA-256 truncated to 16 chars)
     """
+    # Unwrap ubx_message if present (Gemini output variation)
+    if 'ubx_message' in message:
+        message = message['ubx_message']
+    
     # Extract fields from message (including from repeated_groups)
     fields = message.get('fields', [])
+    
+    # Try payload.fields
     payload = message.get('payload', {})
-    if not fields and payload:
+    if isinstance(payload, dict) and not fields:
         fields = payload.get('fields', [])
     
+    # Try payload_fields (Gemini output variation)
+    if not fields:
+        fields = message.get('payload_fields', [])
+    
     # Also include fields from repeated_groups (don't tag - treat same as top-level)
-    repeated_groups = (payload.get('repeated_groups') or []) if payload else []
+    repeated_groups = (payload.get('repeated_groups') or []) if isinstance(payload, dict) else []
     rgroup_fields = []
     for rg in repeated_groups:
         for field in rg.get('fields', []):
@@ -189,13 +199,21 @@ def compute_message_fingerprint_detailed(message: dict) -> dict:
     Returns:
         Dict with fingerprint and per-field details
     """
+    # Unwrap ubx_message if present (Gemini output variation)
+    if 'ubx_message' in message:
+        message = message['ubx_message']
+    
     fields = message.get('fields', [])
     payload = message.get('payload', {})
-    if not fields and payload:
+    if isinstance(payload, dict) and not fields:
         fields = payload.get('fields', [])
     
+    # Try payload_fields (Gemini output variation)
+    if not fields:
+        fields = message.get('payload_fields', [])
+    
     # Also include fields from repeated_groups (don't tag - treat same as top-level)
-    repeated_groups = (payload.get('repeated_groups') or []) if payload else []
+    repeated_groups = (payload.get('repeated_groups') or []) if isinstance(payload, dict) else []
     rgroup_fields = []
     for rg in repeated_groups:
         for field in rg.get('fields', []):
