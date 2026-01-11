@@ -14,10 +14,10 @@ u-blox GNSS receivers use the proprietary UBX binary protocol. The protocol is d
 
 | File | Description |
 |------|-------------|
-| `data/messages/ubx_messages.json` | **239 message definitions** (schema v1.4) |
+| `data/messages/ubx_messages.json` | **235 message definitions** (schema v1.5) |
 | `data/messages/enumerations.json` | **23 enumeration definitions** |
 | `data/config_keys/unified_config_keys.json` | **1,109 configuration keys** |
-| `data/manual_metadata.json` | **Manual-to-protocol version mapping** |
+| `data/manual_metadata.json` | **28 manual-to-protocol version mappings** |
 
 ## Quick Start
 
@@ -44,10 +44,10 @@ uv run python scripts/generate_coverage_report.py
 
 | Component | Count | Status |
 |-----------|-------|--------|
-| Messages | 239 | Complete |
-| Fields | 2,032 | Complete |
-| Bitfield definitions | 159/173 | 92% complete |
-| Enumerations | 23 | 107 values |
+| Messages | 235 | Complete |
+| Fields | 1,923 | Complete |
+| Bitfield definitions | 175/181 | 95% complete |
+| Enumerations | 23 | Complete |
 | Config keys | 1,109 | Complete |
 
 ### Cross-Validation
@@ -151,7 +151,7 @@ CONTRIBUTING.md               # Contribution guide
 
 data/
   messages/
-    ubx_messages.json         # Main output: 239 messages
+    ubx_messages.json         # Main output: 235 messages
     enumerations.json         # 23 enum definitions
   config_keys/
     unified_config_keys.json  # 1,109 config keys
@@ -181,12 +181,12 @@ testing/                      # Test framework
   lib/                        # Schema-based codec
   tests/                      # pytest tests
 
-schema/                       # JSON Schema definitions (v1.4)
+schema/                       # JSON Schema definitions (v1.5)
 docs/                         # Technical documentation
 interface_manuals/            # Source PDF manuals (32 files)
 ```
 
-## Message Schema (v1.4)
+## Message Schema (v1.5)
 
 ```json
 {
@@ -209,6 +209,12 @@ interface_manuals/            # Source PDF manuals (32 files)
   }
 }
 ```
+
+### Schema v1.5 Features
+
+- **Message variants** — Multi-format messages (e.g., UBX-MGA-GPS) with discriminator-based selection
+- **Version tracking** — `since_protocol_version` for fields introduced in later protocol versions
+- **Opaque fields** — `opaque: true` for hardware-specific X-type fields without bitfield definitions
 
 ### Protocol Version Format
 
@@ -244,6 +250,28 @@ For F9+ devices using CFG-VAL* messages:
   "description": "Nominal time between GNSS measurements",
   "unit": "ms"
 }
+```
+
+## Useful Scripts
+
+```bash
+# Run all tests
+uv run pytest testing/tests/ -v
+
+# Cross-validate against pyubx2
+uv run python validation/scripts/cross_validate.py --summary
+
+# Validate a specific message against PDF manuals
+uv run python validation/scripts/validate_message.py UBX-NAV-PVT
+
+# Extract missing bitfields from PDFs and apply to schema
+uv run python validation/scripts/validate_message.py UBX-NAV-PVT --extract-missing --apply
+
+# Update manual metadata (protocol versions from PDF front matter)
+uv run python scripts/extract_manual_metadata.py
+
+# Generate coverage report
+uv run python testing/generate_coverage_report.py
 ```
 
 ## Documentation

@@ -101,7 +101,7 @@ uv run pytest testing/tests/ -v
 ```
 data/
   messages/
-    ubx_messages.json      # Canonical message definitions (239 messages)
+    ubx_messages.json      # Canonical message definitions (235 messages)
     enumerations.json      # Enumeration definitions
   config_keys/
     unified_config_keys.json  # Configuration keys (1,109 keys)
@@ -109,7 +109,7 @@ data/
   preliminary/             # Staging area for extracted messages
 
 schema/
-  ubx-message-schema-v1.4.json   # JSON Schema for message definitions
+  ubx-message-schema-v1.5.json   # JSON Schema for message definitions
 
 src/
   extraction/              # PDF extraction pipeline
