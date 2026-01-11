@@ -1,0 +1,77 @@
+{
+  "name": "UBX-NAV-GEOFENCE",
+  "class_id": "0x01",
+  "message_id": "0x39",
+  "message_type": "periodic_polled",
+  "description": "Geofencing status",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numFences * 2"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "scale": {
+          "raw": "ms"
+        },
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "status",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+      },
+      {
+        "name": "numFences",
+        "byte_offset": 6,
+        "data_type": "U1",
+        "description": "Number of geofences"
+      },
+      {
+        "name": "combState",
+        "byte_offset": 7,
+        "data_type": "U1",
+        "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+      },
+      {
+        "name": "repeated_group",
+        "byte_offset": 8,
+        "data_type": {
+          "array_of": {
+            "type": "object",
+            "fields": [
+              {
+                "name": "state",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+              },
+              {
+                "name": "id",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Geofence ID (0 = not available)"
+              }
+            ]
+          },
+          "count_field": "numFences"
+        },
+        "description": "Repeated group for each geofence"
+      }
+    ]
+  }
+}

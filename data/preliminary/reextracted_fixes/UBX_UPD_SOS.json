@@ -1,0 +1,46 @@
+{
+  "name": "UBX-UPD-SOS",
+  "class_id": "0x09",
+  "message_id": "0x14",
+  "message_type": "polled_command_output",
+  "description": "Messages used for firmware updates related to backup/restore functions of battery-backed memory (BBR) from flash. This message acts as a multiplexed type, where its exact payload content and function are determined by the 'cmd' field at offset 0.",
+  "payload": {
+    "length": {
+      "fixed": 8
+    },
+    "fields": [
+      {
+        "name": "cmd",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Command or message type (0x09 0x14 message variants):\n- No payload: Poll backup restore status (Poll request)\n- 0: Create backup in flash (Input command, payload length 4)\n- 1: Clear backup in flash (Input command, payload length 4)\n- 2: Backup/restore status acknowledge (Output message, payload length 8). Response to poll request or clear command.\n- 3: System restored from backup (Output message, payload length 8). Notifies host of BBR restoration."
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 1,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true,
+        "description": "Reserved. Present when payload length is 4 or 8 bytes (i.e., for cmd values 0, 1, 2, or 3). Not present for Poll requests (length 0)."
+      },
+      {
+        "name": "response",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "description": "Response status. Present when payload length is 8 bytes (i.e., for cmd values 2 or 3).\n- If cmd = 2 (Acknowledge): 0 = Not acknowledged, 1 = Acknowledged.\n- If cmd = 3 (System restored): 0 = Unknown, 1 = Failed restoring from backup, 2 = Restored from backup, 3 = Not restored (no backup)."
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 5,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true,
+        "description": "Reserved. Present when payload length is 8 bytes (i.e., for cmd values 2 or 3)."
+      }
+    ]
+  }
+}

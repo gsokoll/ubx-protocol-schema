@@ -1,0 +1,1553 @@
+{
+  "message": "UBX-NAV-SIG",
+  "timestamp": "2026-01-09T05:06:32.361862+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-NAV-SIG",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:51:42.737269+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-NAV-SIG",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:51:43.332600+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.formula",
+          "issue": "The canonical formula correctly reflects the PDF's '8 + numSigs.16', however, the underlying structure of the 'signals' field as a simple U1 is incorrect. The formula implicitly requires a repeated group of 16-byte elements.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs.16"
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 data type. According to the PDF, 'signals' should be a repeated group ('numSigs' times) of 16-byte structures, each containing multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and 4 reserved bytes) as described on page 2.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group containing 16-byte entries with fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2), cno (U1), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2), and 4 reserved bytes."
+        }
+      ],
+      "notes": "The fixed fields (iTOW, version, numSigs, reserved0) at the beginning of the payload are correctly defined in the canonical. The primary discrepancy is the complete lack of definition for the repeated group ('signals') which constitutes the majority of this message's payload. The canonical needs to implement 'signals' as a `repeated_group` with its full internal structure detailed as per the PDF.",
+      "pdf_pages": [
+        108,
+        109
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:52:10.091206+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The formula string for variable payload length differs. The PDF likely contains a typo, but the literal string is a mismatch.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields (repeated group structure)",
+          "issue": "The canonical definition completely misses the repeated group structure specified in the PDF. The PDF describes a 'Start of repeated group (numSigs times)' at byte offset 8, containing multiple fields. The canonical incorrectly defines a single 'signals' field of type U1 at this offset.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group containing gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and reserved1, with each element being 16 bytes long."
+        },
+        {
+          "field": "payload.fields (missing fields in repeated group)",
+          "issue": "The following fields, clearly defined within the repeated group in the PDF, are entirely missing from the canonical definition: gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and reserved1 (the U1[4] at the end of the repeated block).",
+          "canonical_value": "Missing",
+          "pdf_value": "All fields from '8 + n.16 gnssId' through '20 + n.16 reserved1'"
+        },
+        {
+          "field": "sigFlags.data_type",
+          "issue": "The PDF defines 'sigFlags' as an X2 (bitfield) type, which implies a need for explicit bit definitions. The canonical definition completely omits this field.",
+          "canonical_value": "Missing",
+          "pdf_value": "X2"
+        },
+        {
+          "field": "sigFlags.bitfield_definitions",
+          "issue": "The PDF provides detailed bitfield definitions for 'sigFlags' (e.g., health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, authStatus). These are completely missing from the canonical definition.",
+          "canonical_value": "Missing",
+          "pdf_value": "Detailed bitfield descriptions for sigFlags (X2)"
+        },
+        {
+          "field": "prRes.scale_factor",
+          "issue": "The 'prRes' field in the PDF has a scale factor of 0.1, which is missing from the canonical (as the field itself is missing).",
+          "canonical_value": "Missing",
+          "pdf_value": "Scale 0.1"
+        },
+        {
+          "field": "prRes.unit",
+          "issue": "The 'prRes' field in the PDF has a unit of 'm', which is missing from the canonical (as the field itself is missing).",
+          "canonical_value": "Missing",
+          "pdf_value": "Unit m"
+        },
+        {
+          "field": "cno.unit",
+          "issue": "The 'cno' field in the PDF has a unit of 'dBHz', which is missing from the canonical (as the field itself is missing).",
+          "canonical_value": "Missing",
+          "pdf_value": "Unit dBHz"
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is fundamentally incomplete and inaccurate compared to the provided PDF. It correctly identifies the message ID and fixed header fields (iTOW, version, numSigs, reserved0) and the formula for the variable payload length, but fails to define the substantial repeated group ('signals') and its constituent fields as specified in the manual. The PDF's formula '8 + numSigs-16' appears to be a typo and should likely be '8 + numSigs*16'.",
+      "pdf_pages": [
+        103,
+        104
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:52:40.622746+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4]",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field. The PDF clearly indicates a 'repeated group' structure for the variable-length part of the payload, starting at byte_offset 8 and repeating 'numSigs' times.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "A repeated group starting at byte offset 8, determined by 'numSigs', with each group element being 16 bytes long and containing fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scale 0.1m), cno (U1, dBHz), qualityInd (U1), corrSource (U1), followed by 7 implicit reserved bytes."
+        },
+        {
+          "field": "payload.fields[4].data_type",
+          "issue": "The data_type for the 'signals' element is incorrect because it should be a structure (repeated group) of multiple fields, not a single U1.",
+          "canonical_value": "U1",
+          "pdf_value": "Structure of fields: U1 (gnssId), U1 (svId), U1 (sigId), U1 (freqId), I2 (prRes), U1 (cno), U1 (qualityInd), U1 (corrSource), plus implicit reserved bytes."
+        },
+        {
+          "field": "repeated_groups_structure",
+          "issue": "The canonical definition completely omits the detailed structure of the repeated group, including individual fields like gnssId, svId, sigId, freqId, prRes, cno, qualityInd, and corrSource, as well as the implied reserved bytes within each 16-byte repetition.",
+          "canonical_value": "Not present (represented by a single 'signals' U1 field)",
+          "pdf_value": [
+            {
+              "name": "gnssId",
+              "byte_offset_in_group": 0,
+              "data_type": "U1"
+            },
+            {
+              "name": "svId",
+              "byte_offset_in_group": 1,
+              "data_type": "U1"
+            },
+            {
+              "name": "sigId",
+              "byte_offset_in_group": 2,
+              "data_type": "U1"
+            },
+            {
+              "name": "freqId",
+              "byte_offset_in_group": 3,
+              "data_type": "U1"
+            },
+            {
+              "name": "prRes",
+              "byte_offset_in_group": 4,
+              "data_type": "I2",
+              "scale": {
+                "raw": "0.1",
+                "multiplier": 0.1
+              },
+              "unit": "m"
+            },
+            {
+              "name": "cno",
+              "byte_offset_in_group": 6,
+              "data_type": "U1",
+              "unit": "dBHz"
+            },
+            {
+              "name": "qualityInd",
+              "byte_offset_in_group": 7,
+              "data_type": "U1"
+            },
+            {
+              "name": "corrSource",
+              "byte_offset_in_group": 8,
+              "data_type": "U1"
+            },
+            {
+              "name": "reserved_in_group",
+              "byte_offset_in_group": 9,
+              "data_type": "U1[7]",
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "All other top-level fields (iTOW, version, numSigs, reserved0), message IDs (class_id, message_id), and the payload length formula (8 + numSigs*16) match the PDF. The primary issue is the complete misrepresentation of the variable-length 'signals' part of the payload, which should be a repeated group based on 'numSigs' containing several fields and implied reserved bytes within each 16-byte repetition.",
+      "pdf_pages": [
+        114,
+        115
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:53:05.965354+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SIG",
+      "matches": null,
+      "confidence": "low",
+      "discrepancies": [],
+      "notes": "Failed to parse LLM response: Expecting ',' delimiter: line 65 column 13 (char 2207)",
+      "pdf_pages": [
+        108,
+        109
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:53:44.715691+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.formula",
+          "issue": "The formula in the canonical definition is '8 + numSigs * 16', but the payload should actually be structured as a repeated group based on numSigs, where each group entry is 16 bytes long. The canonical currently defines the 'signals' field incorrectly as a single U1 instead of a 'repeated_group' object.",
+          "canonical_value": "8 + numSigs * 16 (implies a simple flat payload with a 'signals' U1 field)",
+          "pdf_value": "8 + numSigs * 16 (implies a 'repeated_group' of 16-byte entries, each containing multiple fields, starting at byte offset 8)"
+        },
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical defines a single field named 'signals' of type U1 at byte offset 8. The PDF clearly indicates that byte offset 8 marks the beginning of a 'repeated group (numSigs times)' containing multiple individual fields (gnssId, svId, sigId, etc.) each with their own types and offsets within the 16-byte group. This is a fundamental structural mismatch.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 8, with 16 bytes per entry, containing the following fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scaled 0.1 m), cno (U1, dBHz), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2, containing health bitfield)."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the fixed-size header fields (iTOW, version, numSigs, reserved0) and the overall variable payload length formula '8 + numSigs * 16'. However, it fails to implement the variable part of the payload as a 'repeated_group' and instead models it as a single 'U1' field, 'signals'. This is a significant structural error. All fields within the repeated group, including the X2 bitfield 'sigFlags' and its 'health' bits, are missing from the canonical definition.",
+      "pdf_pages": [
+        153,
+        154
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:54:01.814774+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload structure for variable part",
+          "issue": "The canonical definition incorrectly represents the variable part of the payload. It defines a single 'signals' field of type U1 at offset 8. However, the PDF explicitly states 'Start of repeated group (numSigs times)' at byte offset 8, indicating a complex, repeating structure.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A 'repeated_group' structure starting at byte offset 8, repeated 'numSigs' times, with each entry being 16 bytes long as per the payload length formula."
+        },
+        {
+          "field": "fields within repeated group",
+          "issue": "All the individual fields that constitute each entry of the repeated group (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel), as described in the PDF starting from '8 + n.16', are completely missing from the canonical definition. Implicit reserved bytes within each 16-byte group entry are also not defined.",
+          "canonical_value": "Missing.",
+          "pdf_value": "Explicitly defined fields within the repeated group, with their respective types, scales, units, and descriptions (e.g., gnssId (U1), svId (U1), prRes (I2, scale 0.1, unit m), etc.), making up 10 bytes of defined data per entry, implying 6 bytes of reserved space per entry to reach the total 16-byte length per entry."
+        }
+      ],
+      "notes": "The fixed part of the UBX-NAV-SIG payload (iTOW, version, numSigs, reserved0) matches the PDF. However, the crucial variable part, which is described as a 'repeated_group' in the PDF, is entirely misrepresented in the canonical definition. This is a fundamental structural mismatch for the UBX-NAV-SIG message for the M9 ADR 5.10 protocol version.",
+      "pdf_pages": [
+        118,
+        119
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:54:31.932895+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4].signals",
+          "issue": "The 'signals' field is incorrectly defined as a single U1 field. It should be a 'repeated_groups' block containing multiple fields, as described in the PDF manual under 'Start of repeated group (numSigs times)' starting at byte offset 8.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group structure of 9 distinct fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel) plus 6 bytes of reserved space, for a total of 16 bytes per signal, repeated 'numSigs' times."
+        },
+        {
+          "field": "repeated_group_fields",
+          "issue": "The canonical definition is missing the entire structure of the repeated group for 'signals'. The PDF describes 9 specific fields and implied reserved bytes within each 16-byte signal entry.",
+          "canonical_value": "No explicit repeated group definition for signals.",
+          "pdf_value": "gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scale 0.1, unit m), cno (U1, unit dBHz), qualityInd (U1), corrSource (U1), ionoModel (U1), followed by 6 bytes of reserved space (U1[6]) to complete the 16-byte block."
+        }
+      ],
+      "notes": "PDF Page 1 (titled '3.15.16 UBX-NAV-SIG (0x01 0x43)') describes a different message structure with the same Class/Message ID. However, the canonical definition's fixed fields (iTOW, version, numSigs, reserved0) align perfectly with PDF Page 2 ('3.15.16.1 Signal information - UBX-NAV-SIG'). Therefore, the validation of the canonical definition is performed against PDF Page 2, which is presumed to be the intended message variant for the specified manual version. The primary discrepancy lies in the canonical definition's failure to capture the complex 'repeated_groups' structure for the 'signals' data, which is detailed in Page 2.",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:54:59.658846+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4]",
+          "issue": "The canonical defines a single 'signals' field of type U1 at offset 8. The PDF specifies that this offset marks the beginning of a variable-length repeated group, where each entry is 16 bytes and contains multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and a reserved field). The canonical is missing the entire 'repeated_groups' structure.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "A 'repeated_groups' structure starting at byte_offset 8, with 'numSigs' entries, each 16 bytes long, containing fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scale 0.1, unit m), cno (U1, unit dBHz), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2), and 4 bytes reserved."
+        },
+        {
+          "field": "payload.fields[4].repeated_groups.group_fields.qualityInd.value_descriptions",
+          "issue": "Missing value descriptions for 'qualityInd' field.",
+          "canonical_value": "missing",
+          "pdf_value": "0: no signal, 1: searching signal, 2: signal acquired, 3: signal detected but unusable, 4: code locked and time synchronized, 5,6,7: code and carrier locked and time synchronized"
+        },
+        {
+          "field": "payload.fields[4].repeated_groups.group_fields.corrSource.value_descriptions",
+          "issue": "Missing value descriptions for 'corrSource' field.",
+          "canonical_value": "missing",
+          "pdf_value": "0: no corrections, 1: SBAS corrections, 2: BeiDou corrections, 3: RTCM2 corrections, 4: RTCM3 OSR corrections, 5: RTCM3 SSR corrections, 6: QZSS SLAS corrections, 7: SPARTN corrections, 8: CLAS corrections"
+        },
+        {
+          "field": "payload.fields[4].repeated_groups.group_fields.ionoModel.value_descriptions",
+          "issue": "Missing value descriptions for 'ionoModel' field.",
+          "canonical_value": "missing",
+          "pdf_value": "0: no model, 1: Klobuchar model transmitted by GPS, 2: SBAS model, 3: Klobuchar model transmitted by BeiDou, 8: Iono delay derived from dual frequency observations"
+        },
+        {
+          "field": "payload.fields[4].repeated_groups.group_fields.sigFlags.bitfields",
+          "issue": "Missing bitfield definitions for 'sigFlags' (X2) field.",
+          "canonical_value": "missing",
+          "pdf_value": "health (bits 1...0), prSmoothed (bit 2), prUsed (bit 3), crUsed (bit 4), doUsed (bit 5) with their respective descriptions and values."
+        },
+        {
+          "field": "payload.fields[4].repeated_groups.group_fields.reserved_at_end_of_group",
+          "issue": "An implicit 4-byte reserved field is present at the end of each 16-byte repeated group entry, but is not defined in the canonical.",
+          "canonical_value": "missing",
+          "pdf_value": "4 bytes reserved (after sigFlags, to complete the 16-byte block)"
+        }
+      ],
+      "notes": "The payload definition on page 1 of the PDF under '3.15.15 UBX-NAV-SIG (0x01 0x43)' appears to be an incorrect entry or an older/different message (possibly NAV-SAT) mistakenly placed under this heading, as its repeated group structure (12 bytes per entry) and field names do not match the canonical's length formula or the detailed 'Signal information' table on page 2. The canonical definition for top-level fields (iTOW, version, numSigs, reserved0) and the overall payload length formula (8 + numSigs * 16) align perfectly with the context provided on page 2. Therefore, the validation strictly follows the detailed 'Signal information' structure presented on page 2.",
+      "pdf_pages": [
+        146,
+        147
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:55:36.275484+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "signals (repeated group structure)",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field. The PDF (Page 2) clearly indicates a repeated group structure, where 'numSigs' determines the number of repetitions, and each group element is 16 bytes long, starting at byte offset 8.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numSigs times) at byte offset 8, with each group element being 16 bytes."
+        },
+        {
+          "field": "fields within the repeated group",
+          "issue": "All individual fields that constitute each 16-byte element of the repeated group are missing from the canonical definition. These fields include gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, and ionoModel, plus implicit reserved bytes to make up the 16-byte total.",
+          "canonical_value": "None (as the 'signals' field is not structured as a repeated group)",
+          "pdf_value": [
+            {
+              "offset": "8 + n.16",
+              "type": "U1",
+              "name": "gnssId"
+            },
+            {
+              "offset": "9 + n.16",
+              "type": "U1",
+              "name": "svId"
+            },
+            {
+              "offset": "10 + n.16",
+              "type": "U1",
+              "name": "sigId"
+            },
+            {
+              "offset": "11 + n.16",
+              "type": "U1",
+              "name": "freqId"
+            },
+            {
+              "offset": "12 + n.16",
+              "type": "I2",
+              "name": "prRes",
+              "scale": "0.1",
+              "unit": "m"
+            },
+            {
+              "offset": "14 + n.16",
+              "type": "U1",
+              "name": "cno",
+              "unit": "dBHz"
+            },
+            {
+              "offset": "15 + n.16",
+              "type": "U1",
+              "name": "qualityInd"
+            },
+            {
+              "offset": "16 + n.16",
+              "type": "U1",
+              "name": "corrSource"
+            },
+            {
+              "offset": "17 + n.16",
+              "type": "U1",
+              "name": "ionoModel"
+            },
+            {
+              "offset": "18 + n.16",
+              "type": "U1[6]",
+              "name": "reservedX"
+            }
+          ]
+        }
+      ],
+      "notes": "The canonical definition's fixed payload header (iTOW, version, numSigs, reserved0) matches the 'Payload description' on PDF Page 2 exactly.\n\nHowever, PDF Page 1, despite having 'UBX-NAV-SIG (0x01 0x43)' at the bottom, describes a completely different message structure than both the canonical definition and PDF Page 2. Page 1 includes fields like 'geo', 'mode', 'sys', 'service', 'cnt', and a different repeated group structure starting at offset 12 with different internal fields (svid, reserved1, udre, etc.). Given that PDF Page 2 is explicitly titled '3.15.16.1 Signal information UBX-NAV-SIG' and its fixed header matches the canonical, Page 2 is considered the authoritative reference for this specific message definition in the provided manual context (M9 MDR 2.10).",
+      "pdf_pages": [
+        118,
+        119
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:56:07.194317+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The formula for variable payload length contains a typo in the PDF manual.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16 (likely typo, should be numSigs * 16)"
+        },
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The 'signals' field is incorrectly defined as a simple U1 data type in the canonical. It should be a 'repeated_group' structure containing multiple sub-fields as described in the PDF.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 8, with each group being 16 bytes long ('+ n.16' notation), and containing multiple fields."
+        },
+        {
+          "field": "Repeated Group Structure (signals)",
+          "issue": "The canonical definition completely omits the detailed structure and fields of the 'signals' repeated group, which begins at byte offset 8.",
+          "canonical_value": "Not defined (only a placeholder 'signals' U1 field)",
+          "pdf_value": "The repeated group consists of the following 16-byte structure for each signal:\n- gnssId (U1, offset 0 relative to group start)\n- svId (U1, offset 1 relative to group start)\n- sigId (U1, offset 2 relative to group start)\n- freqId (U1, offset 3 relative to group start)\n- prRes (I2, offset 4 relative to group start, scale 0.1, unit m)\n- cno (U1, offset 6 relative to group start, unit dBHz)\n- qualityInd (U1/X1, offset 7 relative to group start, with bitfield descriptions)\n- corrSource (U1/X1, offset 8 relative to group start, with bitfield descriptions)\n- ionoModel (U1/X1, offset 9 relative to group start, with bitfield descriptions)\n- sigFlags (X2, offset 10 relative to group start, with bitfield definitions)\n- (Reserved U1[4], offset 12 relative to group start) - implicit from 16-byte block size."
+        },
+        {
+          "field": "Data type and properties for 'prRes'",
+          "issue": "The 'prRes' field (Pseudorange residual) is missing from the canonical definition of the repeated group.",
+          "canonical_value": "Not present",
+          "pdf_value": "I2, scale 0.1, unit 'm'"
+        },
+        {
+          "field": "Data type and properties for 'cno'",
+          "issue": "The 'cno' field (Carrier-to-noise density ratio) is missing from the canonical definition of the repeated group.",
+          "canonical_value": "Not present",
+          "pdf_value": "U1, unit 'dBHz'"
+        },
+        {
+          "field": "Data type and bit definitions for 'qualityInd'",
+          "issue": "The 'qualityInd' field (Signal quality indicator) is missing from the canonical definition of the repeated group. Although listed as U1 in the PDF, its detailed description indicates it should be an X1 (bitfield/enum) type.",
+          "canonical_value": "Not present",
+          "pdf_value": "U1 (interpreted as enum/bitfield), with explicit values/descriptions for signal quality."
+        },
+        {
+          "field": "Data type and bit definitions for 'corrSource'",
+          "issue": "The 'corrSource' field (Correction source) is missing from the canonical definition of the repeated group. Although listed as U1 in the PDF, its detailed description indicates it should be an X1 (bitfield/enum) type.",
+          "canonical_value": "Not present",
+          "pdf_value": "U1 (interpreted as enum/bitfield), with explicit values/descriptions for correction source."
+        },
+        {
+          "field": "Data type and bit definitions for 'ionoModel'",
+          "issue": "The 'ionoModel' field (Ionospheric model used) is missing from the canonical definition of the repeated group. Although listed as U1 in the PDF, its detailed description indicates it should be an X1 (bitfield/enum) type.",
+          "canonical_value": "Not present",
+          "pdf_value": "U1 (interpreted as enum/bitfield), with explicit values/descriptions for ionospheric model."
+        },
+        {
+          "field": "Data type and bit definitions for 'sigFlags'",
+          "issue": "The 'sigFlags' field (Signal related flags) is missing from the canonical definition of the repeated group. This is an X2 type with extensive bitfield definitions.",
+          "canonical_value": "Not present",
+          "pdf_value": "X2, with explicit bit definitions for health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, authStatus."
+        },
+        {
+          "field": "Reserved bytes within repeated group",
+          "issue": "There are 4 bytes (offset 12-15 relative to the start of each 16-byte signal block) that are implicitly reserved based on the listed fields and the group length, which are not explicitly defined in the canonical.",
+          "canonical_value": "Not present",
+          "pdf_value": "Implicit 4-byte reserved space at the end of each 16-byte signal block."
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is severely incomplete and structurally incorrect regarding its variable-length payload. The 'signals' field should be a 'repeated_group' object, and all subsequent detailed fields described in the PDF for each signal block are entirely missing from the canonical. The PDF's payload length formula '8 + numSigs-16' is almost certainly a typo and should be '8 + numSigs * 16' to align with the 'X + n.16' notation used for the repeated group fields.",
+      "pdf_pages": [
+        127,
+        128
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:56:47.616056+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF states '8 + numSigs-16' for the payload length, which appears to be a typo. Given the 16-byte size of each signal block, the canonical's formula '8 + numSigs * 16' is structurally correct based on typical UBX message patterns, but it technically differs from the literal text in the PDF.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field at byte_offset 8. The PDF clearly defines this section as a variable-length repeated group (numSigs times), where each repeated item is 16 bytes long and contains multiple sub-fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group containing 11 distinct fields and 4 reserved bytes per repetition, starting at byte_offset 8."
+        },
+        {
+          "field": "repeated_groups.signals.fields",
+          "issue": "The entire structure of the 'signals' repeated group and its internal fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1) is missing from the canonical definition. The canonical only contains a placeholder 'signals' field.",
+          "canonical_value": "Not present (represented by a single U1 field)",
+          "pdf_value": "A repeated group starting at byte offset 8, with 'numSigs' repetitions. Each repetition is 16 bytes and contains the following fields:\n- gnssId (U1, offset 0)\n- svId (U1, offset 1)\n- sigId (U1, offset 2)\n- freqId (U1, offset 3)\n- prRes (I2, offset 4, scale 0.1, unit m)\n- cno (U1, offset 6, unit dBHz)\n- qualityInd (U1, offset 7)\n- corrSource (U1, offset 8)\n- ionoModel (U1, offset 9)\n- sigFlags (X2, offset 10, a bitfield with health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, authStatus bits defined)\n- reserved1 (U1[4], offset 12, reserved)"
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is missing the entire 'repeated_groups' structure for 'signals'. It incorrectly defines 'signals' as a single U1 field instead of a complex repeated block containing multiple sub-fields and a bitfield. This is a significant structural error. Additionally, there is a likely typo in the PDF regarding the payload length formula (using 'numSigs-16' instead of 'numSigs * 16').",
+      "pdf_pages": [
+        103,
+        104
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:57:11.032442+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.signals",
+          "issue": "The 'signals' field is incorrectly defined as a single U1 field. According to the PDF, it should be a 'repeated_group' starting at byte offset 8, repeating 'numSigs' times, with each group element being 16 bytes long and containing multiple sub-fields.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "repeated_group_start_offset": 8,
+            "repetition_count_field": "numSigs",
+            "element_size_bytes": 16,
+            "fields_within_group": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "GNSS identifier"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Satellite identifier"
+              },
+              {
+                "name": "sigId",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "description": "New style signal identifier"
+              },
+              {
+                "name": "freqId",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "GLONASS frequency slot + 7"
+              },
+              {
+                "name": "prRes",
+                "byte_offset": 4,
+                "data_type": "I2",
+                "description": "Pseudorange residual",
+                "scale": "0.1",
+                "unit": "m"
+              },
+              {
+                "name": "cno",
+                "byte_offset": 6,
+                "data_type": "U1",
+                "description": "Carrier-to-noise density ratio",
+                "unit": "dBHz"
+              },
+              {
+                "name": "qualityInd",
+                "byte_offset": 7,
+                "data_type": "U1",
+                "description": "Signal quality indicator"
+              },
+              {
+                "name": "corrSource",
+                "byte_offset": 8,
+                "data_type": "U1",
+                "description": "Correction source"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 9,
+                "data_type": "U1[7]",
+                "reserved": true
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The fixed header fields (iTOW, version, numSigs, reserved0) and the overall payload length formula (8 + numSigs * 16) match the PDF specification. The core discrepancy lies in the 'signals' part of the payload, which is a repeated group in the PDF but a single field in the canonical definition.",
+      "pdf_pages": [
+        112,
+        113
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:57:36.526420+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The canonical formula `8 + numSigs * 16` correctly reflects the structure, but the PDF literally states `8 + numSigs-16`, which appears to be a typo in the PDF.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the entire 'signals' repeated group structure. It only defines a single placeholder 'signals' field of type U1 at offset 8, instead of the 16-byte repeating structure described in the PDF.",
+          "canonical_value": "Only fixed header fields and a single U1 'signals' field at offset 8 are defined.",
+          "pdf_value": "PDF defines a 'Start of repeated group (numSigs times)' starting at byte offset 8. Each element of this group is 16 bytes and contains the following fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2), cno (U1), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2), and reserved1 (U1[4])."
+        },
+        {
+          "field": "signals.prRes.scale",
+          "issue": "Scale factor for pseudorange residual does not match.",
+          "canonical_value": "0.09765625 (2^-13)",
+          "pdf_value": "0.1"
+        },
+        {
+          "field": "signals.qualityInd.bitfield_definitions",
+          "issue": "Bitfield definitions for 'qualityInd' are missing from the canonical definition because the field itself is not properly defined within a repeated group.",
+          "canonical_value": "Not defined",
+          "pdf_value": "0 = no signal, 1 = searching signal, 2 = signal acquired, 3 = signal detected but unusable, 4 = code locked and time synchronized, 5, 6, 7 = code and carrier locked and time synchronized"
+        },
+        {
+          "field": "signals.corrSource.bitfield_definitions",
+          "issue": "Bitfield definitions for 'corrSource' are missing from the canonical definition because the field itself is not properly defined within a repeated group.",
+          "canonical_value": "Not defined",
+          "pdf_value": "0 = no corrections, 1 = SBAS corrections, 2 = BeiDou corrections, 3 = RTCM2 corrections, 4 = RTCM3 OSR corrections, 5 = RTCM3 SSR corrections, 6 = QZSS SLAS corrections"
+        },
+        {
+          "field": "signals.ionoModel.bitfield_definitions",
+          "issue": "Bitfield definitions for 'ionoModel' are missing from the canonical definition because the field itself is not properly defined within a repeated group.",
+          "canonical_value": "Not defined",
+          "pdf_value": "0 = no model, 1 = Klobuchar model transmitted by GPS, 2 = SBAS model, 3 = Klobuchar model transmitted by BeiDou, 8 = Iono delay derived from dual frequency observations"
+        },
+        {
+          "field": "signals.sigFlags.data_type",
+          "issue": "The canonical definition does not define the 'sigFlags' field (X2 type) or its bitfield definitions, as it fails to represent the repeated group structure.",
+          "canonical_value": "Not defined",
+          "pdf_value": "X2, with bit definitions for: health (bits 1-0), prSmoothed (bit 2), prUsed (bit 3), crUsed (bit 4), doUsed (bit 5), prCorrUsed (bit 6), crCorrUsed (bit 7), doCorrUsed (bit 8)."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the message class, ID, and fixed header fields. However, it fails to model the variable-length payload correctly, specifically the 'signals' repeated group and its internal fields, including scale factors and bitfield definitions. The PDF's length formula appears to have a minor typo 'numSigs-16' instead of 'numSigs * 16', but the canonical interpretation of 'numSigs * 16' is consistent with the described repeated group structure.",
+      "pdf_pages": [
+        135,
+        136
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:58:02.324312+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition incorrectly defines 'signals' as a simple U1 field. According to the PDF, 'signals' should be a 'repeated_groups' structure containing 11 sub-fields, each entry being 16 bytes long.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group named 'signals' starting at byte offset 8, with 'numSigs' items, each 16 bytes long, and containing fields: gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1."
+        },
+        {
+          "field": "payload.repeated_groups",
+          "issue": "The entire 'repeated_groups' section for 'signals' is missing from the canonical definition. All fields within this group (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1) are absent.",
+          "canonical_value": "No 'repeated_groups' defined for signals.",
+          "pdf_value": "A repeated group containing 11 fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scale 0.1 m), cno (U1, unit dBHz), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2, with bit definitions), reserved1 (U1[4])."
+        },
+        {
+          "field": "prRes.scale_factor",
+          "issue": "Scale factor for 'prRes' is missing.",
+          "canonical_value": "N/A",
+          "pdf_value": "0.1"
+        },
+        {
+          "field": "prRes.unit",
+          "issue": "Unit for 'prRes' is missing.",
+          "canonical_value": "N/A",
+          "pdf_value": "m"
+        },
+        {
+          "field": "cno.unit",
+          "issue": "Unit for 'cno' is missing.",
+          "canonical_value": "N/A",
+          "pdf_value": "dBHz"
+        },
+        {
+          "field": "sigFlags.bitfield",
+          "issue": "The 'bitfield' definitions for 'sigFlags' (an X2 type) are missing.",
+          "canonical_value": "N/A",
+          "pdf_value": "Defines bits for health (bits 0-1), prSmoothed (bit 2), prUsed (bit 3), crUsed (bit 4), doUsed (bit 5), prCorrUsed (bit 6), crCorrUsed (bit 7), doCorrUsed (bit 8)."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the message name, class/message IDs, and the initial fixed-size payload fields (iTOW, version, numSigs, reserved0). However, it completely misses the subsequent variable-length 'repeated_groups' structure for 'signals', which contains numerous fields, including bitfields and scaled values, as clearly defined in the PDF. This is a major discrepancy, indicating the canonical is severely incomplete for this message.",
+      "pdf_pages": [
+        110,
+        111
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T04:58:23.607124+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4]",
+          "issue": "The canonical definition incorrectly represents the variable-length part of the payload. It defines 'signals' as a single U1 field. The PDF clearly shows a 'repeated group' starting at this offset, with 'numSigs' elements, each 16 bytes long, containing multiple sub-fields.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "A repeated group containing 16-byte elements, starting at byte offset 8, with fields: 'gnssId', 'svId', 'sigId', 'freqId', 'prRes', 'cno', 'qualityInd', 'corrSource', 'ionoModel', 'sigFlags' (X2 bitfield with 'health' and 'prSmoothed' bits), a 2-byte reserved field, and 'ic'."
+        }
+      ],
+      "notes": "The PDF layout is somewhat confusing. The message definition for UBX-NAV-SIG (0x01 0x43) is explicitly and clearly defined on Page 2. The tables shown on Page 1 (e.g., '5 U1 mode', '6 I1 sys', 'Start of repeated group (cnt times)' with 'svid', 'prc', 'ic') appear to be for a different message, likely UBX-NAV-SAT or an older/alternative variant, despite the UBX-NAV-SIG header appearing above them on Page 1. This validation focuses solely on the explicit definition provided on Page 2, which aligns with typical UBX-NAV-SIG structures in modern u-blox manuals. The fixed part of the payload (iTOW, version, numSigs, reserved0) matches the PDF definition on Page 2 perfectly.",
+      "pdf_pages": [
+        126,
+        127
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:00.985591+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition specifies a single 'U1' field named 'signals' at byte offset 8. The PDF clearly indicates the start of a repeated group at this offset, with a complex structure containing multiple fields and bitfields, repeated 'numSigs' times.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numSigs times) at byte offset 8. This group has a total size of 16 bytes per element (implied by the payload length formula '8 + numSigs * 16' and the preceding fields occupying 8 bytes). The group contains the following fields:\n- gnssId (U1, offset 0 within group)\n- svId (U1, offset 1 within group)\n- sigId (U1, offset 2 within group)\n- freqId (U1, offset 3 within group)\n- prRes (I2, offset 4 within group, scale 0.1, unit m)\n- cno (U1, offset 6 within group, unit dBHz)\n- qualityInd (U1, offset 7 within group)\n- corrSource (U1, offset 8 within group)\n- ionoModel (U1, offset 9 within group)\n- sigFlags (X2, offset 10 within group, with multiple bitfield definitions including health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, authStatus)\n- [Implicit Reserved Bytes] (U1[4], offset 12 within group) to fill the 16-byte group size."
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is severely incomplete as it omits the entire repeated group structure for 'signals', which is a fundamental part of this message as described in the manual. All fields within the repeated group (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, and sigFlags with its bitfield definitions, plus implicit reserved bytes) are missing from the canonical's payload fields.",
+      "pdf_pages": [
+        130,
+        131
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:29.168157+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The formula in the PDF for payload length contains a typographical error. The canonical formula matches the repeated group structure, but the literal text in the PDF is different.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the entire 'repeated_groups' structure for 'signals'. Instead of a repeated group, it defines 'signals' as a single U1 field.",
+          "canonical_value": "[ { \"name\": \"iTOW\", ... }, { \"name\": \"version\", ... }, { \"name\": \"numSigs\", ... }, { \"name\": \"reserved0\", ... }, { \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" } ]",
+          "pdf_value": "A repeated group named 'signals' (derived from context), starting at byte offset 8, with 'numSigs' entries, each 16 bytes long, containing fields: gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and reserved1."
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition for 'signals' at byte offset 8 is incorrect. It should be a repeated group, not a U1 field, and should encompass all subsequent signal-specific fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A complex repeated group starting at byte offset 8, structured by 'numSigs', with a total size of 16 bytes per entry, defining multiple sub-fields."
+        },
+        {
+          "field": "missing_fields_in_repeated_group",
+          "issue": "The canonical definition completely omits all fields belonging to the 'signals' repeated group.",
+          "canonical_value": "None",
+          "pdf_value": "gnssId, svId, sigId, freqId, prRes (I2, scale 0.1, unit m), cno (U1, unit dBHz), qualityInd (U1), corrSource (U1), ionoModel (U1), sigFlags (X2 bitfield), and reserved1 (U1[4])."
+        },
+        {
+          "field": "sigFlags.bitfield_definitions",
+          "issue": "The 'sigFlags' field (an X2 bitfield) and its detailed bit definitions are entirely missing from the canonical definition due to the omission of the repeated group.",
+          "canonical_value": "None",
+          "pdf_value": "An X2 bitfield with bits for health (2 bits), prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, and authStatus."
+        }
+      ],
+      "notes": "The initial fields (iTOW, version, numSigs, reserved0) match perfectly. However, the core of the UBX-NAV-SIG message, which is a variable-length repeated group for each signal, is entirely missing from the canonical definition. The canonical only lists a placeholder 'signals' U1 field. The PDF contains a typographical error in the payload length formula (using '-' instead of '*' for multiplication), but the intended formula (8 + numSigs * 16) matches the structure of the repeated group.",
+      "pdf_pages": [
+        124,
+        125
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:57.214614+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF states 'numSigs-16' which is likely a typo. The canonical uses 'numSigs * 16', which is consistent with the repeated group size (16 bytes per signal). Assuming the canonical is correct.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field. The PDF clearly indicates a 'Start of repeated group (numSigs times)' at this offset (byte 8), which contains multiple detailed fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group containing multiple fields, starting with 'gnssId' at offset 8 + n*16."
+        },
+        {
+          "field": "repeated_groups",
+          "issue": "The canonical definition is missing the entire 'repeated_groups' structure for the 'signals' array. All the fields that make up each signal information block (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1) are completely absent from the canonical payload definition.",
+          "canonical_value": "Not present (implicitly, the 'signals' field is a single U1 instead)",
+          "pdf_value": "A repeated group 'signals' (numSigs times), where each group item is 16 bytes long and contains the following fields:\n- gnssId (U1, offset 0 relative to group item)\n- svId (U1, offset 1)\n- sigId (U1, offset 2)\n- freqId (U1, offset 3)\n- prRes (I2, offset 4, scale 0.1 m)\n- cno (U1, offset 6, unit dBHz)\n- qualityInd (U1, offset 7)\n- corrSource (U1, offset 8)\n- ionoModel (U1, offset 9)\n- sigFlags (X2, offset 10)\n- reserved1 (U1[4], offset 12)"
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is severely incomplete. It correctly identifies the fixed-size header fields (iTOW, version, numSigs, reserved0) and the variable payload length formula. However, it fails to define the repeated group structure and all the fields contained within each repetition. The 'signals' field in the canonical should be removed and replaced with a 'repeated_groups' array that accurately defines the 16-byte structure for each signal, including the correct data types, offsets (relative to the start of the repeated group item), scales, units, and descriptions, notably 'sigFlags' as an X2 bitfield.",
+      "pdf_pages": [
+        141,
+        142
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:00:25.534335+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition specifies 'signals' as a single U1 field. The PDF clearly describes it as a repeated group of 'numSigs' elements, each 16 bytes long, containing multiple sub-fields.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "A repeated group structure starting at byte_offset 8, with 'numSigs' repetitions. Each repetition block is 16 bytes and contains the following fields: gnssId (U1), svId (U1), sigId (U1), freqId (U1), prRes (I2, scale 0.1, unit m), cno (U1, unit dBHz), qualityInd (U1), corrSource (U1), followed by 7 reserved bytes."
+        },
+        {
+          "field": "payload.fields.signals.prRes",
+          "issue": "The canonical definition is missing the 'prRes' field (Pseudorange residual) and its properties within the repeated group.",
+          "canonical_value": "Not present in canonical, as the entire repeated group is missing.",
+          "pdf_value": "I2 type, byte_offset 4 (within group), scale 0.1, unit m."
+        },
+        {
+          "field": "payload.fields.signals.cno",
+          "issue": "The canonical definition is missing the 'cno' field (Carrier-to-noise density ratio) and its properties within the repeated group.",
+          "canonical_value": "Not present in canonical, as the entire repeated group is missing.",
+          "pdf_value": "U1 type, byte_offset 6 (within group), unit dBHz."
+        }
+      ],
+      "notes": "The initial fields (iTOW, version, numSigs, reserved0) match the PDF. However, the 'signals' field in the canonical definition is structurally incorrect. It should be a 'repeated_groups' block, not a single field. This leads to the omission of all sub-fields and their details (like scale and unit for prRes and cno) which are clearly defined in the PDF on Page 2. Page 1's detailed field list for the repeated group seems to describe UBX-NAV-SAT (0x01 0x35) rather than UBX-NAV-SIG (0x01 0x43), so it was disregarded for the repeated group structure validation.",
+      "pdf_pages": [
+        152,
+        153
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:00:55.722644+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF's explicit field descriptions for one signal item only sum to 12 bytes (10 fields totaling 12 bytes). However, the PDF's notation `X + n.16` for repeated group offsets, and the canonical's formula `8 + numSigs * 16`, both imply a 16-byte size for each signal item. This means there are 4 bytes per signal item that are implicitly reserved but not explicitly documented in the PDF. The canonical's formula reflects this 16-byte item size, while the PDF's explicit list of fields does not.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16 (typo in PDF; actual explicit fields sum to 12 bytes per item if 16-byte item size is assumed, there are 4 undocumented bytes)"
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical defines the 'signals' field as a U1 data type, but it should represent a repeated group structure, not a single byte. A proper definition would include 'repetition_type': 'count_field' referencing 'numSigs', and a 'group_fields' array describing the structure of each individual signal item.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Implies a repeated group of 16-byte structures, each containing fields like gnssId, svId, prRes, etc."
+        },
+        {
+          "field": "payload.fields.signals[].reserved_implicit",
+          "issue": "The PDF explicitly lists fields for each signal item that sum to 12 bytes (offsets 0-11 relative to item start). However, the overall length formula and the 'n.16' offset notation imply each signal item is 16 bytes. This means there are 4 reserved bytes at the end of each 16-byte signal item (relative offsets 12-15) that are not documented in the PDF. The canonical's length formula accounts for these, but they are not described as explicit 'reserved' fields in the PDF.",
+          "canonical_value": "Implied 4 reserved bytes per 16-byte signal item (bytes 12-15 relative to item start).",
+          "pdf_value": "Not explicitly listed or described in the field table for the repeated group."
+        }
+      ],
+      "notes": "The message Class ID (0x01) and Message ID (0x43) match. The base payload fields (iTOW, version, numSigs, reserved0) match in name, offset, type, and unit/description. The fields *within* the repeated signal group (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags) also match in name, offset (relative to item start), type, units, scales, and descriptions, assuming the item size is 16 bytes and the PDF's `X + n.16` notation defines absolute offsets where `16` is the item stride. The main issues are the canonical's incorrect representation of the 'signals' repeated group as a `U1` field and the discrepancy regarding the documentation of the final 4 bytes in each 16-byte signal item.",
+      "pdf_pages": [
+        157,
+        158
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:01:49.528344+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The literal formula in the PDF for variable payload length contains a typo, stating '8 + numSigs-16' instead of the likely intended '8 + numSigs * 16'. The canonical uses the likely intended formula.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical defines 'signals' as a single U1 field. The PDF clearly indicates a 'Start of repeated group (numSigs times)' beginning at this offset, requiring a 'repeated_groups' block with sub-fields, not a single field.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group containing multiple fields for each signal, 16 bytes per entry."
+        },
+        {
+          "field": "repeated_groups",
+          "issue": "The canonical definition is missing the entire 'repeated_groups' block for the 'signals' array, which is clearly defined in the PDF.",
+          "canonical_value": "Not present",
+          "pdf_value": "A repeated group 'signals' (numSigs times), starting at byte offset 8, with each item being 16 bytes and containing fields: gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags (X2 with 'health' bitfield), and 4 reserved bytes."
+        }
+      ],
+      "notes": "The individual fields (gnssId, svId, etc.) that would belong to the repeated group, as well as their data types, offsets (relative to group item start), scales, units, and bitfield definitions, match the PDF's description if they were properly structured into a 'repeated_groups' block. The primary issue is the canonical's incorrect structural representation of this variable-length part of the payload.",
+      "pdf_pages": [
+        158,
+        159
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:02:32.625044+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF header's length formula (8 + numSigs-16) appears to be a typo. Based on the detailed field offsets for the repeated group (8 + n.16, 9 + n.16, ..., 18 + n.16), each repeated block is 16 bytes long (ending at 19 + n.16, with 4 implicit reserved bytes to make it 16 bytes per block). Thus, the canonical's formula of '8 + numSigs * 16' is consistent with the implied block size and correct, despite the PDF's header typo. No discrepancy here.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16 (header, likely typo); 8 + numSigs * 16 (derived from detailed field offsets)"
+        },
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical defines 'signals' as a single U1 field at byte offset 8. The PDF clearly shows that byte offset 8 is the start of a 'repeated group (numSigs times)' containing multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags), each entry being 16 bytes long. The canonical is missing this entire repeated group structure.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numSigs times) at byte offset 8, with block size of 16 bytes per entry."
+        },
+        {
+          "field": "Repeated Group Fields",
+          "issue": "Due to the lack of a 'repeated_group' definition, all the fields that constitute a single signal entry (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags) are missing from the canonical definition. Additionally, implicit reserved bytes within the 16-byte block are also not represented.",
+          "canonical_value": "Not defined (missing repeated_group)",
+          "pdf_value": [
+            {
+              "name": "gnssId",
+              "byte_offset": "8 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "svId",
+              "byte_offset": "9 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "sigId",
+              "byte_offset": "10 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "freqId",
+              "byte_offset": "11 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "prRes",
+              "byte_offset": "12 + n.16",
+              "data_type": "I2",
+              "scale": "0.1",
+              "unit": "m"
+            },
+            {
+              "name": "cno",
+              "byte_offset": "14 + n.16",
+              "data_type": "U1",
+              "unit": "dBHz"
+            },
+            {
+              "name": "qualityInd",
+              "byte_offset": "15 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "corrSource",
+              "byte_offset": "16 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "ionoModel",
+              "byte_offset": "17 + n.16",
+              "data_type": "U1"
+            },
+            {
+              "name": "sigFlags",
+              "byte_offset": "18 + n.16",
+              "data_type": "X2"
+            }
+          ]
+        },
+        {
+          "field": "sigFlags bitfield definition",
+          "issue": "The canonical definition does not include the bitfield 'health' for the 'sigFlags' field as described in the PDF.",
+          "canonical_value": "Not defined",
+          "pdf_value": "bits 1...0 U:2 health"
+        }
+      ],
+      "notes": "The canonical definition fundamentally misunderstands the structure of UBX-NAV-SIG by failing to define the 'signals' portion as a repeated group. It specifies a single U1 field instead of a variable-length array of 16-byte blocks, each containing multiple fields and a bitfield. While the calculated total payload length formula is correct for the PDF's implied block size, the internal structure is entirely wrong.",
+      "pdf_pages": [
+        153,
+        154
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:03:01.768835+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition incorrectly represents the variable-length part of the payload. It defines a single 'signals' field of type U1, whereas the PDF clearly describes a 'repeated group' with multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, plus implied reserved bytes to make up 16 bytes per group) that repeats 'numSigs' times. The canonical definition is missing the `repeated_groups` key and its detailed structure.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numSigs times) at byte offset 8, with individual fields spanning 16 bytes per group."
+        }
+      ],
+      "notes": "The provided PDF contains two different definitions for 'UBX-NAV-SIG (0x01 0x43)'.\n1. Section '3.15.18 UBX-NAV-SIG (0x01 0x43)' (Page 1) describes a structure with 'cnt' and a repeated group of 12 bytes.\n2. Section '3.15.18.1 Signal information' (Page 2) describes a structure with 'numSigs' and a repeated group of 16 bytes.\n\nThe canonical definition provided for validation aligns with the structure described in '3.15.18.1 Signal information' (Page 2) in terms of base payload fields (iTOW, version, numSigs, reserved0) and the overall payload length formula (8 + numSigs * 16).\n\nAll non-repeated fields (iTOW, version, numSigs, reserved0) match perfectly in name, offset, data type, and description between the canonical definition and Page 2 of the PDF.\n\nThe primary discrepancy is the absence of a proper `repeated_groups` definition for the 'signals' data in the canonical JSON, which is clearly described as a repeating structure in the PDF.",
+      "pdf_pages": [
+        110,
+        111
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:03:26.270960+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition incorrectly represents the 'signals' part of the payload. The PDF clearly describes a repeated group of 16 bytes per signal, with `numSigs` elements. The canonical defines a single 'signals' field with data_type 'U1' starting at byte_offset 8, which is insufficient to capture the complex structure of the repeated group.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Starts at byte_offset 8, a repeated group (numSigs times) with a total size of 16 bytes per group entry, containing multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1)."
+        },
+        {
+          "field": "repeated_groups structure",
+          "issue": "The canonical definition completely lacks the `repeated_groups` construct that is necessary to describe the variable-length list of signals as per the PDF.",
+          "canonical_value": "No `repeated_groups` field.",
+          "pdf_value": "Explicitly defined 'Start of repeated group (numSigs times)' and lists fields within this group."
+        },
+        {
+          "field": "fields within repeated group",
+          "issue": "All individual fields within the 'signals' repeated group (e.g., gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1) are missing from the canonical definition.",
+          "canonical_value": "Missing.",
+          "pdf_value": "Detailed list of fields and their types/offsets within each 16-byte signal entry."
+        },
+        {
+          "field": "data_type for prRes",
+          "issue": "The data type for 'prRes' within the repeated group is 'I2' in the PDF, but it is not defined in the canonical.",
+          "canonical_value": "Missing.",
+          "pdf_value": "I2"
+        },
+        {
+          "field": "data_type for sigFlags",
+          "issue": "The data type for 'sigFlags' within the repeated group is 'X2' (a bitfield) in the PDF, with detailed bit definitions. This is completely missing from the canonical.",
+          "canonical_value": "Missing.",
+          "pdf_value": "X2 with several bit definitions (health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed)."
+        },
+        {
+          "field": "data_type for reserved1 (in group)",
+          "issue": "The data type for 'reserved1' within the repeated group is 'U1[4]' in the PDF, but it is not defined in the canonical.",
+          "canonical_value": "Missing.",
+          "pdf_value": "U1[4]"
+        },
+        {
+          "field": "units and scales",
+          "issue": "Units and scales for fields like 'prRes' (0.1 m) and 'cno' (dBHz) within the repeated group are present in the PDF but not captured in the canonical.",
+          "canonical_value": "Missing.",
+          "pdf_value": "prRes: 0.1 m, cno: dBHz"
+        }
+      ],
+      "notes": "The fixed part of the message (iTOW, version, numSigs, reserved0) matches perfectly. However, the entire variable-length 'signals' array, which constitutes the bulk of this message, is completely misrepresented in the canonical definition. It's missing the repeated group structure, all its sub-fields, their types (including bitfields), and associated metadata like units/scales. This is a significant structural discrepancy.",
+      "pdf_pages": [
+        107,
+        108
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:03:47.035849+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF literally states '8 + numSigs-16' for the payload length, which appears to be a typo and should logically be '8 + numSigs * 16' given the repeated group structure. The canonical definition's formula '8 + numSigs * 16' is consistent with the derived size of each signal entry.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition represents the 'signals' part of the payload as a single 'U1' field. According to the PDF, this should be a 'repeated_group' that starts at byte offset 8, repeats 'numSigs' times, and each entry is 16 bytes long, comprising multiple distinct fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group of 16-byte entries, each containing the following fields (relative to the start of each entry):\n- Offset 0: gnssId (U1)\n- Offset 1: svId (U1)\n- Offset 2: sigId (U1)\n- Offset 3: freqId (U1)\n- Offset 4: prRes (I2, scale 0.1m, unit m)\n- Offset 6: cno (U1, unit dBHz)\n- Offset 7: qualityInd (U1)\n- Offset 8: corrSource (U1)\n- Offset 9: ionoModel (U1)\n- Offset 10: sigFlags (X2, containing bits for health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, and authStatus)\n- Offset 12: reserved1 (U1[4])"
+        }
+      ],
+      "notes": "The initial fixed-size fields (iTOW, version, numSigs, reserved0) match perfectly between the canonical definition and the PDF. The derived size of each 'signal' entry from the PDF's detailed listing (16 bytes) is consistent with the canonical's payload length formula (8 + numSigs * 16). The primary discrepancy is the canonical's failure to define the 'signals' as a proper 'repeated_group' with its constituent sub-fields, instead representing it as a single U1 field.",
+      "pdf_pages": [
+        131,
+        132
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:04:18.210361+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[4] (signals)",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field. The PDF clearly shows a 'Start of repeated group (numSigs times)' at byte offset 8, containing multiple sub-fields for each signal entry.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_groups",
+            "name": "signals",
+            "byte_offset": 8,
+            "count_field": "numSigs",
+            "group_length": 16,
+            "fields_start_at_relative_offset": [
+              {
+                "offset": 0,
+                "name": "gnssId",
+                "type": "U1"
+              },
+              {
+                "offset": 1,
+                "name": "svId",
+                "type": "U1"
+              },
+              {
+                "offset": 2,
+                "name": "sigId",
+                "type": "U1"
+              },
+              {
+                "offset": 3,
+                "name": "freqId",
+                "type": "U1"
+              },
+              {
+                "offset": 4,
+                "name": "prRes",
+                "type": "I2",
+                "scale": 0.1,
+                "unit": "m"
+              },
+              {
+                "offset": 6,
+                "name": "cno",
+                "type": "U1",
+                "unit": "dBHz"
+              },
+              {
+                "offset": 7,
+                "name": "qualityInd",
+                "type": "U1",
+                "enum_values": "present"
+              },
+              {
+                "offset": 8,
+                "name": "corrSource",
+                "type": "U1",
+                "enum_values": "present"
+              },
+              {
+                "offset": 9,
+                "name": "ionoModel",
+                "type": "U1",
+                "enum_values": "present"
+              },
+              {
+                "offset": 10,
+                "name": "sigFlags",
+                "type": "X2",
+                "bit_fields": {
+                  "health": "bits 1..0 U:2"
+                }
+              },
+              {
+                "offset": 12,
+                "name": "reserved1",
+                "type": "U1[4]",
+                "reserved": true
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The initial fields (iTOW, version, numSigs, reserved0) match the PDF exactly. However, the subsequent structure, which is a repeated group of signal information, is completely missing and misrepresented as a single U1 field in the canonical definition. The repeated group's total length (16 bytes) and its internal fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, and 4 bytes of implied reserved data) are not captured in the canonical.",
+      "pdf_pages": [
+        132,
+        133
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:04:44.455660+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "signals",
+          "issue": "The canonical defines 'signals' as a single U1 field, but the PDF indicates it is a repeated group. The repeated group should contain multiple sub-fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags) with an element size of 16 bytes per signal, including implicit reserved bytes to make up the element size. The canonical entirely misses this structure and its sub-fields.",
+          "canonical_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "signals",
+            "byte_offset": 8,
+            "repetition_type": "count_field",
+            "count_field_name": "numSigs",
+            "element_size": 16,
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1"
+              },
+              {
+                "name": "sigId",
+                "byte_offset": 2,
+                "data_type": "U1"
+              },
+              {
+                "name": "freqId",
+                "byte_offset": 3,
+                "data_type": "U1"
+              },
+              {
+                "name": "prRes",
+                "byte_offset": 4,
+                "data_type": "I2",
+                "scale": {
+                  "multiplier": 0.1
+                },
+                "unit": "m"
+              },
+              {
+                "name": "cno",
+                "byte_offset": 6,
+                "data_type": "U1",
+                "unit": "dBHz"
+              },
+              {
+                "name": "qualityInd",
+                "byte_offset": 7,
+                "data_type": "U1"
+              },
+              {
+                "name": "corrSource",
+                "byte_offset": 8,
+                "data_type": "U1"
+              },
+              {
+                "name": "ionoModel",
+                "byte_offset": 9,
+                "data_type": "U1"
+              },
+              {
+                "name": "sigFlags",
+                "byte_offset": 10,
+                "data_type": "X2",
+                "bit_definitions": [
+                  {
+                    "name": "health",
+                    "bits": "1:0"
+                  },
+                  {
+                    "name": "prSmoothed",
+                    "bits": "2"
+                  },
+                  {
+                    "name": "prUsed",
+                    "bits": "3"
+                  },
+                  {
+                    "name": "crUsed",
+                    "bits": "4"
+                  },
+                  {
+                    "name": "doUsed",
+                    "bits": "5"
+                  }
+                ]
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 12,
+                "data_type": "U1[4]",
+                "reserved": true
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The initial fixed-size fields (iTOW, version, numSigs, reserved0) match the PDF specification exactly. However, the `signals` field in the canonical definition is fundamentally incorrect as it fails to capture the repeated group structure and its detailed sub-fields as clearly described in the PDF. The PDF indicates a 16-byte element for each signal within the repeated group, which requires several additional fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags) and implicit reserved bytes to fill out the 16-byte element size.",
+      "pdf_pages": [
+        146,
+        147
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:05:15.732750+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition incorrectly models the 'signals' part of the payload. It defines a single 'signals' field of type U1 at offset 8, but the PDF clearly indicates that this is the start of a 'repeated group' (numSigs times) containing multiple complex fields for each signal. The canonical definition completely misses the repeated group structure and all its constituent fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numSigs times) at byte offset 8, containing multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, reserved1), each group being 16 bytes long."
+        },
+        {
+          "field": "payload.repeated_groups",
+          "issue": "The canonical definition is missing the entire 'repeated_groups' array and the detailed field definitions within each signal group (e.g., gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, ionoModel, sigFlags, health, prSmoothed, prUsed, crUsed, doUsed, prCorrUsed, crCorrUsed, doCorrUsed, authStatus, reserved1).",
+          "canonical_value": "Not present",
+          "pdf_value": "A repeated group with 'numSigs' repetitions, starting at byte offset 8, with each repetition being 16 bytes and containing the following fields:\n- gnssId (U1, offset 0 relative to group)\n- svId (U1, offset 1 relative to group)\n- sigId (U1, offset 2 relative to group)\n- freqId (U1, offset 3 relative to group)\n- prRes (I2, offset 4 relative to group, scale 0.1)\n- cno (U1, offset 6 relative to group, unit dBHz)\n- qualityInd (U1, offset 7 relative to group)\n- corrSource (U1, offset 8 relative to group)\n- ionoModel (U1, offset 9 relative to group)\n- sigFlags (X2, offset 10 relative to group, with bitfield definitions for health, prSmoothed, prUsed, etc.)\n- reserved1 (U1[4], offset 12 relative to group, reserved)"
+        },
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF's formula for payload length '8 + numSigs-16' is ambiguously written. While the canonical's '8 + numSigs * 16' is the standard interpretation for UBX protocols and matches the calculated repeated group size (16 bytes), the direct textual representation in the PDF could be misinterpreted if not applying UBX conventions. Assuming the standard interpretation, this is a match in intent, but the PDF's text is technically different.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        }
+      ],
+      "notes": "The core structure of the UBX-NAV-SIG message, specifically its variable-length payload consisting of a repeated group of signal information, is fundamentally misrepresented in the canonical definition. It's missing all the fields for individual signals, which are critical to the message's purpose. The canonical definition for `signals` as a simple `U1` field is entirely incorrect for this message.",
+      "pdf_pages": [
+        120,
+        121
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:05:41.578980+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF's formula appears to contain a typo. It states '8 + numSigs-16', which is mathematically illogical for a byte length, especially when considering the repeated group structure. The canonical's formula '8 + numSigs * 16' correctly reflects the expected variable length based on 'numSigs' and the 16-byte size of each signal block described in the PDF.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is severely incomplete. It defines 'signals' as a single 'U1' field at byte offset 8. However, the PDF clearly indicates that at byte offset 8, a 'repeated group (numSigs times)' begins, containing multiple fields for each signal. The canonical definition completely omits this repeated group structure and all its constituent fields.",
+          "canonical_value": [
+            {
+              "name": "signals",
+              "byte_offset": 8,
+              "data_type": "U1"
+            }
+          ],
+          "pdf_value": "(repeated group 'signals' starting at offset 8, with 16 bytes per entry, containing the following fields):\n- 8 + n.16: U1 gnssId\n- 9 + n.16: U1 svId\n- 10 + n.16: U1 sigId\n- 11 + n.16: U1 freqId\n- 12 + n.16: I2 prRes (Scale 0.1, Unit m)\n- 14 + n.16: U1 cno (Unit dBHz)\n- 15 + n.16: U1 qualityInd\n- 16 + n.16: U1 corrSource\n- 17 + n.16: U1 ionoModel\n- 18 + n.16: X2 sigFlags (with detailed bitfield definitions)"
+        },
+        {
+          "field": "payload.fields[].prRes.scale",
+          "issue": "The 'prRes' field (within the omitted repeated group) has a specified scale factor in the PDF, which is missing from the canonical.",
+          "canonical_value": "Not defined",
+          "pdf_value": "Scale 0.1"
+        },
+        {
+          "field": "payload.fields[].prRes.unit",
+          "issue": "The 'prRes' field (within the omitted repeated group) has a specified unit in the PDF, which is missing from the canonical.",
+          "canonical_value": "Not defined",
+          "pdf_value": "m"
+        },
+        {
+          "field": "payload.fields[].cno.unit",
+          "issue": "The 'cno' field (within the omitted repeated group) has a specified unit in the PDF, which is missing from the canonical.",
+          "canonical_value": "Not defined",
+          "pdf_value": "dBHz"
+        },
+        {
+          "field": "payload.fields[].sigFlags",
+          "issue": "The 'sigFlags' field (within the omitted repeated group) is an X2 (bitfield) type with detailed bit definitions in the PDF. This field and its bit definitions are completely absent from the canonical.",
+          "canonical_value": "Not defined",
+          "pdf_value": "X2 sigFlags (with bits 1...0 health, bit 2 prSmoothed, bit 3 prUsed, etc.)"
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SIG is fundamentally incorrect and incomplete. It fails to capture the core variable-length structure of the message, specifically the repeated group of signal information, and consequently omits numerous fields, their data types, scales, units, and bitfield definitions as clearly described in the provided u-blox HPG 2.00 manual. The payload length formula in the PDF appears to have a minor typo ('numSigs-16' instead of 'numSigs * 16') but the intent is clear from the subsequent detailed description of the repeated group.",
+      "pdf_pages": [
+        106,
+        107
+      ],
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:06:03.809340+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SIG",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The PDF contains a typo in the length formula. It states '8 + numSigs-16' (dash instead of multiply). The canonical formula '8 + numSigs * 16' correctly reflects the implied repeated group size of 16 bytes per signal.",
+          "canonical_value": "8 + numSigs * 16",
+          "pdf_value": "8 + numSigs-16"
+        },
+        {
+          "field": "payload.fields.signals",
+          "issue": "The canonical definition incorrectly defines 'signals' as a single U1 field. The PDF clearly indicates a variable-length payload with a repeated group (numSigs times) starting at byte offset 8. This repeated group contains multiple fields (gnssId, svId, sigId, freqId, prRes, cno, qualityInd, corrSource, and implied reserved bytes) for each signal, with each signal entry being 16 bytes long. The canonical definition completely omits the detailed structure of these repeated group fields.",
+          "canonical_value": "{ \"name\": \"signals\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 8, with 'numSigs' repetitions, each 16 bytes long, containing fields such as 'gnssId', 'svId', 'prRes', etc."
+        }
+      ],
+      "notes": "Page 1 of the PDF appears to display the structure of a different UBX message (likely UBX-NAV-SAT or similar, identified by fields like 'geo', 'svid', 'prc', 'ic') under the '3.15.17 UBX-NAV-SIG' heading. Therefore, only Page 2 of the PDF was used for validating UBX-NAV-SIG structure. The fixed-size fields (iTOW, version, numSigs, reserved0) in the canonical definition correctly match the PDF on Page 2.",
+      "pdf_pages": [
+        112,
+        113
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:06:31.858464+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 29,
+    "matches": 0,
+    "mismatches": 29
+  }
+}

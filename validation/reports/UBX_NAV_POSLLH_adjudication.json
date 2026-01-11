@@ -1,0 +1,95 @@
+{
+  "message": "UBX-NAV-POSLLH",
+  "total_discrepancies": 3,
+  "fix_canonical": 1,
+  "valid_variation": 0,
+  "needs_human": 2,
+  "adjudications": [
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "field": "vAcc",
+      "original_issue": "Field 'vAcc' is defined in the canonical, but not explicitly listed in the 'Payload description' table for UBX-NAV-POSLLH on PDF page 1.",
+      "decision": "needs_human",
+      "confidence": 0.9,
+      "reasoning": "The PDF manual explicitly states the total length of the UBX-NAV-POSLLH message is 28 bytes. The 'Payload description' table in the PDF for UBX-NAV-POSLLH lists fields up to 'hAcc' at byte offset 20 (U4), accounting for bytes 0-23. This leaves 4 bytes (24-27) unaccounted for in the table, but necessary to reach the total message length of 28 bytes. The canonical definition includes 'vAcc' at byte offset 24, as a U4 (4 bytes), which perfectly fills the remaining space (bytes 24-27) to meet the declared message length. Therefore, the canonical definition is consistent with the total message length provided in the PDF, and the discrepancy indicates an omission/incompleteness in the PDF's field listing rather than an error in the canonical definition. The canonical definition is not wrong and does not need to be fixed. This is not a 'valid variation' as the length implies the field's presence. Thus, it requires human review to potentially update the PDF manual.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "field": "vAcc",
+      "original_issue": "Field 'vAcc' is defined in the canonical but not explicitly listed in the 'Payload description' table for UBX-NAV-POSLLH in the PDF.",
+      "decision": "needs_human",
+      "confidence": 0.9,
+      "reasoning": "The 'Payload description' table for UBX-NAV-POSLLH in the PDF (page 115) lists fields up to byte offset 20 ('hAcc'), totaling 24 bytes (6 fields * 4 bytes/field). However, the 'Length (Bytes)' in the message structure for UBX-NAV-POSLLH is explicitly stated as 28 bytes. This indicates there are 4 bytes missing from the table description. The canonical definition includes 'vAcc' (U4) at byte offset 24, which would account for these missing 4 bytes (bytes 24-27) and perfectly match the total length of 28 bytes. This strongly suggests the 'vAcc' field is present in the message as per the canonical definition, and its omission from the PDF's table is a documentation error (incomplete table). However, as per the guidelines, if a field is not *explicitly listed* in the PDF's table, it defaults to 'needs_human' unless it's a clear 'fix_canonical' or 'valid_variation'. Since the information *indirectly* supports the canonical (missing bytes + total length), but the field itself is not *explicitly* named, it falls into a grey area for automated decision, leaning towards 'needs_human' to confirm if this interpretation of an incomplete table is acceptable for direct canonical validation, or if it indeed constitutes an 'error' in the PDF that *requires* a canonical fix if we rigidly adhere to 'explicitly listed'. Given the strong evidence, it's very likely the PDF is simply incomplete, and the canonical is correct."
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "payload.fields",
+      "original_issue": "The PDF states a total payload length of 28 bytes, but only lists fields up to 'hAcc' (4 bytes at offset 20), accounting for 24 bytes. The canonical definition includes 'vAcc' at offset 24 (4 bytes), which correctly brings the total to 28 bytes. The PDF's payload description table for UBX-NAV-POSLLH is incomplete.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF's 'Message structure' explicitly states a 'Length (Bytes)' of 28 for UBX-NAV-POSLLH. However, its 'Payload description' table for this message only lists fields up to 'hAcc' (U4 at offset 20), which sum up to 24 bytes (4*6 fields). This creates an inconsistency within the PDF itself. The canonical definition, by including 'vAcc' (U4 at offset 24), correctly brings the total described length to 28 bytes, matching the PDF's stated total length. Therefore, the canonical definition is correct and complete, while the PDF's table is incomplete. The fix is to update the canonical to reflect what is actually present in the manual's *header*, even if the table is truncated in the manual.",
+      "suggested_fix": {
+        "field": "payload.fields",
+        "change": "ensure all fields up to 'vAcc' (offset 24, U4) are included",
+        "new_value": [
+          {
+            "name": "iTOW",
+            "byte_offset": 0,
+            "data_type": "U4",
+            "description": "GPS time of week of the navigation epoch.",
+            "unit": "ms"
+          },
+          {
+            "name": "lon",
+            "byte_offset": 4,
+            "data_type": "I4",
+            "description": "Longitude",
+            "unit": "deg",
+            "scale": {
+              "multiplier": 1e-07
+            }
+          },
+          {
+            "name": "lat",
+            "byte_offset": 8,
+            "data_type": "I4",
+            "description": "Latitude",
+            "unit": "deg",
+            "scale": {
+              "multiplier": 1e-07
+            }
+          },
+          {
+            "name": "height",
+            "byte_offset": 12,
+            "data_type": "I4",
+            "description": "Height above ellipsoid",
+            "unit": "mm"
+          },
+          {
+            "name": "hMSL",
+            "byte_offset": 16,
+            "data_type": "I4",
+            "description": "Height above mean sea level",
+            "unit": "mm"
+          },
+          {
+            "name": "hAcc",
+            "byte_offset": 20,
+            "data_type": "U4",
+            "description": "Horizontal accuracy estimate",
+            "unit": "mm"
+          },
+          {
+            "name": "vAcc",
+            "byte_offset": 24,
+            "data_type": "U4",
+            "description": "Vertical accuracy estimate",
+            "unit": "mm"
+          }
+        ]
+      }
+    }
+  ]
+}

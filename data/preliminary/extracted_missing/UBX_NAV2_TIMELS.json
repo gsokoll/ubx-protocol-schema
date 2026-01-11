@@ -1,0 +1,80 @@
+{
+  "name": "UBX-NAV2-TIMELS",
+  "class_id": "0x29",
+  "message_id": "0x26",
+  "message_type": "periodic_polled",
+  "description": "Information about the upcoming leap second event if one is scheduled.\nNote: Many sources of leap second information provide the week number of a leap second event as an 8-bit unsigned number. For the upcoming leap second events, this can be resolved and displayed in this message. However, for the previous leap second events decoded from these sources, there is an inherent ambiguity of 256 weeks. Therefore, when the time since the previous event is more than 256 weeks, the dateOfLsGpsWn and timeToLsEvent parameters may provide incorrect information.",
+  "payload": {
+    "length": {
+      "fixed": 24
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 5,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "srcOfCurrLs",
+        "byte_offset": 8,
+        "data_type": "U1",
+        "description": "Information source for the current number of leap seconds. \u2022 0 = Default (hardcoded in the firmware, can be outdated) \u2022 1 = Derived from time difference between GPS and GLONASS time \u2022 2 = GPS \u2022 3 = SBAS \u2022 4 = BeiDou \u2022 5 = Galileo \u2022 6 = Aided data \u2022 7 = Configured \u2022 8 = NavIC \u2022 255 = Unknown"
+      },
+      {
+        "name": "currLs",
+        "byte_offset": 9,
+        "data_type": "I1",
+        "unit": "s",
+        "description": "Current number of leap seconds since start of GPS time (Jan 6, 1980). It reflects how much GPS time is ahead of UTC time. Galileo number of leap seconds is the same as GPS. BeiDou number of leap seconds is 14 less than GPS. GLONASS follows UTC time, so no leap seconds."
+      },
+      {
+        "name": "srcOfLsChange",
+        "byte_offset": 10,
+        "data_type": "U1",
+        "description": "Information source for the future leap second event. \u2022 0 = No source \u2022 2 = GPS \u2022 3 = SBAS \u2022 4 = BeiDou \u2022 5 = Galileo \u2022 6 = GLONASS \u2022 7 = NavIC"
+      },
+      {
+        "name": "lsChange",
+        "byte_offset": 11,
+        "data_type": "I1",
+        "unit": "s",
+        "description": "Future leap second change if one is scheduled. +1 = positive leap second, -1 = negative leap second, 0 = no future leap second event scheduled or no information available. If the value is 0, then the amount of leap seconds did not change and the event should be ignored."
+      },
+      {
+        "name": "timeToLsEvent",
+        "byte_offset": 12,
+        "data_type": "I4",
+        "unit": "s",
+        "description": "Number of seconds until the next leap second event, or from the last leap second event if no future event scheduled. If > 0 event is in the future, = 0 event is now, < 0 event is in the past. Valid only if valid TimeToLsEvent = 1."
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 16,
+        "data_type": {
+          "array_of": "U1",
+          "count": 8
+        },
+        "reserved": true,
+        "description": "Reserved"
+      }
+    ]
+  }
+}

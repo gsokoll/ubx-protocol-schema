@@ -1,0 +1,92 @@
+{
+  "name": "UBX-CFG-TP5",
+  "class_id": "0x06",
+  "message_id": "0x31",
+  "message_type": "get_set",
+  "description": "Time pulse parameters. This message is deprecated in protocol versions greater than 27. Use UBX-CFG-VALSET, UBX-CFG-VALGET, UBX-CFG-VALDEL instead.",
+  "payload": {
+    "length": {
+      "fixed": 32
+    },
+    "fields": [
+      {
+        "name": "tpIdx",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Time pulse selection (0 = TIMEPULSE, 1 = TIMEPULSE2)"
+      },
+      {
+        "name": "version",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "antCableDelay",
+        "byte_offset": 4,
+        "data_type": "I2",
+        "unit": "ns",
+        "description": "Antenna cable delay"
+      },
+      {
+        "name": "rfGroupDelay",
+        "byte_offset": 6,
+        "data_type": "I2",
+        "unit": "ns",
+        "description": "RF group delay"
+      },
+      {
+        "name": "freqPeriod",
+        "byte_offset": 8,
+        "data_type": "U4",
+        "unit": "Hz_or_us",
+        "description": "Frequency or period time, depending on setting of bit 'isFreq'"
+      },
+      {
+        "name": "freqPeriodLock",
+        "byte_offset": 12,
+        "data_type": "U4",
+        "unit": "Hz_or_us",
+        "description": "Frequency or period time when locked to GNSS time, only used if 'lockedOtherSet' is set"
+      },
+      {
+        "name": "pulseLenRatio",
+        "byte_offset": 16,
+        "data_type": "U4",
+        "unit": "us_or_2^-32",
+        "description": "Pulse length or duty cycle, depending on 'isLength'"
+      },
+      {
+        "name": "pulseLenRatioLock",
+        "byte_offset": 20,
+        "data_type": "U4",
+        "unit": "us_or_2^-32",
+        "description": "Pulse length or duty cycle when locked to GNSS time, only used if 'lockedOtherSet' is set"
+      },
+      {
+        "name": "userConfigDelay",
+        "byte_offset": 24,
+        "data_type": "I4",
+        "unit": "ns",
+        "description": "User-configurable time pulse delay"
+      },
+      {
+        "name": "flags",
+        "byte_offset": 28,
+        "data_type": "X4",
+        "description": "Configuration flags:\n- bit 0 (U:1) active: If set enable time pulse; if pin assigned to another function, other function takes precedence. Must be set for FTS variant.\n- bit 1 (U:1) lockGnssFreq: If set, synchronize time pulse to GNSS as soon as GNSS time is valid. If not set, or before GNSS time is valid, use local clock. This flag is ignored by the FTS product variant; in this case the receiver always locks to the best available time/frequency reference (which is not necessarily GNSS). This flag can be unset only in Timing product variants.\n- bit 2 (U:1) lockedOtherSet: If set the receiver switches between the timepulse settings given by 'freqPeriodLocked' & 'pulseLenLocked' and those given by 'freqPeriod' & 'pulseLen'. The 'Locked' settings are used where the receiver has an accurate sense of time. For non-FTS products, this occurs when GNSS solution with a reliable time is available, but for FTS products the setting syncMode field governs behavior. In all cases, the receiver only uses 'freqPeriod' & 'pulseLen' when the flag is unset.\n- bit 3 (U:1) isFreq: If set 'freqPeriodLock' and 'freqPeriod' are interpreted as frequency, otherwise interpreted as period.\n- bit 4 (U:1) isLength: If set 'pulseLenRatioLock' and 'pulseLenRatio' interpreted as pulse length, otherwise interpreted as duty cycle.\n- bit 5 (U:1) alignToTow: Align pulse to top of second (period time must be integer fraction of 1s). Also set 'lockGnssFreq' to use this feature. This flag is ignored by the FTS product variant; it is assumed to be always set (as is lockGnssFreq). Set maxSlewRate and maxPhaseCorrRate fields of UBX-CFG-SMGR to 0 to disable alignment.\n- bit 6 (U:1) polarity: Pulse polarity: \u2022 0 = falling edge at top of second \u2022 1 = rising edge at top of second\n- bits 10...7 (U:4) gridUtcGnss: Timegrid to use: \u2022 0 = UTC \u2022 1 = GPS \u2022 2 = GLONASS \u2022 3 = BeiDou \u2022 4 = Galileo (not supported for protocol versions less than 18.00)"
+      }
+    ]
+  }
+}

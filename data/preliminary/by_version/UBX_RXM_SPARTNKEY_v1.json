@@ -1,0 +1,554 @@
+{
+  "message_name": "UBX-RXM-SPARTNKEY",
+  "protocol_version": 1,
+  "status": "split",
+  "agreement_ratio": 0.4,
+  "winning_structure": {
+    "name": "UBX-RXM-SPARTNKEY",
+    "class_id": "0x02",
+    "message_id": "0x36",
+    "description": "Transfer dynamic SPARTN keys",
+    "message_type": "input/output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + numKeys * 8 + sum(keyLengthBytes)",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "numKeys",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0 the remaining fields will not be transmitted."
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "keys",
+          "repetition_type": "count_field",
+          "count_field": "numKeys",
+          "group_size_bytes": 8,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "reserved1",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "keyLengthBytes",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Key length in bytes"
+            },
+            {
+              "name": "validFromWno",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "description": "GPS week number the key is valid from",
+              "unit": "week"
+            },
+            {
+              "name": "validFromTow",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "GPS time of week the key is valid from",
+              "unit": "sec"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "228d4b032ba2c3f2",
+  "agreeing_sources": [
+    "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968"
+  ],
+  "disagreeing_sources": [
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-RXM-SPARTNKEY",
+        "class_id": "0x02",
+        "message_id": "0x36",
+        "description": "Transfer dynamic SPARTN keys. This message is used to load keys to the receiver.",
+        "message_type": "input_output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + (numKeys * 8) + sum(keys_info.keyLengthBytes)",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numKeys",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0 the remaining fields (keys_info and key_data) will not be transmitted."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys_info",
+              "repetition_type": "count_field",
+              "count_field": "numKeys",
+              "base_offset": 4,
+              "group_size_bytes": 8,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "keyLengthBytes",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Key length in bytes"
+                },
+                {
+                  "name": "validFromWno",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "unit": "week",
+                  "description": "GPS week number the key is valid from"
+                },
+                {
+                  "name": "validFromTow",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "unit": "sec",
+                  "description": "GPS time of week the key is valid from"
+                }
+              ]
+            },
+            {
+              "name": "key_data",
+              "repetition_type": "fill_remaining",
+              "group_size_bytes": 1,
+              "description": "Concatenated key(s) payload. This group takes up all remaining bytes after the fixed fields and 'keys_info' groups. Its total length is the sum of all 'keyLengthBytes' values from the 'keys_info' groups. If numKeys is 0, this group is not transmitted.",
+              "fields": [
+                {
+                  "name": "keyByte",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "A single byte of the concatenated key data."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "4814ce9ea5c9c040"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "structure": {
+        "name": "UBX-RXM-SPARTNKEY",
+        "class_id": "0x02",
+        "message_id": "0x36",
+        "description": "Transfer dynamic SPARTN keys",
+        "message_type": "input/output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numKeys * 8 + sum(keyLengthBytes)",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numKeys",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0 the remaining fields will not be transmitted."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "count_field",
+              "count_field": "numKeys",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "keyLengthBytes",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Key length in bytes"
+                },
+                {
+                  "name": "validFromWno",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "GPS week number the key is valid from",
+                  "unit": "week"
+                },
+                {
+                  "name": "validFromTow",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "GPS time of week the key is valid from",
+                  "unit": "sec"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "228d4b032ba2c3f2"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-RXM-SPARTNKEY",
+        "class_id": "0x02",
+        "message_id": "0x36",
+        "description": "Message describing SPARTN keys, sent in response to a poll request or periodically.",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + (numKeys * 8) + sum_of_keyLengthBytes",
+              "min": 4,
+              "notes": "sum_of_keyLengthBytes is the sum of all keyLengthBytes fields in the keyMetadata repeated group."
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numKeys",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0 the remaining fields (key metadata and key data) will not be transmitted."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keyMetadata",
+              "repetition_type": "count_field",
+              "count_field": "numKeys",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "keyLengthBytes",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Key length in bytes"
+                },
+                {
+                  "name": "validFromWno",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "GPS week number the key is valid from",
+                  "unit": "week"
+                },
+                {
+                  "name": "validFromTow",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "GPS time of week the key is valid from",
+                  "unit": "sec"
+                }
+              ]
+            },
+            {
+              "name": "keyData",
+              "repetition_type": "fill_remaining",
+              "description": "Key(s) payload. This is a concatenation of all keys as raw bytes. The total length is the sum of 'keyLengthBytes' from the keyMetadata entries.",
+              "fields": [
+                {
+                  "name": "key_byte",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "A single byte of the concatenated key data."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "ed434328426198e2"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-RXM-SPARTNKEY",
+        "class_id": "0x02",
+        "message_id": "0x36",
+        "description": "Poll installed keys: Depending on the number of active keys, the receiver shall send a UBX-RXM-SPARTNKEY message describing the keys. If there are no active keys then a UBX-RXM-SPARTNKEY shall be sent, with field numKeys set to zero. Transfer dynamic SPARTN keys: This message is used to load keys to the receiver. The receiver has provision to store up to two (2) keys. By definition, the one currently used is named 'current' and the one that shall be used as soon as 'current' expires is named 'next'. To query the receiver's keys state (including the keys themselves), send a UBX-RXM-SPARTNKEY poll request.",
+        "message_type": "input/output",
+        "payload": {
+          "length": {
+            "variable": {
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numKeys",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0 the remaining fields will not be transmitted."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "key_entries",
+              "repetition_type": "count_field",
+              "count_field": "numKeys",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "keyLengthBytes",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Key length in bytes",
+                  "unit": "bytes"
+                },
+                {
+                  "name": "validFromWno",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "GPS week number the key is valid from",
+                  "unit": "week"
+                },
+                {
+                  "name": "validFromTow",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "GPS time of week the key is valid from",
+                  "unit": "sec"
+                }
+              ]
+            }
+          ],
+          "post_repeated_fields": [
+            {
+              "name": "key",
+              "byte_offset": "4 + numKeys * 8",
+              "data_type": {
+                "array_of": "U1",
+                "count": "variable"
+              },
+              "description": "Key(s) payload. This is a concatenation of all keys as raw bytes. The number of keys is defined in 'numKeys' field. Each key length is defined in its 'keyLengthBytes' field within the 'key_entries' repeated group. The total length of this field is the sum of all 'keyLengthBytes' from the repeated group."
+            }
+          ]
+        }
+      },
+      "fingerprint": "228d4b032ba2c3f2"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-RXM-SPARTNKEY",
+        "class_id": "0x02",
+        "message_id": "0x36",
+        "description": "This message can be used in two ways:\n1. As a Poll Request (Input): Sent to the receiver with no payload (Length=0) to query its current SPARTN key state.\n2. As an Input/Output message for Key Transfer: Used to load dynamic SPARTN keys to the receiver, or as a response from the receiver (e.g., after a poll request) to report its key states, including the keys themselves. The receiver can store up to two keys (current and next).",
+        "message_type": "input_output_poll_request",
+        "payload": {
+          "length": {
+            "variable": {
+              "min": 4,
+              "formula": "4 + (numKeys * 8) + totalKeyBytes",
+              "notes": "The 'totalKeyBytes' is the sum of all 'keyLengthBytes' values from each 'key_metadata' group. If numKeys is 0, totalKeyBytes is 0, and the total length is 4 bytes. For a poll request (Input), the message has a fixed length of 0 bytes, and no payload fields are present."
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numKeys",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0, the 'key_metadata' repeated group and the 'key' field will not be transmitted."
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "key",
+              "byte_offset": null,
+              "data_type": {
+                "array_of": "U1",
+                "count": "N"
+              },
+              "description": "Key(s) payload. This is a concatenation of all keys as raw bytes. Its total length is the sum of all 'keyLengthBytes' values from the 'key_metadata' repeated group. This field starts immediately after the 'key_metadata' repeated group, at an effective offset of 4 + (numKeys * 8).",
+              "byte_offset_notes": "The byte offset for this field is dynamic, calculated as 4 + (numKeys * 8)."
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "key_metadata",
+              "repetition_type": "count_field",
+              "count_field": "numKeys",
+              "group_size_bytes": 8,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "reserved1",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "keyLengthBytes",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Key length in bytes"
+                },
+                {
+                  "name": "validFromWno",
+                  "byte_offset": 2,
+                  "data_type": "U2",
+                  "description": "GPS week number the key is valid from",
+                  "unit": "week"
+                },
+                {
+                  "name": "validFromTow",
+                  "byte_offset": 4,
+                  "data_type": "U4",
+                  "description": "GPS time of week the key is valid from",
+                  "unit": "sec"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "71cd1e22efb81562"
+    }
+  ]
+}

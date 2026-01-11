@@ -1,0 +1,39 @@
+{
+  "name": "UBX-MON-PATCH",
+  "class_id": "0x0a",
+  "message_id": "0x27",
+  "message_type": "polled",
+  "description": "Installed patches",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + nEntries*16"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U2",
+        "description": "Message version (0x0001 for this version)",
+        "fixed_value": 1
+      },
+      {
+        "name": "nEntries",
+        "byte_offset": 2,
+        "data_type": "U2",
+        "description": "Total number of reported patches"
+      },
+      {
+        "name": "patchEntriesRaw",
+        "byte_offset": 4,
+        "data_type": {
+          "array_of": "U1",
+          "count": "nEntries * 16"
+        },
+        "description": "Raw data for 'nEntries' patch entries. Each entry is 16 bytes long and has the following internal structure:\n- Bytes 0-3: patchInfo (X4, Status information about the reported patch)\n  - Bit 0 (U:1): 'activated' (1: active, 0: otherwise)\n  - Bits 1-2 (U:2): 'location' (0: eFuse, 1: ROM, 2: BBR, 3: file system)\n- Bytes 4-7: comparatorNumber (U4, The number of the comparator)\n- Bytes 8-11: patchAddress (U4, The address that is targeted by the patch)\n- Bytes 12-15: patchData (U4, The data that is inserted at the patchAddress)"
+      }
+    ]
+  }
+}

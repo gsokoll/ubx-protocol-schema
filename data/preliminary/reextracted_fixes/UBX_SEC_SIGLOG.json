@@ -1,0 +1,94 @@
+{
+  "name": "UBX-SEC-SIGLOG",
+  "class_id": "0x27",
+  "message_id": "0x10",
+  "message_type": "periodic_polled",
+  "description": "Signal security log",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numEvents * 8"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Message version (0x01 for this version)",
+        "fixed_value": 1
+      },
+      {
+        "name": "numEvents",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of events"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 6
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "timeElapsed",
+        "byte_offset": 8,
+        "data_type": "U4",
+        "description": "Seconds elapsed since this event. Special value 0xFFFFFFFF: more than 45 days",
+        "scale": "raw",
+        "unit": "S"
+      },
+      {
+        "name": "detectionType",
+        "byte_offset": 12,
+        "data_type": "U1",
+        "description": "Type of the spoofing or jamming detection:",
+        "enum_values": [
+          {
+            "value": 0,
+            "description": "simulated signal"
+          },
+          {
+            "value": 1,
+            "description": "abnormal signal"
+          },
+          {
+            "value": 2,
+            "description": "INS/GNSS mismatch"
+          },
+          {
+            "value": 3,
+            "description": "abrupt changes in GNSS signal"
+          },
+          {
+            "value": 4,
+            "description": "jamming indicated"
+          },
+          {
+            "value": 5,
+            "description": "authentication failed"
+          },
+          {
+            "value": 6,
+            "description": "replayed signals"
+          }
+        ]
+      },
+      {
+        "name": "event_reserved_padding",
+        "byte_offset": 13,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "description": "Reserved padding bytes to make each event 8 bytes long.",
+        "reserved": true
+      }
+    ]
+  }
+}

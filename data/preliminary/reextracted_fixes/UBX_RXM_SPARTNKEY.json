@@ -1,0 +1,58 @@
+{
+  "name": "UBX-RXM-SPARTNKEY",
+  "class_id": "0x02",
+  "message_id": "0x36",
+  "message_type": "input_output",
+  "description": "This message is used to load keys to the receiver. The receiver has provision to store up to two (2) keys. By definition, the one currently used is named 'current' and the one that shall be used as soon as 'current' expires is named 'next'.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + numKeys * 8 + sum(keyLengthBytes)"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "numKeys",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of keys the message contains (can be 0, 1 or 2). In case of 0, the 'keys_metadata' and 'key_data' fields will not be transmitted."
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "keys_metadata",
+        "byte_offset": 4,
+        "data_type": {
+          "array_of": "U1",
+          "count": "numKeys * 8"
+        },
+        "description": "Concatenated metadata for all keys. This block contains 'numKeys' entries, each 8 bytes long. Each entry consists of: reserved1 (U1), keyLengthBytes (U1), validFromWno (U2), validFromTow (U4)."
+      },
+      {
+        "name": "key_data",
+        "byte_offset": 20,
+        "data_type": {
+          "array_of": "U1",
+          "count": "sum(keyLengthBytes)"
+        },
+        "description": "Concatenated raw byte data for all keys. The actual byte offset of this field is 4 + numKeys * 8. The given offset (20) represents the earliest possible start of this field if 'numKeys' is at its maximum (2). The 'count' is the sum of all 'keyLengthBytes' values from the 'keys_metadata' block."
+      }
+    ]
+  }
+}

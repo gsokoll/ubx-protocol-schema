@@ -1,0 +1,657 @@
+{
+  "message": "UBX-NAV-NMI",
+  "total_discrepancies": 25,
+  "fix_canonical": 23,
+  "valid_variation": 1,
+  "needs_human": 1,
+  "adjudications": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "payload.length.fixed",
+      "original_issue": "Payload length mismatch.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states the message length as '16' bytes in the 'Message Structure' table. Furthermore, summing the byte lengths of all fields listed in the 'Payload Contents' table (iTOW (4) + version (1) + reserved1 (4) + gpsNmiFlags (1) + gpsLsFlags (1) + galNmiFlags (1) + galLsFlags (1) + bdsNmiFlags (1) + bdsLsFlags (1) + gloNmiFlags (1)) results in a total of 16 bytes. The canonical definition itself lists all these fields, implying a 16-byte payload. The canonical `length.fixed: 0` is incorrect.",
+      "suggested_fix": {
+        "field": "length.fixed",
+        "change": "update_value",
+        "new_value": 16
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "reserved0 / reserved1",
+      "original_issue": "Reserved field name mismatch. Canonical uses 'reserved0', PDF uses 'reserved1'. (Minor)",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF manual, which is an official u-blox document for protocol version 22.01, explicitly names the reserved field at byte offset 5 as 'reserved1'. The canonical definition refers to the same field (same offset, same type, same description) as 'reserved0'. As this is a reserved field, the specific numeric suffix (0 vs 1) does not impact functionality, but consistency with the official documentation is preferred. The PDF is a later protocol version (22.01) compared to the implied canonical (18.00 from prompt), and aligning with the latest official documentation is appropriate.",
+      "suggested_fix": {
+        "field": "reserved0",
+        "change": "rename",
+        "new_value": "reserved1"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "gpsNmiFlags",
+      "original_issue": "Bitfield definition for 'gpsNmiFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-3.",
+      "decision": "fix_canonical",
+      "confidence": 0.95,
+      "reasoning": "The PDF clearly defines the bitfield members for `gpsNmiFlags`, which is an `X1` type (commonly used for bitfields). The canonical definition correctly identifies `gpsNmiFlags` as an `X1` at byte offset 9 but omits the detailed bitfield breakdown. While there's a difference in listed protocol versions (canonical 1800 vs. PDF 22.01), it is highly probable that the bitfield structure for these fundamental flags remained consistent, and the canonical definition is simply incomplete. This is not a variation in the field's existence or type, but an omission of its granular structure.",
+      "suggested_fix": {
+        "field": "gpsNmiFlags",
+        "change": "Add bitfield_members to the `gpsNmiFlags` definition.",
+        "new_value": {
+          "name": "gpsNmiFlags",
+          "byte_offset": 9,
+          "data_type": "X1",
+          "description": "GPS navigation message cross-check information flags.",
+          "bitfield_members": [
+            {
+              "name": "wnoCheckedGPS",
+              "bit": 0,
+              "description": "1 = week number check performed."
+            },
+            {
+              "name": "wnoInvalidGPS",
+              "bit": 1,
+              "description": "1 = week number invalid."
+            },
+            {
+              "name": "UTCORefCheckedGPS",
+              "bit": 2,
+              "description": "1 = GPS UTCO reference time check performed."
+            },
+            {
+              "name": "UTCORefInvalidGPS",
+              "bit": 3,
+              "description": "1 = GPS UTCO reference time invalid."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "gpsLsFlags",
+      "original_issue": "Bitfield definition for 'gpsLsFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-4.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual clearly defines the 'gpsLsFlags' field as a bitfield with specific bits (0-4) and their meanings. The canonical definition, while correctly identifying 'gpsLsFlags' as an X1 (byte) at the correct offset, omits the crucial bitfield breakdown. Both the canonical and PDF refer to message version 0x01 for the payload structure. This indicates an omission in the canonical definition rather than a valid variation due to different protocol versions. The PDF provides clear and unambiguous information.",
+      "suggested_fix": {
+        "field": "gpsLsFlags",
+        "change": "Add bitfield definition for 'gpsLsFlags'",
+        "new_value": {
+          "name": "gpsLsFlags",
+          "byte_offset": 10,
+          "data_type": "X1",
+          "description": "GPS leap second cross-check information flags.",
+          "bitfield": [
+            {
+              "name": "lsValGPS",
+              "mask": 1,
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "name": "dnRangeGPS",
+              "mask": 2,
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "name": "totRangeGPS",
+              "mask": 4,
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "name": "1sEventGPS",
+              "mask": 8,
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "name": "recNowGPS",
+              "mask": 16,
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "galNmiFlags",
+      "original_issue": "Bitfield definition for 'galNmiFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-1.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual explicitly defines the bitfield for 'galNmiFlags' on page 2, detailing bits 0 and 1. The canonical definition, while correctly identifying 'galNmiFlags' as an X1 (byte), is missing this specific bitfield breakdown. There is no information to suggest this is a valid variation based on protocol version; rather, it appears to be an omission in the canonical data.",
+      "suggested_fix": {
+        "field": "galNmiFlags",
+        "change": "Add bitfield definition",
+        "new_value": {
+          "name": "galNmiFlags",
+          "byte_offset": 11,
+          "data_type": "X1",
+          "description": "Galileo navigation message cross-check information flags.",
+          "bitfield": [
+            {
+              "name": "wnoCheckedGAL",
+              "position": 0,
+              "length": 1,
+              "description": "Week number check performed."
+            },
+            {
+              "name": "wnoInvalidGAL",
+              "position": 1,
+              "length": 1,
+              "description": "Week number invalid."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "galLsFlags",
+      "original_issue": "Bitfield definition for 'galLsFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-4.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the bitfield for 'galLsFlags' with 5 distinct bits (0-4), including their names and descriptions. The canonical definition for 'galLsFlags' currently lacks this detailed bitfield information, only specifying it as an X1 (byte) data type. This is a clear case of missing information in the canonical definition, not a variation.",
+      "suggested_fix": {
+        "field": "galLsFlags",
+        "change": "add bitfield definition",
+        "new_value": [
+          {
+            "name": "lsValGAL",
+            "position": 0,
+            "description": "1 = Leap second value out of range."
+          },
+          {
+            "name": "dnRangeGAL",
+            "position": 1,
+            "description": "1 = Day number value out of range."
+          },
+          {
+            "name": "totRangeGAL",
+            "position": 2,
+            "description": "1 = Data reference TOW out of range."
+          },
+          {
+            "name": "1sEventGAL",
+            "position": 3,
+            "description": "1 = Unexpected leap second event."
+          },
+          {
+            "name": "recNowGAL",
+            "position": 4,
+            "description": "1 = Data received this epoch."
+          }
+        ]
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "bdsNmiFlags",
+      "original_issue": "Bitfield definition for 'bdsNmiFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-1.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The canonical definition for UBX-NAV-NMI, message version 0x01 (as specified in both the canonical excerpt and the PDF manual), includes a 'bdsNmiFlags' field of type X1 (unsigned byte). However, the provided canonical excerpt lacks any bitfield definition for this field. The PDF manual, while for a later protocol version (22.01 vs 18.00 for canonical), explicitly provides bitfield definitions for 'bdsNmiFlags' (bits 0 and 1) for the *same message version* (0x01). Given that the field exists, is named 'Flags', and has the same message version, it is highly probable that these bitfield definitions are applicable and are simply missing from the canonical definition for protocol version 18.00.",
+      "suggested_fix": {
+        "field": "bdsNmiFlags",
+        "change": "Add bitfield definitions to the 'bdsNmiFlags' field.",
+        "new_value": "Bit 0: 'wnoCheckedBDS' (1 = week number check performed); Bit 1: 'wnoInvalidBDS' (1 = week number invalid). Specific JSON structure for bitfields would depend on the canonical schema."
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "bdsLsFlags",
+      "original_issue": "Bitfield definition for 'bdsLsFlags' is missing from the canonical definition. The PDF explicitly defines bits 0-4.",
+      "decision": "fix_canonical",
+      "confidence": 0.8,
+      "reasoning": "The canonical definition for `bdsLsFlags` (an X1 type, described as 'flags') is incomplete as it lacks a bitfield breakdown. The provided PDF, which is for u-blox 8/M8 receivers (the same device family, though a later protocol version 22.01 vs. 18.00), explicitly defines the bitfield for this flag. It's highly probable that `bdsLsFlags` has always been a bitfield for this device generation, even if specific bit meanings might have slightly evolved. The absence of any bitfield definition in the canonical is a structural omission that should be corrected.",
+      "suggested_fix": {
+        "field": "bdsLsFlags",
+        "change": "Add bitfield definitions to the existing `bdsLsFlags` entry.",
+        "new_value": {
+          "bitfield": [
+            {
+              "name": "lsValBDS",
+              "position": 0,
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "name": "dnRangeBDS",
+              "position": 1,
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "name": "totRangeBDS",
+              "position": 2,
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "name": "1sEventBDS",
+              "position": 3,
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "name": "recNowBDS",
+              "position": 4,
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "payload.length.fixed",
+      "original_issue": "Payload length is fixed according to the PDF, but canonical states 0.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states 'Length (Bytes) 16' in the message structure header and lists payload contents up to 'Byte Offset 15' with a U1/X1 data type (1 byte), making the total payload length 16 bytes. The canonical definition's 'fields' array also describes a 16-byte payload (from byte_offset 0 to 15, where the last field is 1 byte long). The 'length.fixed: 0' in the canonical definition is therefore incorrect and contradicts both the PDF and the canonical's own field definitions.",
+      "suggested_fix": {
+        "field": "payload.length.fixed",
+        "change": "update_value",
+        "new_value": 16
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "reserved0.name",
+      "original_issue": "Name of the reserved field differs.",
+      "decision": "valid_variation",
+      "confidence": 0.9,
+      "reasoning": "The canonical definition is associated with Protocol Version 1800, where the field is named `reserved0`. The PDF manual describes Protocol Version 22.01, where the same field (at byte offset 5, U1[4]) is named `reserved1`. This difference in naming for a reserved field between distinct protocol versions is a valid variation, not an error in either source, as both are likely accurate for their respective protocol versions.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "gpsNmiFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for gpsNmiFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly provides the bitfield definitions for 'gpsNmiFlags' in the 'Bitfield gpsNmiFlags' graphic and accompanying table. This information is completely missing from the canonical definition for this field, indicating an omission rather than a variation between protocol versions (as the field itself exists in the canonical definition).",
+      "suggested_fix": {
+        "field": "gpsNmiFlags",
+        "change": "add_bitfield_definition",
+        "new_value": {
+          "3": "UTCORefInvalidGPS",
+          "2": "UTCORefCheckedGPS",
+          "1": "wnoInvalidGPS",
+          "0": "wnoCheckedGPS"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "gpsLsFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for gpsLsFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual (page 2) explicitly provides a detailed bitfield definition for `gpsLsFlags`, including the mapping of bits to names (recNowGPS, 1sEventGPS, totRangeGPS, dnRangeGPS, lsValGPS) and their corresponding descriptions. This information is completely missing from the canonical definition, making the canonical definition incomplete. While the prompt mentions 'Protocol Version: 1800', the provided PDF manual explicitly states support for 'protocol version 22.01'. Assuming the canonical definition is intended to reflect the most complete and up-to-date information for this message within the u-blox 8/M8 family as detailed in the provided documentation, this is a clear omission that should be corrected.",
+      "suggested_fix": {
+        "field": "gpsLsFlags",
+        "change": "add_bitfield_definition",
+        "new_value": {
+          "0": "lsValGPS",
+          "1": "dnRangeGPS",
+          "2": "totRangeGPS",
+          "3": "1sEventGPS",
+          "4": "recNowGPS"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "galNmiFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for galNmiFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF clearly defines the bitfield for 'galNmiFlags' with specific bits mapped to descriptions. The canonical definition for 'galNmiFlags' is of type 'X1' (bitfield) but lacks this essential 'bitfield_definition', indicating an incompleteness that needs to be corrected.",
+      "suggested_fix": {
+        "field": "galNmiFlags",
+        "change": "Add 'bitfield_definition' property",
+        "new_value": {
+          "0": "wnoCheckedGAL",
+          "1": "wnoInvalidGAL"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "galLsFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for galLsFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF clearly and explicitly defines the bitfield for 'galLsFlags' with names and descriptions for each bit (page 3, 'Bitfield galLsFlags' section). The canonical definition correctly includes the 'galLsFlags' field but completely omits its 'bitfield_definition'. This is a clear case of missing information in the canonical definition that is present and well-defined in the official documentation.",
+      "suggested_fix": {
+        "field": "galLsFlags",
+        "change": "add_bitfield_definition",
+        "new_value": {
+          "0": {
+            "name": "lsValGAL",
+            "description": "1 = Leap second value out of range."
+          },
+          "1": {
+            "name": "dnRangeGAL",
+            "description": "1 = Day number value out of range."
+          },
+          "2": {
+            "name": "totRangeGAL",
+            "description": "1 = Data reference TOW out of range."
+          },
+          "3": {
+            "name": "1sEventGAL",
+            "description": "1 = Unexpected leap second event."
+          },
+          "4": {
+            "name": "recNowGAL",
+            "description": "1 = Data received this epoch."
+          }
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "bdsNmiFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for bdsNmiFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the bitfield for `bdsNmiFlags` on page 3 under the 'Bitfield bdsNmiFlags' section. The canonical definition is missing this bitfield breakdown.",
+      "suggested_fix": {
+        "field": "bdsNmiFlags",
+        "change": "Add bitfield_definition",
+        "new_value": {
+          "0": "wnoCheckedBDS",
+          "1": "wnoInvalidBDS"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "bdsLsFlags.bitfield_definition",
+      "original_issue": "Canonical definition is missing the bitfield definitions for bdsLsFlags, which are provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The canonical definition for UBX-NAV-NMI includes the 'bdsLsFlags' field at byte offset 14, typed as 'X1' (a hexadecimal byte), and describes it as 'BeiDou leap second cross-check information flags'. Fields named '...Flags' and typed as 'X1' are conventionally bitfields, meaning their individual bits represent distinct status flags. The canonical definition for this field is missing the 'bitfield_definition' key, making it incomplete. The provided PDF, which documents protocol version 22.01 (whereas the canonical is stated to be for protocol version 1800), clearly defines the bitfield for 'bdsLsFlags' on page 3. While the protocol versions differ, it is highly probable that the fundamental bitfield structure for a 'flags' field related to core GNSS status would remain consistent or very similar across these protocol versions. Therefore, the absence of this definition in the canonical for 1800 is considered an incompleteness that should be rectified using the most authoritative available information.",
+      "suggested_fix": {
+        "field": "bdsLsFlags",
+        "change": "add_bitfield_definition",
+        "new_value": {
+          "4": "recNowBDS",
+          "3": "1sEventBDS",
+          "2": "totRangeBDS",
+          "1": "dnRangeBDS",
+          "0": "1sValBDS"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "payload.length.fixed",
+      "original_issue": "The fixed payload length is incorrect.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states a 'Length (Bytes)' of '16' for UBX-NAV-NMI in the message structure table. Furthermore, summing the byte offsets and sizes of all listed payload fields (U4 + U1 + U1[4] + X1 + X1 + X1 + X1 + X1 + X1 + X1 = 4 + 1 + 4 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 16 bytes) confirms this fixed length. The canonical definition of 0 is incorrect.",
+      "suggested_fix": {
+        "field": "length.fixed",
+        "change": "update value",
+        "new_value": 16
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "gpsNmiFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for wnoCheckedGPS, wnoInvalidGPS, UTCOREfCheckedGPS, and UTCOREfInvalidGPS.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the bit-level details for the 'gpsNmiFlags' field, which is of type X1 (bitfield). The canonical definition correctly identifies it as an X1 but is missing these specific bit definitions. This is a common form of incompleteness in canonical definitions compared to detailed manuals.",
+      "suggested_fix": {
+        "field": "gpsNmiFlags",
+        "change": "Add nested bit_fields definitions to the 'gpsNmiFlags' field.",
+        "new_value": {
+          "name": "gpsNmiFlags",
+          "byte_offset": 9,
+          "data_type": "X1",
+          "description": "GPS navigation message cross-check information flags.",
+          "bit_fields": [
+            {
+              "name": "wnoCheckedGPS",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "description": "1 = week number check performed."
+            },
+            {
+              "name": "wnoInvalidGPS",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "description": "1 = week number invalid."
+            },
+            {
+              "name": "UTCOREfCheckedGPS",
+              "bit_offset": 2,
+              "bit_length": 1,
+              "description": "1 = GPS UTCO reference time check performed."
+            },
+            {
+              "name": "UTCOREfInvalidGPS",
+              "bit_offset": 3,
+              "bit_length": 1,
+              "description": "1 = GPS UTCO reference time invalid."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "gpsLsFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for 1sValGPS, dnRangeGPS, totRangeGPS, 1sEventGPS, and recNowGPS.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines five bitfields within the `gpsLsFlags` (X1) field: `1sValGPS` (bit 0), `dnRangeGPS` (bit 1), `totRangeGPS` (bit 2), `1sEventGPS` (bit 3), and `recNowGPS` (bit 4). The canonical definition correctly identifies `gpsLsFlags` as an `X1` data type but lacks these crucial nested bitfield definitions, making it incomplete. Both sources refer to the same message version (0x01), so this is not a valid variation.",
+      "suggested_fix": {
+        "field": "gpsLsFlags",
+        "change": "Add bitfield definitions to the 'gpsLsFlags' field.",
+        "new_value": {
+          "name": "gpsLsFlags",
+          "byte_offset": 10,
+          "data_type": "X1",
+          "description": "GPS leap second cross-check information flags.",
+          "bit_fields": [
+            {
+              "name": "1sValGPS",
+              "bit_offset": 0,
+              "num_bits": 1,
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "name": "dnRangeGPS",
+              "bit_offset": 1,
+              "num_bits": 1,
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "name": "totRangeGPS",
+              "bit_offset": 2,
+              "num_bits": 1,
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "name": "1sEventGPS",
+              "bit_offset": 3,
+              "num_bits": 1,
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "name": "recNowGPS",
+              "bit_offset": 4,
+              "num_bits": 1,
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "galNmiFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for wnoCheckedGAL and wnoInvalidGAL.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual (u-blox F9 TIM 2.20 - Interface Description) explicitly defines the bitfield members for `galNmiFlags` at byte offset 11: `wnoCheckedGAL` (bit 0) and `wnoInvalidGAL` (bit 1). The canonical definition, while correctly identifying `galNmiFlags` as an X1 type, is missing these detailed bit definitions for the specified protocol version and device family. This indicates an incompleteness in the canonical definition rather than a variation.",
+      "suggested_fix": {
+        "field": "galNmiFlags",
+        "change": "Update data_type to include bitfield definitions as per the PDF.",
+        "new_value": {
+          "name": "galNmiFlags",
+          "byte_offset": 11,
+          "data_type": {
+            "bitfield": [
+              {
+                "name": "wnoCheckedGAL",
+                "bit_offset": 0,
+                "bit_length": 1,
+                "description": "1 = week number check performed."
+              },
+              {
+                "name": "wnoInvalidGAL",
+                "bit_offset": 1,
+                "bit_length": 1,
+                "description": "1 = week number invalid."
+              }
+            ]
+          },
+          "description": "Galileo navigation message cross-check information flags."
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "galLsFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for 1sValGAL.",
+      "decision": "needs_human",
+      "confidence": 0.0,
+      "reasoning": "Error during adjudication: Expecting ',' delimiter: line 20 column 9 (char 876)",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "bdsNmiFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for wnoCheckedBDS and wnoInvalidBDS.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines two bitfields (wnoCheckedBDS and wnoInvalidBDS) within the bdsNmiFlags byte at byte offset 13. The canonical definition for bdsNmiFlags is correctly typed as X1 (a byte of flags) but is missing these detailed bitfield definitions. The protocol version and message are consistent between the sources.",
+      "suggested_fix": {
+        "field": "bdsNmiFlags",
+        "change": "add_bit_definitions",
+        "new_value": {
+          "name": "bdsNmiFlags",
+          "byte_offset": 13,
+          "data_type": "X1",
+          "description": "BeiDou navigation message cross-check information flags.",
+          "bit_fields": [
+            {
+              "name": "wnoCheckedBDS",
+              "bit_offset": 0,
+              "length": 1,
+              "description": "1 = week number check performed."
+            },
+            {
+              "name": "wnoInvalidBDS",
+              "bit_offset": 1,
+              "length": 1,
+              "description": "1 = week number invalid."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "bdsLsFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for 1sValBDS, dnRangeBDS, totRangeBDS, 1sEventBDS, and recNowBDS.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the bitfields for 'bdsLsFlags' (an X1 type field at byte offset 14), including '1sValBDS', 'dnRangeBDS', 'totRangeBDS', '1sEventBDS', and 'recNowBDS'. The canonical definition correctly identifies 'bdsLsFlags' as an X1 type but is missing these detailed bitfield definitions, making it incomplete. This is not a variation but an omission in the canonical data.",
+      "suggested_fix": {
+        "field": "bdsLsFlags",
+        "change": "Add bit_fields definitions for 'bdsLsFlags'.",
+        "new_value": {
+          "bit_fields": [
+            {
+              "name": "1sValBDS",
+              "bit_offset": 0,
+              "data_type": "U1",
+              "description": "1 = Leap second value out of range."
+            },
+            {
+              "name": "dnRangeBDS",
+              "bit_offset": 1,
+              "data_type": "U1",
+              "description": "1 = Day number value out of range."
+            },
+            {
+              "name": "totRangeBDS",
+              "bit_offset": 2,
+              "data_type": "U1",
+              "description": "1 = Data reference TOW out of range."
+            },
+            {
+              "name": "1sEventBDS",
+              "bit_offset": 3,
+              "data_type": "U1",
+              "description": "1 = Unexpected leap second event."
+            },
+            {
+              "name": "recNowBDS",
+              "bit_offset": 4,
+              "data_type": "U1",
+              "description": "1 = Data received this epoch."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "field": "gloNmiFlags",
+      "original_issue": "Bitfield definitions are missing from the canonical. The PDF specifies bit details for wnoCheckedGLO and wnoInvalidGLO.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual clearly defines bitfield details for the `gloNmiFlags` field, specifically `wnoCheckedGLO` (bit 0) and `wnoInvalidGLO` (bit 1), which are completely missing from the canonical definition. The PDF is consistent with the specified device family and protocol version.",
+      "suggested_fix": {
+        "field": "gloNmiFlags",
+        "change": "add bitfield definitions",
+        "new_value": [
+          {
+            "name": "wnoCheckedGLO",
+            "bit_offset": 0,
+            "num_bits": 1,
+            "data_type": "U1",
+            "description": "1 = week number check performed."
+          },
+          {
+            "name": "wnoInvalidGLO",
+            "bit_offset": 1,
+            "num_bits": 1,
+            "data_type": "U1",
+            "description": "1 = week number invalid."
+          }
+        ]
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "field": "payload.length.fixed",
+      "original_issue": "The fixed payload length in the canonical definition does not match the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states 'Length (Bytes): 16' for the UBX-NAV-NMI message structure. Furthermore, by summing the byte sizes of all fields described in both the PDF and the canonical definition (iTOW (4) + version (1) + reserved0 (4) + gpsNmiFlags (1) + gpsLsFlags (1) + galNmiFlags (1) + galLsFlags (1) + bdsNmiFlags (1) + bdsLsFlags (1) + gloNmiFlags (1)), the total payload length is 16 bytes. The canonical definition's 'fixed: 0' is incorrect.",
+      "suggested_fix": {
+        "field": "payload.length.fixed",
+        "change": "set_value",
+        "new_value": 16
+      }
+    }
+  ]
+}

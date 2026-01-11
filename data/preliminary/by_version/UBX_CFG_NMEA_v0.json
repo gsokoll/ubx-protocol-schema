@@ -1,0 +1,764 @@
+{
+  "message_name": "UBX-CFG-NMEA",
+  "protocol_version": 0,
+  "status": "split",
+  "agreement_ratio": 0.3333333333333333,
+  "winning_structure": {
+    "name": "UBX-CFG-NMEA",
+    "class_id": "0x06",
+    "message_id": "0x17",
+    "description": "Extended NMEA protocol configuration V1",
+    "message_type": "get_set",
+    "payload": {
+      "length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "name": "filter",
+          "byte_offset": 0,
+          "data_type": "X1",
+          "description": "filter flags",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "posFilt",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Enable position output for failed or invalid fixes"
+              },
+              {
+                "name": "mskPosFilt",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Enable position output for invalid fixes"
+              },
+              {
+                "name": "timeFilt",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "Enable time output for invalid times"
+              },
+              {
+                "name": "dateFilt",
+                "bit_start": 3,
+                "bit_end": 3,
+                "description": "Enable date output for invalid dates"
+              },
+              {
+                "name": "gpsOnlyFilter",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "Restrict output to GPS satellites only"
+              },
+              {
+                "name": "trackFilt",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "Enable COG output even if COG is frozen"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nmeaVersion",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "0x4b: NMEA version 4.11 (not available in all products)\n0x41: NMEA version 4.10 (not available in all products)\n0x40: NMEA version 4.0 (not available in all products)\n0x23: NMEA version 2.3\n0x21: NMEA version 2.1"
+        },
+        {
+          "name": "numSV",
+          "byte_offset": 2,
+          "data_type": "U1",
+          "description": "Maximum number of SVs to report per TalkerId.\n0: unlimited\n8: 8 SVs\n12: 12 SVs\n16: 16 SVs"
+        },
+        {
+          "name": "flags",
+          "byte_offset": 3,
+          "data_type": "X1",
+          "description": "flags",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "compat",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "enable compatibility mode. This might be needed for certain applications when customer's NMEA parser expects a fixed number of digits in position coordinates."
+              },
+              {
+                "name": "consider",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "enable considering mode."
+              }
+            ]
+          }
+        },
+        {
+          "name": "gnssToFilter",
+          "byte_offset": 4,
+          "data_type": "X4",
+          "description": "Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "gps",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "Disable reporting of GPS satellites"
+              },
+              {
+                "name": "sbas",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Disable reporting of SBAS satellites"
+              },
+              {
+                "name": "galileo",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "Disable reporting of Galileo satellites"
+              },
+              {
+                "name": "qzss",
+                "bit_start": 3,
+                "bit_end": 3,
+                "description": "Disable reporting of QZSS satellites"
+              },
+              {
+                "name": "glonass",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "Disable reporting of GLONASS satellites"
+              },
+              {
+                "name": "beidou",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "Disable reporting of BeiDou satellites"
+              }
+            ]
+          }
+        },
+        {
+          "name": "svNumbering",
+          "byte_offset": 8,
+          "data_type": "U1",
+          "description": "Configures the display of satellites that do not have an NMEA-defined value. Note: this does not apply to satellites with an unknown ID.\n0: Strict - Satellites are not output\n1: Extended - Use proprietary numbering (see Satellite Numbering)"
+        },
+        {
+          "name": "mainTalkerId",
+          "byte_offset": 9,
+          "data_type": "U1",
+          "description": "By default the main Talker ID (i.e. the Talker ID used for all messages other than GSV) is determined by the GNSS assignment of the receiver's channels (see UBX-CFG-GNSS). This field enables the main Talker ID to be overridden.\n0: Main Talker ID is not overridden\n1: Set main Talker ID to 'GP'\n2: Set main Talker ID to 'GL'\n3: Set main Talker ID to 'GN'\n4: Set main Talker ID to 'GA'\n5: Set main Talker ID to 'GB'\n6: Set main Talker ID to 'GQ' (available in NMEA 4.11 and later)"
+        },
+        {
+          "name": "gsvTalkerId",
+          "byte_offset": 10,
+          "data_type": "U1",
+          "description": "By default the Talker ID for GSV messages is GNSS-specific (as defined by NMEA). This field enables the GSV Talker ID to be overridden.\n0: Use GNSS-specific Talker ID (as defined by NMEA)\n1: Use the main Talker ID"
+        },
+        {
+          "name": "version",
+          "byte_offset": 11,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 12,
+          "data_type": {
+            "array_of": "U1",
+            "count": 8
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "d278b21e54c540e3",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-NMEA",
+        "class_id": "0x06",
+        "message_id": "0x17",
+        "description": "Extended NMEA protocol configuration V1",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "filter",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "filter flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "posFilt",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable position output for failed or invalid fixes"
+                  },
+                  {
+                    "name": "mskPosFilt",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Enable position output for invalid fixes"
+                  },
+                  {
+                    "name": "timeFilt",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Enable time output for invalid times"
+                  },
+                  {
+                    "name": "dateFilt",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Enable date output for invalid dates"
+                  },
+                  {
+                    "name": "gpsOnlyFilter",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "Restrict output to GPS satellites only"
+                  },
+                  {
+                    "name": "trackFilt",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "Enable COG output even if COG is frozen"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "nmeaVersion",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "0x4b: NMEA version 4.11 (not available in all products)\n0x41: NMEA version 4.10 (not available in all products)\n0x40: NMEA version 4.0 (not available in all products)\n0x23: NMEA version 2.3\n0x21: NMEA version 2.1"
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Maximum number of SVs to report per TalkerId.\n0: unlimited\n8: 8 SVs\n12: 12 SVs\n16: 16 SVs"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "compat",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "enable compatibility mode. This might be needed for certain applications when customer's NMEA parser expects a fixed number of digits in position coordinates."
+                  },
+                  {
+                    "name": "consider",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "enable considering mode."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "gnssToFilter",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gps",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Disable reporting of GPS satellites"
+                  },
+                  {
+                    "name": "sbas",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Disable reporting of SBAS satellites"
+                  },
+                  {
+                    "name": "galileo",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Disable reporting of Galileo satellites"
+                  },
+                  {
+                    "name": "qzss",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Disable reporting of QZSS satellites"
+                  },
+                  {
+                    "name": "glonass",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "Disable reporting of GLONASS satellites"
+                  },
+                  {
+                    "name": "beidou",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "Disable reporting of BeiDou satellites"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "svNumbering",
+              "byte_offset": 8,
+              "data_type": "U1",
+              "description": "Configures the display of satellites that do not have an NMEA-defined value. Note: this does not apply to satellites with an unknown ID.\n0: Strict - Satellites are not output\n1: Extended - Use proprietary numbering (see Satellite Numbering)"
+            },
+            {
+              "name": "mainTalkerId",
+              "byte_offset": 9,
+              "data_type": "U1",
+              "description": "By default the main Talker ID (i.e. the Talker ID used for all messages other than GSV) is determined by the GNSS assignment of the receiver's channels (see UBX-CFG-GNSS). This field enables the main Talker ID to be overridden.\n0: Main Talker ID is not overridden\n1: Set main Talker ID to 'GP'\n2: Set main Talker ID to 'GL'\n3: Set main Talker ID to 'GN'\n4: Set main Talker ID to 'GA'\n5: Set main Talker ID to 'GB'\n6: Set main Talker ID to 'GQ' (available in NMEA 4.11 and later)"
+            },
+            {
+              "name": "gsvTalkerId",
+              "byte_offset": 10,
+              "data_type": "U1",
+              "description": "By default the Talker ID for GSV messages is GNSS-specific (as defined by NMEA). This field enables the GSV Talker ID to be overridden.\n0: Use GNSS-specific Talker ID (as defined by NMEA)\n1: Use the main Talker ID"
+            },
+            {
+              "name": "version",
+              "byte_offset": 11,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 8
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "d278b21e54c540e3"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "structure": {
+        "id": "UBX-CFG-NMEA-V0",
+        "name": "NMEA protocol configuration V0 (deprecated)",
+        "description": "NMEA protocol configuration V0 (deprecated)",
+        "message_class": "0x06",
+        "message_id": "0x17",
+        "length": 12,
+        "payload": {
+          "fields": [
+            {
+              "offset": 0,
+              "name": "filter",
+              "type": "X1",
+              "description": "filter flags",
+              "bitfield": [
+                {
+                  "name": "posFilt",
+                  "position": 0,
+                  "description": "Enable position output for failed or invalid fixes"
+                },
+                {
+                  "name": "mskPosFilt",
+                  "position": 1,
+                  "description": "Enable position output for invalid fixes"
+                },
+                {
+                  "name": "timeFilt",
+                  "position": 2,
+                  "description": "Enable time output for invalid times"
+                },
+                {
+                  "name": "dateFilt",
+                  "position": 3,
+                  "description": "Enable date output for invalid dates"
+                },
+                {
+                  "name": "gpsOnlyFilter",
+                  "position": 4,
+                  "description": "Restrict output to GPS satellites only"
+                },
+                {
+                  "name": "trackFilt",
+                  "position": 5,
+                  "description": "Enable COG output even if COG is frozen"
+                }
+              ]
+            },
+            {
+              "offset": 1,
+              "name": "nmeaVersion",
+              "type": "U1",
+              "description": "NMEA version",
+              "values": [
+                {
+                  "value": "0x23",
+                  "description": "NMEA version 2.3"
+                },
+                {
+                  "value": "0x21",
+                  "description": "NMEA version 2.1"
+                }
+              ]
+            },
+            {
+              "offset": 2,
+              "name": "numSV",
+              "type": "U1",
+              "description": "Maximum number of SVs to report per TalkerId.",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "unlimited"
+                },
+                {
+                  "value": 8,
+                  "description": "8 SVs"
+                },
+                {
+                  "value": 12,
+                  "description": "12 SVs"
+                },
+                {
+                  "value": 16,
+                  "description": "16 SVs"
+                }
+              ]
+            },
+            {
+              "offset": 3,
+              "name": "flags",
+              "type": "X1",
+              "description": "flags",
+              "bitfield": [
+                {
+                  "name": "compat",
+                  "position": 0,
+                  "description": "enable compatibility mode."
+                },
+                {
+                  "name": "consider",
+                  "position": 1,
+                  "description": "enable considering mode."
+                }
+              ]
+            },
+            {
+              "offset": 4,
+              "name": "gnssToFilter",
+              "type": "X4",
+              "description": "Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.",
+              "bitfield": [
+                {
+                  "name": "gps",
+                  "position": 0,
+                  "description": "Disable reporting of GPS satellites"
+                },
+                {
+                  "name": "sbas",
+                  "position": 1,
+                  "description": "Disable reporting of SBAS satellites"
+                },
+                {
+                  "name": "galileo",
+                  "position": 2,
+                  "description": "Disable reporting of Galileo satellites"
+                },
+                {
+                  "name": "qzss",
+                  "position": 3,
+                  "description": "Disable reporting of QZSS satellites"
+                },
+                {
+                  "name": "glonass",
+                  "position": 5,
+                  "description": "Disable reporting of GLONASS satellites"
+                },
+                {
+                  "name": "beidou",
+                  "position": 6,
+                  "description": "Disable reporting of BeiDou satellites"
+                }
+              ]
+            },
+            {
+              "offset": 8,
+              "name": "svNumbering",
+              "type": "U1",
+              "description": "Configures the display of satellites that do not have an NMEA-defined value.",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "Strict - Satellites are not output"
+                },
+                {
+                  "value": 1,
+                  "description": "Extended - Use proprietary numbering (see Satellite Numbering)"
+                }
+              ]
+            },
+            {
+              "offset": 9,
+              "name": "mainTalkerId",
+              "type": "CH",
+              "description": "Main Talker ID. 0: Main Talker ID is not overridden, 1: Set main Talker ID to 'GP', 2: Set main Talker ID to 'GL', 3: Set main Talker ID to 'GN', 4: Set main Talker ID to 'GA', 5: Set main Talker ID to 'GB', 6: Set main Talker ID to 'GQ' (available in NMEA 4.11 and later).",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "Main Talker ID is not overridden"
+                },
+                {
+                  "value": 1,
+                  "description": "Set main Talker ID to 'GP'"
+                },
+                {
+                  "value": 2,
+                  "description": "Set main Talker ID to 'GL'"
+                },
+                {
+                  "value": 3,
+                  "description": "Set main Talker ID to 'GN'"
+                },
+                {
+                  "value": 4,
+                  "description": "Set main Talker ID to 'GA'"
+                },
+                {
+                  "value": 5,
+                  "description": "Set main Talker ID to 'GB'"
+                },
+                {
+                  "value": 6,
+                  "description": "Set main Talker ID to 'GQ' (available in NMEA 4.11 and later)"
+                }
+              ]
+            },
+            {
+              "offset": 10,
+              "name": "gsvTalkerId",
+              "type": "CH",
+              "description": "GSV Talker ID. 0: Use GNSS-specific Talker ID (as defined by NMEA), 1: Use the main Talker ID.",
+              "values": [
+                {
+                  "value": 0,
+                  "description": "Use GNSS-specific Talker ID (as defined by NMEA)"
+                },
+                {
+                  "value": 1,
+                  "description": "Use the main Talker ID"
+                }
+              ]
+            },
+            {
+              "offset": 11,
+              "name": "version",
+              "type": "U1",
+              "description": "Message version (0x00 for this version)",
+              "values": [
+                {
+                  "value": "0x00",
+                  "description": "This version"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "9889fbbb18a79d1e"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-CFG-NMEA",
+        "class_id": "0x06",
+        "message_id": "0x17",
+        "description": "Extended NMEA protocol configuration V1",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "filter",
+              "byte_offset": 0,
+              "data_type": "X1",
+              "description": "filter flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "posFilt",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Enable position output for failed or invalid fixes"
+                  },
+                  {
+                    "name": "mskPosFilt",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Enable position output for invalid fixes"
+                  },
+                  {
+                    "name": "timeFilt",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Enable time output for invalid times"
+                  },
+                  {
+                    "name": "dateFilt",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Enable date output for invalid dates"
+                  },
+                  {
+                    "name": "gpsOnlyFilter",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "Restrict output to GPS satellites only"
+                  },
+                  {
+                    "name": "trackFilt",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "Enable COG output even if COG is frozen"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "nmeaVersion",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "0x4b = NMEA version 4.11 (not available in all products)\n0x41 = NMEA version 4.10 (not available in all products)\n0x40 = NMEA version 4.0 (not available in all products)\n0x23 = NMEA version 2.3\n0x21 = NMEA version 2.1"
+            },
+            {
+              "name": "numSV",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Maximum number of SVs to report per TalkerId.\n0 = unlimited\n8 = 8 SVs\n12 = 12 SVs\n16 = 16 SVs"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 3,
+              "data_type": "X1",
+              "description": "flags",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "compat",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "enable compatibility mode. This might be needed for certain applications when customer's NMEA parser expects a fixed number of digits in position coordinates."
+                  },
+                  {
+                    "name": "consider",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "enable considering mode."
+                  },
+                  {
+                    "name": "limit82",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "enable strict limit to 82 characters maximum."
+                  },
+                  {
+                    "name": "highPrec",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "enable high precision mode. This flag cannot be set in conjunction with either compatibility mode or Limit82 mode (not supported for protocol versions less than 20.01)."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "gnssToFilter",
+              "byte_offset": 4,
+              "data_type": "X4",
+              "description": "Filters out satellites based on their GNSS. If a bitfield is enabled, the corresponding satellites will be not output.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gps",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Disable reporting of GPS satellites"
+                  },
+                  {
+                    "name": "sbas",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Disable reporting of SBAS satellites"
+                  },
+                  {
+                    "name": "galileo",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Disable reporting of Galileo satellites"
+                  },
+                  {
+                    "name": "qzss",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "Disable reporting of QZSS satellites"
+                  },
+                  {
+                    "name": "glonass",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "Disable reporting of GLONASS satellites"
+                  },
+                  {
+                    "name": "beidou",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": "Disable reporting of BeiDou satellites"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      },
+      "fingerprint": "ab8e865540dad8df"
+    }
+  ]
+}

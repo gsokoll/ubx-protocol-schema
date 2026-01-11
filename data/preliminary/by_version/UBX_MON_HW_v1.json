@@ -1,0 +1,525 @@
+{
+  "message_name": "UBX-MON-HW",
+  "protocol_version": 1,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "ubx_message": {
+      "name": "UBX-MON-HW",
+      "message_class": "MON",
+      "message_id": "0x09",
+      "message_type": "periodic_polled",
+      "description": "Status of different aspect of the hardware, such as antenna, PIO/peripheral pins, noise level, automatic gain control (AGC). This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead.",
+      "payload_length": {
+        "fixed": 60
+      },
+      "payload_fields": [
+        {
+          "byte_offset": 0,
+          "data_type": "U1",
+          "name": "version",
+          "description": "Message version (0x01 for this version)",
+          "fixed_value": 1
+        },
+        {
+          "byte_offset": 1,
+          "data_type": "X1",
+          "name": "supported",
+          "description": "A bit mask showing the major GNSS that can be supported by this receiver",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "GPSSup",
+              "description": "GPS is supported"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "GlonassSup",
+              "description": "GLONASS is supported"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "BeidouSup",
+              "description": "BeiDou is supported"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "GalileoSup",
+              "description": "Galileo is supported"
+            }
+          ]
+        },
+        {
+          "byte_offset": 2,
+          "data_type": "X1",
+          "name": "defaultGnss",
+          "description": "A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "GPSDef",
+              "description": "GPS is default-enabled"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "GlonassDef",
+              "description": "GLONASS is default-enabled"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "BeidouDef",
+              "description": "BeiDou is default-enabled"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "GalileoDef",
+              "description": "Galileo is default-enabled"
+            }
+          ]
+        },
+        {
+          "byte_offset": 3,
+          "data_type": "X1",
+          "name": "enabled",
+          "description": "A bit mask showing the current major GNSS selection enabled for this receiver",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "GPSEna",
+              "description": "GPS is enabled"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "GlonassEna",
+              "description": "GLONASS is enabled"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 1,
+              "name": "BeidouEna",
+              "description": "BeiDou is enabled"
+            },
+            {
+              "bit_offset": 3,
+              "bit_length": 1,
+              "name": "GalileoEna",
+              "description": "Galileo is enabled"
+            }
+          ]
+        },
+        {
+          "byte_offset": 4,
+          "data_type": "U1",
+          "name": "simultaneous",
+          "description": "Maximum number of concurrent major GNSS that can be supported by this receiver"
+        },
+        {
+          "byte_offset": 5,
+          "data_type": {
+            "array_of": "U1",
+            "count": 3
+          },
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 8,
+          "data_type": "X4",
+          "name": "pinSel",
+          "description": "Mask of pins set as peripheral/PIO"
+        },
+        {
+          "byte_offset": 12,
+          "data_type": "X4",
+          "name": "pinVal",
+          "description": "Mask of pins value low/high"
+        },
+        {
+          "byte_offset": 16,
+          "data_type": "U2",
+          "name": "noisePerMS",
+          "description": "Noise level as measured by the GPS core"
+        },
+        {
+          "byte_offset": 18,
+          "data_type": "U2",
+          "name": "agcCnt",
+          "description": "AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+        },
+        {
+          "byte_offset": 20,
+          "data_type": "U1",
+          "name": "aStatus",
+          "description": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+        },
+        {
+          "byte_offset": 21,
+          "data_type": "U1",
+          "name": "aPower",
+          "description": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+        },
+        {
+          "byte_offset": 22,
+          "data_type": "X1",
+          "name": "flags",
+          "description": "Flags",
+          "bit_fields": [
+            {
+              "bit_offset": 0,
+              "bit_length": 1,
+              "name": "rtcCalib",
+              "description": "RTC is calibrated"
+            },
+            {
+              "bit_offset": 1,
+              "bit_length": 1,
+              "name": "safeBoot",
+              "description": "Safeboot mode (0 = inactive, 1 = active)"
+            },
+            {
+              "bit_offset": 2,
+              "bit_length": 2,
+              "name": "jammingState",
+              "description": "Output from jamming/interference monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+            },
+            {
+              "bit_offset": 4,
+              "bit_length": 1,
+              "name": "xtalAbsent",
+              "description": "RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)"
+            }
+          ]
+        },
+        {
+          "byte_offset": 23,
+          "data_type": "U1",
+          "name": "reserved0",
+          "reserved": true
+        },
+        {
+          "byte_offset": 24,
+          "data_type": "X4",
+          "name": "usedMask",
+          "description": "Mask of pins that are used by the virtual pin manager"
+        },
+        {
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 17
+          },
+          "name": "VP",
+          "description": "Array of pin mappings for each of the 17 physical pins"
+        },
+        {
+          "byte_offset": 45,
+          "data_type": "U1",
+          "name": "jamInd",
+          "description": "CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        },
+        {
+          "byte_offset": 46,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "name": "reserved1",
+          "reserved": true
+        },
+        {
+          "byte_offset": 48,
+          "data_type": "X4",
+          "name": "pinIrq",
+          "description": "Mask of pins value using the PIO Irq"
+        },
+        {
+          "byte_offset": 52,
+          "data_type": "X4",
+          "name": "pullH",
+          "description": "Mask of pins value using the PIO pull high resistor"
+        },
+        {
+          "byte_offset": 56,
+          "data_type": "X4",
+          "name": "pullL",
+          "description": "Mask of pins value using the PIO pull low resistor"
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "a9405763bbc590f6",
+  "agreeing_sources": [
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message": {
+          "name": "UBX-MON-HW",
+          "message_class": "MON",
+          "message_id": "0x09",
+          "message_type": "periodic_polled",
+          "description": "Status of different aspect of the hardware, such as antenna, PIO/peripheral pins, noise level, automatic gain control (AGC). This message is deprecated in this protocol version. Use UBX-MON-HW3 and UBX-MON-RF instead.",
+          "payload_length": {
+            "fixed": 60
+          },
+          "payload_fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x01 for this version)",
+              "fixed_value": 1
+            },
+            {
+              "byte_offset": 1,
+              "data_type": "X1",
+              "name": "supported",
+              "description": "A bit mask showing the major GNSS that can be supported by this receiver",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "name": "GPSSup",
+                  "description": "GPS is supported"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "name": "GlonassSup",
+                  "description": "GLONASS is supported"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 1,
+                  "name": "BeidouSup",
+                  "description": "BeiDou is supported"
+                },
+                {
+                  "bit_offset": 3,
+                  "bit_length": 1,
+                  "name": "GalileoSup",
+                  "description": "Galileo is supported"
+                }
+              ]
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "X1",
+              "name": "defaultGnss",
+              "description": "A bit mask showing the default major GNSS selection. If the default major GNSS selection is currently configured in the efuse for this receiver, it takes precedence over the default major GNSS selection configured in the executing firmware of this receiver.",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "name": "GPSDef",
+                  "description": "GPS is default-enabled"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "name": "GlonassDef",
+                  "description": "GLONASS is default-enabled"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 1,
+                  "name": "BeidouDef",
+                  "description": "BeiDou is default-enabled"
+                },
+                {
+                  "bit_offset": 3,
+                  "bit_length": 1,
+                  "name": "GalileoDef",
+                  "description": "Galileo is default-enabled"
+                }
+              ]
+            },
+            {
+              "byte_offset": 3,
+              "data_type": "X1",
+              "name": "enabled",
+              "description": "A bit mask showing the current major GNSS selection enabled for this receiver",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "name": "GPSEna",
+                  "description": "GPS is enabled"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "name": "GlonassEna",
+                  "description": "GLONASS is enabled"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 1,
+                  "name": "BeidouEna",
+                  "description": "BeiDou is enabled"
+                },
+                {
+                  "bit_offset": 3,
+                  "bit_length": 1,
+                  "name": "GalileoEna",
+                  "description": "Galileo is enabled"
+                }
+              ]
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "simultaneous",
+              "description": "Maximum number of concurrent major GNSS that can be supported by this receiver"
+            },
+            {
+              "byte_offset": 5,
+              "data_type": {
+                "array_of": "U1",
+                "count": 3
+              },
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "X4",
+              "name": "pinSel",
+              "description": "Mask of pins set as peripheral/PIO"
+            },
+            {
+              "byte_offset": 12,
+              "data_type": "X4",
+              "name": "pinVal",
+              "description": "Mask of pins value low/high"
+            },
+            {
+              "byte_offset": 16,
+              "data_type": "U2",
+              "name": "noisePerMS",
+              "description": "Noise level as measured by the GPS core"
+            },
+            {
+              "byte_offset": 18,
+              "data_type": "U2",
+              "name": "agcCnt",
+              "description": "AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+            },
+            {
+              "byte_offset": 20,
+              "data_type": "U1",
+              "name": "aStatus",
+              "description": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+            },
+            {
+              "byte_offset": 21,
+              "data_type": "U1",
+              "name": "aPower",
+              "description": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+            },
+            {
+              "byte_offset": 22,
+              "data_type": "X1",
+              "name": "flags",
+              "description": "Flags",
+              "bit_fields": [
+                {
+                  "bit_offset": 0,
+                  "bit_length": 1,
+                  "name": "rtcCalib",
+                  "description": "RTC is calibrated"
+                },
+                {
+                  "bit_offset": 1,
+                  "bit_length": 1,
+                  "name": "safeBoot",
+                  "description": "Safeboot mode (0 = inactive, 1 = active)"
+                },
+                {
+                  "bit_offset": 2,
+                  "bit_length": 2,
+                  "name": "jammingState",
+                  "description": "Output from jamming/interference monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+                },
+                {
+                  "bit_offset": 4,
+                  "bit_length": 1,
+                  "name": "xtalAbsent",
+                  "description": "RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)"
+                }
+              ]
+            },
+            {
+              "byte_offset": 23,
+              "data_type": "U1",
+              "name": "reserved0",
+              "reserved": true
+            },
+            {
+              "byte_offset": 24,
+              "data_type": "X4",
+              "name": "usedMask",
+              "description": "Mask of pins that are used by the virtual pin manager"
+            },
+            {
+              "byte_offset": 28,
+              "data_type": {
+                "array_of": "U1",
+                "count": 17
+              },
+              "name": "VP",
+              "description": "Array of pin mappings for each of the 17 physical pins"
+            },
+            {
+              "byte_offset": 45,
+              "data_type": "U1",
+              "name": "jamInd",
+              "description": "CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+            },
+            {
+              "byte_offset": 46,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "name": "reserved1",
+              "reserved": true
+            },
+            {
+              "byte_offset": 48,
+              "data_type": "X4",
+              "name": "pinIrq",
+              "description": "Mask of pins value using the PIO Irq"
+            },
+            {
+              "byte_offset": 52,
+              "data_type": "X4",
+              "name": "pullH",
+              "description": "Mask of pins value using the PIO pull high resistor"
+            },
+            {
+              "byte_offset": 56,
+              "data_type": "X4",
+              "name": "pullL",
+              "description": "Mask of pins value using the PIO pull low resistor"
+            }
+          ]
+        }
+      },
+      "fingerprint": "a9405763bbc590f6"
+    }
+  ]
+}

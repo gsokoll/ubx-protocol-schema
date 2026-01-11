@@ -1,0 +1,72 @@
+{
+  "name": "UBX-CFG-VALDEL",
+  "class_id": "0x06",
+  "message_id": "0x8c",
+  "message_type": "Set",
+  "description": "Delete configuration item values (with transaction)",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + N*4",
+        "N_description": "N = number of configuration key IDs"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "layers",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "The layers where the configuration should be deleted from",
+        "bit_fields": [
+          {
+            "name": "bbr",
+            "position": 0,
+            "length": 1,
+            "description": "Delete configuration from the BBR layer"
+          },
+          {
+            "name": "flash",
+            "position": 1,
+            "length": 1,
+            "description": "Delete configuration from the Flash layer"
+          }
+        ]
+      },
+      {
+        "name": "transaction",
+        "byte_offset": 2,
+        "data_type": "U1",
+        "description": "Transaction action to be applied:",
+        "bit_fields": [
+          {
+            "name": "action",
+            "position": 0,
+            "length": 2,
+            "description": "Transaction action to be applied:\n\u2022 0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n\u2022 1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n\u2022 2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n\u2022 3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+          }
+        ]
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 3,
+        "data_type": "U1",
+        "description": "Reserved"
+      },
+      {
+        "name": "keys",
+        "byte_offset": 4,
+        "data_type": "U4",
+        "description": "Configuration key IDs of the configuration items to be deleted",
+        "is_repeated": true,
+        "repeat_count_formula": "N"
+      }
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "name": "UBX-NAV2-SAT",
+  "class_id": "0x29",
+  "message_id": "0x35",
+  "message_type": "periodic_polled",
+  "description": "This message displays information about SVs that are either known to be visible or currently tracked by the receiver. All signal related information corresponds to the subset of signals specified in Signal Identifiers. For resolving potential ambiguities on signal related information, refer to UBX-NAV-SIG.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numSvs * 12"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTow",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "numSvs",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "Number of satellites"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 6,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "gnssId",
+        "byte_offset": 8,
+        "data_type": "U1",
+        "description": "GNSS identifier (see Satellite Numbering) for assignment. This field and subsequent fields (svId through flags) repeat numSvs times, starting at this offset for the first satellite."
+      },
+      {
+        "name": "svId",
+        "byte_offset": 9,
+        "data_type": "U1",
+        "description": "Satellite identifier (see Satellite Numbering) for assignment"
+      },
+      {
+        "name": "cno",
+        "byte_offset": 10,
+        "data_type": "U1",
+        "unit": "dBHz",
+        "description": "Carrier to noise ratio (signal strength)"
+      },
+      {
+        "name": "elev",
+        "byte_offset": 11,
+        "data_type": "I1",
+        "unit": "deg",
+        "description": "Elevation (range: +/-90), unknown if out of range"
+      },
+      {
+        "name": "azim",
+        "byte_offset": 12,
+        "data_type": "I2",
+        "unit": "deg",
+        "description": "Azimuth (range 0-360), unknown if elevation is out of range"
+      },
+      {
+        "name": "prRes",
+        "byte_offset": 14,
+        "data_type": "I2",
+        "scale": {
+          "multiplier": 0.1,
+          "raw": true
+        },
+        "unit": "m",
+        "description": "Pseudorange residual"
+      },
+      {
+        "name": "flags",
+        "byte_offset": 16,
+        "data_type": "X4",
+        "description": "Bitmask:\nSignal quality indicator (bits 2..0): 0=no signal, 1=searching, 2=acquired, 3=detected but unusable, 4=code locked and time synchronized. svUsed (bit 3). Health (bits 5..4): 0=unknown, 1=healthy, 2=unhealthy. diffCorr (bit 6). smoothed (bit 7). orbitSource (bits 10..8). ephAvail (bit 11). almAvail (bit 12). anoAvail (bit 13). aopAvail (bit 14). sbasCorrUsed (bit 16). rtcmCorrUsed (bit 17). slasCorrUsed (bit 18). spartnCorrUsed (bit 19). prCorrUsed (bit 20). crCorrUsed (bit 21). doCorrUsed (bit 22). clasCorrUsed (bit 23). 1ppCorrUsed (bit 24). hasCorrUsed (bit 25)."
+      }
+    ]
+  }
+}

@@ -1,5 +1,15 @@
 # UBX Message JSON Schema - Design Notes
 
+## Version 1.5
+
+**Changes from v1.4:**
+- Added `variant_aliases` property for backward-compatible lookup of suffix-named variants
+- Consolidated multi-variant messages (e.g., UBX-MGA-GPS family) into single messages with `variants` array
+- Added `scripts/consolidate_variants.py` for converting suffix-named messages to proper variants
+- Added `since_protocol_version` (integer, protocol version × 100) to fields and bitfield bits
+- Added `prior_name` to track what a field/bit was called before it was defined (e.g., "reserved4")
+- Added `opaque` property for X-type fields that intentionally lack bitfield definitions (hardware-specific or undocumented)
+
 ## Version 1.4
 
 **Changes from v1.3:**
@@ -52,9 +62,44 @@ Some UBX messages have multiple payload formats sharing the same Class/Message I
 | `UBX-TIM-VCOCAL` | STOP (type=0), SET (type=2), GET (type=3) | `type` field at byte 0 |
 | `UBX-CFG-PRT` | UART, USB, SPI, I2C | `portId` field |
 
-> **Extraction Note**: Type-discriminated messages must be listed in `MULTI_VARIANT_MESSAGES` in `scripts/extract_messages_v2.py` to ensure all variants are extracted separately.
+> **Extraction Note**: Type-discriminated messages must be listed in `MULTI_VARIANT_MESSAGES` in `scripts/bulk_extraction/extract_messages_v2.py` to ensure all variants are extracted separately.
 
-**Solution**: The `variants` array with `discriminator` objects:
+**Solution**: The `variants` array with `discriminator` objects, plus `variant_aliases` for backward compatibility:
+
+```json
+{
+  "name": "UBX-MGA-GPS",
+  "class_id": "0x13",
+  "message_id": "0x00",
+  "variant_aliases": ["UBX-MGA-GPS-EPH", "UBX-MGA-GPS-ALM", "UBX-MGA-GPS-HEALTH", "UBX-MGA-GPS-UTC", "UBX-MGA-GPS-IONO"],
+  "variants": [
+    {
+      "name": "EPH",
+      "discriminator": {"field": "type", "byte_offset": 0, "value": 1},
+      "payload": { "length": {"fixed": 68}, "fields": [...] }
+    },
+    {
+      "name": "ALM",
+      "discriminator": {"field": "type", "byte_offset": 0, "value": 2},
+      "payload": { "length": {"fixed": 36}, "fields": [...] }
+    }
+  ]
+}
+```
+
+The `variant_aliases` property enables tools to look up messages by their legacy suffix names (e.g., `get_message_by_name("UBX-MGA-GPS-EPH")` returns the parent `UBX-MGA-GPS` message). Use `get_variant_by_alias()` to get both the parent message and the specific variant.
+
+**Consolidation Script**: Use `scripts/consolidate_variants.py` to convert suffix-named messages to the proper variants format:
+
+```bash
+# Preview changes
+uv run python scripts/consolidate_variants.py --family MGA-GPS --dry-run
+
+# Apply changes
+uv run python scripts/consolidate_variants.py --family MGA-GPS
+```
+
+**Alternative: Length-discriminated variants**:
 
 ```json
 {
@@ -187,15 +232,13 @@ UBX X-type fields contain packed bits. The M8 documentation shows these as graph
   "name": "flags",
   "byte_offset": 0,
   "data_type": "X2",
-  "bitfield": {
-    "bits": [
-      { "name": "svcs", "bit_start": 0, "bit_end": 0, "data_type": "U", "description": "Enable antenna supply voltage control" },
-      { "name": "scd", "bit_start": 1, "bit_end": 1, "data_type": "U", "description": "Enable short circuit detection" },
-      { "name": "ocd", "bit_start": 2, "bit_end": 2, "data_type": "U", "description": "Enable open circuit detection" },
-      { "name": "pdwn_on_scd", "bit_start": 3, "bit_end": 3, "data_type": "U", "description": "Power down on short circuit" },
-      { "name": "recovery", "bit_start": 4, "bit_end": 4, "data_type": "U", "description": "Enable automatic recovery" }
-    ]
-  }
+  "bitfield": [
+    { "name": "svcs", "bit_offset": 0, "bit_width": 1, "description": "Enable antenna supply voltage control" },
+    { "name": "scd", "bit_offset": 1, "bit_width": 1, "description": "Enable short circuit detection" },
+    { "name": "ocd", "bit_offset": 2, "bit_width": 1, "description": "Enable open circuit detection" },
+    { "name": "pdwn_on_scd", "bit_offset": 3, "bit_width": 1, "description": "Power down on short circuit" },
+    { "name": "recovery", "bit_offset": 4, "bit_width": 1, "description": "Enable automatic recovery" }
+  ]
 }
 ```
 
@@ -204,9 +247,8 @@ UBX X-type fields contain packed bits. The M8 documentation shows these as graph
 ```json
 {
   "name": "pin_switch",
-  "bit_start": 0,
-  "bit_end": 4,
-  "data_type": "U",
+  "bit_offset": 0,
+  "bit_width": 5,
   "description": "PIO-pin used for switching antenna supply"
 }
 ```
@@ -470,6 +512,83 @@ M8 messages specify protocol version support and some are deprecated:
 #[deprecated(since = "protocol-15", note = "Use UBX-MGA messages instead")]
 pub struct UbxAidAlmPoll;
 ```
+
+### 8. Protocol Version Changes (Silent Changes)
+
+Some fields and bitfield bits were reserved in earlier protocol versions and became defined later. These changes happen **without** the message's internal version field being bumped (if it even has one).
+
+**Problem**: UBX-CFG-NAV5 byte 30 was reserved in protocol versions < 16.00, then became `utcStandard` starting in protocol 16.00. The message has no internal version field, so this is a "silent change."
+
+**Solution**: Use `since_protocol_version` (integer, protocol version × 100) to track when a field/bit was introduced:
+
+```json
+{
+  "name": "utcStandard",
+  "byte_offset": 30,
+  "data_type": "U1",
+  "description": "UTC standard to be used",
+  "since_protocol_version": 1600,
+  "prior_name": "reserved4"
+}
+```
+
+**For bitfield bits**:
+
+```json
+{
+  "name": "flags",
+  "byte_offset": 8,
+  "data_type": "X4",
+  "bitfield": {
+    "bits": [
+      {
+        "name": "newFeatureFlag",
+        "bit_start": 7,
+        "bit_end": 7,
+        "data_type": "U",
+        "description": "Enable new feature (protocol 27.50+)",
+        "since_protocol_version": 2750,
+        "prior_name": "reserved"
+      }
+    ]
+  }
+}
+```
+
+**Properties**:
+- `since_protocol_version`: Integer protocol version (×100) when the field/bit was introduced
+- `prior_name`: What the field/bit was called before (optional, for documentation)
+
+**Code generation**: Before protocol version threshold, treat the field/bit as reserved (ignore on read, zero on write).
+
+### 9. Opaque Fields (No Bitfield Definitions)
+
+Some X-type fields intentionally lack bitfield definitions because:
+- **Hardware-specific**: Bit meanings depend on device variant (e.g., GPIO pin masks)
+- **Undocumented**: u-blox PDFs don't document the bit structure
+- **Deprecated**: Legacy messages where bitfield extraction isn't worthwhile
+
+**Solution**: Mark these fields with `opaque: true`:
+
+```json
+{
+  "name": "pinBank",
+  "byte_offset": 4,
+  "data_type": "X4",
+  "opaque": true,
+  "description": "Mask of pins set as bank A/B (hardware-specific, no protocol-defined bit structure)"
+}
+```
+
+**Fields marked as opaque:**
+
+| Message | Field | Reason |
+|---------|-------|--------|
+| UBX-AID-HUI | health | Deprecated legacy message (M8 era) |
+| UBX-LOG-BATCH | flags2 | Explicitly undocumented in PDFs |
+| UBX-MON-HW | pinBank, pinDir, pinVal, usedMask | Hardware-specific GPIO masks |
+
+**Code generation**: Treat opaque fields as raw integers (no bit unpacking). The VP array in UBX-MON-HW provides per-pin mappings instead.
 
 ---
 

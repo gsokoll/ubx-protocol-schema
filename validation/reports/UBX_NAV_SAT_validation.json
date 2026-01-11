@@ -1,0 +1,2183 @@
+{
+  "message": "UBX-NAV-SAT",
+  "timestamp": "2026-01-09T04:36:56.226289+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8 bytes of fixed payload fields as described in the PDF manual.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved1",
+              "type": "U2",
+              "offset": 6,
+              "description": "U1[2] in PDF implies 2 bytes"
+            }
+          ]
+        },
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed payload length of 0, but the PDF indicates a variable length payload of '8 + 12*numSvs' bytes, accounting for both the fixed header and the repeated group.",
+          "canonical_value": {
+            "fixed": 0
+          },
+          "pdf_value": {
+            "variable": {
+              "formula": "8 + 12 * numSvs"
+            }
+          }
+        }
+      ],
+      "notes": "The structure of the 'repeated_groups' section (fields within each 'satellites' entry, their types, offsets, units, and scale factors) is correct and consistent with the PDF. The main issue is the absence of the fixed-size header fields and the incorrect overall payload length definition.",
+      "pdf_pages": [
+        396,
+        397
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:26:01.465299+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8-byte fixed part of the payload, which includes iTow, version, numSvs, and reserved1.",
+          "canonical_value": "[]",
+          "pdf_value": "[{name: 'iTow', type: 'U4', offset: 0}, {name: 'version', type: 'U1', offset: 4}, {name: 'numSvs', type: 'U1', offset: 5}, {name: 'reserved1', type: 'U1[2]', offset: 6}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0, but the PDF indicates an 8-byte fixed part before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.length.variable.formula",
+          "issue": "The canonical definition lacks a variable length formula for the payload, despite having a repeated group. The PDF specifies '8 + 12*numSvs' bytes, implying a fixed part + a variable part.",
+          "canonical_value": "missing",
+          "pdf_value": "12 * numSvs (after initial 8 fixed bytes)"
+        },
+        {
+          "field": "repeated_groups[0].count_field",
+          "issue": "The 'numSvs' field used as the count for the repeated group is not defined in the canonical's payload fields, making the repeated group definition unusable.",
+          "canonical_value": "numSvs",
+          "pdf_value": "numSvs (defined at offset 5 in the fixed payload)"
+        }
+      ],
+      "notes": "The individual fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes, flags) are correctly defined in the canonical, matching the PDF's types, offsets (relative to the group start), units, and scale factors. The discrepancy lies in the complete omission of the fixed 8-byte header of the payload and the associated length definition.",
+      "pdf_pages": [
+        396,
+        397
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:26:27.995389+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Missing fixed header fields. The canonical definition's 'fields' array for the fixed part of the payload is empty, but the PDF specifies four fixed fields prior to the repeated group.",
+          "canonical_value": "[]",
+          "pdf_value": [
+            "{ name: 'iTOW', type: 'U4', offset: 0, unit: 'ms' }",
+            "{ name: 'version', type: 'U1', offset: 4 }",
+            "{ name: 'numSvs', type: 'U1', offset: 5 }",
+            "{ name: 'reserved0', type: 'U1[2]', offset: 6, reserved: true }"
+          ]
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "Incorrect fixed payload length. The PDF indicates a fixed header of 8 bytes before the variable length portion.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.repeated_groups[0].fields[6].flags.bitfield_definitions",
+          "issue": "Missing bitfield definitions for the 'flags' field. The canonical defines 'flags' as type X4, but does not include its detailed bit definitions as provided in the manual.",
+          "canonical_value": "Not present",
+          "pdf_value": [
+            "{ name: 'qualityInd', bits: [0, 2], type: 'U:3', description: 'Signal quality indicator' }",
+            "{ name: 'svUsed', bit: 3, type: 'U:1', description: 'Signal in subset used for navigation' }",
+            "{ name: 'health', bits: [4, 5], type: 'U:2', description: 'Signal health flag' }",
+            "{ name: 'diffCorr', bit: 6, type: 'U:1', description: 'Differential correction data available' }",
+            "{ name: 'smoothed', bit: 7, type: 'U:1', description: 'Carrier smoothed pseudorange used' }",
+            "{ name: 'orbitSource', bits: [8, 10], type: 'U:3', description: 'Orbit source' }",
+            "{ name: 'ephAvail', bit: 11, type: 'U:1', description: 'Ephemeris available' }",
+            "{ name: 'almAvail', bit: 12, type: 'U:1', description: 'Almanac available' }",
+            "{ name: 'anoAvail', bit: 13, type: 'U:1', description: 'AssistNow Offline data available' }",
+            "{ name: 'aopAvail', bit: 14, type: 'U:1', description: 'AssistNow Autonomous data available' }",
+            "{ name: 'sbasCorrUsed', bit: 16, type: 'U:1', description: 'SBAS corrections used' }"
+          ]
+        }
+      ],
+      "notes": "The fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes, flags) match the PDF's offsets, types, units, and scales for the group's internal structure. However, the overall message structure is incomplete in the canonical definition due to the missing fixed header and bitfield details for 'flags'.",
+      "pdf_pages": [
+        105,
+        106
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:26:51.052300+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition incorrectly states a fixed payload length of 0. The PDF clearly shows a fixed payload header of 8 bytes before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the fixed header fields: iTOW, version, numSvs, and reserved0. These 8 bytes form the initial part of the payload, and 'numSvs' is critical as the count for the repeated group.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "The fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes, flags) and their offsets, types, scales, and units are correctly defined in the canonical relative to the start of each satellite block. However, the overall payload structure is incorrect due to the omission of the fixed 8-byte header (iTOW, version, numSvs, reserved0) that precedes the repeated group, and the corresponding fixed payload length.",
+      "pdf_pages": [
+        100,
+        101
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:27:08.600187+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0 bytes, but the PDF indicates a fixed length of 8 bytes before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition's main payload fields array is empty. The PDF specifies four fixed fields (8 bytes total) that precede the repeated group.",
+          "canonical_value": "[]",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6
+            }
+          ]
+        },
+        {
+          "field": "payload.repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as an X4 type in canonical, but the detailed bitfield definitions (qualityInd, svUsed, health, diffCorr, smoothed) are missing.",
+          "canonical_value": "Missing bitfield definitions for X4 type.",
+          "pdf_value": {
+            "bits 2...0": "qualityInd",
+            "bit 3": "svUsed",
+            "bits 5...4": "health",
+            "bit 6": "diffCorr",
+            "bit 7": "smoothed"
+          }
+        }
+      ],
+      "notes": "The primary discrepancy is the absence of the initial 8 bytes of fixed payload (iTOW, version, numSvs, reserved0) in the canonical definition, which are clearly shown in the PDF before the 'Start of repeated group'. This impacts the overall payload structure and the location of the 'numSvs' field used as the count for the repeated group. All fields within the repeated group match their type, offset, and scale/unit definitions from the PDF.",
+      "pdf_pages": [
+        111,
+        112
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:27:24.939932+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Canonical definition is missing the fixed 8-byte header fields that precede the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6
+            }
+          ]
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The X4 (bitfield) type 'flags' is missing its detailed bitfield definitions which are present in the PDF.",
+          "canonical_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8
+          },
+          "pdf_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8,
+            "bit_definitions": [
+              {
+                "name": "qualityInd",
+                "bits": "2..0",
+                "description": "Signal quality indicator"
+              },
+              {
+                "name": "svUsed",
+                "bits": "3",
+                "description": "Signal currently being used for navigation"
+              },
+              {
+                "name": "health",
+                "bits": "5..4",
+                "description": "Signal health flag"
+              },
+              {
+                "name": "diffCorr",
+                "bits": "6",
+                "description": "Differential correction data is available for this SV"
+              },
+              {
+                "name": "smoothed",
+                "bits": "7",
+                "description": "Carrier smoothed pseudorange used"
+              },
+              {
+                "name": "orbitSource",
+                "bits": "10..8",
+                "description": "Orbit source"
+              },
+              {
+                "name": "ephAvail",
+                "bits": "11",
+                "description": "Ephemeris is available for this SV"
+              },
+              {
+                "name": "almAvail",
+                "bits": "12",
+                "description": "Almanac is available for this SV"
+              },
+              {
+                "name": "anoAvail",
+                "bits": "13",
+                "description": "AssistNow Offline data is available for this SV"
+              },
+              {
+                "name": "aopAvail",
+                "bits": "14",
+                "description": "AssistNow Autonomous data is available for this SV"
+              },
+              {
+                "name": "sbasCorrUsed",
+                "bits": "16",
+                "description": "SBAS corrections have been used"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The canonical definition incorrectly assumes the entire payload is a repeated group. The PDF clearly shows an 8-byte fixed header (iTOW, version, numSvs, reserved0) followed by a variable number of 12-byte satellite information blocks.",
+      "pdf_pages": [
+        105,
+        106
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:27:40.268714+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the fixed part of the payload fields defined in the PDF before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed payload length in the canonical definition is incorrect due to missing fields.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "repeated_groups.satellites.flags",
+          "issue": "The 'flags' field is correctly identified as X4, but the detailed bitfield definitions for its bits (e.g., qualityInd, svUsed, health, diffCorr, smoothed, orbitSource, ephAvail, almAvail, etc.) are not included in the provided canonical JSON snippet. While X4 type implies bitfields, the definitions themselves are missing.",
+          "canonical_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8 }",
+          "pdf_value": "Detailed bitfield definitions spanning bits 0-23 across 4 bytes."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the repeated group structure and its fields (gnssId, svId, cno, elev, azim, prRes, flags) including their types, offsets, scales, and units within the group. However, it completely omits the fixed-length header fields (iTOW, version, numSvs, reserved0) that precede the repeated group, leading to an incorrect fixed payload length of 0. The bitfield definitions for the 'flags' field are also absent from the provided JSON, which would be necessary for a complete definition.",
+      "pdf_pages": [
+        151,
+        152
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:27:57.324668+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields (fixed part)",
+          "issue": "The canonical definition is missing the initial fixed 8 bytes of the payload, which contain critical fields like iTOW, version, numSvs, and reserved0. The 'numSvs' field is especially important as it's used as the count for the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[{\"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0, \"unit\": \"ms\"}, {\"name\": \"version\", \"type\": \"U1\", \"offset\": 4}, {\"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5}, {\"name\": \"reserved0\", \"type\": {\"array_of\": \"U1\", \"count\": 2}, \"offset\": 6, \"reserved\": true}]"
+        },
+        {
+          "field": "payload.repeated_groups[0].fields[6].flags.bitfield_definition",
+          "issue": "The canonical definition for the 'flags' field (type X4) in the repeated group is missing its detailed bitfield definitions, which are provided extensively in the PDF.",
+          "canonical_value": "Not present (only type: X4)",
+          "pdf_value": {
+            "qualityInd": {
+              "bits": "2:0",
+              "type": "U3",
+              "description": "Signal quality indicator: 0=no signal, 1=searching signal, 2=signal acquired, 3=signal detected but unusable, 4=code locked and time synchronized, 5,6,7=code and carrier locked and time synchronized"
+            },
+            "svUsed": {
+              "bit": 3,
+              "type": "U1",
+              "description": "1 if Signal in the subset specified in Signal Identifiers is currently being used for navigation"
+            },
+            "health": {
+              "bits": "5:4",
+              "type": "U2",
+              "description": "Signal health flag: 0=unknown, 1=healthy, 2=unhealthy"
+            },
+            "diffCorr": {
+              "bit": 6,
+              "type": "U1",
+              "description": "1 if differential correction data is available for this SV"
+            },
+            "smoothed": {
+              "bit": 7,
+              "type": "U1",
+              "description": "1 if carrier smoothed pseudorange used"
+            },
+            "orbitSource": {
+              "bits": "10:8",
+              "type": "U3",
+              "description": "Orbit source: 0=no orbit information, 1=ephemeris, 2=almanac, 3=AssistNow Offline, 4=AssistNow Autonomous, 5,6,7=other orbit information"
+            },
+            "ephAvail": {
+              "bit": 11,
+              "type": "U1",
+              "description": "1 if ephemeris is available for this SV"
+            },
+            "almAvail": {
+              "bit": 12,
+              "type": "U1",
+              "description": "1 if almanac is available for this SV"
+            },
+            "anoAvail": {
+              "bit": 13,
+              "type": "U1",
+              "description": "1 if AssistNow Offline data is available for this SV"
+            },
+            "aopAvail": {
+              "bit": 14,
+              "type": "U1",
+              "description": "1 if AssistNow Autonomous data is available for this SV"
+            },
+            "sbasCorrUsed": {
+              "bit": 16,
+              "type": "U1",
+              "description": "1 if SBAS corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "rtcmCorrUsed": {
+              "bit": 17,
+              "type": "U1",
+              "description": "1 if RTCM corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "slasCorrUsed": {
+              "bit": 18,
+              "type": "U1",
+              "description": "1 if QZSS SLAS corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "spartnCorrUsed": {
+              "bit": 19,
+              "type": "U1",
+              "description": "1 if SPARTN corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "prCorrUsed": {
+              "bit": 20,
+              "type": "U1",
+              "description": "1 if Pseudorange corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "crCorrUsed": {
+              "bit": 21,
+              "type": "U1",
+              "description": "1 if Carrier range corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "doCorrUsed": {
+              "bit": 22,
+              "type": "U1",
+              "description": "1 if Range rate (Doppler) corrections have been used for a signal in the subset specified in Signal Identifiers"
+            },
+            "clasCorrUsed": {
+              "bit": 23,
+              "type": "U1",
+              "description": "1 if CLAS corrections have been used for a signal in the subset specified in Signal Identifiers"
+            }
+          }
+        }
+      ],
+      "notes": "The fixed fields (iTOW, version, numSvs, reserved0) at the beginning of the payload (first 8 bytes) are entirely absent from the canonical 'payload.fields' array. The 'numSvs' field is crucial for defining the count of the 'satellites' repeated group. Additionally, the 'flags' field, while correctly identified as an X4 type, lacks all its specific bitfield definitions which are clearly detailed in the manual over two pages.",
+      "pdf_pages": [
+        116,
+        117
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:28:25.295657+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "Fixed payload length is incorrect. Canonical shows 0 bytes, but the PDF indicates 8 bytes (iTOW, version, numSvs, reserved0).",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "Fixed payload fields are missing. The canonical definition omits iTOW, version, numSvs, and reserved0, which are present in the PDF before the repeated group.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1",
+              "array_count": 2,
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "The repeated group 'satellites' is correctly defined in the canonical structure, matching field names, types, offsets, units, and scales as per the PDF. The main issue is the complete omission of the fixed 8-byte payload preceding the repeated group.",
+      "pdf_pages": [
+        120,
+        121
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:28:42.653221+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8 bytes of the payload which precede the repeated group. These fields are iTOW, version, numSvs, and reserved0.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[{name: 'iTOW', type: 'U4', offset: 0, unit: 'ms'}, {name: 'version', type: 'U1', offset: 4}, {name: 'numSvs', type: 'U1', offset: 5}, {name: 'reserved0', type: 'U1[2]', offset: 6, reserved: true}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition specifies a fixed payload length of 0. However, the message has an initial fixed header of 8 bytes (iTOW, version, numSvs, reserved0) plus a variable part based on numSvs. Setting fixed to 0 is incorrect.",
+          "canonical_value": "0",
+          "pdf_value": "Variable: 8 + numSvs * 12 bytes"
+        },
+        {
+          "field": "payload.repeated_groups[0].fields.flags",
+          "issue": "The canonical defines 'flags' as type X4 but lacks the detailed bitfield definitions. The PDF provides specific bit definitions for qualityInd, svUsed, health, diffCorr, smoothed, and orbitSource.",
+          "canonical_value": "{type: 'X4', offset: 8}",
+          "pdf_value": "{type: 'X4', offset: 8, bit_definitions: {qualityInd: 'bits 2..0', svUsed: 'bit 3', health: 'bits 5..4', diffCorr: 'bit 6', smoothed: 'bit 7', orbitSource: 'bits 10..8'}}"
+        }
+      ],
+      "notes": "The fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes) match the PDF specification in terms of type, relative offset, unit, and scale. However, the overall message structure is incomplete in the canonical definition, missing the initial fixed header part of the payload, and the bitfield details for the 'flags' field.",
+      "pdf_pages": [
+        143,
+        144
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:29:08.817043+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial fixed fields of the payload.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition specifies a fixed payload length of 0, but the PDF indicates an 8-byte fixed header before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "repeated_groups.satellites.flags",
+          "issue": "The canonical definition for the 'flags' field (X4) is missing all its bitfield definitions, which are extensively described in the PDF.",
+          "canonical_value": "Type: X4, no bitfield definitions",
+          "pdf_value": "Type: X4, with bit definitions for qualityInd (bits 2:0), svUsed (bit 3), health (bits 5:4), diffCorr (bit 6), smoothed (bit 7), orbitSource (bits 10:8), ephAvail (bit 11), almAvail (bit 12), anoAvail (bit 13), aopAvail (bit 14), sbasCorrUsed (bit 16), rtcmCorrUsed (bit 17), slasCorrUsed (bit 18), spartnCorrUsed (bit 19), prCorrUsed (bit 20), crCorrUsed (bit 21), doCorrUsed (bit 22), clasCorrUsed (bit 23)."
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SAT is incomplete as it omits the fixed 8-byte header fields (iTOW, version, numSvs, reserved0) and the detailed bitfield definitions for the 'flags' field within the repeated group. The 'numSvs' field, which is used as the count_field for the repeated group, must be explicitly defined in the payload.fields array.",
+      "pdf_pages": [
+        116,
+        117
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:29:29.665656+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition specifies a fixed payload length of 0, but the PDF indicates a fixed part of 8 bytes before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": "8 (from '8 + numSvs 12')"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array for the fixed part of the payload. The PDF clearly defines four fields preceding the repeated group.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "The definition of the repeated group ('satellites') and its internal fields (gnssId, svId, cno, elev, azim, prRes, flags) correctly matches the PDF specification for UBX-NAV-SAT. The primary discrepancy is the omission of the initial 8-byte fixed payload and the incorrect 'payload.length.fixed' value.",
+      "pdf_pages": [
+        124,
+        125
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:29:47.328808+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fixed_fields",
+          "issue": "The canonical definition is missing the fixed fields that precede the repeated group. The PDF clearly shows 8 bytes of fixed fields (iTOW, version, numSvs, reserved0) before the 'satellites' repeated group starts. The canonical has an empty `payload.fields` array and `length.fixed` set to 0.",
+          "canonical_value": "payload.fields: [], payload.length.fixed: 0",
+          "pdf_value": "Fixed payload consists of:\n- offset 0: iTOW (U4)\n- offset 4: version (U1)\n- offset 5: numSvs (U1)\n- offset 6: reserved0 (U1[2])\nTotal fixed payload length: 8 bytes."
+        },
+        {
+          "field": "satellites.flags.bitfields",
+          "issue": "The 'flags' field within the 'satellites' repeated group is defined as an X4 type, but its required bitfield definitions are missing from the canonical definition. The PDF provides a detailed breakdown of all bits within this field.",
+          "canonical_value": "flags: {type: \"X4\"}",
+          "pdf_value": "flags (X4) contains bitfields:\n- bits 2...0 U:3 qualityInd\n- bit 3 U:1 svUsed\n- bits 5...4 U:2 health\n- bit 6 U:1 diffCorr\n- bit 7 U:1 smoothed\n- bits 10...8 U:3 orbitSource\n- bit 11 U:1 ephAvail\n- bit 12 U:1 almAvail\n- bit 13 U:1 anoAvail\n- bit 14 U:1 aopAvail\n- bit 16 U:1 sbasCorrUsed\n- bit 17 U:1 rtcmCorrUsed\n- bit 18 U:1 slasCorrUsed\n- bit 19 U:1 spartnCorrUsed"
+        }
+      ],
+      "notes": "The discrepancies found are structural and significant, indicating that the canonical definition for UBX-NAV-SAT (0x01 0x35) does not accurately reflect the message structure as described in the u-blox M10 SPG 5.10 Interface Description (UBX-21035062). The fixed part of the payload (iTOW, version, numSvs, reserved0) is entirely missing from the canonical, and the bitfield definitions for the 'flags' field are also absent.",
+      "pdf_pages": [
+        100,
+        101
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:30:11.132214+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8-byte fixed payload header fields (iTOW, version, numSvs, reserved0) which precede the repeated groups.",
+          "canonical_value": "[]",
+          "pdf_value": "[{\"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0, \"unit\": \"ms\"}, {\"name\": \"version\", \"type\": \"U1\", \"offset\": 4}, {\"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5}, {\"name\": \"reserved0\", \"type\": \"U1\", \"array_count\": 2, \"offset\": 6}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition indicates a fixed payload length of 0, but the PDF indicates a fixed header of 8 bytes before the variable part.",
+          "canonical_value": 0,
+          "pdf_value": "8 (plus numSvs * 12 for repeated groups)"
+        },
+        {
+          "field": "satellites.flags.bitfield_definitions",
+          "issue": "The canonical definition declares 'flags' as an X4 type but does not include the detailed bitfield definitions provided in the PDF.",
+          "canonical_value": "missing bitfield definitions",
+          "pdf_value": "Bits 2-0: qualityInd (U:3), Bit 3: svUsed (U:1), Bits 5-4: health (U:2), Bit 6: diffCorr (U:1), Bit 7: smoothed (U:1)."
+        }
+      ],
+      "notes": "The core structure for the repeated 'satellites' group (field names, types, offsets, scales, and units) matches the PDF. However, the initial 8-byte fixed part of the message payload and the bitfield definitions for 'flags' are entirely missing from the canonical definition. This represents a significant structural incompleteness in the canonical representation for UBX-NAV-SAT.",
+      "pdf_pages": [
+        109,
+        110
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:30:30.959193+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8 bytes of fixed fields in the payload. These fields ('iTOW', 'version', 'numSvs', 'reserved0') are clearly defined in the PDF before the repeated 'satellites' group begins.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            "{ \"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0 }",
+            "{ \"name\": \"version\", \"type\": \"U1\", \"offset\": 4 }",
+            "{ \"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5 }",
+            "{ \"name\": \"reserved0\", \"type\": \"U1\", \"count\": 2, \"offset\": 6 }"
+          ]
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length of the payload (before the repeated group) is incorrect. The PDF states '8 + numSvs 12', indicating 8 fixed bytes.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "repeated_groups[0].count_field",
+          "issue": "The 'numSvs' field is used as the count for the repeated group, but it is not defined as a field within the top-level 'payload.fields' array in the canonical definition. It should be present at offset 5 in the fixed part of the payload.",
+          "canonical_value": "\"numSvs\" (referred but undefined)",
+          "pdf_value": "numSvs (defined as U1 at offset 5 within fixed payload)"
+        }
+      ],
+      "notes": "The fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes, flags) match the PDF's relative offsets, types, scales, and units. The main issue is the complete omission of the initial 8 fixed bytes from the top-level payload definition and the corresponding incorrect fixed payload length.",
+      "pdf_pages": [
+        132,
+        133
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:30:53.110971+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Canonical is missing the fixed 8-byte header fields before the repeated group.",
+          "canonical_value": "[]",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "satellites.flags",
+          "issue": "Canonical 'flags' field (X4) is missing detailed bitfield definitions as described in the PDF.",
+          "canonical_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8
+          },
+          "pdf_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8,
+            "bit_definitions": [
+              {
+                "name": "qualityInd",
+                "bits": "2:0",
+                "type": "U:3"
+              },
+              {
+                "name": "svUsed",
+                "bits": "3",
+                "type": "U:1"
+              },
+              {
+                "name": "health",
+                "bits": "5:4",
+                "type": "U:2"
+              },
+              {
+                "name": "diffCorr",
+                "bits": "6",
+                "type": "U:1"
+              },
+              {
+                "name": "smoothed",
+                "bits": "7",
+                "type": "U:1"
+              },
+              {
+                "name": "orbitSource",
+                "bits": "10:8",
+                "type": "U:3"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SAT is significantly incomplete. It entirely omits the initial 8-byte fixed part of the payload, which includes critical fields like 'iTOW', 'version', and 'numSvs'. Additionally, while the 'flags' field within the repeated group is correctly identified as an X4 type, its detailed bitfield definitions, which are clearly laid out in the PDF, are missing from the canonical definition. The structure and field definitions within the 'satellites' repeated group otherwise match the PDF's relative offsets, types, scales, and units.",
+      "pdf_pages": [
+        107,
+        108
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T04:31:10.353293+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Missing initial fixed payload fields.",
+          "canonical_value": "[] (empty)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "repeated_groups[0].fields.offset",
+          "issue": "Offsets for fields within the repeated group are correct relative to the group start, but the canonical definition implies the repeated group starts at offset 0 of the payload, whereas the PDF indicates it starts at byte 8 of the payload after the fixed fields.",
+          "canonical_value": "The first field 'gnssId' is at offset 0 within the repeated group.",
+          "pdf_value": "The first field 'gnssId' is at absolute offset 8 within the message, or offset 0 relative to the start of the repeated group which itself starts after 8 bytes of fixed payload."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the UBX-NAV-SAT message, its class and message IDs. It also correctly defines the structure of the repeated group including field names, types, offsets (relative to the group's start), units, and scale factors. The 'flags' field is correctly identified as an X4 (4-byte bitfield), and the PDF details align with this. \n\nHowever, the canonical definition *fails to include the initial 8 bytes of the payload* which consist of 'iTOW', 'version', 'numSvs', and 'reserved0'. These fields precede the variable-length repeated group as per the PDF. This omission makes the canonical definition incomplete. The 'numSvs' field, which dictates the number of repetitions, is defined in the fixed part of the payload, making its absence in the canonical's 'payload.fields' particularly critical.",
+      "pdf_pages": [
+        124,
+        125
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:31:28.200274+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8-byte fixed part of the payload. It should include iTOW (U4, offset 0), version (U1, offset 4), numSvs (U1, offset 5), and reserved0 (U1[2], offset 6) as regular fields before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[ { \"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0 }, { \"name\": \"version\", \"type\": \"U1\", \"offset\": 4 }, { \"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5 }, { \"name\": \"reserved0\", \"type\": \"U1[2]\", \"offset\": 6, \"reserved\": true } ]"
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is correctly identified as type X4, but its bitfield definitions (qualityInd, svUsed, health, diffCorr, smoothed, orbitSource, ephAvail, almAvail, anoAvail, aopAvail, sbasCorrUsed, rtcmCorrUsed, slasCorrUsed, spartnCorrUsed, prCorrUsed, crCorrUsed, doCorrUsed, clasCorrUsed) are missing in the canonical definition.",
+          "canonical_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8 }",
+          "pdf_value": "X4 type with detailed bitfield definitions for bits 0-23 as shown in the manual (e.g., qualityInd, svUsed, health, etc.)"
+        }
+      ],
+      "notes": "The overall structure with a fixed header followed by a variable-length repeated group is correctly inferred by the canonical, but the explicit definition of the fixed header fields and the detailed bitfield definitions for 'flags' are absent.",
+      "pdf_pages": [
+        127,
+        128
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:31:48.033081+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Missing the initial fixed-size payload fields before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[ { \"name\": \"iTow\", \"type\": \"U4\", \"offset\": 0 }, { \"name\": \"version\", \"type\": \"U1\", \"offset\": 4 }, { \"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5 }, { \"name\": \"reserved0\", \"type\": \"U1\", \"offset\": 6, \"array_of\": \"U1\", \"count\": 2 } ]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed payload length is 8 bytes, not 0.",
+          "canonical_value": "0",
+          "pdf_value": "8"
+        },
+        {
+          "field": "repeated_groups[0].fields.flags",
+          "issue": "The X4 'flags' field is missing its detailed bitfield definitions as described in the PDF manual (e.g., qualityInd, svUsed, health, diffCorr, smoothed, orbitSource, ephAvail, etc.).",
+          "canonical_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8 }",
+          "pdf_value": "X4 with defined bits: qualityInd (bits 2..0), svUsed (bit 3), health (bits 5..4), diffCorr (bit 6), smoothed (bit 7), orbitSource (bits 10..8), ephAvail (bit 11), almAvail (bit 12), anoAvail (bit 13), aopAvail (bit 14), sbasCorrUsed (bit 16), rtcmCorrUsed (bit 17), slasCorrUsed (bit 18), spartnCorrUsed (bit 19), prCorrUsed (bit 20), crCorrUsed (bit 21), doCorrUsed (bit 22), clasCorrUsed (bit 23), 1ppCorrUsed (bit 24), hasCorrUsed (bit 25)."
+        }
+      ],
+      "notes": "The overall structure of the repeated group (offsets, types, units, and scale for 'satellites') is otherwise consistent with the PDF. The primary issues are the complete omission of the fixed 8-byte payload preceding the repeated group and the lack of bit-level definitions for the 'flags' field.",
+      "pdf_pages": [
+        121,
+        122
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:32:05.938174+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length of the payload (before the repeated group) is incorrect.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the fixed part of the payload fields (iTOW, version, numSvs, reserved0) at the top level. All fields are incorrectly placed inside the 'repeated_groups' structure.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "payload.repeated_groups[0].fields",
+          "issue": "The canonical definition of the repeated group fields incorrectly includes 'gnssId', 'svId', 'cno', 'elev', 'azim', 'prRes', and 'flags' starting from offset 0 within the repeated group. These fields are defined correctly *relative to the start of the repeated group*, but their overall placement implies they are part of the *fixed* payload, not *repeated* payload, because the canonical `payload.fields` is empty. If the fixed part was present, these relative offsets would be correct.",
+          "canonical_value": "All fields are listed here with relative offsets.",
+          "pdf_value": "Fields 'gnssId' through 'flags' are correctly defined as part of the repeated group, starting at offset 0 relative to the group's start."
+        },
+        {
+          "field": "payload.repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as an X4 type, but the canonical definition is missing the detailed 'bit_fields' definitions as explicitly described in the PDF.",
+          "canonical_value": "type: X4",
+          "pdf_value": {
+            "type": "X4",
+            "bit_fields": [
+              {
+                "name": "qualityInd",
+                "bits": 0,
+                "size": 3,
+                "description": "Signal quality indicator"
+              },
+              {
+                "name": "svUsed",
+                "bits": 3,
+                "size": 1,
+                "description": "Signal currently used for navigation"
+              },
+              {
+                "name": "health",
+                "bits": 4,
+                "size": 2,
+                "description": "Signal health flag"
+              },
+              {
+                "name": "diffCorr",
+                "bits": 6,
+                "size": 1,
+                "description": "Differential correction data available"
+              },
+              {
+                "name": "smoothed",
+                "bits": 7,
+                "size": 1,
+                "description": "Carrier smoothed pseudorange used"
+              },
+              {
+                "name": "orbitSource",
+                "bits": 8,
+                "size": 3,
+                "description": "Orbit source"
+              },
+              {
+                "name": "ephAvail",
+                "bits": 11,
+                "size": 1,
+                "description": "Ephemeris available"
+              },
+              {
+                "name": "almAvail",
+                "bits": 12,
+                "size": 1,
+                "description": "Almanac available"
+              },
+              {
+                "name": "anoAvail",
+                "bits": 13,
+                "size": 1,
+                "description": "AssistNow Offline data available"
+              },
+              {
+                "name": "aopAvail",
+                "bits": 14,
+                "size": 1,
+                "description": "AssistNow Autonomous data available"
+              },
+              {
+                "name": "reserved15",
+                "bits": 15,
+                "size": 1,
+                "reserved": true
+              },
+              {
+                "name": "sbasCorrUsed",
+                "bits": 16,
+                "size": 1,
+                "description": "SBAS corrections used"
+              },
+              {
+                "name": "rtcmCorrUsed",
+                "bits": 17,
+                "size": 1,
+                "description": "RTCM corrections used"
+              },
+              {
+                "name": "slasCorrUsed",
+                "bits": 18,
+                "size": 1,
+                "description": "QZSS SLAS corrections used"
+              },
+              {
+                "name": "spartnCorrUsed",
+                "bits": 19,
+                "size": 1,
+                "description": "SPARTN corrections used"
+              },
+              {
+                "name": "prCorrUsed",
+                "bits": 20,
+                "size": 1,
+                "description": "Pseudorange corrections used"
+              },
+              {
+                "name": "crCorrUsed",
+                "bits": 21,
+                "size": 1,
+                "description": "Carrier range corrections used"
+              },
+              {
+                "name": "doCorrUsed",
+                "bits": 22,
+                "size": 1,
+                "description": "Range rate (Doppler) corrections used"
+              },
+              {
+                "name": "reserved23_31",
+                "bits": 23,
+                "size": 9,
+                "reserved": true
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The core issue is a structural error in the 'payload' definition. The initial fixed-length fields (iTOW, version, numSvs, reserved0) must be defined directly under `payload.fields` before the `repeated_groups` section. This also affects the `payload.length.fixed` value. Additionally, the X4 'flags' field requires explicit bitfield definitions as per the protocol specification.",
+      "pdf_pages": [
+        138,
+        139
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:32:31.882680+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length of the payload is incorrect. The canonical definition implies no fixed payload before the repeated group, but the PDF shows 8 bytes of fixed fields.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial fixed payload fields: iTOW, version, numSvs, and reserved0. These 8 bytes precede the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            "{name: iTOW, type: U4, offset: 0, unit: ms}",
+            "{name: version, type: U1, offset: 4}",
+            "{name: numSvs, type: U1, offset: 5}",
+            "{name: reserved0, type: U2, offset: 6}"
+          ]
+        },
+        {
+          "field": "repeated_groups[0].count_field",
+          "issue": "The 'numSvs' field, which is used as the count for the repeated group, must be defined within the main 'payload.fields' section, but it is missing there in the canonical definition.",
+          "canonical_value": "numSvs (referenced but not defined in payload.fields)",
+          "pdf_value": "numSvs (defined at offset 5 in the fixed payload)"
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags.bits",
+          "issue": "The 'flags' field is of type X4 (bitfield), but its bit definitions are not present in the canonical message structure. The PDF provides detailed bitfield definitions.",
+          "canonical_value": "No bit definitions",
+          "pdf_value": [
+            "bits 2...0: qualityInd",
+            "bit 3: svUsed",
+            "bits 5...4: health",
+            "bit 6: diffCorr",
+            "bit 7: smoothed",
+            "bits 10...8: orbitSource",
+            "bit 11: ephAvail",
+            "bit 12: almAvail",
+            "bit 13: anoAvail",
+            "bit 14: aopAvail",
+            "bit 16: sbasCorrUsed",
+            "bit 17: rtcmCorrUsed",
+            "bit 18: slasCorrUsed",
+            "bit 19: spartnCorrUsed",
+            "bit 20: prCorrUsed",
+            "bit 21: crCorrUsed",
+            "bit 22: doCorrUsed",
+            "bit 23: clasCorrUsed"
+          ]
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SAT is structurally incorrect as it omits the initial 8-byte fixed payload (iTOW, version, numSvs, reserved0) and the bitfield definitions for the 'flags' field. The 'numSvs' field, critical for the repeated group count, must be part of the main payload fields.",
+      "pdf_pages": [
+        150,
+        151
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:32:50.823123+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial fixed fields of the payload. The PDF clearly shows 'iTow' (U4), 'version' (U1), 'numSvs' (U1), and 'reserved0' (U1[2]) preceding the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[{name: 'iTow', type: 'U4', offset: 0}, {name: 'version', type: 'U1', offset: 4}, {name: 'numSvs', type: 'U1', offset: 5}, {name: 'reserved0', type: 'U1[2]', offset: 6}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0. Based on the PDF, the sum of the initial fixed fields ('iTow', 'version', 'numSvs', 'reserved0') is 4 + 1 + 1 + 2 = 8 bytes. Therefore, the fixed length should be 8.",
+          "canonical_value": "0",
+          "pdf_value": "8"
+        },
+        {
+          "field": "payload.length.formula",
+          "issue": "The canonical definition lacks a 'formula' for payload length. The PDF explicitly states the message length as '8 + numSvs 12', indicating a variable length based on the 'numSvs' field.",
+          "canonical_value": "Not present",
+          "pdf_value": "\"8 + numSvs * 12\""
+        },
+        {
+          "field": "repeated_groups.satellites.size_bytes",
+          "issue": "The canonical definition correctly identifies the repeated group size as 12 bytes. However, this is only part of the payload length calculation; the overall payload length formula needs to include the fixed 8 bytes from the header and the `numSvs` multiplier.",
+          "canonical_value": "12",
+          "pdf_value": "Implied 12 bytes per repetition by '8 + numSvs 12'"
+        }
+      ],
+      "notes": "The fields within the 'satellites' repeated group (gnssId, svId, cno, elev, azim, prRes, flags) and their respective types, offsets (relative to the start of the group), units, and scale factors (for prRes) match the PDF description. The 'flags' field is correctly identified as an X4 (4-byte bitfield), and the bits described in the PDF fit within this size. The main issue is the canonical definition's incomplete representation of the overall payload structure, omitting the initial fixed-size fields and the corresponding length calculations.",
+      "pdf_pages": [
+        154,
+        155
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:33:20.341881+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Missing the entire 8-byte fixed payload header before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[ { \"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0, \"unit\": \"ms\" }, { \"name\": \"version\", \"type\": \"U1\", \"offset\": 4 }, { \"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5 }, { \"name\": \"reserved0\", \"type\": \"U1[2]\", \"offset\": 6, \"reserved\": true } ]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "Incorrect fixed payload length. It should account for the initial 8-byte header.",
+          "canonical_value": "0",
+          "pdf_value": "8"
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is correctly identified as type X4 and its offset, but the canonical definition lacks the detailed bitfield definitions (e.g., qualityInd, svUsed, health, diffCorr, smoothed, orbitSource) which are essential for an X-type field.",
+          "canonical_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8 }",
+          "pdf_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8, \"bitfields\": [ { \"name\": \"qualityInd\", \"bits\": \"2..0\" }, { \"name\": \"svUsed\", \"bits\": \"3\" }, { \"name\": \"health\", \"bits\": \"5..4\" }, { \"name\": \"diffCorr\", \"bits\": \"6\" }, { \"name\": \"smoothed\", \"bits\": \"7\" }, { \"name\": \"orbitSource\", \"bits\": \"10..8\" } ] }"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the message class, ID, and the structure of the repeated 'satellites' group (name, size, count_field, and the fields within the group including their types, offsets, scales, and units). However, it entirely misses the 8-byte fixed header (iTOW, version, numSvs, reserved0) that precedes the repeated group in the payload. Consequently, the fixed payload length is incorrect, and while the 'flags' field is correctly typed as X4, its crucial bitfield definitions are absent.",
+      "pdf_pages": [
+        155,
+        156
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:33:40.739749+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields (fixed header)",
+          "issue": "The canonical definition is missing the initial 8 bytes of the message payload, which comprise the fixed header fields before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as type 'X4' in the PDF, implying a bitfield, but the canonical definition lacks the detailed bitfield definitions provided in the manual.",
+          "canonical_value": "{ \"name\": \"flags\", \"type\": \"X4\", \"offset\": 8 }",
+          "pdf_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8,
+            "bitfields": [
+              {
+                "name": "qualityInd",
+                "bits": "2:0",
+                "type": "U:3"
+              },
+              {
+                "name": "svUsed",
+                "bits": "3",
+                "type": "U:1"
+              },
+              {
+                "name": "health",
+                "bits": "5:4",
+                "type": "U:2"
+              },
+              {
+                "name": "diffCorr",
+                "bits": "6",
+                "type": "U:1"
+              },
+              {
+                "name": "smoothed",
+                "bits": "7",
+                "type": "U:1"
+              },
+              {
+                "name": "orbitSource",
+                "bits": "10:8",
+                "type": "U:3"
+              },
+              {
+                "name": "ephAvail",
+                "bits": "11",
+                "type": "U:1"
+              },
+              {
+                "name": "almAvail",
+                "bits": "12",
+                "type": "U:1"
+              },
+              {
+                "name": "anoAvail",
+                "bits": "13",
+                "type": "U:1"
+              },
+              {
+                "name": "aopAvail",
+                "bits": "14",
+                "type": "U:1"
+              },
+              {
+                "name": "sbasCorrUsed",
+                "bits": "16",
+                "type": "U:1"
+              },
+              {
+                "name": "rtcmCorrUsed",
+                "bits": "17",
+                "type": "U:1"
+              },
+              {
+                "name": "slasCorrUsed",
+                "bits": "18",
+                "type": "U:1"
+              },
+              {
+                "name": "spartnCorrUsed",
+                "bits": "19",
+                "type": "U:1"
+              },
+              {
+                "name": "prCorrUsed",
+                "bits": "20",
+                "type": "U:1"
+              },
+              {
+                "name": "crCorrUsed",
+                "bits": "21",
+                "type": "U:1"
+              },
+              {
+                "name": "doCorrUsed",
+                "bits": "22",
+                "type": "U:1"
+              },
+              {
+                "name": "clasCorrUsed",
+                "bits": "23",
+                "type": "U:1"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The fixed header fields (iTOW, version, numSvs, reserved0) are missing from the canonical definition's `payload.fields` array. Additionally, the 'flags' field within the repeated group is missing its required bitfield definitions, which are extensively described in the manual.",
+      "pdf_pages": [
+        151,
+        152
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:34:02.498531+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Missing fixed payload fields (iTOW, version, numSvs, reserved0) which appear before the repeated group.",
+          "canonical_value": "[]",
+          "pdf_value": "[{\"name\": \"iTOW\", \"type\": \"U4\", \"offset\": 0}, {\"name\": \"version\", \"type\": \"U1\", \"offset\": 4}, {\"name\": \"numSvs\", \"type\": \"U1\", \"offset\": 5}, {\"name\": \"reserved0\", \"type\": \"U1[2]\", \"offset\": 6, \"reserved\": true}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed part of the payload length is incorrect. It should account for the iTOW (4 bytes), version (1 byte), numSvs (1 byte), and reserved0 (2 bytes) fields.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as X4, but lacks its detailed bitfield definitions as provided in the PDF manual (e.g., qualityInd, svUsed, health, diffCorr, smoothed, orbitSource, etc.).",
+          "canonical_value": "No bitfield definition provided.",
+          "pdf_value": "Extensive bitfield definitions for qualityInd (bits 2..0), svUsed (bit 3), health (bits 5..4), diffCorr (bit 6), smoothed (bit 7), orbitSource (bits 10..8), ephAvail (bit 11), almAvail (bit 12), anoAvail (bit 13), aopAvail (bit 14), sbasCorrUsed (bit 16), rtcmCorrUsed (bit 17), slasCorrUsed (bit 18), spartnCorrUsed (bit 19), prCorrUsed (bit 20), crCorrUsed (bit 21), doCorrUsed (bit 22), clasCorrUsed (bit 23)."
+        }
+      ],
+      "notes": "The overall structure with a fixed header and a repeated group controlled by 'numSvs' is correctly identified. The internal structure of the repeated group (field names, types, offsets, scales, units) is correctly defined. The main issues are the omission of the initial fixed-size payload fields and the lack of bit definitions for the 'flags' field within the repeated group.",
+      "pdf_pages": [
+        108,
+        109
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:34:20.182195+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Canonical definition is missing initial fixed-size fields of the payload before the repeated group.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[{name: \"iTOW\", type: \"U4\", offset: 0}, {name: \"version\", type: \"U1\", offset: 4}, {name: \"numSvs\", type: \"U1\", offset: 5}, {name: \"reserved0\", type: \"U1[2]\", offset: 6, reserved: true}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length of the payload (before the repeated group) is incorrect.",
+          "canonical_value": "0",
+          "pdf_value": "8 (4 bytes for iTOW + 1 byte for version + 1 byte for numSvs + 2 bytes for reserved0)"
+        },
+        {
+          "field": "satellites.flags",
+          "issue": "Bitfield definitions for the 'flags' field are missing in the canonical definition, but are detailed in the PDF.",
+          "canonical_value": "{name: \"flags\", type: \"X4\", offset: 8}",
+          "pdf_value": "{name: \"flags\", type: \"X4\", offset: 8, bitfield_definitions: [ {name: \"qualityInd\", bits: \"0-2\", type: \"U:3\"}, {name: \"svUsed\", bit: 3, type: \"U:1\"}, {name: \"health\", bits: \"4-5\", type: \"U:2\"}, {name: \"diffCorr\", bit: 6, type: \"U:1\"}, {name: \"smoothed\", bit: 7, type: \"U:1\"}, {name: \"orbitSource\", bits: \"8-10\", type: \"U:3\"} ]}"
+        }
+      ],
+      "notes": "The UBX-NAV-SAT message is present in the manual on page 105. The `repeated_groups` structure (size, count_field, and fields within the group, including their types, offsets, scales, and units) correctly matches the PDF, except for the missing bitfield definitions for the `flags` field. The primary discrepancy is the complete omission of the initial 8-byte fixed header fields of the payload (iTOW, version, numSvs, reserved0) from the canonical definition's `fields` array, which also leads to an incorrect `payload.length.fixed` value.",
+      "pdf_pages": [
+        104,
+        105
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:34:39.201411+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed part of the payload length is incorrect. The PDF specifies an 8-byte fixed header before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8-byte fixed fields of the payload (iTOW, version, numSvs, reserved0) that precede the repeated satellite information group.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1",
+              "offset": 6,
+              "count": 2,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "repeated_groups[0].count_field",
+          "issue": "The 'numSvs' field, which dictates the number of repetitions, is not defined in the main payload fields.",
+          "canonical_value": "numSvs",
+          "pdf_value": "numSvs (defined as part of the fixed payload)"
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as an X4 (bitfield), but the canonical definition lacks the required bitfield definitions for its individual bits (qualityInd, svUsed, health, diffCorr, smoothed, orbitSource, ephAvail, almAvail, etc.).",
+          "canonical_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8
+          },
+          "pdf_value": {
+            "name": "flags",
+            "type": "X4",
+            "offset": 8,
+            "bitfields": [
+              {
+                "name": "qualityInd",
+                "bits": [
+                  0,
+                  1,
+                  2
+                ],
+                "type": "U:3"
+              },
+              {
+                "name": "svUsed",
+                "bits": [
+                  3
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "health",
+                "bits": [
+                  4,
+                  5
+                ],
+                "type": "U:2"
+              },
+              {
+                "name": "diffCorr",
+                "bits": [
+                  6
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "smoothed",
+                "bits": [
+                  7
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "orbitSource",
+                "bits": [
+                  8,
+                  9,
+                  10
+                ],
+                "type": "U:3"
+              },
+              {
+                "name": "ephAvail",
+                "bits": [
+                  11
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "almAvail",
+                "bits": [
+                  12
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "anoAvail",
+                "bits": [
+                  13
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "aopAvail",
+                "bits": [
+                  14
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "sbasCorrUsed",
+                "bits": [
+                  16
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "rtcmCorrUsed",
+                "bits": [
+                  17
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "slasCorrUsed",
+                "bits": [
+                  18
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "spartnCorrUsed",
+                "bits": [
+                  19
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "prCorrUsed",
+                "bits": [
+                  20
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "crCorrUsed",
+                "bits": [
+                  21
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "doCorrUsed",
+                "bits": [
+                  22
+                ],
+                "type": "U:1"
+              },
+              {
+                "name": "clasCorrUsed",
+                "bits": [
+                  23
+                ],
+                "type": "U:1"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The canonical definition is significantly incomplete for UBX-NAV-SAT. It correctly identifies the message ID and the structure of the repeated group's fields (except for the missing bitfield definitions), but entirely omits the fixed 8-byte header that precedes the repeated group in the payload, and consequently fails to define the `numSvs` field which controls the repetition count.",
+      "pdf_pages": [
+        128,
+        129
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:35:02.978418+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition indicates a fixed payload length of 0 bytes, but the PDF shows a fixed header of 8 bytes before the repeated group starts. The total length is 8 + numSvs * 12.",
+          "canonical_value": "0",
+          "pdf_value": "8 (for the fixed header)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the fixed header fields that precede the repeated group. These fields are present in the PDF and define the overall message structure before the satellite information repeats.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "payload.repeated_groups[0].count_field",
+          "issue": "The `numSvs` field is correctly identified as the count_field for the repeated group, but it is not defined as a field within the main payload itself. It should be a U1 field at offset 5 in the fixed header.",
+          "canonical_value": "numSvs (implicitly referenced, not defined as a field)",
+          "pdf_value": "numSvs (U1 field at offset 5 in the fixed header)"
+        },
+        {
+          "field": "payload.repeated_groups[0].fields[6].flags",
+          "issue": "The `flags` field is correctly identified as X4, but the canonical definition does not include the detailed bitfield definitions (qualityInd, svUsed, health, diffCorr, smoothed, orbitSource) provided in the PDF manual. These definitions are crucial for interpreting the bitfield's meaning.",
+          "canonical_value": "X4 (without bit definitions)",
+          "pdf_value": "X4 (with detailed bit definitions for bits 0-2, 3, 4-5, 6, 7, 8-10)"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the structure of the *repeated group* (satellites) itself, including field names, types, offsets, units, and scales. However, it completely omits the *fixed header* of the UBX-NAV-SAT message, which contains `iTOW`, `version`, `numSvs`, and `reserved0`. The `numSvs` field, while correctly used as the `count_field` for the repeated group, needs to be explicitly defined as a field in the main payload at offset 5. Additionally, the bitfield definitions for the `flags` field in the repeated group are missing from the canonical.",
+      "pdf_pages": [
+        129,
+        130
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:35:23.835488+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the fixed fields that precede the repeated group. The PDF clearly shows 8 bytes of fixed payload (iTOW, version, numSvs, reserved0) before the 'Start of repeated group'.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[{name: 'iTOW', type: 'U4', offset: 0, unit: 'ms'}, {name: 'version', type: 'U1', offset: 4}, {name: 'numSvs', type: 'U1', offset: 5}, {name: 'reserved0', type: 'U1[2]', offset: 6}]"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition for fixed payload length is incorrect. The PDF implies a fixed payload length of 8 bytes before the variable-length repeated group.",
+          "canonical_value": "0",
+          "pdf_value": "8 (implied by '8 + numSvs*12')"
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags",
+          "issue": "The 'flags' field is defined as an X4 type, but the canonical definition does not include the required bitfield definitions (e.g., qualityInd, svUsed, health, etc.) which are detailed in the PDF.",
+          "canonical_value": "{name: 'flags', type: 'X4', offset: 8} (without bitfield details)",
+          "pdf_value": "{name: 'flags', type: 'X4', offset: 8, bitfields: [bits 2..0 qualityInd, bit 3 svUsed, bits 5..4 health, bit 6 diffCorr, bit 7 smoothed, bits 10..8 orbitSource]}"
+        }
+      ],
+      "notes": "The discrepancies indicate that the canonical definition provided is an incomplete representation of the UBX-NAV-SAT message as described in the u-blox F9 TIM 2.20 Interface Description. The fixed-length header fields are entirely missing from the canonical's `payload.fields` array, and the bitfield details for the `flags` field are omitted.",
+      "pdf_pages": [
+        143,
+        144
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:35:46.488747+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0 bytes, but the PDF indicates 8 bytes of fixed payload before the repeated group (8 + numSvs * 12).",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array for the main payload. The PDF clearly shows four fixed fields (iTOW, version, numSvs, reserved0) at the beginning of the message payload before the repeated 'satellites' group.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5
+            },
+            {
+              "name": "reserved0",
+              "type": "U1[2]",
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "flags.bits",
+          "issue": "The canonical definition for the 'flags' field within the 'satellites' repeated group specifies it as type 'X4', but it completely lacks the detailed bitfield definitions that are extensively documented across both PDF pages.",
+          "canonical_value": "No bit definitions provided for X4 type",
+          "pdf_value": "Extensive bit definitions are provided for bits 0-3, 4-5, 6, 7, 8-10, 11-14, 16-23 covering quality indicators, health, differential correction, orbit source, and correction usage."
+        }
+      ],
+      "notes": "The structure of the repeated group itself (name, count_field, size_bytes, and the fields within the group including their names, types, offsets, units, and scale factors for prRes) largely matches the PDF. The primary issues are the missing fixed payload fields and the absence of bit definitions for the 'flags' X4 field.",
+      "pdf_pages": [
+        117,
+        118
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:36:10.019360+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0 bytes, but the PDF indicates 8 bytes of fixed payload fields before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": 8
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8 bytes of fixed payload fields: iTOW, version, numSvs, and reserved0.",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "name": "iTOW",
+              "type": "U4",
+              "offset": 0,
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "type": "U1",
+              "offset": 4,
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numSvs",
+              "type": "U1",
+              "offset": 5,
+              "description": "Number of satellites"
+            },
+            {
+              "name": "reserved0",
+              "type": "U1",
+              "count": 2,
+              "offset": 6,
+              "reserved": true
+            }
+          ]
+        },
+        {
+          "field": "repeated_groups[0].fields[6].flags.bit_definitions",
+          "issue": "The 'flags' field, defined as type X4, is missing its detailed bitfield definitions which are extensively provided across two pages in the PDF.",
+          "canonical_value": "missing",
+          "pdf_value": [
+            {
+              "name": "qualityInd",
+              "bits": "0:2",
+              "type": "U3",
+              "description": "Signal quality indicator"
+            },
+            {
+              "name": "svUsed",
+              "bits": "3",
+              "type": "U1",
+              "description": "Signal used for navigation"
+            },
+            {
+              "name": "health",
+              "bits": "4:5",
+              "type": "U2",
+              "description": "Signal health flag"
+            },
+            {
+              "name": "diffCorr",
+              "bits": "6",
+              "type": "U1",
+              "description": "Differential correction data available"
+            },
+            {
+              "name": "smoothed",
+              "bits": "7",
+              "type": "U1",
+              "description": "Carrier smoothed pseudorange used"
+            },
+            {
+              "name": "orbitSource",
+              "bits": "8:10",
+              "type": "U3",
+              "description": "Orbit source"
+            },
+            {
+              "name": "ephAvail",
+              "bits": "11",
+              "type": "U1",
+              "description": "Ephemeris available"
+            },
+            {
+              "name": "almAvail",
+              "bits": "12",
+              "type": "U1",
+              "description": "Almanac available"
+            },
+            {
+              "name": "anoAvail",
+              "bits": "13",
+              "type": "U1",
+              "description": "AssistNow Offline data available"
+            },
+            {
+              "name": "aopAvail",
+              "bits": "14",
+              "type": "U1",
+              "description": "AssistNow Autonomous data available"
+            },
+            {
+              "name": "reserved1",
+              "bits": "15",
+              "type": "U1",
+              "reserved": true
+            },
+            {
+              "name": "sbasCorrUsed",
+              "bits": "16",
+              "type": "U1",
+              "description": "SBAS corrections used"
+            },
+            {
+              "name": "rtcmCorrUsed",
+              "bits": "17",
+              "type": "U1",
+              "description": "RTCM corrections used"
+            },
+            {
+              "name": "slasCorrUsed",
+              "bits": "18",
+              "type": "U1",
+              "description": "QZSS SLAS corrections used"
+            },
+            {
+              "name": "spartnCorrUsed",
+              "bits": "19",
+              "type": "U1",
+              "description": "SPARTN corrections used"
+            },
+            {
+              "name": "prCorrUsed",
+              "bits": "20",
+              "type": "U1",
+              "description": "Pseudorange corrections used"
+            },
+            {
+              "name": "crCorrUsed",
+              "bits": "21",
+              "type": "U1",
+              "description": "Carrier range corrections used"
+            },
+            {
+              "name": "doCorrUsed",
+              "bits": "22",
+              "type": "U1",
+              "description": "Range rate (Doppler) corrections used"
+            },
+            {
+              "name": "clasCorrUsed",
+              "bits": "23",
+              "type": "U1",
+              "description": "CLAS corrections used"
+            },
+            {
+              "name": "1ppCorrUsed",
+              "bits": "24",
+              "type": "U1",
+              "description": "LPP corrections used"
+            },
+            {
+              "name": "hasCorrUsed",
+              "bits": "25",
+              "type": "U1",
+              "description": "HAS corrections used"
+            },
+            {
+              "name": "reserved2",
+              "bits": "26:31",
+              "type": "U6",
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "The core structure of the repeated group fields (gnssId, svId, cno, elev, azim, prRes, flags) matches the PDF. However, the initial 8 bytes of fixed payload and the extensive bitfield definitions for 'flags' are entirely missing from the canonical definition. This represents a significant deviation from the manual.",
+      "pdf_pages": [
+        103,
+        104
+      ],
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T04:36:34.667954+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SAT",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition states a fixed payload length of 0, but the PDF shows an initial 8-byte fixed part before the repeated group.",
+          "canonical_value": 0,
+          "pdf_value": "8 (before repeated group)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition is missing the initial 8 bytes of fixed fields: iTOW, version, numSvs, and reserved0.",
+          "canonical_value": "[] (empty)",
+          "pdf_value": "[{name: 'iTOW', type: 'U4', offset: 0}, {name: 'version', type: 'U1', offset: 4}, {name: 'numSvs', type: 'U1', offset: 5}, {name: 'reserved0', type: 'U1[2]', offset: 6}]"
+        },
+        {
+          "field": "repeated_groups.satellites.flags.bitfield_definitions",
+          "issue": "The 'flags' field in the repeated group is defined as an X4 type in both canonical and PDF, but the canonical definition does not include the bitfield definitions provided in the PDF.",
+          "canonical_value": "missing bitfield definitions",
+          "pdf_value": "{bits 2...0: 'qualityInd', bit 3: 'svUsed', bits 5...4: 'health', bit 6: 'diffCorr', bit 7: 'smoothed'}"
+        }
+      ],
+      "notes": "The Class ID (0x01) and Message ID (0x35) match. The structure of the repeated group (field names, types, offsets, units, scale) correctly matches the PDF, and the size of each repeated entry (12 bytes) is also correct. However, the absence of the initial 8-byte fixed payload fields and the lack of bitfield definitions for the 'flags' field are significant discrepancies.",
+      "pdf_pages": [
+        109,
+        110
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:36:55.721383+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 32,
+    "matches": 0,
+    "mismatches": 32
+  }
+}

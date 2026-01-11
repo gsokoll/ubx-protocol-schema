@@ -1,0 +1,1390 @@
+{
+  "message": "UBX-NAV-SBAS",
+  "timestamp": "2026-01-09T05:02:39.504625+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The message has a variable length payload as per the PDF ('12 + 12*cnt'), but the canonical definition incorrectly specifies a fixed length of 0.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "{ \"formula\": \"12 + 12*cnt\" }"
+        },
+        {
+          "field": "reserved0",
+          "issue": "The name of the reserved field at byte offset 10 differs between the canonical definition and the PDF.",
+          "canonical_value": "reserved0",
+          "pdf_value": "reserved1"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition incorrectly defines 'svData' as a single U1 field starting at byte offset 12. According to the PDF, this is the beginning of a 'repeated_groups' structure, where a block of 9 fields (totaling 12 bytes) is repeated 'cnt' times. The canonical definition completely misses the detailed structure of this repeated block.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group (repeated 'cnt' times) starting at byte offset 12, with the following fields: svid (U1), reserved2 (U1), udre (U1), svSys (U1), svService (U1), reserved3 (U1), prc (I2), reserved4 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The fixed part of the message (iTOW, geo, mode, sys, service, cnt, statusFlags) mostly matches in terms of byte offset and data type (with a minor naming difference for a reserved field). However, the definition of the variable-length payload and the detailed structure of the repeated 'svData' blocks are fundamentally incorrect or missing in the canonical definition, making it an incomplete representation of the message as described in the manual.",
+      "pdf_pages": [
+        398,
+        399
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:51:15.524123+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed payload length, but the PDF indicates a variable length payload based on a count field (`cnt`).",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + 12*cnt"
+        },
+        {
+          "field": "reserved0",
+          "issue": "Minor naming difference for the reserved field.",
+          "canonical_value": "reserved0",
+          "pdf_value": "reserved1"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition incorrectly represents a single U1 field for `svData` where the PDF clearly shows a repeated block of 9 fields (total 12 bytes) that occurs `cnt` times. The canonical definition should use a `repeated_groups` structure referencing the `cnt` field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated block (cnt times) starting at byte offset 12, containing: svid (U1), flags (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2, cm), reserved3 (U1[2]), ic (I2, cm)."
+        }
+      ],
+      "notes": "The u-blox 8/M8 manual correctly defines UBX-NAV-SBAS as having a variable-length payload with a repeated group. The canonical definition correctly identifies the initial fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved) but fails to properly model the repeated 'svData' block as a `repeated_groups` construct, instead defining it as a single U1 field. The `payload.length` also reflects this, being marked as fixed in canonical but clearly variable in the PDF (12 + 12*cnt).",
+      "pdf_pages": [
+        398,
+        399
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T04:51:36.769199+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length is variable based on the 'cnt' field, not fixed.",
+          "canonical_value": {
+            "fixed": 0
+          },
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "service.data_type",
+          "issue": "Canonical specifies X1 but is missing the bitfield definitions provided in the PDF.",
+          "canonical_value": "X1 (no bit definitions)",
+          "pdf_value": "X1 with bit definitions: bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode)"
+        },
+        {
+          "field": "statusFlags.data_type",
+          "issue": "Canonical specifies X1 but is missing the bitfield definitions provided in the PDF.",
+          "canonical_value": "X1 (no bit definitions)",
+          "pdf_value": "X1 with bit definitions: bits 1...0 (integrityUsed)"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition only shows a single U1 field for 'svData' at offset 12. The PDF clearly defines a complex repeated group starting at offset 12, repeated 'cnt' times, where each group is 12 bytes long and contains 9 distinct fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic). The canonical entirely misses this structure.",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": "Repeated group (cnt times) starting at offset 12, each group is 12 bytes:\n- 12 + n*12: U1 svid\n- 13 + n*12: U1 reserved1\n- 14 + n*12: U1 udre\n- 15 + n*12: U1 svSys\n- 16 + n*12: U1 svService\n- 17 + n*12: U1 reserved2\n- 18 + n*12: I2 prc (cm)\n- 20 + n*12: U1[2] reserved3\n- 22 + n*12: I2 ic (cm)"
+        }
+      ],
+      "notes": "The canonical definition is missing the detailed bitfield specifications for 'service' and 'statusFlags'. More critically, it completely fails to capture the variable-length repeated group for 'svData', which is a fundamental part of this message's payload structure as described in the PDF manual. The 'payload.length' should reflect this variable nature and the 'svData' field should be replaced by a 'repeated_groups' construct.",
+      "pdf_pages": [
+        107,
+        108
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:51:54.567448+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed payload length is incorrectly defined. PDF indicates 12 bytes for the fixed header, while canonical sets it to 0.",
+          "canonical_value": 0,
+          "pdf_value": 12
+        },
+        {
+          "field": "payload.fields[4].name (service)",
+          "issue": "Field type is correct (X1), but bitfield definitions are missing in the canonical. The PDF provides detailed bit definitions.",
+          "canonical_value": "X1 without bitfield definition",
+          "pdf_value": "X1 with bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode), bit 4 (Bad) defined."
+        },
+        {
+          "field": "payload.fields[6].name (statusFlags)",
+          "issue": "Field type is correct (X1), but bitfield definitions are missing in the canonical. The PDF provides detailed bit definitions.",
+          "canonical_value": "X1 without bitfield definition",
+          "pdf_value": "X1 with bits 1...0 (integrityUsed) defined."
+        },
+        {
+          "field": "payload.fields[8].name (svData)",
+          "issue": "This field is incorrectly defined as a single U1. Based on the message structure '12 + cnt 12' and the 'cnt' field description ('Number of SV data following'), this should be a repeated group. The repeated group should start at byte offset 12, use 'cnt' as the count field, and each element should be 12 bytes long.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 12, with 'cnt' elements, each 12 bytes in length. The internal structure of these 12-byte elements is not detailed in the provided PDF pages."
+        }
+      ],
+      "notes": "The fields iTOW, geo, mode, sys, cnt, and the implied reserved0 (U1[2] at offset 10) match the PDF's structure and descriptions for the fixed part of the message. The PDF explicitly states the message length as '12 + cnt 12', confirming the 12-byte fixed header and the variable-length repeated group. The bit 'U:1' definitions (`prCorrUsed`, `crCorrUsed`, etc.) visible above the UBX-NAV-SBAS message in the PDF appear to be trailing definitions from a previous message (likely UBX-NAV-SAT) and are not part of UBX-NAV-SBAS itself.",
+      "pdf_pages": [
+        102,
+        103
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:52:25.182672+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed payload length of 0, which is incorrect. The PDF clearly indicates a variable payload length determined by '12 + cnt * 12'.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt * 12"
+        },
+        {
+          "field": "repeated_groups",
+          "issue": "The canonical definition completely lacks the 'repeated_groups' structure for the SBAS SV data. The PDF explicitly defines a repeated group starting at byte offset 12, repeated 'cnt' times, with each group being 12 bytes long.",
+          "canonical_value": "Not present",
+          "pdf_value": "A repeated group named 'svData' (or similar) starting at offset 12, repeated 'cnt' times, with fields: 'svid' (U1), 'reserved1' (U1), 'udre' (U1), 'svSys' (U1), 'svService' (U1), 'reserved2' (U1), 'prc' (I2), 'reserved3' (U1[2]), 'ic' (I2)."
+        },
+        {
+          "field": "svData",
+          "issue": "The 'svData' field in the canonical definition is incorrect. It is defined as a single U1 at byte offset 12, but this offset marks the beginning of a variable-length repeated group in the PDF, specifically the 'svid' field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "The first field of the repeated group at byte offset 12 is 'svid' (U1)."
+        },
+        {
+          "field": "service (bitfield definitions)",
+          "issue": "While 'service' is correctly identified as an X1 type, the canonical definition does not include the detailed bitfield definitions provided in the PDF for this field. These bits describe 'Ranging', 'Corrections', 'Integrity', 'Testmode', and 'Bad'.",
+          "canonical_value": "Description is general: 'SBAS Services available'. No bit definitions.",
+          "pdf_value": "Bit 0: Ranging, Bit 1: Corrections, Bit 2: Integrity, Bit 3: Testmode, Bit 4: Bad."
+        },
+        {
+          "field": "statusFlags (bitfield definitions)",
+          "issue": "While 'statusFlags' is correctly identified as an X1 type, the canonical definition does not include the detailed bitfield definitions provided in the PDF for 'integrityUsed' (bits 1...0).",
+          "canonical_value": "Description is general: 'SBAS status flags'. No bit definitions.",
+          "pdf_value": "Bits 1...0: integrityUsed (0: Unknown, 1: Integrity information not available/enabled, 2: Receiver uses only GPS satellites for which integrity information is available)."
+        }
+      ],
+      "notes": "The core issue is the complete absence of the 'repeated_groups' structure in the canonical definition, which is central to this message's payload. The payload length calculation in the PDF (12 + cnt*12) clearly indicates a fixed header of 12 bytes followed by 'cnt' repetitions of 12-byte blocks. Additionally, detailed bitfield definitions for 'service' and 'statusFlags' are missing from the canonical, although the X1 type correctly identifies them as bitfields.",
+      "pdf_pages": [
+        113,
+        114
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:52:43.294746+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length is variable based on 'cnt' field, not fixed.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "svData",
+          "issue": "The 'svData' field is incorrectly defined as a single U1. The PDF clearly shows a repeated group starting at byte offset 12, with 'cnt' repetitions, each containing multiple sub-fields and totaling 12 bytes.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group (cnt times) starting at byte offset 12, with fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The bitfield definitions for 'service' (X1) and 'statusFlags' (X1) are detailed in the PDF (e.g., 'Ranging', 'Corrections', 'Integrity', 'Testmode' for 'service'; 'integrityUsed' and 'Bad' bits for 'statusFlags'), but these internal bit definitions are not present in the canonical X1 type. This is an incompleteness of the canonical representation rather than a direct mismatch of the field's type or offset.",
+      "pdf_pages": [
+        107,
+        108
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:53:07.027823+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "service",
+          "issue": "Bitfield definitions are missing in the canonical message.",
+          "canonical_value": "X1 (no bit definitions)",
+          "pdf_value": "X1 with bit definitions: bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode), bit 4 (Bad)"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "Bitfield definitions are missing in the canonical message.",
+          "canonical_value": "X1 (no bit definitions)",
+          "pdf_value": "X1 with bit definitions: bits 1...0 (integrityUsed)"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition only includes a placeholder 'svData' field at offset 12. The PDF clearly specifies a variable-length payload using a repeated group based on the 'cnt' field, with each group element having a detailed structure (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic). This is a major structural omission in the canonical definition.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Repeated group 'svData' (cnt times) starting at byte_offset 12, each group element is 12 bytes and contains the following fields:\n- svid (U1, offset 0 relative to block start)\n- reserved1 (U1, offset 1 relative to block start)\n- udre (U1, offset 2 relative to block start)\n- svSys (U1, offset 3 relative to block start)\n- svService (U1, offset 4 relative to block start)\n- reserved2 (U1, offset 5 relative to block start)\n- prc (I2, offset 6 relative to block start, unit cm)\n- reserved3 (U1[2], offset 8 relative to block start)\n- ic (I2, offset 10 relative to block start, unit cm)"
+        }
+      ],
+      "notes": "The basic message identification and fixed fields up to offset 10 (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match the PDF. However, the bitfield definitions for 'service' and 'statusFlags' are entirely absent in the canonical. Most importantly, the variable-length part of the payload, driven by the 'cnt' field, is not correctly defined as a repeated group in the canonical. Instead, it has a single placeholder field 'svData' which is insufficient.",
+      "pdf_pages": [
+        152,
+        153
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:53:26.736847+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Message has a variable payload length, but canonical defines it as fixed.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes) 12 + cnt * 12 (variable, dependent on 'cnt' field)"
+        },
+        {
+          "field": "service (byte 7)",
+          "issue": "Canonical defines 'service' as an X1 type but is missing the required bitfield definitions.",
+          "canonical_value": "{ \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bit definitions:\n  bit 0 U:1 Ranging\n  bit 1 U:1 Corrections\n  bit 2 U:1 Integrity\n  bit 3 U:1 Testmode\n  bit 4 U:1 Bad"
+        },
+        {
+          "field": "statusFlags (byte 9)",
+          "issue": "Canonical defines 'statusFlags' as an X1 type but is missing the required bitfield definitions.",
+          "canonical_value": "{ \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bit definitions:\n  bits 1...0 U:2 integrityUsed"
+        },
+        {
+          "field": "svData (byte 12)",
+          "issue": "Canonical defines 'svData' as a single U1 field. PDF indicates a variable-length repeated group of 12-byte blocks, repeated 'cnt' times, starting at this offset.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (cnt times) consisting of the following fields:\n  svid (U1, offset 0 rel.)\n  reserved1 (U1, offset 1 rel.)\n  udre (U1, offset 2 rel.)\n  svSys (U1, offset 3 rel.)\n  svService (U1, offset 4 rel.)\n  reserved2 (U1, offset 5 rel.)\n  prc (I2, offset 6 rel.)\n  reserved3 (U1[2], offset 8 rel.)\n  ic (I2, offset 10 rel.)\nTotal group size: 12 bytes."
+        }
+      ],
+      "notes": "The canonical definition incorrectly models the variable-length payload structure. It should include a 'repeated_groups' array at the payload level, with 'repetition_type' set to 'count_field' referencing 'cnt', and the 'group_fields' array containing the details of the 'svData' block. Additionally, the X1 fields 'service' and 'statusFlags' are missing their bitfield definitions in the canonical model.",
+      "pdf_pages": [
+        117,
+        118
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:53:49.299506+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length definition is incorrect. The message has a variable-length payload based on the 'cnt' field, not a fixed length of 0. The fixed portion is 12 bytes, followed by 'cnt' * 12 bytes.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt * 12"
+        },
+        {
+          "field": "mode",
+          "issue": "Description is incomplete, missing the 2: MSAS value.",
+          "canonical_value": "SBAS Mode (0: Disabled, 1: Enabled integrity, 3: Enabled test mode)",
+          "pdf_value": "SBAS Mode (0 Disabled, 1 Enabled integrity, 3 Enabled test mode) (note: mode 2 exists for MSAS on other manuals)"
+        },
+        {
+          "field": "sys",
+          "issue": "Description is incomplete for I1 type; it should also include '2: MSAS' and '16: GPS' as per the bitfield-like description in the PDF (though 'sys' is I1, not X1).",
+          "canonical_value": "SBAS System (WAAS, EGNOS, MSAS, GAGAN, etc.)",
+          "pdf_value": "-1 Unknown, 0 WAAS, 1 EGNOS, 2 MSAS, 3 GAGAN, 16 GPS"
+        },
+        {
+          "field": "service",
+          "issue": "Bitfield definitions are missing from the canonical. The canonical only lists the field name and data type, but not the individual bit definitions.",
+          "canonical_value": "{ \"name\": \"service\", \"byte_offset\": 7, \"data_type\": \"X1\", \"description\": \"SBAS Services available\" }",
+          "pdf_value": "X1 with bits: bit 0 U:1 Ranging, bit 1 U:1 Corrections, bit 2 U:1 Integrity, bit 3 U:1 Testmode, bit 4 U:1 Bad"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "Bitfield definitions are missing from the canonical. The canonical only lists the field name and data type, but not the individual bit definitions.",
+          "canonical_value": "{ \"name\": \"statusFlags\", \"byte_offset\": 9, \"data_type\": \"X1\", \"description\": \"SBAS status flags\" }",
+          "pdf_value": "X1 with bits: bits 1...0 U:2 integrityUsed (0=Unknown, 1=not available/enabled, 2=receiver uses GPS satellites only)"
+        },
+        {
+          "field": "svData",
+          "issue": "The 'svData' field is defined as a single U1, but it should be a repeated group of 12-byte elements, with the count specified by the 'cnt' field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group (cnt times) starting at byte offset 12, with each element being 12 bytes and containing fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2, cm), reserved3 (U1[2]), ic (I2, cm)."
+        }
+      ],
+      "notes": "The canonical definition significantly deviates from the PDF for UBX-NAV-SBAS. It fails to capture the variable-length nature of the payload, the bitfield definitions for 'service' and 'statusFlags', and the detailed structure of the repeated 'svData' group. The fixed part of the payload is 12 bytes (iTOW to reserved0). The variable part consists of 'cnt' repetitions of a 12-byte structure.",
+      "pdf_pages": [
+        121,
+        122
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:54:07.858500+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The fixed length of the payload is incorrect. It should account for the fixed part of the message before the repeated group.",
+          "canonical_value": "fixed: 0",
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "svData",
+          "issue": "The 'svData' field is incorrectly defined as a single U1. It should be a 'repeated_group' containing multiple fields for each SV data block, with a count determined by the 'cnt' field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A 'repeated_group' starting at byte offset 12, iterated 'cnt' times. Each iteration is 12 bytes long and contains fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The manual clearly defines a 'Start of repeated group (cnt times)' for the SV data, which is missing from the canonical definition. The total payload length, according to the PDF, is 12 bytes for the fixed header followed by 'cnt' times 12 bytes for the repeated group (svData). The canonical definition should define `payload.length.fixed` as 12 and use a `repeated_groups` structure for `svData` with `count_field: 'cnt'`.",
+      "pdf_pages": [
+        145,
+        146
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:54:25.222245+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed length of 0, implying a variable-length message but without the explicit structure. The PDF clearly defines a variable length payload with a fixed part of 12 bytes followed by a repeated group whose count is determined by the 'cnt' field, with each group being 12 bytes.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt 12"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition lists 'svData' as a single U1 field at byte_offset 12. The PDF indicates that byte_offset 12 marks the beginning of a repeated group of SV data, where the number of repetitions is given by the 'cnt' field. This repeated group contains multiple sub-fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic), each block being 12 bytes long.",
+          "canonical_value": "[ { \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" } ]",
+          "pdf_value": "A repeated group starting at byte_offset 12, repeated 'cnt' times, with the following fields per repetition:\n  - U1 svid (offset 0 relative to group start)\n  - U1 reserved1 (offset 1 relative to group start)\n  - U1 udre (offset 2 relative to group start)\n  - U1 svSys (offset 3 relative to group start)\n  - U1 svService (offset 4 relative to group start)\n  - U1 reserved2 (offset 5 relative to group start)\n  - I2 prc (offset 6 relative to group start)\n  - U1[2] reserved3 (offset 8 relative to group start)\n  - I2 ic (offset 10 relative to group start)"
+        }
+      ],
+      "notes": "All initial fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match in name, offset, and data type between the canonical definition and the PDF. The primary discrepancy lies in the handling of the variable-length part of the payload, which is defined as a repeated group in the PDF but is not structured as such in the canonical definition. The X1 data types for 'service' and 'statusFlags' are correctly identified in the canonical, although the detailed bitfield definitions are not provided in this specific JSON snippet for validation purposes.",
+      "pdf_pages": [
+        117,
+        118
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:54:45.288128+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "service",
+          "issue": "Missing bitfield definitions for X1 type.",
+          "canonical_value": "X1 without bit definitions",
+          "pdf_value": "X1 with bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode), bit 4 (Bad) definitions."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "Missing bitfield definitions for X1 type.",
+          "canonical_value": "X1 without bit definitions",
+          "pdf_value": "X1 with bits 1...0 (integrityUsed) definition."
+        },
+        {
+          "field": "svData",
+          "issue": "Incorrect representation of variable-length payload. The 'svData' should be a repeated group, not a single U1 field. The canonical definition also lacks the internal structure of each 12-byte 'svData' block.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Implies a repeated group of 'cnt' elements, each 12 bytes long, starting at byte offset 12. The PDF's length is '12 + cnt*12', indicating 12 bytes of fixed header followed by 'cnt' repetitions of 12-byte blocks. The structure of these 12-byte blocks is not defined in the provided PDF snippet for UBX-NAV-SBAS (it's often detailed in a nested table, which is absent here)."
+        },
+        {
+          "field": "payload.length",
+          "issue": "The payload length is variable, defined by a formula, but the canonical specifies 'fixed: 0'. It should reflect the '12 + cnt*12' structure.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt*12 (where 'cnt' is a field within the message)"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the first 12 bytes of the fixed header, including the implicit 2-byte 'reserved0' field. However, it fails to model the variable-length repeated group for 'svData' as indicated by the 'cnt' field and the message length formula. Additionally, bitfield definitions for 'service' and 'statusFlags' are missing. The provided PDF snippet does not detail the 12-byte structure of each 'svData' block, which would be expected if the repeated group were to be fully defined.",
+      "pdf_pages": [
+        126,
+        127
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T04:55:08.522688+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[8].svData",
+          "issue": "The canonical defines 'svData' as a single U1 field. The PDF indicates a 'repeated group' starting at byte offset 12, controlled by the 'cnt' field, where each group element is 12 bytes long and contains multiple sub-fields.",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "name": "svData",
+            "start_offset": 12,
+            "repetition_type": "count_field",
+            "count_field": "cnt",
+            "group_size": 12,
+            "fields": [
+              {
+                "name": "svid",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "SV ID"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "reserved": true
+              },
+              {
+                "name": "udre",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "description": "Monitoring status"
+              },
+              {
+                "name": "svSys",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "System (WAAS/EGNOS/...) same as SYS"
+              },
+              {
+                "name": "svService",
+                "byte_offset": 4,
+                "data_type": "U1",
+                "description": "Services available same as SERVICE"
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 5,
+                "data_type": "U1",
+                "reserved": true
+              },
+              {
+                "name": "prc",
+                "byte_offset": 6,
+                "data_type": "I2",
+                "unit": "cm",
+                "description": "Pseudo Range correction in [cm]"
+              },
+              {
+                "name": "reserved3",
+                "byte_offset": 8,
+                "data_type": "U1[2]",
+                "reserved": true
+              },
+              {
+                "name": "ic",
+                "byte_offset": 10,
+                "data_type": "I2",
+                "unit": "cm",
+                "description": "Ionosphere correction in [cm]"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "All fixed-payload fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match the PDF specification. The primary discrepancy is the handling of the variable-length 'svData' part of the message, which should be a repeated group defined by the 'cnt' field, rather than a single U1 field.",
+      "pdf_pages": [
+        102,
+        103
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T04:55:30.905542+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical defines payload.length.fixed as 0. The PDF indicates a fixed header of 12 bytes followed by a variable-length repeated group (12 + cnt*12 bytes total payload length).",
+          "canonical_value": "{fixed: 0}",
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "repeated_groups",
+          "issue": "The canonical completely omits the 'svData' repeated group. The PDF clearly describes a repeated group ('Start of repeated group (cnt times)') which starts at byte offset 12 and repeats 'cnt' times, with each group being 12 bytes long and containing specific fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic).",
+          "canonical_value": "Not present",
+          "pdf_value": "Present, starting at offset 12, repeated 'cnt' times, each 12 bytes long."
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 at byte_offset 12. This is incorrect. At byte_offset 12, the PDF shows the start of the 'svid' field which is the first field of the repeated group.",
+          "canonical_value": "{name: 'svData', byte_offset: 12, data_type: 'U1'}",
+          "pdf_value": "{name: 'svid', byte_offset: '12 + n*12', data_type: 'U1'}"
+        }
+      ],
+      "notes": "The initial fixed fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match in name, offset, and type up to byte offset 11. However, the message structure then fundamentally diverges due to the canonical's omission of the variable-length repeated group, which is a core part of the UBX-NAV-SBAS message as described in the PDF manual.",
+      "pdf_pages": [
+        111,
+        112
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T04:55:50.992166+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical defines the payload length as fixed: 0, but the PDF explicitly states a variable length: '12 + cnt*12'.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes): 12 + cnt*12"
+        },
+        {
+          "field": "cnt",
+          "issue": "The 'cnt' field (byte_offset 8) is defined in the canonical but is not described in the 'Payload description' section for UBX-NAV-SBAS in the provided PDF. The PDF's description ends at byte offset 7.",
+          "canonical_value": "{ \"name\": \"cnt\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Not present in Payload description"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "The 'statusFlags' field (byte_offset 9) is defined in the canonical but is not described in the 'Payload description' section for UBX-NAV-SBAS in the provided PDF.",
+          "canonical_value": "{ \"name\": \"statusFlags\", \"byte_offset\": 9, \"data_type\": \"X1\" }",
+          "pdf_value": "Not present in Payload description"
+        },
+        {
+          "field": "reserved0",
+          "issue": "The 'reserved0' field (byte_offset 10) is defined in the canonical but is not described in the 'Payload description' section for UBX-NAV-SBAS in the provided PDF.",
+          "canonical_value": "{ \"name\": \"reserved0\", \"byte_offset\": 10, \"data_type\": \"U1[2]\" }",
+          "pdf_value": "Not present in Payload description"
+        },
+        {
+          "field": "svData",
+          "issue": "The 'svData' field (byte_offset 12) is defined in the canonical but is not described in the 'Payload description' section for UBX-NAV-SBAS in the provided PDF. Furthermore, given the PDF's length formula '12 + cnt*12', 'svData' should be the start of a repeated group, which is not reflected in the canonical's current structure.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Not present in Payload description; implies start of repeated group based on length formula."
+        },
+        {
+          "field": "service.bitfield_definitions",
+          "issue": "The canonical definition for 'service' is missing the explicit bitfield definitions provided in the PDF.",
+          "canonical_value": "data_type: X1 (no bitfield definitions)",
+          "pdf_value": "bit 0 U:1 Ranging, bit 1 U:1 Corrections, bit 2 U:1 Integrity, bit 3 U:1 Testmode, bit 4 U:1 Bad"
+        }
+      ],
+      "notes": "The 'Payload description' section for UBX-NAV-SBAS in the provided PDF (page 1) appears to be incomplete, only describing fields up to byte offset 7. It omits 'cnt', 'statusFlags', 'reserved0', and the variable-length 'svData' group, despite the message header explicitly stating a variable length of '12 + cnt*12'. The canonical definition includes these additional fields and implies a repeated group, but its 'payload.length' specification and the explicit 'svData' field are structurally inconsistent with the variable length and repeated group implied by the PDF's header.",
+      "pdf_pages": [
+        134,
+        135
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:56:22.363368+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition lacks a specific formula for the variable payload length.",
+          "canonical_value": "{\"fixed\": 0}",
+          "pdf_value": "12 + cnt * 12 (indicating a variable length based on the 'cnt' field)"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 field at offset 12, but the PDF clearly shows that offset 12 is the start of a repeated group ('svData' repeated 'cnt' times), containing multiple sub-fields. The entire repeated group structure is missing from the canonical.",
+          "canonical_value": "{\"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\"}",
+          "pdf_value": "Start of repeated group (cnt times) at byte_offset 12, consisting of: svid (U1), flags (U1), udre (U1), svSys (U1), svService (U1), reserved1 (U1), prc (I2), reserved2 (U1[2]), ic (I2)."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "While 'statusFlags' is correctly identified as an X1 type in the canonical, it lacks the specific bitfield definitions provided in the PDF, specifically 'integrityUsed' (bits 1..0 U:2).",
+          "canonical_value": "{\"name\": \"statusFlags\", \"byte_offset\": 9, \"data_type\": \"X1\", \"description\": \"SBAS status flags\"}",
+          "pdf_value": "'statusFlags' contains 'bits 1..0 U:2 integrityUsed' with descriptive values."
+        }
+      ],
+      "notes": "The basic fields (iTOW, geo, mode, sys, service, cnt, reserved0) match in name, offset, and data type between the canonical definition and the PDF. The primary discrepancy is the complete omission of the 'svData' repeated group and its detailed sub-fields in the canonical definition, which forms the variable part of the message payload. Additionally, the payload length formula is not explicitly stated in the canonical. The bitfield definitions for 'statusFlags' are also missing from the canonical, despite the PDF providing them.",
+      "pdf_pages": [
+        109,
+        110
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T04:56:47.718843+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload structure (repeated_groups)",
+          "issue": "The canonical definition is missing the 'repeated_groups' structure for the variable-length payload section, 'svData'. It incorrectly represents it as a single U1 field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group 'svData' (cnt times), starting at byte offset 12, with each element being 12 bytes long and containing fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        },
+        {
+          "field": "payload.length",
+          "issue": "While the canonical `fixed: 0` correctly implies variable length, the PDF explicitly states the formula for the total payload length (12 + cnt*12). The canonical definition does not capture this formula or link to the 'cnt' field for its variable length.",
+          "canonical_value": "{ \"length\": { \"fixed\": 0 } }",
+          "pdf_value": "Payload Length: 12 + cnt*12 bytes"
+        }
+      ],
+      "notes": "All fixed-offset fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match perfectly between the canonical definition and the PDF. The primary discrepancy is the complete omission of the detailed structure for the repeated group ('svData') and its internal fields, as well as the explicit length formula.",
+      "pdf_pages": [
+        125,
+        126
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:57:09.223380+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed payload length is incorrect. The PDF header indicates a fixed part of 12 bytes before the variable length section.",
+          "canonical_value": "0",
+          "pdf_value": "12 (derived from '12 + cnt 12')"
+        },
+        {
+          "field": "svData (structure)",
+          "issue": "The canonical definition treats 'svData' as a single U1 field at byte_offset 12. The PDF clearly describes a 'Start of repeated group (cnt times)' beginning at '12 + n 12', meaning there are 'cnt' blocks, each 12 bytes long, following the initial 12-byte fixed payload. The first field of each repeated block is 'svid' (U1).",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 12, repeated 'cnt' times, with each group item being 12 bytes long. The first byte of each item is 'svid' (U1), and the remaining 11 bytes per item are implicitly reserved or unnamed in the PDF."
+        }
+      ],
+      "notes": "The primary discrepancy is the mishandling of the variable-length payload. The message has a fixed header of 12 bytes, followed by a repeated group whose count is specified by the 'cnt' field, and each item in this group is 12 bytes long. The 'svid' field is only the first byte of each 12-byte repeated block.",
+      "pdf_pages": [
+        129,
+        130
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:57:30.517218+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length is variable, depending on 'cnt' field, but canonical defines it as fixed: 0. The PDF provides a formula, although its multiplier might be inconsistent with the detailed repeated group fields.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes): 12 + cnt 12"
+        },
+        {
+          "field": "svData",
+          "issue": "Canonical incorrectly defines 'svData' as a single U1 field. The PDF clearly indicates a 'Start of repeated group (cnt times)' containing multiple sub-fields (svid, reserved1, udre, svSys). This requires a 'repeated_group' structure in the canonical definition.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (cnt times) at byte_offset 12, containing fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1)."
+        },
+        {
+          "field": "service",
+          "issue": "Canonical correctly identifies 'service' as an X1 (bitfield) type but is missing the detailed bitfield definitions provided in the PDF.",
+          "canonical_value": "{ \"name\": \"service\", \"data_type\": \"X1\" } (missing bitfield definitions)",
+          "pdf_value": "X1 with bitfield definitions: bit 0 U:1 Ranging, bit 1 U:1 Corrections, bit 2 U:1 Integrity, bit 3 U:1 Testmode, bit 4 U:1 Bad."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "Canonical correctly identifies 'statusFlags' as an X1 (bitfield) type but is missing the detailed bitfield definitions provided in the PDF.",
+          "canonical_value": "{ \"name\": \"statusFlags\", \"data_type\": \"X1\" } (missing bitfield definitions)",
+          "pdf_value": "X1 with bitfield definition: bits 1...0 U:2 integrityUsed."
+        }
+      ],
+      "notes": "The PDF states the message length as '12 + cnt 12'. However, the fields detailed within the repeated group (svid, reserved1, udre, svSys) sum to only 4 bytes per group element. This suggests a likely typo in the manual's length formula, which should probably be '12 + cnt 4'. Regardless, the canonical definition completely misses the repeated group structure and the correct payload length formula.",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:58:01.475670+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition has a placeholder 'fixed: 0' for payload length. The PDF specifies a variable length formula '12 + cnt * 12 Bytes', indicating a fixed header size followed by a variable number of repeated blocks.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt * 12 Bytes"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition incorrectly defines 'svData' as a single U1 field starting at offset 12. The PDF clearly shows a 'Start of repeated group (cnt times)' beginning at offset 12, containing 9 fields (svid, flags, udre, svSys, svService, reserved1, prc, reserved2, ic), each block totaling 12 bytes.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group of 9 fields (12 bytes per iteration) as defined in the PDF, controlled by the 'cnt' field."
+        },
+        {
+          "field": "service",
+          "issue": "The canonical definition correctly identifies 'service' as an X1 (bitfield) type, but it lacks the detailed bitfield definitions provided in the PDF manual (e.g., bit 0: Ranging, bit 1: Corrections, bit 2: Integrity, bit 3: Testmode, bit 4: Bad).",
+          "canonical_value": "{ \"name\": \"service\", \"byte_offset\": 7, \"data_type\": \"X1\", ... }",
+          "pdf_value": "X1 with named bits: Ranging (bit 0), Corrections (bit 1), Integrity (bit 2), Testmode (bit 3), Bad (bit 4)."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "The canonical definition correctly identifies 'statusFlags' as an X1 (bitfield) type, but it lacks the detailed bitfield definitions provided in the PDF manual (e.g., bits 1...0: integrityUsed with specific values).",
+          "canonical_value": "{ \"name\": \"statusFlags\", \"byte_offset\": 9, \"data_type\": \"X1\", ... }",
+          "pdf_value": "X1 with named bits: integrityUsed (bits 1...0)."
+        },
+        {
+          "field": "reserved0",
+          "issue": "The canonical defines 'reserved0' as U1[2] starting at offset 10. The PDF does not explicitly name a field 'reserved0' at this offset but implies a 2-byte gap between 'statusFlags' (offset 9) and the start of the repeated group (offset 12). This is consistent in terms of size and position, but the canonical makes it an explicit named 'reserved' field.",
+          "canonical_value": "{ \"name\": \"reserved0\", \"byte_offset\": 10, \"data_type\": \"U1[2]\", \"reserved\": true }",
+          "pdf_value": "Implicit 2-byte reserved gap at offsets 10-11."
+        }
+      ],
+      "notes": "The core structure of the UBX-NAV-SBAS message in the canonical definition is significantly different from the PDF due to the incorrect handling of the variable-length repeated group. The canonical defines a single 'svData' field where the PDF clearly shows a complex repeated block whose size is determined by the 'cnt' field. Additionally, detailed bitfield definitions are missing for the 'service' and 'statusFlags' fields, which are present in the PDF.",
+      "pdf_pages": [
+        140,
+        141
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:58:24.681089+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The message has a variable payload length based on a 'cnt' field, but the canonical definition uses 'fixed: 0' and does not properly represent the repeated group structure.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt * 12 (variable)"
+        },
+        {
+          "field": "service",
+          "issue": "This is an X1 (bitfield) type, but the canonical definition is missing the explicit bit definitions found in the PDF.",
+          "canonical_value": "{ \"name\": \"service\", ..., \"data_type\": \"X1\" } (no bitfield definitions)",
+          "pdf_value": "X1 service, with bits for Ranging (0), Corrections (1), Integrity (2), Testmode (3), Bad (4)"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "This is an X1 (bitfield) type, but the canonical definition is missing the explicit bit definitions found in the PDF, specifically 'integrityUsed'.",
+          "canonical_value": "{ \"name\": \"statusFlags\", ..., \"data_type\": \"X1\" } (no bitfield definitions)",
+          "pdf_value": "X1 statusFlags, with bits 1...0 for integrityUsed"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines a single 'svData' field (U1) at offset 12. The PDF clearly describes a variable-length repeated group starting at offset 12, repeated 'cnt' times, with a detailed structure of 9 fields per group (total 12 bytes per group).",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Repeated group (cnt times) starting at offset 12, containing: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The canonical definition accurately captures the fixed-size header fields (iTOW, geo, mode, sys, cnt, reserved0) in terms of offset, type, and general description. However, it critically fails to represent the X-type bitfields with their individual bit definitions and completely misrepresents the variable-length repeated group structure that constitutes the main data of this message.",
+      "pdf_pages": [
+        151,
+        152
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:58:45.310865+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length calculation is incorrect. The fixed part of the payload is 12 bytes (iTOW to reserved0), followed by a variable part based on 'cnt' field. The canonical specifies fixed: 0, which is incorrect.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "service",
+          "issue": "X1 (bitfield) type is correct, but the detailed bit definitions for 'Ranging', 'Corrections', 'Integrity', 'Testmode' are missing from the canonical definition.",
+          "canonical_value": "{ \"name\": \"service\", \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode)"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "X1 (bitfield) type is correct, but the detailed bit definitions for 'integrityUsed' (bits 1..0) and 'Bad' (bit 4) are missing from the canonical definition.",
+          "canonical_value": "{ \"name\": \"statusFlags\", \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bits 1..0 (integrityUsed) and bit 4 (Bad)"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 field at byte offset 12. This is incorrect. Byte offset 12 is the start of a variable-length repeated group, where 'cnt' specifies the number of repetitions. The canonical completely misses the repeated group structure and its constituent fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic).",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group (cnt times) starting at byte offset 12, with each group containing 12 bytes of fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic)."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the fixed fields up to 'reserved0' (bytes 0-11) by name, offset, and type, with the exception of missing bit definitions for X1 fields. However, it fails to capture the subsequent 'repeated group' structure, which accounts for the variable length part of the payload (12 + cnt*12).",
+      "pdf_pages": [
+        156,
+        157
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:06.841333+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length is variable and described by a formula in the PDF, but the canonical only specifies 'fixed: 0' without a formula or reference to the repeated group size.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "12 + cnt * 12"
+        },
+        {
+          "field": "svData (repeated group structure)",
+          "issue": "The canonical definition represents the variable-length 'svData' as a single 'U1' field at offset 12. The PDF clearly defines this as a repeated group based on the 'cnt' field, where each group element is 12 bytes long and contains multiple sub-fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic). The canonical is missing the 'repeated_groups' structure entirely.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at offset 12, repeated 'cnt' times, with each group element being 12 bytes and containing sub-fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        },
+        {
+          "field": "bitfield_definitions",
+          "issue": "The 'service' and 'statusFlags' fields are correctly identified as X1 (bitfields), but the canonical JSON snippet does not include the essential bit-level definitions provided in the PDF for these fields. While the data type is correct, the detailed interpretation is missing.",
+          "canonical_value": "No explicit bit definitions provided in the snippet for 'service' or 'statusFlags'.",
+          "pdf_value": "For 'service': bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode), bit 4 (Bad). For 'statusFlags': bits 1...0 (integrityUsed)."
+        }
+      ],
+      "notes": "All fixed-offset fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) up to offset 11 match correctly in name, offset, type, and description. The primary discrepancies relate to the variable-length portion of the payload (the repeated group) and the absence of explicit bitfield definitions for X-type fields, which are crucial for full message parsing.",
+      "pdf_pages": [
+        157,
+        158
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:26.510490+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The payload length is variable and depends on the 'cnt' field, which dictates a repeated group. The canonical definition should use 'repeated_groups' and specify the total length formula.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes) = 12 + cnt*12"
+        },
+        {
+          "field": "service",
+          "issue": "Missing bitfield definitions for the X1 type.",
+          "canonical_value": "{ \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bits defined as: bit 0 (Ranging), bit 1 (Corrections), bit 2 (Integrity), bit 3 (Testmode), bit 4 (Bad)."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "Missing bitfield definitions for the X1 type.",
+          "canonical_value": "{ \"data_type\": \"X1\" }",
+          "pdf_value": "X1 with bits defined as: bits 1...0 (integrityUsed)."
+        },
+        {
+          "field": "svData",
+          "issue": "This field is incorrectly defined as a single U1. The PDF indicates it is the start of a variable-length repeated group, controlled by the 'cnt' field.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "A repeated group starting at byte offset 12, with 'cnt' repetitions. Each block is 12 bytes long and contains fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The core structure of the message's variable-length payload (the 'svData' repeated group) is missing from the canonical definition. Additionally, the bitfield definitions for 'service' and 'statusFlags' are not present, making the X1 type less descriptive.",
+      "pdf_pages": [
+        152,
+        153
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T04:59:46.286413+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition incorrectly defines the variable-length portion of the payload as a single 'svData' field (U1 type) at byte offset 12. The PDF clearly shows this as a 'repeated group' structure, repeated 'cnt' times, with each group element consisting of multiple fields (svid, flags, udre, svSys, svService, reserved1, prc, reserved2, ic) and a total length of 12 bytes per element.",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (cnt times):\n- 12 + n*12 U1 svid\n- 13 + n*12 U1 flags\n- 14 + n*12 U1 udre\n- 15 + n*12 U1 svSys\n- 16 + n*12 U1 svService\n- 17 + n*12 U1 reserved1\n- 18 + n*12 I2 prc (unit: cm)\n- 20 + n*12 U1[2] reserved2\n- 22 + n*12 I2 ic (unit: cm)\nEach group element is 12 bytes long."
+        }
+      ],
+      "notes": "The initial fixed-length fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) all match the PDF definition in name, byte offset, and data type. The significant discrepancy lies in the handling of the variable-length part of the payload, which should be defined using 'repeated_groups' with 'cnt' as the counter field.",
+      "pdf_pages": [
+        109,
+        110
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:00:04.479005+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload structure (svData)",
+          "issue": "The canonical definition incorrectly defines 'svData' as a single U1 field at byte_offset 12. The PDF clearly indicates that this section is a repeated group (controlled by the 'cnt' field) containing multiple sub-fields: 'svid', 'flags', 'udre', 'svSys', 'svService', 'reserved1', 'prc', 'U1[2] reserved2', and 'ic'. Each iteration of this group is 12 bytes long, matching the '12 + cnt*12' payload length formula.",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "count_field": "cnt",
+            "offset_start": 12,
+            "element_size": 12,
+            "fields": [
+              {
+                "name": "svid",
+                "byte_offset": 0,
+                "data_type": "U1"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 1,
+                "data_type": "U1"
+              },
+              {
+                "name": "udre",
+                "byte_offset": 2,
+                "data_type": "U1"
+              },
+              {
+                "name": "svSys",
+                "byte_offset": 3,
+                "data_type": "U1"
+              },
+              {
+                "name": "svService",
+                "byte_offset": 4,
+                "data_type": "U1"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 5,
+                "data_type": "U1",
+                "reserved": true
+              },
+              {
+                "name": "prc",
+                "byte_offset": 6,
+                "data_type": "I2"
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 8,
+                "data_type": "U1[2]",
+                "reserved": true
+              },
+              {
+                "name": "ic",
+                "byte_offset": 10,
+                "data_type": "I2"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "All fixed fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) match the PDF specification precisely in terms of name, offset, and data type. The primary discrepancy lies in the handling of the variable-length portion of the payload, which is defined as a repeated group in the PDF but is missing this structure in the canonical definition.",
+      "pdf_pages": [
+        106,
+        107
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:00:25.113171+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies 'fixed: 0' for the payload length, indicating a variable payload. However, it does not provide the explicit formula for the variable length. The PDF clearly specifies the formula.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes): 12 + cnt*12"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical definition incorrectly defines 'svData' as a single 'U1' field at byte_offset 12. The PDF explicitly states 'Start of repeated group (cnt times)' at this offset, indicating a complex variable-length structure with 'cnt' repetitions. Each repetition is 12 bytes long and contains multiple sub-fields: svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, and ic. The canonical completely misses this entire 'repeated_groups' structure.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (cnt times) at offset 12. Each group has a length of 12 bytes and contains the following fields: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2, unit: cm), reserved3 (U1[2]), ic (I2, unit: cm)."
+        },
+        {
+          "field": "service",
+          "issue": "The canonical correctly identifies 'service' as an X1 (bitfield) type, but it lacks the detailed bit definitions (e.g., bit 0 for Ranging, bit 1 for Corrections, etc.) provided in the PDF for this field.",
+          "canonical_value": "data_type: \"X1\"",
+          "pdf_value": "Bitfield definitions: bit 0: Ranging, bit 1: Corrections, bit 2: Integrity, bit 3: Testmode, bit 4: Bad."
+        },
+        {
+          "field": "statusFlags",
+          "issue": "The canonical correctly identifies 'statusFlags' as an X1 (bitfield) type, but it lacks the detailed bit definitions (e.g., bits 1...0 for integrityUsed with its specific values) provided in the PDF for this field.",
+          "canonical_value": "data_type: \"X1\"",
+          "pdf_value": "Bitfield definitions: bits 1...0: integrityUsed (U:2), with descriptions for 0=Unknown, 1=Integrity information not available/enabled, 2=Receiver uses only GPS sats for integrity."
+        }
+      ],
+      "notes": "The primary discrepancy is the complete absence of the 'repeated_groups' structure in the canonical definition for the SV data, which is a fundamental part of this message as described in the PDF. The canonical only defines a placeholder 'svData' field instead of the full group. Additionally, the bitfield definitions for 'service' and 'statusFlags' are missing in the canonical, and the explicit payload length formula for variable messages should be included.",
+      "pdf_pages": [
+        129,
+        130
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:00:48.537353+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "Payload length calculation is incorrect. The canonical specifies a fixed length of 0, but the PDF indicates a fixed header of 12 bytes plus a variable part.",
+          "canonical_value": 0,
+          "pdf_value": "12 + cnt * 12"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 field at byte_offset 12. The PDF clearly indicates a variable-length payload section starting at byte_offset 12, which is a repeated group (cnt times) of 12-byte structures, each containing multiple fields.",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "repeated_groups": [
+              {
+                "name": "svData",
+                "repetition_type": "count_field",
+                "count_field": "cnt",
+                "fields": [
+                  {
+                    "name": "svid",
+                    "byte_offset": 0,
+                    "data_type": "U1",
+                    "description": "SV ID"
+                  },
+                  {
+                    "name": "reserved1",
+                    "byte_offset": 1,
+                    "data_type": "U1",
+                    "reserved": true
+                  },
+                  {
+                    "name": "udre",
+                    "byte_offset": 2,
+                    "data_type": "U1",
+                    "description": "Monitoring status"
+                  },
+                  {
+                    "name": "svSys",
+                    "byte_offset": 3,
+                    "data_type": "U1",
+                    "description": "System (WAAS/EGNOS/...) same as SYS"
+                  },
+                  {
+                    "name": "svService",
+                    "byte_offset": 4,
+                    "data_type": "U1",
+                    "description": "Services available same as SERVICE"
+                  },
+                  {
+                    "name": "reserved2",
+                    "byte_offset": 5,
+                    "data_type": "U1",
+                    "reserved": true
+                  },
+                  {
+                    "name": "prc",
+                    "byte_offset": 6,
+                    "data_type": "I2",
+                    "unit": "cm",
+                    "description": "Pseudo Range correction in [cm]"
+                  },
+                  {
+                    "name": "reserved3",
+                    "byte_offset": 8,
+                    "data_type": "U1[2]",
+                    "reserved": true
+                  },
+                  {
+                    "name": "ic",
+                    "byte_offset": 10,
+                    "data_type": "I2",
+                    "unit": "cm",
+                    "description": "Ionosphere correction in [cm]"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the fields from iTOW up to reserved0, including their types and offsets. However, it fails to recognize the 'svData' section as a repeated group. Instead, it lists it as a single U1 field. The PDF clearly indicates 'Start of repeated group (cnt times)' for the subsequent data, with each repetition being 12 bytes long and containing multiple sub-fields. The total payload length in the PDF is given as '12 + cnt*12', reflecting 12 bytes of fixed header followed by 'cnt' repetitions of 12-byte structures. The canonical's fixed length of 0 is also incorrect, as there are 12 bytes of fixed payload before any repeated groups.",
+      "pdf_pages": [
+        131,
+        132
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:01:08.449171+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The canonical definition specifies a fixed payload length of 0, but the PDF indicates a fixed portion of 12 bytes before the repeated group starts. The total length is '12 + cnt*12'.",
+          "canonical_value": "0",
+          "pdf_value": "12 + cnt*12"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 field at byte_offset 12. The PDF clearly shows a repeated group starting at byte_offset 12, with 'cnt' as the repetition count, and each element of the group consisting of multiple fields (svid, reserved1, udre, svSys, svService, reserved2, prc, reserved3, ic) totaling 12 bytes per element. This is a major structural discrepancy.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" }",
+          "pdf_value": "Repeated group based on 'cnt' with 9 sub-fields, total 12 bytes per group element."
+        },
+        {
+          "field": "service",
+          "issue": "The canonical defines 'service' as an X1 (bitfield) but lacks the detailed bit definitions (Ranging, Corrections, Integrity, Testmode, Bad) which are present in the PDF.",
+          "canonical_value": "X1 without bit definitions",
+          "pdf_value": "X1 with 5 named bit definitions"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "The canonical defines 'statusFlags' as an X1 (bitfield) but lacks the detailed bit definitions (integrityUsed) which are present in the PDF.",
+          "canonical_value": "X1 without bit definitions",
+          "pdf_value": "X1 with 'bits 1...0 U:2 integrityUsed' definition"
+        }
+      ],
+      "notes": "The initial fields (iTOW, geo, mode, sys, service, cnt, statusFlags, reserved0) up to offset 12 match in terms of name, offset, and basic data type (U1, I1, X1, U1[2]). However, the canonical's representation of the variable-length 'svData' portion is fundamentally incorrect, and detailed bitfield definitions for 'service' and 'statusFlags' are missing. The payload length calculation in the canonical also needs to reflect the fixed part plus the variable part determined by 'cnt'.",
+      "pdf_pages": [
+        145,
+        146
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:01:24.828915+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[8]",
+          "issue": "The 'svData' field in the canonical definition is incorrect. The PDF manual clearly indicates a 'Start of repeated group (cnt times)' at byte offset 12. The canonical defines 'svData' as a single U1 type, whereas it should be a repeated group containing four sub-fields (svid, reserved1, udre, svSys).",
+          "canonical_value": {
+            "name": "svData",
+            "byte_offset": 12,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "repetition_type": "count_field",
+            "count_field": "cnt",
+            "byte_offset": 12,
+            "fields": [
+              {
+                "name": "svid",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "SV ID"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "reserved": true
+              },
+              {
+                "name": "udre",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "description": "Monitoring status"
+              },
+              {
+                "name": "svSys",
+                "byte_offset": 3,
+                "data_type": "U1",
+                "description": "System (WAAS/EGNOS/...) same as SYS"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The manual page (Page 2 of the provided context) clearly defines the UBX-NAV-SBAS message structure. Page 1, despite having the same message ID (0x01 0x32) in its title, appears to contain generic bitfield definitions (e.g., svUsed, health) that are referenced by other messages or by fields within this message, but do not directly form part of the UBX-NAV-SBAS payload structure as defined by the 'Payload description' table on Page 2. Therefore, validation focused primarily on Page 2 for the message structure.\n\nThere's a minor ambiguity in the PDF's 'Length (Bytes): 12 + cnt 12'. Based on the explicit field definitions within the repeated group (svid U1, reserved1 U1, udre U1, svSys U1), each repeated block is 4 bytes. Thus, the total length should be 12 + cnt * 4. The '12' in 'cnt 12' is likely a typo and should be '4' or it refers to the fixed part of the message length.",
+      "pdf_pages": [
+        118,
+        119
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:01:51.244201+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed payload length, but the PDF indicates a variable length dependent on a count field.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "Length (Bytes): 12 + cnt * 12"
+        },
+        {
+          "field": "payload.repeated_groups",
+          "issue": "The canonical definition is missing the `repeated_groups` structure to describe the variable trailing data. It incorrectly defines 'svData' as a simple U1 field within the main 'fields' array.",
+          "canonical_value": "{ \"name\": \"svData\", \"byte_offset\": 12, \"data_type\": \"U1\" } within payload.fields",
+          "pdf_value": "Start of repeated group (cnt times) at byte offset 12, where each block is 12 bytes long and begins with U1 svid."
+        },
+        {
+          "field": "payload.fields.service.bit_definitions",
+          "issue": "The canonical definition correctly identifies 'service' as an X1 (bitfield) type but does not provide the detailed bit definitions as shown in the PDF.",
+          "canonical_value": "X1 (no bit_definitions)",
+          "pdf_value": "bit 0 U:1 Ranging, bit 1 U:1 Corrections, bit 2 U:1 Integrity, bit 3 U:1 Testmode, bit 4 U:1 Bad"
+        },
+        {
+          "field": "payload.fields.statusFlags.bit_definitions",
+          "issue": "The canonical definition correctly identifies 'statusFlags' as an X1 (bitfield) type but does not provide the detailed bit definitions, specifically for 'integrityUsed', as shown in the PDF.",
+          "canonical_value": "X1 (no bit_definitions)",
+          "pdf_value": "bits 1...0 U:2 integrityUsed"
+        }
+      ],
+      "notes": "The fixed fields (iTOW, geo, mode, sys, cnt, reserved0) match perfectly in name, offset, and type. The primary discrepancy lies in the handling of the variable-length payload structure (`12 + cnt * 12`) and the detailed bitfield definitions for 'service' and 'statusFlags'. The 'svData' field in the canonical should represent a `repeated_group` with `cnt` as the count field, and each group block should be 12 bytes long, starting with `U1 svid` (the remaining 11 bytes within each block are implicitly reserved based on the PDF's length formula).",
+      "pdf_pages": [
+        105,
+        106
+      ],
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:02:17.802489+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-NAV-SBAS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition implies a fixed payload length or an incorrectly structured variable length. The PDF clearly indicates a variable length: 12 bytes (fixed header) + (cnt * 12 bytes) for the repeated group.",
+          "canonical_value": "{fixed: 0}",
+          "pdf_value": "12 + cnt * 12"
+        },
+        {
+          "field": "service",
+          "issue": "The canonical 'service' field (X1) is missing its bit definitions, which are explicitly provided in the PDF.",
+          "canonical_value": "Missing bit_definitions",
+          "pdf_value": "bit 0: Ranging, bit 1: Corrections, bit 2: Integrity, bit 3: Testmode, bit 4: Bad"
+        },
+        {
+          "field": "statusFlags",
+          "issue": "The canonical 'statusFlags' field (X1) is missing its bit definitions, which are explicitly provided in the PDF.",
+          "canonical_value": "Missing bit_definitions",
+          "pdf_value": "bits 1...0: integrityUsed"
+        },
+        {
+          "field": "svData",
+          "issue": "The canonical defines 'svData' as a single U1 field at byte_offset 12. The PDF clearly describes a repeated group of 'cnt' elements, each 12 bytes long, starting at byte_offset 12. This repeated group contains multiple sub-fields, not a single U1 field.",
+          "canonical_value": "{name: 'svData', byte_offset: 12, data_type: 'U1'}",
+          "pdf_value": "Repeated group (cnt times) starting at byte_offset 12, each 12 bytes long, containing: svid (U1), reserved1 (U1), udre (U1), svSys (U1), svService (U1), reserved2 (U1), prc (I2), reserved3 (U1[2]), ic (I2)."
+        }
+      ],
+      "notes": "The canonical definition for UBX-NAV-SBAS fundamentally misrepresents the payload structure by omitting the entire 'repeated_groups' section for SV data. It defines a single, incorrect 'svData' field instead of a complex repeated group based on the 'cnt' field. Additionally, the X1 (bitfield) types are missing their explicit bit definitions.",
+      "pdf_pages": [
+        111,
+        112
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:02:38.999648+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 32,
+    "matches": 0,
+    "mismatches": 32
+  }
+}

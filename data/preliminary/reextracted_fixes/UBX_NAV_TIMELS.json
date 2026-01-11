@@ -1,0 +1,113 @@
+{
+  "name": "UBX-NAV-TIMELS",
+  "class_id": "0x01",
+  "message_id": "0x26",
+  "message_type": "periodic_polled",
+  "description": "Information about the upcoming leap second event if one is scheduled.",
+  "payload": {
+    "length": {
+      "fixed": 24
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 5,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "srcOfCurrLs",
+        "byte_offset": 8,
+        "data_type": "U1",
+        "description": "Information source for the current number of leap seconds.\n\u2022 0 = Default (hardcoded in the firmware, can be outdated)\n\u2022 1 = Derived from time difference between GPS and GLONASS time\n\u2022 2 = GPS\n\u2022 3 = SBAS\n\u2022 4 = BeiDou\n\u2022 5 = Galileo\n\u2022 6 = Aided data\n\u2022 7 = Configured\n\u2022 8 = NavIC\n\u2022 255 = Unknown"
+      },
+      {
+        "name": "currLs",
+        "byte_offset": 9,
+        "data_type": "I1",
+        "unit": "S",
+        "description": "Current number of leap seconds since start of GPS time (Jan 6, 1980). It reflects how much GPS time is ahead of UTC time. Galileo number of leap seconds is the same as GPS. BeiDou number of leap seconds is 14 less than GPS. GLONASS follows UTC time, so no leap seconds."
+      },
+      {
+        "name": "srcOfLsChange",
+        "byte_offset": 10,
+        "data_type": "U1",
+        "description": "Information source for the future leap second event.\n\u2022 0 = No source\n\u2022 2 = GPS\n\u2022 3 = SBAS\n\u2022 4 = BeiDou\n\u2022 5 = Galileo\n\u2022 6 = GLONASS\n\u2022 7 = NavIC"
+      },
+      {
+        "name": "lsChange",
+        "byte_offset": 11,
+        "data_type": "I1",
+        "unit": "S",
+        "description": "Future leap second change if one is scheduled. +1 = positive leap second, -1 = negative leap second, 0 = no future leap second event scheduled or no information available."
+      },
+      {
+        "name": "timeToLsEvent",
+        "byte_offset": 12,
+        "data_type": "I4",
+        "unit": "S",
+        "description": "Number of seconds until the next leap second event, or from the last leap second event if no future event scheduled. If > 0 event is in the future, = 0 event is now, < 0 event is in the past. Valid only if validTimeToLsEvent = 1."
+      },
+      {
+        "name": "dateOfLsGpsWn",
+        "byte_offset": 16,
+        "data_type": "U2",
+        "description": "GPS week number (WN) of the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1."
+      },
+      {
+        "name": "dateOfLsGpsDn",
+        "byte_offset": 18,
+        "data_type": "U2",
+        "description": "GPS day of week number (DN) for the next leap second event or the last one if no future event scheduled. Valid only if validTimeToLsEvent = 1. (GPS and Galileo DN: from 1 = Sun to 7 = Sat. BeiDou DN: from 0 = Sun to 6 = Sat.)"
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 20,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "valid",
+        "byte_offset": 23,
+        "data_type": "X1",
+        "description": "Validity flags",
+        "bit_fields": [
+          {
+            "name": "validCurrLs",
+            "bit_offset": 0,
+            "num_bits": 1,
+            "description": "1 = Valid current number of leap seconds value."
+          },
+          {
+            "name": "validTimeToLsEvent",
+            "bit_offset": 1,
+            "num_bits": 1,
+            "description": "1 = Valid time to next leap second event or from the last leap second event if no future event scheduled."
+          }
+        ]
+      }
+    ]
+  }
+}

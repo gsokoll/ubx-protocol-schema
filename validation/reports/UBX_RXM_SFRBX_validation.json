@@ -1,0 +1,921 @@
+{
+  "message": "UBX-RXM-SFRBX",
+  "timestamp": "2026-01-09T05:13:55.681929+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[7]",
+          "issue": "Name of reserved field differs.",
+          "canonical_value": {
+            "name": "reserved0",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          "pdf_value": {
+            "name": "reserved1",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Reserved"
+          }
+        },
+        {
+          "field": "payload.dataWords",
+          "issue": "The 'dataWords' field is incorrectly defined as a single U1. The PDF clearly indicates a repeated block of U4 (32-bit words), where the block repeats 'numWords' times.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated block (numWords times) with field 'dwrd' (U4) at 8 + 4*N"
+        }
+      ],
+      "notes": "The PDF provides two distinct definitions for UBX-RXM-SFRBX based on protocol versions:\n1.  Protocol version 17 (Page 1):\n    - At offset 2: `reserved1` (canonical has `sigId`)\n    - At offset 5: `reserved2` (canonical has `chn`)\n    - At offset 6: `version` (value 0x01, canonical expects 0x02)\n    - At offset 7: `reserved3` (canonical has `reserved0`)\n\n2.  Protocol versions 18, 19, ..., 23.01 (Page 2):\n    - This structure largely aligns with the canonical definition for fields from offset 0 to 6.\n    - At offset 7: `reserved1` (canonical has `reserved0` - minor name difference for a reserved field).\n\nSince the canonical `min_protocol_version` is 1800, it should align with the structure on Page 2.\n\nThe most significant discrepancy is the handling of the 'data words' (dwrd). The canonical defines a single `U1` field named `dataWords` at byte offset 8. The PDF (both pages) explicitly states a 'Start of repeated block (numWords times)' where each block element is a `U4` named `dwrd` at '8 + 4*N'. This requires the canonical definition to use a `repeated_groups` structure with `data_type: U4` for the repeated field, rather than a single `U1` field.",
+      "pdf_pages": [
+        434,
+        435
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T05:07:00.903671+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "Payload field at byte_offset 2",
+          "issue": "Canonical defines a functional field, PDF defines a reserved field.",
+          "canonical_value": "{ \"name\": \"sigId\", \"byte_offset\": 2, \"data_type\": \"U1\", \"description\": \"Signal identifier\" }",
+          "pdf_value": "{ \"name\": \"reserved1\", \"byte_offset\": 2, \"data_type\": \"U1\", \"description\": \"Reserved\" }"
+        },
+        {
+          "field": "Repeated Block (dataWords / dwrd)",
+          "issue": "The canonical defines a single U1 field for `dataWords` at offset 8, while the PDF explicitly describes a repeated block of U4 (dwrd) elements, repeated `numWords` times. This is a structural and data type mismatch for the variable-length portion of the payload.",
+          "canonical_value": "{ \"name\": \"dataWords\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated block (numWords times): { \"byte_offset\": \"8 + 4*N\", \"data_type\": \"U4\", \"name\": \"dwrd\", \"description\": \"The data words\" }"
+        }
+      ],
+      "notes": "The canonical definition of UBX-RXM-SFRBX shows two significant discrepancies when compared against page 2 of the provided PDF ('u-blox 8 / u-blox M8 Receiver description - Manual', which details protocol versions 18+ and is relevant to the canonical's min_protocol_version 1800):\n1. At byte offset 2, the canonical defines 'sigId' (Signal identifier) while the PDF clearly marks this byte as 'reserved1'. This changes the interpretation of the message content.\n2. The canonical payload defines 'dataWords' as a single U1 field at byte offset 8. However, the message is described as having a variable length based on 'numWords', with the PDF explicitly detailing a 'Start of repeated block (numWords times)' containing 'dwrd' of type U4. The canonical should use a 'repeated_groups' structure with U4 data type to correctly represent this part of the message.\n\nPage 1 of the PDF (older/different variant for M8, protocol 17) also differs at byte offset 5, where it shows 'reserved2' while the canonical matches page 2's 'chn' field. Since the canonical's 'min_protocol_version' is 1800, page 2 is the primary reference for this validation. The field 'reserved0' in canonical and 'reserved2'/'reserved3' in PDF for byte offset 7 are considered a match as they are both reserved fields of U1 type.",
+      "pdf_pages": [
+        434,
+        435
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T05:07:28.731205+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "dataWords",
+          "issue": "The canonical defines 'dataWords' as a single U1 field. The PDF (via the length formula '8 + numWords * 4' and 'Start of repeated group (numWords times)') indicates this should be a repeated group of 'numWords' elements, with each element being 4 bytes (implied U4 type).",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Repeated group of 'numWords' data words, each 4 bytes long (U4), starting at byte offset 8."
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match their byte offsets, data types, and general descriptions. The discrepancy is solely in the incorrect representation of the variable-length 'dataWords' as a single field instead of a repeated group in the canonical definition. The descriptions in the PDF for freqId, numWords, and chn are slightly more detailed than the canonical, but not contradictory.",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:07:43.809615+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "dataWords (dwrd)",
+          "issue": "The canonical definition incorrectly models the variable-length 'dwrd' field. It is defined as a single U1 field, but the PDF clearly specifies it as a repeated group of U4 data words ('dwrd'), starting at byte offset 8, and repeated 'numWords' times, consistent with the payload length formula '8 + numWords * 4'.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "dwrd",
+            "byte_offset": "8 + n.4",
+            "data_type": "U4",
+            "structure_hint": "Start of repeated group (numWords times)"
+          }
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) and the overall payload length calculation '8 + numWords * 4' match the PDF specification. The core discrepancy lies in the modeling of the trailing variable-length data words. The canonical definition should be updated to use a 'repeated_group' for 'dwrd', with a 'data_type' of 'U4', and its 'count_field' referencing 'numWords'.",
+      "pdf_pages": [
+        118,
+        119
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:08:06.606390+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[8].dataWords",
+          "issue": "The 'dataWords' field in the canonical definition is incorrectly defined as a single U1 type. The PDF specifies a repeated group starting at byte offset 8, where each element ('dwrd') is of type U4 and the group repeats 'numWords' times.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "group_start_offset": "8",
+            "group_repetition_count": "numWords",
+            "group_element_name": "dwrd",
+            "group_element_type": "U4",
+            "group_element_description": "The data words"
+          }
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match in name, offset, and data type between the canonical definition and the provided PDF. The descriptions are also consistent, with the PDF often providing more detail. The main discrepancy is the incorrect representation of the variable-length 'dataWords' as a single field instead of a repeated group of U4 elements.",
+      "pdf_pages": [
+        133,
+        134
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:08:21.560757+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "freqId.description",
+          "issue": "Description is less specific in canonical.",
+          "canonical_value": "Frequency slot for GLONASS",
+          "pdf_value": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+        },
+        {
+          "field": "numWords.description",
+          "issue": "Description is less specific in canonical.",
+          "canonical_value": "Number of data words",
+          "pdf_value": "The number of data words contained in this message (up to 10, for currently supported signals)"
+        },
+        {
+          "field": "dataWords",
+          "issue": "The 'dataWords' field is incorrectly defined. In the PDF, it is a repeated group starting at byte offset 8, where each element is a U4 (dwrd) and the group repeats 'numWords' times. The canonical defines it as a single U1 field.",
+          "canonical_value": "{ \"name\": \"dataWords\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numWords times)\n8 + n.4 U4 dwrd The data words"
+        }
+      ],
+      "notes": "The primary discrepancy is the incorrect definition of 'dataWords'. It should be a repeated group of U4 types, not a single U1 field. The descriptions for 'freqId' and 'numWords' are also less detailed in the canonical definition but refer to the same concept.",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:08:38.996835+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The 'dataWords' field is incorrectly defined as a single U1 field. According to the PDF, this should be a repeated group of U4 elements, repeated 'numWords' times.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "name": "dataWords",
+            "repetition_type": "count_field",
+            "count_field": "numWords",
+            "start_offset": "8",
+            "field_within_group": {
+              "name": "dwrd",
+              "byte_offset_relative": 0,
+              "data_type": "U4"
+            }
+          }
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) and the message length formula match the provided PDF content exactly. The primary issue is the incorrect modeling of the variable-length 'dwrd' data as a single U1 field instead of a repeated group of U4 fields.",
+      "pdf_pages": [
+        194,
+        195
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:09:00.467019+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:09:01.012426+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:09:01.555536+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "dataWords",
+          "issue": "The canonical definition represents 'dataWords' as a single U1 field. The PDF clearly indicates a 'Start of repeated group (numWords times)' at byte offset 8, with each element being a U4 type named 'dwrd'. The canonical should use a 'repeated_groups' structure for this variable-length data.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "start_offset": "8",
+            "repetition_count_field": "numWords",
+            "element": {
+              "name": "dwrd",
+              "data_type": "U4",
+              "description": "The data words"
+            }
+          }
+        },
+        {
+          "field": "freqId.description",
+          "issue": "The description for freqId in the canonical is less specific than in the PDF. This is a minor difference, not a structural or type mismatch.",
+          "canonical_value": "Frequency slot for GLONASS",
+          "pdf_value": "Only used for GLONASS: This is the frequency slot + 7 (range from 0 to 13)"
+        }
+      ],
+      "notes": "All fixed-size fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match in name, offset, and type. The main issue is the incorrect representation of the variable-length 'dataWords' as a single U1 field instead of a repeated group of U4 words, as specified by 'numWords' in the PDF.",
+      "pdf_pages": [
+        161,
+        162
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:09:18.008166+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:09:18.554288+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:09:19.098892+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload structure for dataWords",
+          "issue": "The canonical definition incorrectly defines 'dataWords' as a single U1 field at offset 8. The PDF clearly indicates a repeated group starting at offset 8, where the number of repetitions is determined by 'numWords', and each element of the group is a U4 (named 'dwrd').",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times) with elements: 'dwrd' (U4) at offset '8 + n.4'"
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match in name, offset, and type. The payload length formula also matches. The critical discrepancy lies in the structure of the variable-length data words at the end of the payload, which is a repeated group in the PDF but a single field in the canonical.",
+      "pdf_pages": [
+        118,
+        119
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:09:33.660926+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[8]",
+          "issue": "The canonical defines 'dataWords' as a single U1 field at byte_offset 8. The PDF explicitly indicates a repeated group of 'numWords' elements, with each element named 'dwrd' and having a data type of U4, starting at byte_offset 8.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "repeated_group": {
+              "name": "dwrd",
+              "offset": "8 + n.4",
+              "type": "U4",
+              "repetition_count_field": "numWords"
+            }
+          }
+        }
+      ],
+      "notes": "All fixed-size fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match the PDF specification in terms of name, byte_offset, and data_type. The payload length formula (8 + numWords * 4) also matches. The primary discrepancy is how the variable-length 'data words' at the end of the message are represented. The canonical should use a 'repeated_groups' structure for 'dwrd' with 'repetition_type': 'count_field' referring to 'numWords', and the individual elements should be 'U4' type.",
+      "pdf_pages": [
+        131,
+        132
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:09:56.481086+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[2]",
+          "issue": "Field name mismatch and missing 'sigId' in PDF.",
+          "canonical_value": {
+            "name": "sigId",
+            "byte_offset": 2,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": "U1"
+          }
+        },
+        {
+          "field": "payload.fields[7]",
+          "issue": "Reserved field name mismatch.",
+          "canonical_value": {
+            "name": "reserved0",
+            "byte_offset": 7,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "reserved1",
+            "byte_offset": 7,
+            "data_type": "U1"
+          }
+        },
+        {
+          "field": "payload.fields[8]",
+          "issue": "Major structural mismatch for the 'dataWords' field. The canonical defines it as a single U1, while the PDF defines it as a repeated group of U4 data words, where the count is determined by 'numWords'.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "dwrd",
+            "byte_offset": "8 + n.4",
+            "data_type": "U4",
+            "repetition_type": "count_field",
+            "count_field": "numWords",
+            "description": "The data words"
+          }
+        }
+      ],
+      "notes": "The canonical definition for UBX-RXM-SFRBX has significant structural differences compared to the ZED-F9H Interface Description (UBX-19030118) for protocol version 31.11. Specifically, the field at byte offset 2 (sigId vs reserved0) and the entire structure of the trailing data words (single U1 vs repeated group of U4) are mismatched. The canonical definition needs to be updated to reflect the `reserved0` field at offset 2 and the `dwrd` field as a `repeated_group` of `U4` controlled by `numWords`.",
+      "pdf_pages": [
+        149,
+        150
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:10:17.646543+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fields[2]",
+          "issue": "Field name and description mismatch.",
+          "canonical_value": {
+            "name": "sigId",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Signal identifier"
+          },
+          "pdf_value": {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Reserved"
+          }
+        },
+        {
+          "field": "payload.fields[7]",
+          "issue": "Reserved field name mismatch. This is a minor discrepancy.",
+          "canonical_value": {
+            "name": "reserved0",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Reserved",
+            "reserved": true
+          },
+          "pdf_value": {
+            "name": "reserved1",
+            "byte_offset": 7,
+            "data_type": "U1",
+            "description": "Reserved"
+          }
+        },
+        {
+          "field": "payload.fields[8]",
+          "issue": "The dataWords field in the canonical definition is incorrectly specified. The PDF indicates a repeated group of U4 'dwrd' fields, not a single U1 field.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "name": "dwrd",
+            "repetition_type": "count_field",
+            "count_field": "numWords",
+            "byte_offset": "8 + n.4",
+            "data_type": "U4",
+            "description": "The data words"
+          }
+        }
+      ],
+      "notes": "The canonical definition has significant structural errors compared to the provided PDF for UBX-RXM-SFRBX, particularly regarding the field at offset 2 (sigId vs reserved0) and the handling of the variable-length data words (single U1 field vs repeated group of U4 fields). The name for the reserved field at offset 7 also differs (reserved0 vs reserved1), though this is a minor difference for a reserved field.",
+      "pdf_pages": [
+        126,
+        127
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:10:34.633059+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The canonical definition uses a single 'U1' field named 'dataWords' for the variable part of the payload. The PDF clearly indicates a 'repeated group' of 'U4' elements named 'dwrd', repeated 'numWords' times.",
+          "canonical_value": "{ \"name\": \"dataWords\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numWords times)\n8 + n.4    U4    dwrd    The data words\nEnd of repeated group (numWords times)"
+        }
+      ],
+      "notes": "The canonical definition for UBX-RXM-SFRBX incorrectly models the variable-length portion of the payload. It should use a 'repeated_groups' structure containing 'U4' elements (named 'dwrd' in the PDF), with the repetition count controlled by the 'numWords' field. Instead, it defines a single 'U1' field, which is fundamentally incorrect according to the manual.",
+      "pdf_pages": [
+        164,
+        165
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:10:48.496980+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The canonical defines 'dataWords' as a single U1 field. The PDF indicates a repeated group 'numWords times' starting at this offset, with each 'word' being 4 bytes long, based on the payload length formula '8 + numWords * 4'. The canonical should use a 'repeated_group' structure for this, with elements of type U4.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times) (implied elements of 4 bytes each)"
+        }
+      ],
+      "notes": "All fixed fields (gnssId to reserved0) match perfectly in name, offset, and type. The discrepancy lies solely in the interpretation and representation of the variable-length 'dataWords' section. The canonical represents it as a single U1 field, while the manual's length formula and 'repeated group' notation clearly indicate it should be a repeated group of U4 elements, whose count is given by 'numWords'.",
+      "pdf_pages": [
+        171,
+        172
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:11:05.498633+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "dataWords",
+          "issue": "The canonical defines 'dataWords' as a single U1 field. The PDF clearly indicates a repeated group of U4 fields named 'dwrd', with the repetition count determined by 'numWords'. This is a fundamental structural mismatch for a variable-length message.",
+          "canonical_value": "{ \"name\": \"dataWords\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numWords times)\nByte offset: 8 + n.4, Type: U4, Name: dwrd, Description: The data words\nEnd of repeated group (numWords times)"
+        }
+      ],
+      "notes": "All fixed-size fields (gnssId through reserved0) match perfectly in name, offset, type, and description. The payload length formula also matches. The only significant discrepancy is the definition of the variable-length portion of the payload, where the canonical incorrectly defines a single U1 field instead of a repeated group of U4 fields as specified by the manual.",
+      "pdf_pages": [
+        164,
+        165
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:11:22.850247+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "payload.fields[2] (offset 2)",
+          "issue": "Field name and purpose mismatch.",
+          "canonical_value": {
+            "name": "sigId",
+            "data_type": "U1",
+            "description": "Signal identifier"
+          },
+          "pdf_value": {
+            "name": "reserved0",
+            "data_type": "U1",
+            "description": "Reserved"
+          }
+        },
+        {
+          "field": "payload.fields[8] (dataWords)",
+          "issue": "Structural definition of the data words is incorrect. The canonical defines a single U1 field, while the PDF clearly shows a repeated group of U4 data words.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "structure": "repeated_group (numWords times)",
+            "element_offset": "8 + n.4",
+            "element_type": "U4",
+            "element_name": "dwrd",
+            "element_description": "The data words"
+          }
+        },
+        {
+          "field": "payload.fields[7] (reserved0 vs reserved1)",
+          "issue": "Minor naming difference for a reserved field.",
+          "canonical_value": {
+            "name": "reserved0"
+          },
+          "pdf_value": {
+            "name": "reserved1"
+          }
+        }
+      ],
+      "notes": "The canonical definition has significant structural discrepancies compared to the PDF. Specifically, the field at byte offset 2 (sigId vs reserved0) and the entire structure for the 'data words' (a single U1 field vs a repeated group of U4 fields) are different. The current canonical definition does not reflect the variable-length nature and data type of the actual data words as described in the manual.",
+      "pdf_pages": [
+        158,
+        159
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:11:39.250548+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields (dataWords)",
+          "issue": "The canonical definition incorrectly represents the variable-length data words as a single 'dataWords' field. The PDF clearly specifies a 'repeated group' structure for 'dwrd'.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times) with field 'dwrd', type U4, offset 8 + n.4"
+        },
+        {
+          "field": "dataWords.data_type",
+          "issue": "The data type for the data words is incorrect.",
+          "canonical_value": "U1",
+          "pdf_value": "U4"
+        },
+        {
+          "field": "dataWords.name",
+          "issue": "The name of the data words field differs.",
+          "canonical_value": "dataWords",
+          "pdf_value": "dwrd"
+        }
+      ],
+      "notes": "The initial fixed-size fields (gnssId to reserved0) match perfectly. The discrepancy lies entirely in the representation and details of the variable-length 'data words' portion of the payload. The canonical definition should be updated to use a `repeated_groups` structure based on `numWords`, with each element of type `U4` and named `dwrd`.",
+      "pdf_pages": [
+        192,
+        193
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:11:59.563157+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields (dataWords) vs. repeated_groups",
+          "issue": "The canonical definition incorrectly models the variable-length 'data words'. It defines 'dataWords' as a single U1 field at byte_offset 8. The PDF clearly specifies a 'repeated group (numWords times)' where each element is a U4 field named 'dwrd', starting at byte_offset 8.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times):\n8 + n.4     U4   dwrd               The data words"
+        }
+      ],
+      "notes": "All fixed fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) and the overall payload length formula (8 + numWords * 4) match the PDF. The primary issue is the incorrect representation of the variable-length 'data words' as a single field instead of a repeated group of U4 elements.",
+      "pdf_pages": [
+        199,
+        200
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:20.081700+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The `dataWords` field is defined as a single U1 type in the canonical definition, but the PDF clearly specifies it as a repeated group of `numWords` times U4 elements, named `dwrd`.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times)\n8 + n.4 U4 dwrd The data words"
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) match their byte_offset, data_type, and general description as provided in the PDF. The primary issue is the incorrect representation of the variable-length `dataWords` as a single `U1` field instead of a `repeated_group` of `U4` fields.",
+      "pdf_pages": [
+        201,
+        202
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:35.524750+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields at byte_offset 8",
+          "issue": "The canonical definition incorrectly represents the variable-length data as a single U1 field named 'dataWords'. The PDF clearly indicates this is a repeated group of U4 fields.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times)\n8 + n.4 U4 dwrd\nEnd of repeated group (numWords times)"
+        }
+      ],
+      "notes": "The canonical definition needs to be updated to include a 'repeated_groups' structure for the 'dwrd' field, with 'repetition_type': 'count_field', 'count_field_name': 'numWords', and 'element_type': 'U4'. Each element of this group should represent 'dwrd'.",
+      "pdf_pages": [
+        194,
+        195
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:49.902977+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:50.451505+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:50.992279+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:51.545169+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-RXM-SFRBX",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:12:52.089313+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The canonical definition uses a single 'dataWords' field of type U1 at offset 8. The PDF specifies that this part of the payload is a repeated group (numWords times) where each element ('dwrd') is of type U4, starting at offset 8. This is a structural mismatch for the variable-length portion of the payload.",
+          "canonical_value": "{ \"name\": \"dataWords\", \"byte_offset\": 8, \"data_type\": \"U1\" }",
+          "pdf_value": "Start of repeated group (numWords times): { byte_offset: 8 + n.4, type: U4, name: dwrd, description: The data words }"
+        }
+      ],
+      "notes": "All fixed-length fields (gnssId through reserved0) match the PDF specification in terms of name, byte_offset, and data_type. The payload length formula also matches. The primary discrepancy lies in the representation of the variable-length 'data words' section. The canonical definition should use a 'repeated_groups' structure with 'dwrd' as U4, instead of a single 'dataWords' U1 field.",
+      "pdf_pages": [
+        179,
+        180
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:13:12.480907+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition incorrectly defines 'dataWords' as a single U1 field at offset 8. The PDF clearly indicates a 'Start of repeated group (numWords times)' at byte offset 8, with each element named 'dwrd' and of type U4. This requires a 'repeated_groups' structure in the canonical definition, not a simple field.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "type": "repeated_group",
+            "name": "dwrd",
+            "data_type": "U4",
+            "start_offset": 8,
+            "repetition_type": "count_field",
+            "count_field": "numWords"
+          }
+        }
+      ],
+      "notes": "The payload length calculation `8 + numWords * 4` in the canonical definition correctly reflects the structure shown in the PDF (8 bytes of fixed header + `numWords` elements, each 4 bytes long). However, the implementation of the repeated data section itself is missing/incorrect, replacing the `repeated_groups` with a single `U1` field instead of a proper group of `U4` elements.",
+      "pdf_pages": [
+        157,
+        158
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:13:25.153281+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields.dataWords",
+          "issue": "The canonical defines 'dataWords' as a single U1 field. The PDF clearly shows a repeated group of U4 elements ('dwrd') starting at offset 8, repeated 'numWords' times.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": "Start of repeated group (numWords times) -> 8 + n.4 U4 dwrd"
+        }
+      ],
+      "notes": "All other fields (gnssId, svId, sigId, freqId, numWords, chn, version, reserved0) and the message header/length definition match the PDF exactly. The discrepancy is solely in the definition of the variable-length 'dataWords' part of the payload, which should be a repeated group of U4 data words.",
+      "pdf_pages": [
+        124,
+        125
+      ],
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:13:38.279902+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-RXM-SFRBX",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[8].dataWords",
+          "issue": "The 'dataWords' field is incorrectly defined as a single U1 field. According to the PDF, this should be a repeated group ('dwrd') that occurs 'numWords' times, with each element of the group being of type U4.",
+          "canonical_value": {
+            "name": "dataWords",
+            "byte_offset": 8,
+            "data_type": "U1"
+          },
+          "pdf_value": {
+            "name": "dwrd",
+            "byte_offset": "8 + n.4",
+            "data_type": "U4",
+            "repeated_group": "numWords times"
+          }
+        }
+      ],
+      "notes": "The payload length formula (8 + numWords * 4) correctly implies a repeated group of U4 (4 bytes) elements occurring 'numWords' times after the initial 8 bytes of fixed fields. The canonical definition incorrectly lists 'dataWords' as a single U1 field instead of a repeated group of U4 elements.",
+      "pdf_pages": [
+        131,
+        132
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:13:55.177113+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 24,
+    "matches": 0,
+    "mismatches": 24
+  }
+}
