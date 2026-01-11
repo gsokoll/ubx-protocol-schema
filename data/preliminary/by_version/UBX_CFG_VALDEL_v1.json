@@ -1,0 +1,1208 @@
+{
+  "message_name": "UBX-CFG-VALDEL",
+  "protocol_version": 1,
+  "status": "split",
+  "agreement_ratio": 0.5,
+  "winning_structure": {
+    "name": "UBX-CFG-VALDEL",
+    "class_id": "0x06",
+    "message_id": "0x8c",
+    "description": "Delete configuration item values (with transaction)",
+    "message_type": "set",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + N*4",
+          "min": 4,
+          "max": 260
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "layers",
+          "byte_offset": 1,
+          "data_type": "X1",
+          "description": "The layers where the configuration should be deleted from",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "bbr",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "Delete configuration from the BBR layer"
+              },
+              {
+                "name": "flash",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "Delete configuration from the Flash layer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "transaction",
+          "byte_offset": 2,
+          "data_type": "X1",
+          "description": "Transaction action to be applied:",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "action",
+                "bit_start": 0,
+                "bit_end": 1,
+                "description": "Transaction action to be applied:",
+                "values": [
+                  {
+                    "value": 0,
+                    "description": "Transactionless UBX-CFG-VALDEL"
+                  },
+                  {
+                    "value": 1,
+                    "description": "(Re)Start deletion transaction"
+                  },
+                  {
+                    "value": 2,
+                    "description": "Deletion transaction ongoing"
+                  },
+                  {
+                    "value": 3,
+                    "description": "Apply and end a deletion transaction"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 3,
+          "data_type": "U1",
+          "reserved": true,
+          "description": "Reserved"
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "keys",
+          "repetition_type": "fill_remaining",
+          "base_offset": 4,
+          "group_size_bytes": 4,
+          "fields": [
+            {
+              "name": "keyId",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "Configuration key IDs of the configuration items to be deleted"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "dec45be09da54b04",
+  "agreeing_sources": [
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "LAP120_Interfacedescription_UBX-20046191"
+  ],
+  "disagreeing_sources": [
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+    "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+    "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062"
+  ],
+  "all_extractions": [
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:\n0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "count_from_length",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keys",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "7a2c44397b10c5a6"
+    },
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4,
+              "max": 260
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:",
+                    "values": [
+                      {
+                        "value": 0,
+                        "description": "Transactionless UBX-CFG-VALDEL"
+                      },
+                      {
+                        "value": 1,
+                        "description": "(Re)Start deletion transaction"
+                      },
+                      {
+                        "value": 2,
+                        "description": "Deletion transaction ongoing"
+                      },
+                      {
+                        "value": 3,
+                        "description": "Apply and end a deletion transaction"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "reserved": true,
+              "description": "Reserved"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "fill_remaining",
+              "base_offset": 4,
+              "group_size_bytes": 4,
+              "fields": [
+                {
+                  "name": "keyId",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied: 0 = Transactionless UBX-CFG-VALDEL, 1 = (Re)Start deletion transaction, 2 = Deletion transaction ongoing, 3 = Apply and end a deletion transaction"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "calculated_from_length",
+              "count_formula": "(payload_length - 4) / 4",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "key",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f1a0c28ad897bea9"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numKeys * 4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:\n0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "variable_length_derived",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyId",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N * 4",
+              "min": 4,
+              "max": 260
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:\n0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "keys",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U4",
+                "count": "N"
+              },
+              "description": "Configuration key IDs of the configuration items to be deleted"
+            }
+          ]
+        }
+      },
+      "fingerprint": "d14e00ea8bda00a2"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "This message can be used to delete saved configuration to effectively revert the item values to defaults. This message can delete saved configuration from the flash configuration layer and the BBR configuration layer. The changes will not be effective until these layers are loaded into the RAM layer. This message is limited to containing a maximum of 64 keys up for deletion; i.e. N is a maximum of 64. This message can be used multiple times with the result being managed within a transaction.",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:\n0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "keys",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U4",
+                "count": "N"
+              },
+              "description": "Configuration key IDs of the configuration items to be deleted"
+            }
+          ]
+        }
+      },
+      "fingerprint": "d14e00ea8bda00a2"
+    },
+    {
+      "source": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N_keys * 4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:",
+                    "values": [
+                      {
+                        "value": 0,
+                        "description": "Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied."
+                      },
+                      {
+                        "value": 1,
+                        "description": "(Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages."
+                      },
+                      {
+                        "value": 2,
+                        "description": "Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3."
+                      },
+                      {
+                        "value": 3,
+                        "description": "Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "variable_count",
+              "count_field": "N_keys",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyID",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied: 0 = Transactionless UBX-CFG-VALDEL; 1 = (Re)Start deletion transaction; 2 = Deletion transaction ongoing; 3 = Apply and end a deletion transaction"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "calculated_count",
+              "count_formula": "(payload_length - 4) / 4",
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyID",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "command",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N*4",
+              "min": 4,
+              "max": 260
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied: 0 = Transactionless UBX-CFG-VALDEL; 1 = (Re)Start deletion transaction; 2 = Deletion transaction ongoing; 3 = Apply and end a deletion transaction"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "calculated",
+              "count_formula": "(payload_length - 4) / 4",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyId",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    },
+    {
+      "source": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "set",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N_keys * 4",
+              "min": 4,
+              "max": 260
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "Transaction action to be applied:\n0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied.\n1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages.\n2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3.\n3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys_group",
+              "repetition_type": "derived_count",
+              "count_formula": "(payload_length - 4) / 4",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keys",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "7a2c44397b10c5a6"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values",
+        "message_type": "command",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numKeys * 4",
+              "min": 4,
+              "max": 260
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "keys",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U4",
+                "count": "N"
+              },
+              "description": "Configuration key IDs of the configuration items to be deleted"
+            }
+          ]
+        }
+      },
+      "fingerprint": "d8b5b00fe6c51369"
+    },
+    {
+      "source": "LAP120_Interfacedescription_UBX-20046191",
+      "structure": {
+        "name": "UBX-CFG-VALDEL",
+        "class_id": "0x06",
+        "message_id": "0x8c",
+        "description": "Delete configuration item values (with transaction)",
+        "message_type": "input",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + N * 4",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "layers",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "The layers where the configuration should be deleted from",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bbr",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Delete configuration from the BBR layer"
+                  },
+                  {
+                    "name": "flash",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Delete configuration from the Flash layer"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1",
+              "description": "Transaction action to be applied:",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "action",
+                    "bit_start": 0,
+                    "bit_end": 1,
+                    "description": "0 = Transactionless UBX-CFG-VALDEL: In the next UBX-CFG-VALDEL, it can be either 0 or 1. If a transaction has not yet been started, the incoming configuration is applied. If a transaction has already been started, cancels any started transaction and the incoming configuration is applied. 1 = (Re)Start deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. If a transaction has not yet been started, a transaction will be started. If a transaction has already been started, restarts the transaction, effectively removing all previous non-applied UBX-CFG-VALDEL messages. 2 = Deletion transaction ongoing: In the next UBX-CFG-VALDEL, it can be either 0, 1, 2 or 3. 3 = Apply and end a deletion transaction: In the next UBX-CFG-VALDEL, it can be either 0 or 1."
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Reserved"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "keys",
+              "repetition_type": "count_by_formula",
+              "count_formula": "(payload_length - 4) / 4",
+              "group_size_bytes": 4,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "keyId",
+                  "byte_offset": 0,
+                  "data_type": "U4",
+                  "description": "Configuration key IDs of the configuration items to be deleted"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "dec45be09da54b04"
+    }
+  ]
+}

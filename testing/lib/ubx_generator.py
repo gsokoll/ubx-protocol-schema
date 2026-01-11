@@ -4,7 +4,7 @@ import struct
 import random
 from typing import Any, Optional
 
-from .schema_loader import parse_hex_id
+from .schema_loader import parse_hex_id, get_variant_by_alias
 
 # UBX sync characters
 SYNC_CHAR_1 = 0xB5
@@ -43,38 +43,82 @@ def get_field_size(data_type) -> int:
     if isinstance(data_type, dict):
         if "array_of" in data_type:
             base_type = data_type["array_of"]
+            # Handle nested structures (complex array_of with dict)
+            if isinstance(base_type, dict):
+                return 0  # Can't determine size of complex nested structures
             count = data_type.get("count", 1)
-            # Handle variable count (string like 'N') - use 0 for variable-length
+            # Handle variable count (string like 'N' or count_field) - use 0 for variable-length
             if not isinstance(count, int):
                 return 0
             base_size = DATA_TYPE_MAP.get(base_type, ("B", 1))[1]
             return base_size * count
+        # Handle other dict formats (num_elements_field, elements, etc.)
+        if "elements" in data_type or "num_elements_field" in data_type:
+            return 0  # Variable-length complex structure
         data_type = data_type.get("type", "U1")
     if not isinstance(data_type, str):
         return 1
-    
-    # Handle array types like "U1[6]" or "CH[30]"
+
+    # Handle array types like "U1[6]" or "CH[30]" or "U1[]" (variable length)
     if "[" in data_type:
         base_type = data_type.split("[")[0]
-        count = int(data_type.split("[")[1].rstrip("]"))
+        count_str = data_type.split("[")[1].rstrip("]")
+        if not count_str:  # Empty count like "U1[]"
+            return 0
+        try:
+            count = int(count_str)
+        except ValueError:
+            return 0  # Variable count like "U1[N]"
         base_size = DATA_TYPE_MAP.get(base_type, ("B", 1))[1]
         return base_size * count
-    
+
     return DATA_TYPE_MAP.get(data_type, ("B", 1))[1]
 
 
-def generate_test_values(message: dict, num_repeated: int = 1) -> dict:
+def get_message_payload(message: dict, variant_name: Optional[str] = None) -> tuple[dict, Optional[dict]]:
+    """Get payload definition from a message, handling variants.
+
+    Args:
+        message: Message definition from schema
+        variant_name: Optional variant name for multi-variant messages
+
+    Returns:
+        Tuple of (payload_dict, variant_dict or None)
+    """
+    if "variants" in message and message["variants"]:
+        variants = message["variants"]
+        if variant_name:
+            for v in variants:
+                if v.get("name") == variant_name:
+                    return v.get("payload", {}), v
+            # Variant not found, use first one
+            return variants[0].get("payload", {}), variants[0]
+        else:
+            # No variant specified, use first one
+            return variants[0].get("payload", {}), variants[0]
+    else:
+        return message.get("payload", {}), None
+
+
+def generate_test_values(message: dict, num_repeated: int = 1, variant_name: Optional[str] = None) -> dict:
     """Generate random but valid test values for a message's fields.
-    
+
     Args:
         message: Message definition from schema
         num_repeated: Number of repeated group instances to generate
-    
+        variant_name: Optional variant name for multi-variant messages
+
     Returns:
         Dict with field values and optional _repeated_groups data
     """
     values = {}
-    payload = message.get("payload", {})
+    payload, variant = get_message_payload(message, variant_name)
+
+    # If this is a variant, include the discriminator value
+    if variant and "discriminator" in variant:
+        disc = variant["discriminator"]
+        if "field" in disc and "value" in disc:
+            values[disc["field"]] = disc["value"]
     fields = payload.get("fields", [])
     repeated_groups = payload.get("repeated_groups", [])
     
@@ -95,7 +139,11 @@ def generate_test_values(message: dict, num_repeated: int = 1) -> dict:
         
         # Use fixed_value if specified (e.g., MGA type discriminators)
         if "fixed_value" in field:
-            values[name] = field["fixed_value"]
+            fv = field["fixed_value"]
+            # Parse hex strings to integers
+            if isinstance(fv, str) and fv.startswith("0x"):
+                fv = int(fv, 16)
+            values[name] = fv
             continue
         
         # Set count fields to num_repeated
@@ -153,19 +201,31 @@ def _generate_value_for_type(data_type) -> Any:
     if isinstance(data_type, dict):
         if "array_of" in data_type:
             base_type = data_type["array_of"]
+            # Handle nested structures - skip them
+            if isinstance(base_type, dict):
+                return []
             count = data_type.get("count", 1)
-            # Handle variable count (string like 'N') - use empty array
+            # Handle variable count (string like 'N' or count_field) - use empty array
             if not isinstance(count, int):
                 return []
             if base_type == "CH":
                 return "A" * count
             return [_random_value_for_type(base_type) for _ in range(count)]
+        # Handle complex element structures
+        if "elements" in data_type or "num_elements_field" in data_type:
+            return []
         data_type = data_type.get("type", "U1")
     if not isinstance(data_type, str):
         return 0
     if "[" in data_type:
         base_type = data_type.split("[")[0]
-        count = int(data_type.split("[")[1].rstrip("]"))
+        count_str = data_type.split("[")[1].rstrip("]")
+        if not count_str:  # Variable length like "U1[]"
+            return []
+        try:
+            count = int(count_str)
+        except ValueError:
+            return []
         if base_type == "CH":
             return "A" * count
         return [_random_value_for_type(base_type) for _ in range(count)]
@@ -208,8 +268,11 @@ def encode_field(value: Any, data_type) -> bytes:
     if isinstance(data_type, dict):
         if "array_of" in data_type:
             base_type = data_type["array_of"]
+            # Handle nested structures - can't encode them, return empty
+            if isinstance(base_type, dict):
+                return b""
             count = data_type.get("count", 1)
-            # Handle variable count (string like 'N') - encode actual values provided
+            # Handle variable count (string like 'N' or count_field) - encode actual values provided
             if not isinstance(count, int):
                 if isinstance(value, (list, tuple)):
                     count = len(value)
@@ -232,6 +295,9 @@ def encode_field(value: Any, data_type) -> bytes:
                 else:
                     result = b"\x00" * (size * count)
                 return result
+        # Handle complex element structures
+        if "elements" in data_type or "num_elements_field" in data_type:
+            return b""
         data_type = data_type.get("type", "U1")
     
     if not isinstance(data_type, str):
@@ -240,8 +306,26 @@ def encode_field(value: Any, data_type) -> bytes:
     # Handle array types
     if "[" in data_type:
         base_type = data_type.split("[")[0]
-        count = int(data_type.split("[")[1].rstrip("]"))
-        
+        count_str = data_type.split("[")[1].rstrip("]")
+
+        # Handle variable-length arrays like "U1[]"
+        if not count_str:
+            if isinstance(value, (list, tuple)):
+                count = len(value)
+            elif isinstance(value, str):
+                count = len(value)
+            else:
+                return b""
+        else:
+            try:
+                count = int(count_str)
+            except ValueError:
+                # Variable count like "U1[N]"
+                if isinstance(value, (list, tuple)):
+                    count = len(value)
+                else:
+                    return b""
+
         if base_type == "CH":
             # String/character array
             if isinstance(value, str):
@@ -269,29 +353,43 @@ def encode_field(value: Any, data_type) -> bytes:
         return b"\x00" * size
 
 
-def generate_ubx_message(message: dict, field_values: Optional[dict] = None) -> bytes:
+def generate_ubx_message(message: dict, field_values: Optional[dict] = None, variant_name: Optional[str] = None) -> bytes:
     """Generate a complete UBX binary message from schema and field values.
-    
+
     Args:
         message: Message definition from schema
         field_values: Optional dict of field name -> value. Missing fields use defaults.
-    
+        variant_name: Optional variant name for multi-variant messages
+
     Returns:
         Complete UBX message as bytes (sync + class + id + length + payload + checksum)
     """
     if field_values is None:
-        field_values = generate_test_values(message)
-    
+        field_values = generate_test_values(message, variant_name=variant_name)
+
     # Get class and message IDs
     class_id = parse_hex_id(message.get("class_id", 0))
     msg_id = parse_hex_id(message.get("message_id", 0))
-    
-    # Build payload
-    payload = message.get("payload", {})
+
+    # Get payload definition (handles variants)
+    payload, variant = get_message_payload(message, variant_name)
+
+    # If generating a variant, ensure discriminator value is set
+    if variant and "discriminator" in variant:
+        disc = variant["discriminator"]
+        if "field" in disc and "value" in disc:
+            if disc["field"] not in field_values:
+                field_values[disc["field"]] = disc["value"]
     fields = payload.get("fields", [])
     
     # Sort fields by byte_offset to ensure correct order
-    sorted_fields = sorted(fields, key=lambda f: f.get("byte_offset", 0))
+    # Handle fields with None or non-integer byte_offsets by putting them at the end
+    def get_sort_key(f):
+        offset = f.get("byte_offset")
+        if isinstance(offset, int):
+            return (0, offset)  # Integer offsets first, sorted by value
+        return (1, 0)  # Non-integer offsets (None, strings) at the end
+    sorted_fields = sorted(fields, key=get_sort_key)
     
     # Build payload bytes
     payload_bytes = bytearray()
@@ -300,8 +398,12 @@ def generate_ubx_message(message: dict, field_values: Optional[dict] = None) -> 
     for field in sorted_fields:
         name = field.get("name")
         data_type = field.get("data_type", "U1")
-        byte_offset = field.get("byte_offset", current_offset)
-        
+        byte_offset = field.get("byte_offset")
+
+        # Skip fields with non-integer byte_offsets (variable position fields)
+        if not isinstance(byte_offset, int):
+            continue
+
         # Pad if there's a gap
         if byte_offset > current_offset:
             payload_bytes.extend(b"\x00" * (byte_offset - current_offset))
@@ -348,7 +450,12 @@ def generate_ubx_message(message: dict, field_values: Optional[dict] = None) -> 
         
         for instance in instances:
             # Sort fields by byte_offset within the group
-            sorted_rg_fields = sorted(rg_fields, key=lambda f: f.get("byte_offset", 0))
+            def get_rg_sort_key(f):
+                offset = f.get("byte_offset")
+                if isinstance(offset, int):
+                    return (0, offset)
+                return (1, 0)
+            sorted_rg_fields = sorted(rg_fields, key=get_rg_sort_key)
             group_start = current_offset
             
             for field in sorted_rg_fields:

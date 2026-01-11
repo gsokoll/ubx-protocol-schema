@@ -1,0 +1,1103 @@
+{
+  "message_name": "UBX-NAV-GEOFENCE",
+  "protocol_version": 0,
+  "status": "split",
+  "agreement_ratio": 0.6153846153846154,
+  "winning_structure": {
+    "name": "UBX-NAV-GEOFENCE",
+    "class_id": "0x01",
+    "message_id": "0x39",
+    "description": "Geofencing status",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 8,
+          "formula": "8 + numFences * 2",
+          "min": 8
+        }
+      },
+      "fields": [
+        {
+          "name": "iTOW",
+          "byte_offset": 0,
+          "data_type": "U4",
+          "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+          "unit": "ms"
+        },
+        {
+          "name": "version",
+          "byte_offset": 4,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "status",
+          "byte_offset": 5,
+          "data_type": "U1",
+          "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+        },
+        {
+          "name": "numFences",
+          "byte_offset": 6,
+          "data_type": "U1",
+          "description": "Number of geofences"
+        },
+        {
+          "name": "combState",
+          "byte_offset": 7,
+          "data_type": "U1",
+          "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "fenceStates",
+          "repetition_type": "count_field",
+          "count_field": "numFences",
+          "group_size_bytes": 2,
+          "base_offset": 8,
+          "fields": [
+            {
+              "name": "state",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+            },
+            {
+              "name": "id",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Geofence ID (0 = not available)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "be1d9572c637fedf",
+  "agreeing_sources": [
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+    "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+    "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+    "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+    "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+    "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+    "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991"
+  ],
+  "disagreeing_sources": [
+    "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+    "F9-HPS120_Interfacedescription_UBX-19056845",
+    "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+    "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "structure": {
+        "ubx_message_extraction": {
+          "message_name": "UBX-NAV-GEOFENCE",
+          "message_class": "0x01",
+          "message_id": "0x39",
+          "message_type": "periodic_polled",
+          "description": "This message outputs the evaluated states of all configured geofences for the current epoch's position. See section Geofencing in the integration manual for feature details.",
+          "payload_length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences*2"
+            }
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U4",
+              "name": "iTOW",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U1",
+              "name": "version",
+              "fixed_value": 0,
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "data_type": "U1",
+              "name": "status",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "byte_offset": 6,
+              "data_type": "U1",
+              "name": "numFences",
+              "description": "Number of geofences"
+            },
+            {
+              "byte_offset": 7,
+              "data_type": "U1",
+              "name": "combState",
+              "description": "Combined (logical OR) state of all geofences\n0- Unknown\n1 - Inside\n2 - Outside"
+            },
+            {
+              "byte_offset": 8,
+              "is_repeated": true,
+              "name": "geofences",
+              "count_field": "numFences",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "name": "state",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "name": "id",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences*2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Geofencing status: 0 - Geofencing not available or not reliable; 1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "X1",
+              "description": "Combined (logical OR) state of all geofences: 0 - Unknown; 1 - Inside; 2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofence_data",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Geofence state: 0 - Unknown; 1 - Inside; 2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "4c4c24719947d3b4"
+    },
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences * 2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "fenceStates",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status. This message outputs the evaluated states of all configured geofences for the current epoch's position.",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences*2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "X1",
+              "description": "Geofencing status:\n\u2022 0 - Geofencing not available or not reliable\n\u2022 1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "X1",
+              "description": "Combined (logical OR) state of all geofences:\n\u2022 0 - Unknown\n\u2022 1 - Inside\n\u2022 2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "fences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "base_offset": 8,
+              "group_size_bytes": 2,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "X1",
+                  "description": "Geofence state:\n\u2022 0 - Unknown\n\u2022 1 - Inside\n\u2022 2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "4c4c24719947d3b4"
+    },
+    {
+      "source": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "structure": {
+        "ubx_message_extraction": {
+          "name": "UBX-NAV-GEOFENCE",
+          "class_id": "0x01",
+          "message_id": "0x39",
+          "message_type": "periodic_polled",
+          "payload_length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences*2"
+            }
+          },
+          "fields": [
+            {
+              "byte_offset": 0,
+              "name": "iTOW",
+              "data_type": "U4",
+              "unit": "ms",
+              "description": "GPS time of week of the navigation epoch."
+            },
+            {
+              "byte_offset": 4,
+              "name": "version",
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "byte_offset": 5,
+              "name": "status",
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "byte_offset": 6,
+              "name": "numFences",
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "byte_offset": 7,
+              "name": "combState",
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            },
+            {
+              "byte_offset": 8,
+              "name": "repeated_group",
+              "data_type": {
+                "array_of": {
+                  "elements": [
+                    {
+                      "byte_offset": 0,
+                      "name": "state",
+                      "data_type": "U1",
+                      "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                    },
+                    {
+                      "byte_offset": 1,
+                      "name": "id",
+                      "data_type": "U1",
+                      "description": "Geofence ID (0 = not available)"
+                    }
+                  ]
+                },
+                "count_field": "numFences"
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    },
+    {
+      "source": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + N*2",
+              "min": 8,
+              "count_field": "numFences"
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status: 0 - Geofencing not available or not reliable, 1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences: 0 - Unknown, 1 - Inside, 2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state: 0 - Unknown, 1 - Inside, 2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences * 2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status: 0 - Geofencing not available or not reliable, 1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences: 0 - Unknown, 1 - Inside, 2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state: 0 - Unknown, 1 - Inside, 2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences * 2"
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the section iTOW timestamps in Integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + N*2",
+              "min": 8,
+              "count_field": "numFences"
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See the description of iTOW for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofenceStates",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "description": "Geofencing status",
+        "message_class": "0x01",
+        "message_id": "0x39",
+        "message_type": "periodic_polled",
+        "supported_versions": [
+          "18",
+          "19",
+          "19.1",
+          "19.2",
+          "20",
+          "20.01",
+          "20.1",
+          "20.2",
+          "20.3",
+          "22",
+          "22.01",
+          "23",
+          "23.01"
+        ],
+        "payload_length": {
+          "variable": {
+            "base": 8,
+            "formula": "8 + 2*numFences"
+          }
+        },
+        "payload_fields": [
+          {
+            "byte_offset": 0,
+            "name": "iTOW",
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+          },
+          {
+            "byte_offset": 4,
+            "name": "version",
+            "data_type": "U1",
+            "fixed_value": 0,
+            "description": "Message version (0x00 for this version)"
+          },
+          {
+            "byte_offset": 5,
+            "name": "status",
+            "data_type": "U1",
+            "description": "Geofencing status",
+            "value_mapping": {
+              "0": "Geofencing not available or not reliable",
+              "1": "Geofencing active"
+            }
+          },
+          {
+            "byte_offset": 6,
+            "name": "numFences",
+            "data_type": "U1",
+            "description": "Number of geofences"
+          },
+          {
+            "byte_offset": 7,
+            "name": "combState",
+            "data_type": "U1",
+            "description": "Combined (logical OR) state of all geofences",
+            "value_mapping": {
+              "0": "Unknown",
+              "1": "Inside",
+              "2": "Outside"
+            }
+          },
+          {
+            "byte_offset": 8,
+            "name": "geofences",
+            "count_field": "numFences",
+            "array_of_fields": [
+              {
+                "name": "state",
+                "data_type": "U1",
+                "description": "Geofence state",
+                "value_mapping": {
+                  "0": "Unknown",
+                  "1": "Inside",
+                  "2": "Outside"
+                }
+              },
+              {
+                "name": "id",
+                "data_type": "U1",
+                "description": "Geofence ID (0 = not available)"
+              }
+            ]
+          }
+        ]
+      },
+      "fingerprint": "be1a350dd6973fd9"
+    },
+    {
+      "source": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences * 2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "periodic_polled",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences * 2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n0 - Geofencing not available or not reliable\n1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n0 - Unknown\n1 - Inside\n2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofence_states",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n0 - Unknown\n1 - Inside\n2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    },
+    {
+      "source": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "structure": {
+        "name": "UBX-NAV-GEOFENCE",
+        "class_id": "0x01",
+        "message_id": "0x39",
+        "description": "Geofencing status",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 8,
+              "formula": "8 + numFences*2",
+              "min": 8
+            }
+          },
+          "fields": [
+            {
+              "name": "iTOW",
+              "byte_offset": 0,
+              "data_type": "U4",
+              "description": "GPS time of week of the navigation epoch.",
+              "unit": "ms"
+            },
+            {
+              "name": "version",
+              "byte_offset": 4,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "status",
+              "byte_offset": 5,
+              "data_type": "U1",
+              "description": "Geofencing status\n\u2022 0 - Geofencing not available or not reliable\n\u2022 1 - Geofencing active"
+            },
+            {
+              "name": "numFences",
+              "byte_offset": 6,
+              "data_type": "U1",
+              "description": "Number of geofences"
+            },
+            {
+              "name": "combState",
+              "byte_offset": 7,
+              "data_type": "U1",
+              "description": "Combined (logical OR) state of all geofences\n\u2022 0 - Unknown\n\u2022 1 - Inside\n\u2022 2 - Outside"
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "geofences",
+              "repetition_type": "count_field",
+              "count_field": "numFences",
+              "group_size_bytes": 2,
+              "base_offset": 8,
+              "fields": [
+                {
+                  "name": "state",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Geofence state\n\u2022 0 - Unknown\n\u2022 1 - Inside\n\u2022 2 - Outside"
+                },
+                {
+                  "name": "id",
+                  "byte_offset": 1,
+                  "data_type": "U1",
+                  "description": "Geofence ID (0 = not available)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "be1d9572c637fedf"
+    }
+  ]
+}

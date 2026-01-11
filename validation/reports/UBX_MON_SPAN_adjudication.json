@@ -1,0 +1,105 @@
+{
+  "message": "UBX-MON-SPAN",
+  "total_discrepancies": 8,
+  "fix_canonical": 6,
+  "valid_variation": 0,
+  "needs_human": 2,
+  "adjudications": [
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "field": "payload.length.variable.formula",
+      "original_issue": "The formula for the variable payload length appears to have a typo in the PDF. The PDF shows a hyphen instead of a multiplication operator for the repeated group size.",
+      "decision": "needs_human",
+      "confidence": 0.9,
+      "reasoning": "The PDF explicitly states '4+ numRfBlocks-272' for the message length. This formula is mathematically incorrect for calculating a length, as it would result in a negative value for any typical `numRfBlocks` (e.g., if numRfBlocks=0 or 1, the length would be negative). However, the detailed breakdown of the payload structure within the PDF itself clearly describes a fixed initial section of 4 bytes (version, numRfBlocks, reserved0) followed by a repeated group (numRfBlocks times), where each group is 272 bytes long (256 for spectrum + 4 for span + 4 for res + 4 for center + 1 for pga + 3 for reserved1 = 272 bytes). This detailed description strongly implies the correct formula for the total payload length is '4 + numRfBlocks * 272'. The discrepancy is a clear typo in the PDF, where a hyphen '-' is used instead of a multiplication operator '*'. The canonical definition correctly reflects the intended message structure and formula. While the canonical definition is correct and does not need fixing, the presence of a clear and misleading typo in the official PDF manual means this item needs human review, ideally to correct the source documentation.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "field": "description",
+      "original_issue": "Formula for center frequency at each bin differs.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for the ZED-F9H (UBX-19030118) explicitly states the formula for the center frequency at each bin as 'f(i) = center + span * (i - 128) / 256' in the comment section for UBX-MON-SPAN. The canonical definition uses '(i - 127)', which directly contradicts the documentation.",
+      "suggested_fix": {
+        "field": "description",
+        "change": "update formula for center frequency at each bin",
+        "new_value": "f(i) = center + span * (i - 128) / 256"
+      }
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "field": "description (f(i) formula)",
+      "original_issue": "The formula for calculating f(i) differs.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for u-blox F9 LAP 1.20 explicitly states in the 'Comment' section for UBX-MON-SPAN that the formula for calculating f(i) is 'f(i) = center + span * (i - 128) / 256'. This directly contradicts the canonical value of '(i - 127)'. The PDF serves as the authoritative interface description for this specific device/firmware version, indicating that the canonical definition should be updated to match.",
+      "suggested_fix": {
+        "field": "message description (f(i) formula)",
+        "change": "Update the f(i) formula within the UBX-MON-SPAN message description.",
+        "new_value": "f(i) = center + span * (i - 128) / 256"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "field": "description.f(i) formula",
+      "original_issue": "Formula for calculating center frequency at each bin differs.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for u-blox F9 HPG 1.13 (Page 2, section 3.14.12.1) explicitly states the formula for calculating the center frequency at each bin as 'f(i) = center + span * (i - 128) / 256'. This directly contradicts the canonical value 'f(i) = center + span * (i - 127) / 256'. The canonical definition should be updated to reflect the formula as documented in the official interface description.",
+      "suggested_fix": {
+        "field": "message_description_formula",
+        "change": "Update the formula for calculating the center frequency at each bin.",
+        "new_value": "f(i) = center + span * (i - 128) / 256"
+      }
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "field": "description (f(i) formula)",
+      "original_issue": "The formula for calculating the center frequency at each bin differs.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual, 'F9-HPS120_Interfacedescription_UBX-19056845', for the UBX-MON-SPAN message clearly states the formula for calculating the center frequency at each bin as 'f(i) = center + span * (i - 128) / 256'. This directly contradicts the canonical value 'f(i) = center + span * (i - 127) / 256'. Given the PDF is the official documentation, the canonical definition should be updated to match it.",
+      "suggested_fix": {
+        "field": "description (of UBX-MON-SPAN message)",
+        "change": "update the formula for calculating the center frequency at each bin",
+        "new_value": "f(i) = center + span * (i - 128) / 256"
+      }
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "field": "payload.repeated_groups.rfBlock.fields.spectrum.scale",
+      "original_issue": "The scale factor for the 'spectrum' field is present in the canonical definition but not explicitly stated in the PDF table.",
+      "decision": "needs_human",
+      "confidence": 0.8,
+      "reasoning": "The PDF manual for UBX-MON-SPAN, specifically for the 'spectrum' field within the repeated group, leaves the 'Scale' column blank. The canonical definition, conversely, explicitly states a scale of 0.25 for this field and includes `[Uuu.ff dB]` in its description, which strongly suggests a fixed-point representation requiring a scale factor. While the canonical definition appears internally consistent and likely correct (as U1 with a unit of dB often implies fractional scaling), the complete omission of this critical scale factor in the official PDF manual creates a significant discrepancy. Users relying solely on the PDF might incorrectly assume a default scale (e.g., 1) or that no scaling is applied, leading to misinterpretation of the spectrum data. Therefore, this situation requires human review to ensure that documentation is consistent and to prevent potential user errors, even if the canonical itself is not 'wrong' but rather more complete.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "field": "description",
+      "original_issue": "The canonical description is a partial subset of the full description provided in the PDF. It omits details about PGA gain not being included in spectrum data, and considerations for internal fixed LNA gain or external third-party LNA.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF's 'Comment' section for UBX-MON-SPAN provides a much more comprehensive and accurate description of the message's purpose and limitations than the canonical value. It includes crucial caveats about the accuracy of spectrum amplitude, the handling of PGA gain (not included in spectrum data, but available as a separate field), and considerations for internal fixed LNA gain or external third-party LNA. These details are important for proper interpretation and use of the message and are entirely missing from the provided canonical description.",
+      "suggested_fix": {
+        "field": "description",
+        "change": "Update the overall message description for UBX-MON-SPAN.",
+        "new_value": "This message gives information for comparative analysis rather than absolute and precise spectrum overview. Users should not expect highly accurate spectrum amplitude. Note that the PGA gain is not included in the spectrum data but is available as a separate field. Neither the spectrum, nor the PGA gain considers the internal fixed LNA gain or an external third-party LNA. The center frequency at each bin, assuming a zero-based bin count, can be computed as f(i) = center + span * (i - 127) / 256. Additionally, in order to give further insight on the signal captured by the receiver, the current gain of the internal programmable gain amplifier (PGA) is provided."
+      }
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "field": "payload.length.variable.formula",
+      "original_issue": "The formula for the variable payload length appears to have a typo in the PDF. It shows a hyphen instead of a multiplication symbol.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The canonical definition's formula '4 + numRfBlocks * 272' is consistent with the standard pattern for calculating payload length for messages with repeated groups. The base length is 4 bytes (version, numRfBlocks, reserved0), and then 'numRfBlocks' repetitions of a 272-byte block. The PDF's '4 + numRfBlocks-272' is syntactically and logically incorrect as a formula, strongly suggesting a typo where a multiplication symbol (*) was mistakenly rendered or typed as a hyphen (-). The 'group_size_bytes' in the canonical definition confirms the 272-byte block size for the repeated group.",
+      "suggested_fix": {
+        "field": "payload.length.variable.formula",
+        "change": "Correct the multiplication symbol.",
+        "new_value": "4 + numRfBlocks * 272"
+      }
+    }
+  ]
+}

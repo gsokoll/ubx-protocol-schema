@@ -8,7 +8,7 @@ Extract UBX configuration keys from u-blox PDF interface manuals using Google Ge
 
 | Script | Purpose |
 |--------|---------|
-| `extract_config_keys_with_gemini.py` | Extract keys from PDF using Gemini |
+| `bulk_extraction/extract_config_keys_with_gemini.py` | Extract keys from PDF using Gemini |
 | `detect_config_key_conflicts.py` | Detect conflicts across extractions |
 | `adjudicate_config_keys.py` | Resolve conflicts using LLM |
 | `merge_config_keys.py` | Merge into unified schema-compliant database |
@@ -18,7 +18,7 @@ Extract UBX configuration keys from u-blox PDF interface manuals using Google Ge
 ```bash
 # 1. Extract config keys from a manual
 export GOOGLE_API_KEY="your-key"
-uv run python scripts/extract_config_keys_with_gemini.py --pdf-path <manual.pdf>
+uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py --pdf-path <manual.pdf>
 
 # 2. Run conflict detection across all extractions
 uv run python scripts/detect_config_key_conflicts.py
@@ -66,21 +66,21 @@ uv run python scripts/merge_config_keys.py
 
 ```bash
 # Dry run - preview batches without extraction
-uv run python scripts/extract_config_keys_with_gemini.py \
+uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py \
   --pdf-path interface_manuals/zed-f9p-module/u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124.pdf \
   --dry-run
 
 # Full extraction
-uv run python scripts/extract_config_keys_with_gemini.py \
+uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py \
   --pdf-path <pdf-path>
 
 # Extract specific groups only
-uv run python scripts/extract_config_keys_with_gemini.py \
+uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py \
   --pdf-path <pdf-path> \
   --groups CFG-RATE CFG-NMEA
 
 # Adjust batch size
-uv run python scripts/extract_config_keys_with_gemini.py \
+uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py \
   --pdf-path <pdf-path> \
   --max-pages 20
 ```

@@ -1,0 +1,109 @@
+{
+  "name": "UBX-MON-RF",
+  "class_id": "0x0a",
+  "message_id": "0x38",
+  "message_type": "periodic_polled",
+  "description": "RF information. Information for each RF block. There are as many RF blocks reported as bands supported by this receiver.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + nBlocks*24"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "nBlocks",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "The number of RF blocks included"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "rfBlocks",
+        "byte_offset": 4,
+        "array_of": {
+          "type": "object",
+          "fields": [
+            {
+              "name": "blockId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "RF block ID (0 = L1 band, 1 = L2 or L5 band depending on product configuration)"
+            },
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Flags",
+              "sub_fields": [
+                {
+                  "name": "jammingState",
+                  "byte_offset": 1,
+                  "data_type": "U:2",
+                  "description": "output from Jamming/Interference Monitor (0 = unknown or feature disabled, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+                }
+              ]
+            },
+            {
+              "name": "antStatus",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Status of the antenna supervisor state machine (0x00=INIT, 0x01=DONTKNOW, 0x02=OK, 0x03=SHORT, 0x04=OPEN)"
+            },
+            {
+              "name": "antPower",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Current power status of antenna (0x00=OFF, 0x01=ON, 0x02=DONTKNOW)"
+            },
+            {
+              "name": "postStatus",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "POST status word"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 12
+              },
+              "description": "Reserved for padding to 24-byte block size",
+              "reserved": true
+            }
+          ]
+        },
+        "count_field": "nBlocks",
+        "description": "Array of RF block information"
+      }
+    ]
+  }
+}

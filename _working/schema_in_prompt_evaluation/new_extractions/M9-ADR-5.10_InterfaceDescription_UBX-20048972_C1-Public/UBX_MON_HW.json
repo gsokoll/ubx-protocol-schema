@@ -1,0 +1,181 @@
+{
+  "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public.pdf",
+  "message_name": "UBX-MON-HW",
+  "extraction_timestamp": "2026-01-08T14:07:01.336194+00:00",
+  "model": "gemini-2.5-flash",
+  "pdf_pages": {
+    "start": 94,
+    "end": 95
+  },
+  "conversation": [
+    {
+      "role": "user",
+      "parts": [
+        "You are extracting a UBX protocol message definition from u-blox PDF manual pages.\n\nTARGET MESSAGE: UBX-MON-HW\nExpected IDs: class_id=0x0a, message_id=0x09\n\nCRITICAL INSTRUCTIONS:\n1. Extract ONLY the message named \"UBX-MON-HW\". Ignore any other messages visible.\n2. Set the \"message_type\" JSON field based on the \"Type\" row in the message header table:\n   - \"Type: Input\" \u2192 message_type: \"input\"\n   - \"Type: Output\" \u2192 message_type: \"output\"  \n   - \"Type: Periodic\" \u2192 message_type: \"periodic\"\n   - \"Type: Polled\" \u2192 message_type: \"polled\"\n   - \"Type: Command\" \u2192 message_type: \"command\"\n   - \"Type: Set\" \u2192 message_type: \"set\"\n   - \"Type: Get\" \u2192 message_type: \"get\"\n   - Combinations like \"Periodic/Polled\" \u2192 message_type: \"periodic_polled\"\n3. The payload table shows fields in order. Extract them exactly as shown with correct byte offsets.\n4. Verify field sizes match offset differences (e.g., if offset jumps by 4, field is 4 bytes).\n\nFIELD EXTRACTION:\n- byte_offset: Exact byte offset from \"Offset\" column (integer, 0-indexed)\n- data_type: UBX types: U1, I1, X1, U2, I2, X2, U4, I4, X4, R4, R8, CH\n- For arrays: {\"array_of\": \"U1\", \"count\": N} - check Type column for \"[N]\" or \"x N\"\n- scale: Include \"raw\" string and numeric \"multiplier\" if shown\n- unit: Physical unit if shown (ms, deg, m/s, etc.)\n- reserved: Set true for reserved fields\n- fixed_value: For \"type\" fields at offset 0 (especially MGA messages), if the description\n  says \"Message type (0x01 for this type)\", set fixed_value to the integer (e.g., 1).\n  This value identifies the specific message variant.\n\nPAYLOAD LENGTH:\n- Fixed: {\"fixed\": 28}\n- Variable: {\"variable\": {\"base\": 8, \"formula\": \"8 + N*12\"}}\n\nQUALITY CHECK before returning:\n- Byte offsets sequential and non-overlapping\n- Field sizes match offset gaps\n- Total field sizes match payload length\n\n\nReturn the extracted message using the ubx_message_extraction tool.\n\n\n=== REQUIRED JSON SCHEMA ===\nYour response MUST conform to this JSON schema:\n\n{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://example.com/ubx-message-extraction.schema.json\",\n  \"title\": \"UBX Message Extraction Response\",\n  \"description\": \"Schema for LLM-extracted UBX protocol message definition\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"description\": \"Full message name (e.g., 'UBX-NAV-PVT')\"\n    },\n    \"class_id\": {\n      \"type\": \"string\",\n      \"pattern\": \"^0x[0-9a-fA-F]{2}$\",\n      \"description\": \"Class ID as hex (e.g., '0x01')\"\n    },\n    \"message_id\": {\n      \"type\": \"string\",\n      \"pattern\": \"^0x[0-9a-fA-F]{2}$\",\n      \"description\": \"Message ID as hex (e.g., '0x07')\"\n    },\n    \"description\": {\n      \"type\": \"string\",\n      \"description\": \"Short description of the message\"\n    },\n    \"message_type\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"input\",\n        \"output\",\n        \"command\",\n        \"set\",\n        \"get\",\n        \"get_set\",\n        \"poll_request\",\n        \"polled\",\n        \"periodic\",\n        \"periodic_polled\",\n        \"input_output\"\n      ],\n      \"description\": \"Direction and nature of the message\"\n    },\n    \"payload\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"length\": {\n          \"oneOf\": [\n            {\n              \"type\": \"object\",\n              \"properties\": {\n                \"fixed\": {\n                  \"type\": \"integer\",\n                  \"description\": \"Fixed payload length in bytes\"\n                }\n              },\n              \"required\": [\n                \"fixed\"\n              ],\n              \"additionalProperties\": false\n            },\n            {\n              \"type\": \"object\",\n              \"properties\": {\n                \"variable\": {\n                  \"type\": \"object\",\n                  \"properties\": {\n                    \"base\": {\n                      \"type\": \"integer\",\n                      \"description\": \"Base (fixed) portion of payload\"\n                    },\n                    \"formula\": {\n                      \"type\": \"string\",\n                      \"description\": \"Human-readable formula (e.g., '8 + N*12')\"\n                    },\n                    \"min\": {\n                      \"type\": \"integer\",\n                      \"description\": \"Minimum payload length\"\n                    },\n                    \"max\": {\n                      \"type\": [\n                        \"integer\",\n                        \"null\"\n                      ],\n                      \"description\": \"Maximum payload length (null if unbounded)\"\n                    }\n                  },\n                  \"required\": [\n                    \"base\"\n                  ]\n                }\n              },\n              \"required\": [\n                \"variable\"\n              ],\n              \"additionalProperties\": false\n            },\n            {\n              \"type\": \"object\",\n              \"properties\": {\n                \"alternatives\": {\n                  \"type\": \"array\",\n                  \"description\": \"Multiple valid fixed lengths\",\n                  \"items\": {\n                    \"type\": \"integer\"\n                  }\n                }\n              },\n              \"required\": [\n                \"alternatives\"\n              ],\n              \"additionalProperties\": false\n            }\n          ]\n        },\n        \"fields\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/field\"\n          }\n        },\n        \"repeated_groups\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/repeated_group\"\n          }\n        },\n        \"optional_blocks\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/optional_block\"\n          }\n        }\n      },\n      \"required\": [\n        \"length\",\n        \"fields\"\n      ]\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"class_id\",\n    \"message_id\",\n    \"message_type\",\n    \"payload\"\n  ],\n  \"$defs\": {\n    \"field\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"Field name (e.g., 'iTOW', 'flags')\"\n        },\n        \"byte_offset\": {\n          \"oneOf\": [\n            {\n              \"type\": \"integer\"\n            },\n            {\n              \"type\": \"string\",\n              \"description\": \"Formula for variable offset (e.g., '16 + n*4')\"\n            }\n          ]\n        },\n        \"data_type\": {\n          \"$ref\": \"#/$defs/data_type\"\n        },\n        \"description\": {\n          \"type\": \"string\"\n        },\n        \"scale\": {\n          \"$ref\": \"#/$defs/scale_factor\"\n        },\n        \"unit\": {\n          \"type\": \"string\",\n          \"description\": \"Physical unit (e.g., 'deg', 'm', 's', 'mm/s')\"\n        },\n        \"reserved\": {\n          \"type\": \"boolean\",\n          \"description\": \"Whether this is a reserved field\"\n        },\n        \"fixed_value\": {\n          \"type\": \"integer\",\n          \"description\": \"Fixed value for discriminator fields\"\n        },\n        \"enumeration\": {\n          \"type\": \"string\",\n          \"description\": \"Reference to a named enumeration\"\n        },\n        \"bitfield\": {\n          \"$ref\": \"#/$defs/bitfield\",\n          \"description\": \"Bitfield definition for X-type fields\"\n        }\n      },\n      \"required\": [\n        \"name\",\n        \"byte_offset\",\n        \"data_type\"\n      ]\n    },\n    \"data_type\": {\n      \"oneOf\": [\n        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"U1\",\n            \"I1\",\n            \"X1\",\n            \"U2\",\n            \"I2\",\n            \"X2\",\n            \"U4\",\n            \"I4\",\n            \"X4\",\n            \"R4\",\n            \"R8\",\n            \"I8\",\n            \"CH\"\n          ],\n          \"description\": \"Scalar UBX data type\"\n        },\n        {\n          \"type\": \"object\",\n          \"description\": \"Array type\",\n          \"properties\": {\n            \"array_of\": {\n              \"type\": \"string\",\n              \"enum\": [\n                \"U1\",\n                \"I1\",\n                \"X1\",\n                \"U2\",\n                \"I2\",\n                \"X2\",\n                \"U4\",\n                \"I4\",\n                \"X4\",\n                \"R4\",\n                \"R8\",\n                \"I8\",\n                \"CH\"\n              ]\n            },\n            \"count\": {\n              \"oneOf\": [\n                {\n                  \"type\": \"integer\"\n                },\n                {\n                  \"type\": \"string\",\n                  \"description\": \"Field name that contains the count\"\n                }\n              ]\n            }\n          },\n          \"required\": [\n            \"array_of\",\n            \"count\"\n          ],\n          \"additionalProperties\": false\n        }\n      ]\n    },\n    \"scale_factor\": {\n      \"type\": \"object\",\n      \"description\": \"Scale factor to convert raw integer to physical value\",\n      \"properties\": {\n        \"raw\": {\n          \"type\": \"string\",\n          \"description\": \"Original scale string from documentation (e.g., '2^-31', '1e-7')\"\n        },\n        \"multiplier\": {\n          \"type\": \"number\",\n          \"description\": \"Numeric multiplier (raw_value * multiplier = physical_value)\"\n        }\n      },\n      \"required\": [\n        \"raw\",\n        \"multiplier\"\n      ]\n    },\n    \"bitfield\": {\n      \"type\": \"object\",\n      \"description\": \"Definition of bits within an X-type field\",\n      \"properties\": {\n        \"bits\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/bitfield_entry\"\n          }\n        }\n      },\n      \"required\": [\n        \"bits\"\n      ]\n    },\n    \"bitfield_entry\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\"\n        },\n        \"bit_start\": {\n          \"type\": \"integer\",\n          \"description\": \"Starting bit position (0-indexed, LSB)\"\n        },\n        \"bit_end\": {\n          \"type\": \"integer\",\n          \"description\": \"Ending bit position (inclusive)\"\n        },\n        \"data_type\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"U\",\n            \"I\",\n            \"S\"\n          ],\n          \"description\": \"U=unsigned, I=signed two's complement, S=sign-magnitude\"\n        },\n        \"description\": {\n          \"type\": \"string\"\n        },\n        \"reserved\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\": [\n        \"name\",\n        \"bit_start\",\n        \"bit_end\",\n        \"data_type\"\n      ]\n    },\n    \"repeated_group\": {\n      \"type\": \"object\",\n      \"description\": \"A group of fields that repeats\",\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"Identifier for this group\"\n        },\n        \"description\": {\n          \"type\": \"string\"\n        },\n        \"repetition_type\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"count_field\",\n            \"constant\",\n            \"optional\",\n            \"fill_remaining\"\n          ],\n          \"description\": \"How repetition count is determined\"\n        },\n        \"count_field\": {\n          \"type\": \"string\",\n          \"description\": \"Name of the field containing repetition count\"\n        },\n        \"constant_count\": {\n          \"type\": \"integer\",\n          \"description\": \"Fixed number of repetitions\"\n        },\n        \"group_size_bytes\": {\n          \"type\": \"integer\",\n          \"description\": \"Size of one group instance in bytes\"\n        },\n        \"base_offset\": {\n          \"type\": \"integer\",\n          \"description\": \"Byte offset where the group starts\"\n        },\n        \"fields\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/field\"\n          }\n        }\n      },\n      \"required\": [\n        \"name\",\n        \"repetition_type\",\n        \"group_size_bytes\",\n        \"base_offset\",\n        \"fields\"\n      ]\n    },\n    \"optional_block\": {\n      \"type\": \"object\",\n      \"description\": \"An optional block of fields that may or may not be present\",\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\",\n          \"description\": \"Identifier for this optional block\"\n        },\n        \"description\": {\n          \"type\": \"string\"\n        },\n        \"base_offset\": {\n          \"type\": \"integer\",\n          \"description\": \"Byte offset where this block starts if present\"\n        },\n        \"size_bytes\": {\n          \"type\": \"integer\",\n          \"description\": \"Size of this optional block in bytes\"\n        },\n        \"presence_condition\": {\n          \"type\": \"string\",\n          \"description\": \"Condition for presence (e.g., 'payload_length > 8')\"\n        },\n        \"fields\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\": \"#/$defs/field\"\n          }\n        }\n      },\n      \"required\": [\n        \"name\",\n        \"base_offset\",\n        \"fields\"\n      ]\n    }\n  }\n}\n\nKEY REQUIREMENTS:\n1. The response must be a single JSON object matching the schema\n2. Required fields: name, class_id, message_id, message_type, payload\n3. class_id and message_id must be hex strings like \"0x01\"\n4. message_type must be one of the enum values\n5. payload.length must be either {\"fixed\": N} or {\"variable\": {\"base\": N, \"formula\": \"...\"}}\n6. Each field needs: name, byte_offset (integer), data_type\n7. For arrays, use: {\"array_of\": \"U1\", \"count\": 4}\n8. For bitfields (X1/X2/X4 types), include \"bitfield\" with \"bits\" array\n9. IMPORTANT: Every byte of the payload must be accounted for by fields\n"
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        "{\n  \"name\": \"UBX-MON-HW\",\n  \"class_id\": \"0x0a\",\n  \"message_id\": \"0x09\",\n  \"description\": \"Hardware status\",\n  \"message_type\": \"periodic_polled\",\n  \"payload\": {\n    \"length\": {\n      \"fixed\": 60\n    },\n    \"fields\": [\n      {\n        \"name\": \"pinSel\",\n        \"byte_offset\": 0,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as peripheral/PIO\"\n      },\n      {\n        \"name\": \"pinBank\",\n        \"byte_offset\": 4,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as bank A/B\"\n      },\n      {\n        \"name\": \"pinDir\",\n        \"byte_offset\": 8,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins set as input/output\"\n      },\n      {\n        \"name\": \"pinVal\",\n        \"byte_offset\": 12,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value low/high\"\n      },\n      {\n        \"name\": \"noisePerMS\",\n        \"byte_offset\": 16,\n        \"data_type\": \"U2\",\n        \"description\": \"Noise level as measured by the GPS core\"\n      },\n      {\n        \"name\": \"agcCnt\",\n        \"byte_offset\": 18,\n        \"data_type\": \"U2\",\n        \"description\": \"AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)\"\n      },\n      {\n        \"name\": \"aStatus\",\n        \"byte_offset\": 20,\n        \"data_type\": \"U1\",\n        \"description\": \"Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)\"\n      },\n      {\n        \"name\": \"aPower\",\n        \"byte_offset\": 21,\n        \"data_type\": \"U1\",\n        \"description\": \"Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)\"\n      },\n      {\n        \"name\": \"flags\",\n        \"byte_offset\": 22,\n        \"data_type\": \"X1\",\n        \"bitfield\": {\n          \"bits\": [\n            {\n              \"name\": \"rtcCalib\",\n              \"bit_start\": 0,\n              \"bit_end\": 0,\n              \"data_type\": \"U\",\n              \"description\": \"RTC is calibrated\"\n            },\n            {\n              \"name\": \"safeBoot\",\n              \"bit_start\": 1,\n              \"bit_end\": 1,\n              \"data_type\": \"U\",\n              \"description\": \"Safeboot mode (0 = inactive, 1 = active)\"\n            },\n            {\n              \"name\": \"jammingState\",\n              \"bit_start\": 2,\n              \"bit_end\": 3,\n              \"data_type\": \"U\",\n              \"description\": \"Output from jamming/interference monitor (0 = unknown or feature disabled, 1 = ok no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)\"\n            },\n            {\n              \"name\": \"xtalAbsent\",\n              \"bit_start\": 4,\n              \"bit_end\": 4,\n              \"data_type\": \"U\",\n              \"description\": \"RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\": \"reserved0\",\n        \"byte_offset\": 23,\n        \"data_type\": \"U1\",\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"usedMask\",\n        \"byte_offset\": 24,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins that are used by the virtual pin manager\"\n      },\n      {\n        \"name\": \"VP\",\n        \"byte_offset\": 28,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 17\n        },\n        \"description\": \"Array of pin mappings for each of the 17 physical pins\"\n      },\n      {\n        \"name\": \"jamInd\",\n        \"byte_offset\": 45,\n        \"data_type\": \"U1\",\n        \"description\": \"CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)\"\n      },\n      {\n        \"name\": \"reserved1\",\n        \"byte_offset\": 46,\n        \"data_type\": {\n          \"array_of\": \"U1\",\n          \"count\": 2\n        },\n        \"description\": \"Reserved\",\n        \"reserved\": true\n      },\n      {\n        \"name\": \"pinIrq\",\n        \"byte_offset\": 48,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO Irq\"\n      },\n      {\n        \"name\": \"pullH\",\n        \"byte_offset\": 52,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO pull high resistor\"\n      },\n      {\n        \"name\": \"pullL\",\n        \"byte_offset\": 56,\n        \"data_type\": \"X4\",\n        \"description\": \"Mask of pins value using the PIO pull low resistor\"\n      }\n    ]\n  }\n}"
+      ]
+    }
+  ],
+  "extracted_structure": {
+    "name": "UBX-MON-HW",
+    "class_id": "0x0a",
+    "message_id": "0x09",
+    "description": "Hardware status",
+    "message_type": "periodic_polled",
+    "payload": {
+      "length": {
+        "fixed": 60
+      },
+      "fields": [
+        {
+          "name": "pinSel",
+          "byte_offset": 0,
+          "data_type": "X4",
+          "description": "Mask of pins set as peripheral/PIO"
+        },
+        {
+          "name": "pinBank",
+          "byte_offset": 4,
+          "data_type": "X4",
+          "description": "Mask of pins set as bank A/B"
+        },
+        {
+          "name": "pinDir",
+          "byte_offset": 8,
+          "data_type": "X4",
+          "description": "Mask of pins set as input/output"
+        },
+        {
+          "name": "pinVal",
+          "byte_offset": 12,
+          "data_type": "X4",
+          "description": "Mask of pins value low/high"
+        },
+        {
+          "name": "noisePerMS",
+          "byte_offset": 16,
+          "data_type": "U2",
+          "description": "Noise level as measured by the GPS core"
+        },
+        {
+          "name": "agcCnt",
+          "byte_offset": 18,
+          "data_type": "U2",
+          "description": "AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+        },
+        {
+          "name": "aStatus",
+          "byte_offset": 20,
+          "data_type": "U1",
+          "description": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+        },
+        {
+          "name": "aPower",
+          "byte_offset": 21,
+          "data_type": "U1",
+          "description": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+        },
+        {
+          "name": "flags",
+          "byte_offset": 22,
+          "data_type": "X1",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "rtcCalib",
+                "bit_start": 0,
+                "bit_end": 0,
+                "data_type": "U",
+                "description": "RTC is calibrated"
+              },
+              {
+                "name": "safeBoot",
+                "bit_start": 1,
+                "bit_end": 1,
+                "data_type": "U",
+                "description": "Safeboot mode (0 = inactive, 1 = active)"
+              },
+              {
+                "name": "jammingState",
+                "bit_start": 2,
+                "bit_end": 3,
+                "data_type": "U",
+                "description": "Output from jamming/interference monitor (0 = unknown or feature disabled, 1 = ok no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix)"
+              },
+              {
+                "name": "xtalAbsent",
+                "bit_start": 4,
+                "bit_end": 4,
+                "data_type": "U",
+                "description": "RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserved0",
+          "byte_offset": 23,
+          "data_type": "U1",
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "usedMask",
+          "byte_offset": 24,
+          "data_type": "X4",
+          "description": "Mask of pins that are used by the virtual pin manager"
+        },
+        {
+          "name": "VP",
+          "byte_offset": 28,
+          "data_type": {
+            "array_of": "U1",
+            "count": 17
+          },
+          "description": "Array of pin mappings for each of the 17 physical pins"
+        },
+        {
+          "name": "jamInd",
+          "byte_offset": 45,
+          "data_type": "U1",
+          "description": "CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 46,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "pinIrq",
+          "byte_offset": 48,
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO Irq"
+        },
+        {
+          "name": "pullH",
+          "byte_offset": 52,
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO pull high resistor"
+        },
+        {
+          "name": "pullL",
+          "byte_offset": 56,
+          "data_type": "X4",
+          "description": "Mask of pins value using the PIO pull low resistor"
+        }
+      ]
+    }
+  },
+  "review": null,
+  "uploaded_file_name": "files/5ktppymh1j0b"
+}

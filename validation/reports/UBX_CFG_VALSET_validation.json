@@ -1,0 +1,982 @@
+{
+  "message": "UBX-CFG-VALSET",
+  "timestamp": "2026-01-09T07:18:49.312379+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-CFG-VALSET",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T07:05:23.134058+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-CFG-VALSET",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T07:05:23.729073+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length of the payload is incorrectly stated. The PDF indicates a fixed part of 4 bytes (version, layers, transaction, reserved0) before the variable cfgData.",
+          "canonical_value": 0,
+          "pdf_value": "4 (implied by '4 + [0..n]' and field offsets)"
+        },
+        {
+          "field": "cfgData representation",
+          "issue": "The canonical definition represents 'cfgData' as a simple 'U1[]' type within the 'fields' array. The PDF explicitly indicates 'cfgData' as a 'Start of repeated group (N times)' which typically implies a specific 'repeated_group' structure in the canonical definition format, especially when it's variable trailing data.",
+          "canonical_value": "{ \"name\": \"cfgData\", \"byte_offset\": 4, \"data_type\": \"U1[]\" }",
+          "pdf_value": "Start of repeated group (N times) 4 + n U1 cfgData"
+        }
+      ],
+      "notes": "The canonical definition targets the transactional version of UBX-CFG-VALSET (version 0x01), which is described on page 2 of the PDF. \n\nMinor observations (not marked as discrepancies):\n- The PDF describes the 'transaction' field (offset 2) as 'U1' but then provides bitfield definitions ('bits 1...0 U:2 action'). The canonical's use of 'X1' for this field is semantically more accurate as it indicates a bitfield.\n- The 'reserved0' field at offset 3 is explicitly listed in the canonical definition, whereas it is only implied by the total fixed payload length (4 bytes) and the preceding fields in the PDF. Making it explicit in the canonical is good practice.",
+      "pdf_pages": [
+        56,
+        57
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T07:05:48.942429+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Message is a command to set configuration, therefore it is an input message, not output.",
+          "canonical_value": "output",
+          "pdf_value": "input"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed portion of the payload (version, layers, transaction, reserved0) is 4 bytes. The remaining cfgData is variable. The fixed length should reflect the minimum payload size.",
+          "canonical_value": 0,
+          "pdf_value": "4 (minimum payload length)"
+        },
+        {
+          "field": "payload.fields.transaction.data_type",
+          "issue": "The PDF explicitly lists 'U1' as the type for the 'transaction' field. While bits within this byte are interpreted as an action, the overall field type is U1.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        },
+        {
+          "field": "payload.fields.cfgData",
+          "issue": "The 'cfgData' is described as a 'repeated group' of 'key and value pairs' in the PDF. It's not simply an array of U1s, but rather a structured sequence of U4 keys followed by variable-length values. This should be modeled as a 'repeated_groups' construct containing the key-value pair structure, rather than a generic 'U1[]' field.",
+          "canonical_value": {
+            "name": "cfgData",
+            "byte_offset": 4,
+            "data_type": "U1[]",
+            "description": "Configuration data as a sequence of key-value pairs (U4 key followed by variable length value)"
+          },
+          "pdf_value": "Repeated group starting at byte_offset 4, containing U4 keys and variable-length values."
+        }
+      ],
+      "notes": "The canonical definition accurately corresponds to the 'Set configuration item values (with transaction)' variant (version 0x01) described on page 2 of the manual, rather than the non-transactional version (0x00) on page 1. The discrepancies noted are in the precise typing and structural modeling of the payload, particularly the variable 'cfgData' portion, and the message direction.",
+      "pdf_pages": [
+        55,
+        56
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T07:06:16.578848+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "transaction",
+          "issue": "The PDF defines 'transaction' as U1 but then provides a bitfield description ('bits 1...0 U:2 action'), which implies it should be an X1 (bitfield) type. The canonical definition correctly uses X1.",
+          "canonical_value": "X1",
+          "pdf_value": "U1 (with bitfield description)"
+        }
+      ],
+      "notes": "The provided PDF manual contains two distinct definitions for UBX-CFG-VALSET (0x06 0x8a), plus an additional section mislabeled as UBX-CFG-VALSET.\n\n1.  **Page 1 (top section):** This section is titled '3.10.5 UBX-CFG-VALSET (0x06 0x8a)' but its 'Message structure' table indicates Class ID 0x06, Message ID 0x8b, and the payload fields ('layer' for retrieval, 'position' for skipped items) clearly describe **UBX-CFG-VALGET** (0x06 0x8b). Therefore, this section is irrelevant for UBX-CFG-VALSET validation.\n\n2.  **Page 1 (bottom section):** '3.10.5.1 Set configuration item values' describes **UBX-CFG-VALSET version 0x00** (non-transactional). This version has fields 'version' (0x00), 'layers' (X1), followed by two implicit reserved bytes (bytes 2 and 3) before 'cfgData' at offset 4. The canonical definition targets UBX-CFG-VALSET version 0x01, which includes a 'transaction' field, making this a valid version difference.\n\n3.  **Page 2 (entire section):** '3.10.5.2 Set configuration item values (with transaction)' describes **UBX-CFG-VALSET version 0x01**. This is the version that the canonical definition matches very closely:\n    *   **version (U1, offset 0):** Matches. Both specify 'Message version (0x01 for this version)'.\n    *   **layers (X1, offset 1):** Matches. The PDF explicitly lists 'bit 0 U:1 ram', 'bit 1 U:1 bbr', and 'bit 2 U:1 flash' within this X1 field, which is consistent with the canonical's 'X1' type.\n    *   **transaction (X1, offset 2):** Matches in name and offset. The canonical correctly identifies it as 'X1'. The PDF lists it as 'U1' but then defines 'bits 1...0 U:2 action' within it, implicitly making it a bitfield. The canonical's 'X1' is more precise.\n    *   **reserved0 (U1, offset 3):** Matches. The canonical explicitly defines a 'reserved0' U1 field at offset 3. This is implicitly present in the PDF to align 'cfgData' at offset 4 after 'version', 'layers', and 'transaction' fields.\n    *   **cfgData (U1[], offset 4):** Matches conceptually. Both indicate variable configuration data (key-value pairs) starting at offset 4.",
+      "pdf_pages": [
+        59,
+        60
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T07:06:56.324365+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "The canonical definition accurately reflects the UBX-CFG-VALSET message with transaction (version 0x01) as described in section 3.10.5.2 on page 2 of the PDF. The description for the `version` field in the canonical explicitly states `(0x01 for transactional version)`, which aligns with this interpretation.\n\nThe non-transactional version (version 0x00) described in section 3.10.5.1 on page 1 of the PDF differs by replacing the `transaction` field and the subsequent implicit `reserved0` byte with a `U1[2] reserved0` field at offset 2. This is a valid version variation, and the canonical correctly represents the transactional variant.",
+      "pdf_pages": [
+        56,
+        57
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T07:07:13.540148+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Message type is incorrect. UBX-CFG-VALSET is an input (Set) message, not an output message.",
+          "canonical_value": "output",
+          "pdf_value": "Set (implies input)"
+        },
+        {
+          "field": "version",
+          "issue": "The version number for the transactional message differs.",
+          "canonical_value": "0x01 (as per description for transactional version)",
+          "pdf_value": "0x00 (as per payload table for transactional version)"
+        },
+        {
+          "field": "transaction / reserved0 (offsets 2-3)",
+          "issue": "The structure of fields at byte offsets 2 and 3 differs. Canonical defines a 1-byte 'transaction' field followed by a 1-byte 'reserved0' field. The PDF defines a 2-byte 'reserved0' field starting at offset 2, implying no explicit 'transaction' field in the payload structure.",
+          "canonical_value": "transaction (X1, offset 2), reserved0 (U1, offset 3)",
+          "pdf_value": "reserved0 (U1[2], offset 2)"
+        }
+      ],
+      "notes": "The canonical definition appears to describe a 'version 1' transactional message, which is mentioned in a note on page 1 of the PDF. However, the explicit payload table for 'Set configuration item values (with transaction)' on page 2 defines 'version 0x00' and a different structure for bytes 2-3. The canonical definition does not match the explicit table on page 2 for the transactional message.",
+      "pdf_pages": [
+        96,
+        97
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:07:52.926725+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message is used to set configuration values on the receiver, indicating it is an input message (host to receiver), not an output message.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied by description)"
+        },
+        {
+          "field": "version.description",
+          "issue": "The canonical description for the 'version' field states '0x01 for transactional version', which aligns with 3.10.5.2. However, the manual also presents a non-transactional version (3.10.5.1) where the version is 0x00. The canonical definition seems to specifically target the transactional version, which is reasonable given its structure. This is not a direct discrepancy against the transactional version itself, but a note on context.",
+          "canonical_value": "Message version (0x01 for transactional version)",
+          "pdf_value": "3.10.5.1: Message version (0x00 for this version); 3.10.5.2: Message version (0x01 for this version)"
+        },
+        {
+          "field": "transaction.data_type",
+          "issue": "The canonical defines 'transaction' as 'X1'. The PDF for the transactional version (3.10.5.2) defines it as 'U1' with a nested bitfield definition 'bits 1...0 U:2 action'. While 'X1' signifies a bitfield byte, the explicit 'U1' followed by bit definitions in the PDF is a more precise declaration of the byte's primary type before its bit-level interpretation.",
+          "canonical_value": "X1",
+          "pdf_value": "U1 (with bitfield 'bits 1...0 U:2 action')"
+        }
+      ],
+      "notes": "The canonical definition's structure (fields, byte offsets, and order) precisely matches the '3.10.5.2 Set configuration item values (with transaction)' message in the manual (Page 2). It does not match the non-transactional '3.10.5.1 Set configuration item values' message (Page 1) due to the presence of the 'transaction' field at offset 2 and the 'reserved0' field at offset 3. The canonical's description for the 'version' field also specifically mentions '0x01 for transactional version', further confirming it represents the transactional variant shown on Page 2.",
+      "pdf_pages": [
+        63,
+        64
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T07:08:16.201927+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[2].data_type",
+          "issue": "The data type for the 'transaction' field differs. The PDF shows U1, while the canonical uses X1. Although both represent a 1-byte field, X1 (bitfield) is more specific given the PDF's description of bit definitions within this field.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        }
+      ],
+      "notes": "The canonical definition explicitly describes itself as the 'transactional version' (message version 0x01). Therefore, the validation was primarily performed against section 3.10.6.2 (page 2 of the PDF), which describes message version 0x01. Section 3.10.6.1 (page 1) describes message version 0x00 and has a different payload structure (e.g., reserved field at offset 2 instead of transaction field), which is a valid version difference and not considered a discrepancy for this canonical definition.",
+      "pdf_pages": [
+        65,
+        66
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T07:08:40.948939+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "version.description",
+          "issue": "Version value for transactional message differs.",
+          "canonical_value": "Message version (0x01 for transactional version)",
+          "pdf_value": "Message version (0x00 for this version)"
+        },
+        {
+          "field": "transaction",
+          "issue": "Field 'transaction' is present in canonical but not in PDF for this message version. The PDF shows a 2-byte reserved field instead.",
+          "canonical_value": {
+            "name": "transaction",
+            "byte_offset": 2,
+            "data_type": "X1",
+            "description": "Transaction action to be applied"
+          },
+          "pdf_value": {
+            "name": "reserved0",
+            "byte_offset": 2,
+            "data_type": "U1[2]",
+            "description": "Reserved"
+          }
+        },
+        {
+          "field": "reserved0",
+          "issue": "Field 'reserved0' is positioned differently and has a different size due to the absence of the 'transaction' field in the PDF.",
+          "canonical_value": {
+            "name": "reserved0",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "Reserved"
+          },
+          "pdf_value": "Part of 'reserved0' (U1[2]) starting at byte_offset 2"
+        }
+      ],
+      "notes": "The canonical definition appears to describe a later version of UBX-CFG-VALSET (0x06 0x8a) that explicitly includes a 'transaction' field at offset 2 and uses version '0x01' for transactional operations. The provided manual (u-blox M9 SPG 4.04, protocol version 32.01) defines the 'Set configuration item values (with transaction)' variant (Section 3.10.28.2) with 'version 0x00' and a 2-byte 'reserved0' field starting at offset 2, meaning there is no explicit 'transaction' field in the payload at that position in this manual's definition. The transaction mechanism for this version must be managed by other means, likely implied by message context or bits in the 'layers' field, rather than a dedicated payload field.",
+      "pdf_pages": [
+        89,
+        90
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T07:09:05.288233+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.length",
+          "issue": "Payload length definition is incorrect. The message has a fixed header of 4 bytes followed by a variable-length repeated group. The canonical defines 'fixed: 0'.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "4 + [0..n] bytes (variable)"
+        },
+        {
+          "field": "transaction.data_type",
+          "issue": "Data type mismatch. Canonical specifies X1, but PDF indicates U1 for this field which represents an action value.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        },
+        {
+          "field": "cfgData",
+          "issue": "Structural mismatch. The canonical defines 'cfgData' as a simple 'U1[]' field. The PDF describes it as a 'repeated group' of 'key and value pairs' (U4 key followed by variable length value). This requires a 'repeated_group' definition, not a simple array field, to correctly model its structure and variable length.",
+          "canonical_value": "{ \"name\": \"cfgData\", \"byte_offset\": 4, \"data_type\": \"U1[]\" }",
+          "pdf_value": "Repeated group (N times) starting at offset 4, containing key-value pairs (U4 key, variable length value)."
+        }
+      ],
+      "notes": "The canonical definition attempts to describe the transactional version (version 0x01) of UBX-CFG-VALSET, which is detailed on Page 2 of the manual. The non-transactional version (version 0x00) on Page 1 is a different variant, with 'reserved0' being 2 bytes instead of 1, and lacking the 'transaction' field.",
+      "pdf_pages": [
+        63,
+        64
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T07:09:36.084345+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message type is incorrect. UBX-CFG-VALSET is sent *to* the receiver to set configuration values, making it an input message from the receiver's perspective.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied by 'Set configuration item values')"
+        },
+        {
+          "field": "payload.length",
+          "issue": "The canonical definition specifies a fixed payload length of 0 bytes, but the PDF clearly indicates a variable payload length of '4 + [0..n]' bytes.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "variable (4 + [0..n])"
+        },
+        {
+          "field": "payload.fields.cfgData",
+          "issue": "The `cfgData` field is defined as `U1[]` (an array of bytes), but its description states it's a 'sequence of key-value pairs (U4 key followed by variable length value)'. This implies a structured variable-length group. A `repeated_group` structure should be used instead of a simple `U1[]` field to properly define the key-value pair structure within the variable part of the payload.",
+          "canonical_value": "{ \"name\": \"cfgData\", \"data_type\": \"U1[]\", ... }",
+          "pdf_value": "variable-length repeated group containing U4 key and variable-length value pairs (structured)"
+        }
+      ],
+      "notes": "The provided canonical definition generally aligns with the structure of the *transactional* version (v1, UBX-CFG-VALSET with transaction support, as shown on page 2), correctly identifying the `version` (0x01 description), `layers`, `transaction`, and an implicit `reserved` byte at offset 3. However, it completely omits the non-transactional version (v0, as shown on page 1) which has a different structure (e.g., `U1[2] reserved0` at offset 2 instead of `transaction`). The discrepancies noted above are applicable even when comparing against the transactional version.",
+      "pdf_pages": [
+        66,
+        67
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T07:10:05.682230+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "UBX-CFG-VALSET is a command sent to the receiver to set configuration values. Therefore, it is typically classified as an 'input' or 'input_output' message, not 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "Implied: input (based on 'Set configuration item values')"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The message has a variable length payload as indicated by 'Length (Bytes): 4 + [0..n]' in the PDF. The canonical's `fixed: 0` for the total payload length is incorrect for a variable-length message that also has a fixed prefix.",
+          "canonical_value": "0",
+          "pdf_value": "Variable (4 + [0..n])"
+        },
+        {
+          "field": "payload.fields[1].layers.bitfield_definitions",
+          "issue": "The canonical definition for the 'layers' field is missing the explicit bitfield definitions provided in the PDF.",
+          "canonical_value": "No bitfield definitions",
+          "pdf_value": "bit 0 U:1 ram, bit 1 U:1 bbr, bit 2 U:1 flash"
+        },
+        {
+          "field": "payload.fields[2].transaction.bitfield_definitions",
+          "issue": "The canonical definition for the 'transaction' field is missing the explicit bitfield definitions provided in the PDF.",
+          "canonical_value": "No bitfield definitions",
+          "pdf_value": "bits 1...0 U:2 action"
+        },
+        {
+          "field": "payload.fields[4].cfgData.data_type",
+          "issue": "The `data_type: \"U1[]\"` for 'cfgData' is an oversimplification. The canonical's own description for this field states 'U4 key followed by variable length value'. This complex structure of key-value pairs cannot be accurately represented by a simple `U1[]` array. It typically requires a `repeated_group` with a nested structure to define the key and value for each pair.",
+          "canonical_value": "U1[]",
+          "pdf_value": "U1 (within a 'Start of repeated group' for key-value pairs)"
+        }
+      ],
+      "notes": "The canonical definition correctly aligns with the transactional version (version 0x01) of UBX-CFG-VALSET described in section 3.10.5.2 of the manual, including field names, offsets, and data types (U1, X1). However, it misses detailed bitfield definitions for 'layers' and 'transaction', and significantly misrepresents the 'cfgData' field's structure, which should be a complex repeated group of key-value pairs rather than a simple byte array, despite the description being accurate.",
+      "pdf_pages": [
+        55,
+        56
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T07:10:33.622961+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "The canonical definition accurately describes the 'Set configuration item values (with transaction)' variant of UBX-CFG-VALSET (version 0x01), as detailed in section 3.10.6.2 on page 2 of the PDF. The version 0x00 variant, described in section 3.10.6.1 on page 1, has a different payload structure (specifically, `U1[2] reserved0` at offset 2 instead of `transaction` and a single reserved byte). This is a valid version-based variation, and the canonical definition correctly targets the transactional version (0x01).",
+      "pdf_pages": [
+        60,
+        61
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T07:10:55.696901+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields[1].layers",
+          "issue": "Missing bitfield definitions for 'layers'. PDF clearly defines bits for 'ram', 'bbr', 'flash'.",
+          "canonical_value": {
+            "name": "layers",
+            "byte_offset": 1,
+            "data_type": "X1",
+            "description": "The layers where the configuration should be applied"
+          },
+          "pdf_value": "X1 (implicit from bit definitions), with:\n- bit 0 U:1 ram\n- bit 1 U:1 bbr\n- bit 2 U:1 flash"
+        },
+        {
+          "field": "payload.fields[2].transaction",
+          "issue": "Missing bitfield definitions for 'transaction'. PDF defines 'bits 1...0 U:2 action' within this byte.",
+          "canonical_value": {
+            "name": "transaction",
+            "byte_offset": 2,
+            "data_type": "X1",
+            "description": "Transaction action to be applied"
+          },
+          "pdf_value": "U1 (containing bitfield 'bits 1...0 U:2 action') with:\n- bits 1...0 U:2 action\n- 0 = Transactionless UBX-CFG-VALSET\n- 1 = Start new transaction / Apply transaction"
+        }
+      ],
+      "notes": "The canonical definition matches the transactional version (v1) of UBX-CFG-VALSET as described on page 2 (section 3.10.25.2). The non-transactional version on page 1 has a different field at offset 2 ('position') which is not present in the canonical definition. The 'reserved0' field at offset 3 is implicitly derived from the byte offset gap in the PDF and is a valid interpretation for the canonical.",
+      "pdf_pages": [
+        83,
+        84
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:11:21.383637+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "UBX-CFG-VALSET Version 0 (page 1)",
+          "issue": "The canonical definition only describes the structure for message version 1. It omits the structure for message version 0, which is also present in this manual on page 1.",
+          "canonical_value": "Not defined in canonical (implicitly version 1 only)",
+          "pdf_value": "Version 0 fields: U1 version, U1 layer, U2 position, U1[] cfgData (starting at offset 4)"
+        },
+        {
+          "field": "transaction (byte_offset 2)",
+          "issue": "The data type in the canonical is X1, but the PDF states U1. Furthermore, the PDF provides a nested bitfield definition ('bits 1...0 U:2 action') for this byte which is missing in the canonical.",
+          "canonical_value": "{ \"name\": \"transaction\", \"byte_offset\": 2, \"data_type\": \"X1\", \"description\": \"Transaction action to be applied\" }",
+          "pdf_value": "U1 transaction (Byte offset 2), with 'bits 1...0 U:2 action' defined within it."
+        }
+      ],
+      "notes": "The canonical definition accurately describes the payload structure for `UBX-CFG-VALSET` message version 1 (as seen on page 2 of the PDF). However, the manual also presents `UBX-CFG-VALSET` version 0 on page 1, which has a different payload structure (specifically, the fields at byte offsets 1 and 2 differ: version 0 has `U1 layer` and `U2 position`, while version 1 has `X1 layers` and `U1 transaction` with a reserved byte). The canonical definition does not account for this version 0 structure. Additionally, while the canonical uses `X1` for `transaction`, the PDF explicitly states `U1` and provides a specific bitfield definition (`action`) for bits 0-1 of that byte, which is absent from the canonical.",
+      "pdf_pages": [
+        56,
+        57
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T07:11:46.028148+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message type is incorrect. UBX-CFG-VALSET is used to send configuration to the receiver, making it an input message.",
+          "canonical_value": "output",
+          "pdf_value": "input"
+        },
+        {
+          "field": "payload.length.fixed",
+          "issue": "The fixed length part of the payload is 4 bytes (version, layers, transaction, reserved0) for the transactional message, not 0.",
+          "canonical_value": 0,
+          "pdf_value": 4
+        }
+      ],
+      "notes": "The provided canonical definition for UBX-CFG-VALSET matches the transactional version (version 0x01) as described on page 2 of the PDF manual, including the inferred 'reserved0' field at offset 3 to fill the byte gap. However, the manual also describes a non-transactional version (version 0x00) on page 1 which has a different structure (e.g., U1[2] reserved0 at offset 2 instead of a transaction field). The canonical definition does not account for this multi-variant nature of the message.",
+      "pdf_pages": [
+        67,
+        68
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:12:10.518830+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Message type is incorrect. UBX-CFG-VALSET is sent from host to receiver to set configuration, so it's an 'input' message for the receiver.",
+          "canonical_value": "output",
+          "pdf_value": "input (inferred from context 'Set configuration item values')"
+        },
+        {
+          "field": "payload.length",
+          "issue": "The payload length is variable, not fixed at 0. The PDF indicates a fixed part of 4 bytes plus a variable part [0..n] for cfgData.",
+          "canonical_value": "{ \"fixed\": 0 }",
+          "pdf_value": "{ \"min\": 4, \"variable\": true, \"formula\": \"4 + [sum of lengths of cfgData items]\" }"
+        },
+        {
+          "field": "payload.fields[2].data_type",
+          "issue": "While the canonical's `X1` for 'transaction' is acceptable given it contains bitfields, the PDF explicitly states `U1` as the primary type. More importantly, the canonical is missing the bitfield definitions for `action` (bits 1...0) within this byte, which is detailed in the PDF.",
+          "canonical_value": "X1 (without bitfield definitions)",
+          "pdf_value": "U1 (with nested bitfield 'action' at bits 1...0)"
+        },
+        {
+          "field": "payload.fields[4].data_type",
+          "issue": "The 'cfgData' field is defined as a single `U1[]` (array of bytes), but its description explicitly states it's 'a sequence of key-value pairs (U4 key followed by variable length value)'. This complex, variable-length structure should be defined as a `repeated_groups` block, with nested fields for the U4 key and the variable length value, not a simple byte array.",
+          "canonical_value": "U1[]",
+          "pdf_value": "Sequence of (U4 key, variable-length value) pairs, represented as `U1 cfgData` in 'Start of repeated group (N times)' which implies a complex structure starting at byte 4."
+        }
+      ],
+      "notes": "The canonical definition appears to target the 'transactional' version (0x01) of UBX-CFG-VALSET, as indicated by the description for the 'version' field and the presence of the 'transaction' field at offset 2 (which is 'reserved0' in the non-transactional version). The inferred 'reserved0' at offset 3 in the canonical definition aligns with the fixed length of 4 bytes mentioned in the PDF for the transactional version. The primary issues are the incorrect payload length definition, the missing bitfield details for 'transaction', and a fundamental misrepresentation of the variable-length 'cfgData' structure.",
+      "pdf_pages": [
+        68,
+        69
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:12:36.565414+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "SET messages are typically input messages to the receiver, not output.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied by 'Set configuration item values')"
+        },
+        {
+          "field": "payload.length",
+          "issue": "The message has a variable-length payload, not a fixed length of 0. The PDF specifies a minimum fixed part of 4 bytes plus a variable part.",
+          "canonical_value": "{\"fixed\": 0}",
+          "pdf_value": "variable (4 + [0..n])"
+        },
+        {
+          "field": "transaction",
+          "issue": "The canonical definition includes a 'transaction' field at byte offset 2. The PDF for this manual version describes this byte (and the next) as 'reserved0' (U1[2]), not a 'transaction' field.",
+          "canonical_value": "name: 'transaction', byte_offset: 2, data_type: 'X1'",
+          "pdf_value": "name: 'reserved0', byte_offset: 2, data_type: 'U1[2]'"
+        },
+        {
+          "field": "reserved0 (canonical)",
+          "issue": "The canonical defines a 1-byte 'reserved0' at byte offset 3. In the PDF, byte offset 3 is the second byte of the 2-byte 'reserved0' field that starts at byte offset 2. It is not a separate field.",
+          "canonical_value": "name: 'reserved0', byte_offset: 3, data_type: 'U1'",
+          "pdf_value": "part of 'reserved0' (U1[2]) starting at byte offset 2"
+        }
+      ],
+      "notes": "The canonical definition's 'version' field description ('0x01 for transactional version') and 'layers' field (X1) suggest it aims to define the transactional variant of UBX-CFG-VALSET (Page 65). However, a significant structural difference exists where the canonical's 'transaction' field (offset 2) is replaced by a 2-byte 'reserved0' field in the PDF for this specific manual (F9 DBD 1.30, Protocol Version 41.30). The 'message_type' and 'payload.length' definitions are also incorrect for any variant of this message type as described in the manual.",
+      "pdf_pages": [
+        64,
+        65
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:13:12.724125+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message direction is incorrectly specified. UBX-CFG-VALSET is used to set configuration, meaning it is an input message from the host to the receiver.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied by 'Set configuration item values')"
+        },
+        {
+          "field": "payload.length",
+          "issue": "The payload length is variable due to the cfgData field, but the canonical defines it as fixed: 0. The PDF shows the length as '4 + [0..n]', indicating a variable length.",
+          "canonical_value": "{'fixed': 0}",
+          "pdf_value": "{'variable': true, 'formula': '4 + n'}"
+        },
+        {
+          "field": "transaction.data_type",
+          "issue": "The canonical defines 'transaction' as an X1 (bitfield), but the PDF describes it as U1 ('U1 transaction') and does not provide any bitfield definitions for it. U1 would be more appropriate given the PDF's presentation.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        },
+        {
+          "field": "cfgData.data_type",
+          "issue": "The canonical defines 'cfgData' as a simple U1 array (U1[]). The PDF explicitly describes it as a 'repeated group (N times)' of 'Configuration data (key and value pairs)', implying a structured repeated group (e.g., U4 key followed by variable length value) rather than just an array of U1 bytes.",
+          "canonical_value": "U1[]",
+          "pdf_value": "repeated_group (U4 key, variable value)"
+        },
+        {
+          "field": "layers.bitfield_definitions",
+          "issue": "The 'layers' field is an X1 bitfield as per both canonical and PDF, but the canonical is missing the explicit bit definitions (ram, bbr, flash) which are provided in the PDF.",
+          "canonical_value": "missing bit definitions",
+          "pdf_value": "bit 0 U:1 ram, bit 1 U:1 bbr, bit 2 U:1 flash"
+        }
+      ],
+      "notes": "The canonical definition appears to be based on the transactional version of UBX-CFG-VALSET (version 1), as indicated by the 'version' field description and the presence of a 'transaction' field. Validation was primarily performed against section 3.10.26.2 of the manual. The `reserved0` field offset and type are consistent with the implicit padding required for the transactional version.",
+      "pdf_pages": [
+        87,
+        88
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:13:35.406161+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "transaction",
+          "issue": "The PDF lists incorrect bit definitions for the 'transaction' field. It appears to be a copy-paste error from the 'layers' field's bit definitions. The canonical's description, 'Transaction action to be applied', is correct and aligns with the expected behavior for transactional configuration.",
+          "canonical_value": "Description: Transaction action to be applied",
+          "pdf_value": "Bit values listed: 0 - RAM layer, 1 - BBR layer, 2 - Flash layer, 7 - Default (these are correct for 'layers' but incorrect for 'transaction')"
+        }
+      ],
+      "notes": "The UBX-CFG-VALSET message (Class 0x06, ID 0x8a) is clearly defined on page 2 of the provided PDF. All fields (version, layers, transaction, reserved0, cfgData) match in name, byte offset, and data type (U1, X1). The use of X1 for 'layers' and 'transaction' is appropriate for bitfield flags.\n\nThe 'cfgData' field is correctly identified as variable length. The canonical's `U1[]` data type, combined with its description, accurately represents the 'Configuration data (key and value pairs)' as a sequence of bytes containing U4 keys and variable-length values, as implied by the PDF's '0 + [n]' length and description.",
+      "pdf_pages": [
+        96,
+        97
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:13:59.890056+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "version.description",
+          "issue": "The description of the version field differs. The canonical describes 0x01 for the transactional version, which is implied by the section title 'Set configuration item values (with transaction)', while the PDF's payload table explicitly states 0x00 for 'this version'. The PDF's 'Comment' section further clarifies that the table describes 'version 0'.",
+          "canonical_value": "Message version (0x01 for transactional version)",
+          "pdf_value": "Message version (0x00 for this version)"
+        },
+        {
+          "field": "payload fields at offset 2 and 3",
+          "issue": "The structure of fields at byte offsets 2 and 3 differs. The canonical defines a 'transaction' field (X1) at offset 2 and a 'reserved0' field (U1) at offset 3. The PDF's payload description for version 0 shows a single 'reserved0' field of type U1[2] starting at offset 2, occupying both byte 2 and 3.",
+          "canonical_value": [
+            {
+              "name": "transaction",
+              "byte_offset": 2,
+              "data_type": "X1"
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 3,
+              "data_type": "U1"
+            }
+          ],
+          "pdf_value": [
+            {
+              "name": "reserved0",
+              "byte_offset": 2,
+              "data_type": "U1[2]"
+            }
+          ]
+        }
+      ],
+      "notes": "The provided PDF (u-blox F9 HPG 1.50) in section 3.10.25.2 'Set configuration item values (with transaction)' presents a payload description table. However, a note in the 'Comment' section states: 'See version 0 of UBX-CFG-VALSET for simplified version of this message.' This indicates that the payload structure detailed in the table corresponds to version 0 of the message. The canonical definition, with a 'transaction' field and a 'version' description implying '0x01 for transactional version', represents a later, transactional version of UBX-CFG-VALSET (likely version 1). While the canonical definition is consistent with the conceptual description of transactional capabilities in the text, it does not match the specific version 0 payload table provided in the manual.",
+      "pdf_pages": [
+        98,
+        99
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:14:28.094446+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "version",
+          "issue": "The value described for the version field differs.",
+          "canonical_value": "0x01 for transactional version",
+          "pdf_value": "0x00 for this version"
+        },
+        {
+          "field": "transaction",
+          "issue": "The canonical definition includes a 'transaction' field at byte_offset 2, which is not present in the PDF's payload definition for this message. Instead, the PDF specifies a 2-byte reserved field starting at offset 2.",
+          "canonical_value": "{ name: 'transaction', byte_offset: 2, data_type: 'X1' }",
+          "pdf_value": "{ name: 'reserved0', byte_offset: 2, data_type: 'U1[2]' }"
+        },
+        {
+          "field": "reserved0",
+          "issue": "The canonical definition has a 1-byte 'reserved0' field at byte_offset 3. The PDF has a 2-byte 'reserved0' field starting at byte_offset 2, covering bytes 2 and 3.",
+          "canonical_value": "{ name: 'reserved0', byte_offset: 3, data_type: 'U1' }",
+          "pdf_value": "{ name: 'reserved0', byte_offset: 2, data_type: 'U1[2]' }"
+        }
+      ],
+      "notes": "The canonical definition of UBX-CFG-VALSET (0x06 0x8a) appears to correspond to a different or later version than the one described in the 'u-blox F9 HPG 1.51 - Interface description' manual (protocol 27.50), specifically for the 'Set configuration item values (with transaction)' section (3.10.25.2). The manual describes a payload structure where bytes 2 and 3 are a 2-byte reserved field ('U1[2] reserved0'), whereas the canonical definition includes a 'transaction' (X1) field at byte_offset 2 and a 1-byte 'reserved0' (U1) field at byte_offset 3. The 'version' field value also differs (0x01 in canonical vs 0x00 in PDF for this 'transactional' message).",
+      "pdf_pages": [
+        98,
+        99
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:14:51.081276+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "version.description",
+          "issue": "The description for the 'version' field indicates a different message version. The canonical describes version 0x01 for the transactional message, while the PDF explicitly states version 0x00 for this transactional message variant.",
+          "canonical_value": "Message version (0x01 for transactional version)",
+          "pdf_value": "Message version (0x00 for this version)"
+        },
+        {
+          "field": "transaction",
+          "issue": "The canonical definition includes a 'transaction' field at byte offset 2. The PDF's definition for the transactional message (version 0x00) does not have this field; instead, byte offset 2 (and 3) are part of a 2-byte 'reserved0' field.",
+          "canonical_value": "{ name: 'transaction', byte_offset: 2, data_type: 'X1' }",
+          "pdf_value": "{ name: 'reserved0', byte_offset: 2, data_type: 'U1[2]' }"
+        },
+        {
+          "field": "reserved0",
+          "issue": "The canonical definition has a 1-byte 'reserved0' field at byte offset 3. The PDF's definition for the transactional message (version 0x00) has a 2-byte 'reserved0' field starting at byte offset 2, thus covering both byte offset 2 and 3.",
+          "canonical_value": "{ name: 'reserved0', byte_offset: 3, data_type: 'U1' }",
+          "pdf_value": "{ name: 'reserved0', byte_offset: 2, data_type: 'U1[2]' }"
+        }
+      ],
+      "notes": "The manual describes two versions of UBX-CFG-VALSET:\n1. A non-transactional version (3.10.25.1) with a different payload structure (version 0x01, layer, position).\n2. A transactional version (3.10.25.2) which states its 'version' field is 0x00. The canonical definition, based on its 'version' field description, appears to describe a transactional message version 0x01. Therefore, the canonical does not match the specific version (0x00) of the transactional message presented in this manual for the F9 HPG L1L5 1.40 firmware. The structural differences around byte offsets 2 and 3 confirm this version mismatch. The canonical likely represents a valid, but newer, iteration of the UBX-CFG-VALSET transactional message than what is documented in this specific manual's 'version 0x00' definition.",
+      "pdf_pages": [
+        96,
+        97
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:15:14.919903+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical 'message_type' is incorrect. UBX-CFG-VALSET is a command sent *to* the receiver, making it an 'input' message from the host's perspective, not 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "input (inferred)"
+        },
+        {
+          "field": "payload.length",
+          "issue": "The canonical payload length definition is incorrect. The PDF explicitly states a variable length for the payload (4 + [0..n]), indicating the presence of a repeated group, not a fixed length of 0.",
+          "canonical_value": "fixed: 0",
+          "pdf_value": "4 + [0..n]"
+        },
+        {
+          "field": "layers (bitfield definitions)",
+          "issue": "The canonical definition for the 'layers' field, which is an X1 (bitfield) type, is missing the detailed bitfield definitions (ram, bbr, flash) explicitly provided in the PDF.",
+          "canonical_value": "{ \"name\": \"layers\", \"data_type\": \"X1\" } (no sub-fields)",
+          "pdf_value": "X1 layers with bit 0 U:1 ram, bit 1 U:1 bbr, bit 2 U:1 flash"
+        },
+        {
+          "field": "payload structure at byte offsets 2-3",
+          "issue": "There is a significant structural mismatch in the payload definition for byte offsets 2 and 3. The canonical defines a 'transaction' field (X1) at byte offset 2 and a 'reserved0' field (U1) at byte offset 3. However, the PDF explicitly shows a single 2-byte 'reserved0' field (U1 [2]) starting at byte offset 2, covering both bytes 2 and 3. This means the 'transaction' field as defined in the canonical is not present in the PDF's payload table for this protocol version.",
+          "canonical_value": "[{ \"name\": \"transaction\", \"byte_offset\": 2, \"data_type\": \"X1\" }, { \"name\": \"reserved0\", \"byte_offset\": 3, \"data_type\": \"U1\" }]",
+          "pdf_value": "[{ \"name\": \"reserved0\", \"byte_offset\": 2, \"data_type\": \"U1[2]\" }]"
+        }
+      ],
+      "notes": "The manual (u-blox F9 HPS 1.21 - Interface description, UBX-21019746 - R02) describes two variants of 'Set configuration item values': one non-transactional (which actually corresponds to UBX-CFG-VALGET, 0x06 0x8b, on page 1) and one transactional (UBX-CFG-VALSET, 0x06 0x8a, on page 2). This validation exclusively used the definition for UBX-CFG-VALSET (0x06 0x8a) from page 2, as it aligns with the canonical message ID and is explicitly titled 'Set configuration item values (with transaction)'. Despite the section title implying transaction support, the payload structure table on page 2 does not list an explicit 'transaction' field at byte offset 2, showing a 2-byte 'reserved0' instead.",
+      "pdf_pages": [
+        54,
+        55
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:15:47.431263+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Message type mismatch. This message is used to 'Set configuration item values', implying it is an input message to the receiver, not an output.",
+          "canonical_value": "output",
+          "pdf_value": "input"
+        }
+      ],
+      "notes": "The canonical message definition accurately describes the UBX-CFG-VALSET (0x06 0x8a) message with transaction support (version 1), as detailed on page 2 of the provided PDF. The 'version' field description in the canonical also explicitly mentions '0x01 for transactional version', aligning with this interpretation.\n\nKey validations:\n- **Name & IDs**: Match 'UBX-CFG-VALSET', '0x06', '0x8a'.\n- **Payload Length**: Canonical `length.fixed: 0` correctly indicates a variable-length payload, consistent with the `4 + [0..n]` length in the PDF (where `n` refers to the variable-length `cfgData`).\n- **version field**: `byte_offset 0`, `U1` type, and description match PDF page 2.\n- **layers field**: `byte_offset 1`, `X1` type. PDF page 2 shows `X1` with bitfield definitions ('ram', 'bbr', 'flash'). This is a correct match. (Note: PDF page 1, describing the non-transactional version, shows 'U1' for this field).\n- **transaction field**: `byte_offset 2`, `X1` type. PDF page 2 shows `U1 transaction` with `bits 1...0 U:2 action` described, indicating it is a bitfield. `X1` is the appropriate canonical type for a single-byte bitfield. This is a correct match. This field is only present in the transactional version (page 2), confirming the canonical models this version.\n- **reserved0 field**: `byte_offset 3`, `U1` type. This field is not explicitly listed in the PDF but is inferred from the offset gap between the `transaction` field (at offset 2) and the `cfgData` repeated group (starting at offset 4). This is a common and appropriate practice for handling reserved bytes.\n- **cfgData field**: `byte_offset 4`, `U1[]` type. Matches the repeated group starting at `4 + n` in the PDF. The description correctly notes it contains key-value pairs (U4 key, variable length value).\n\nThe only discrepancy found is the `message_type` being `output` in the canonical, while the message's purpose is to *set* configuration, making it an *input* message to the receiver.",
+      "pdf_pages": [
+        53,
+        54
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:16:11.584168+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.transaction.data_type",
+          "issue": "Data type mismatch for 'transaction' field. Canonical defines it as X1, while PDF lists it as U1. However, the PDF's subsequent bitfield definition for 'action' within 'transaction' (bits 1...0 U:2 action) confirms it behaves as a bitfield, making X1 more appropriate.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        }
+      ],
+      "notes": "The canonical definition accurately describes the UBX-CFG-VALSET message for the transactional version (version 1), as detailed in section 3.10.7.2 of the manual. \n\n1. The 'version' field description in the canonical JSON ('0x01 for transactional version') aligns with the PDF's description for version 1 of the message ('0x01 for this version').\n2. The 'reserved0' field at byte_offset 3 is not explicitly listed in the PDF's field table for version 1. However, the 'Message structure' table specifies the payload length as '4 + [0..n]' bytes, implying a fixed payload portion of 4 bytes. With 'version' (1 byte), 'layers' (1 byte), and 'transaction' (1 byte) accounting for 3 bytes, the canonical's 'reserved0' (1 byte) at offset 3 completes the 4-byte fixed payload and matches the implied structure.\n3. The 'cfgData' field is correctly identified as starting at byte_offset 4, following the 4 fixed bytes. The PDF's '4 + n U1 cfgData' notation for repeated groups in UBX-CFG-VALSET can be confusing, but the byte_offset 4 for the start of the variable data is consistent.\n4. Section 3.10.7.1 in the PDF describes a non-transactional version of UBX-CFG-VALSET (where the 'version' field itself is 0x00 and the structure differs by not including the 'transaction' field or having a 'flash' bit in 'layers'). The canonical definition does not match this non-transactional version, but it is not expected to, given its explicit description for the transactional version.\n5. The 'payload.length.fixed: 0' in the canonical correctly indicates a variable-length message, where the variable part is the 'cfgData'.",
+      "pdf_pages": [
+        67,
+        68
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:16:55.534917+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message_type in canonical is 'output', but UBX-CFG-VALSET is typically an 'input' message to the receiver (used to set configuration).",
+          "canonical_value": "output",
+          "pdf_value": "implied input"
+        },
+        {
+          "field": "transaction.data_type",
+          "issue": "The PDF specifies the type as U1, while the canonical specifies X1. X1 is generally used for bitfields. Given that the PDF provides bit-level definitions ('bits 1...0 U:2 action'), X1 is a more appropriate and informative type for the canonical definition, indicating its bitfield nature.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        }
+      ],
+      "notes": "The canonical definition for UBX-CFG-VALSET accurately describes the *transactional* version of the message (version 0x01), which is presented on page 69 of the manual. The canonical's `version` field description ('0x01 for transactional version') confirms this intent. The non-transactional version (version 0x00) described on page 68 has different fields ('layer' as U1 and 'position' as U2 at offsets 1 and 2 respectively) and is not compatible with this canonical definition. The 'reserved0' field at byte offset 3 is implicitly present in the PDF by the length calculation (4 bytes before cfgData) but not explicitly named.",
+      "pdf_pages": [
+        68,
+        69
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:17:22.435789+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical defines UBX-CFG-VALSET as an 'output' message, but its function ('Set configuration item values') clearly indicates it is an 'input' message to the receiver.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied)"
+        },
+        {
+          "field": "version (field value)",
+          "issue": "The canonical's description for the 'version' field states '0x01 for transactional version'. However, the only detailed payload table provided in the PDF (Section 3.10.25.1) is for version '0x00'. The canonical does not match this explicitly defined version.",
+          "canonical_value": "0x01 (in description)",
+          "pdf_value": "0x00 (in description for version field in 3.10.25.1)"
+        },
+        {
+          "field": "Payload structure at offsets 2 and 3",
+          "issue": "The canonical defines a 'transaction' field (X1) at byte_offset 2 and a 'reserved0' field (U1) at byte_offset 3. The detailed payload table in PDF Section 3.10.25.1 (for version 0x00) defines a single 'reserved0' field (U1[2]) starting at byte_offset 2, which occupies both bytes 2 and 3. This is a structural mismatch with the explicit definition of version 0x00.",
+          "canonical_value": "transaction (X1) at offset 2, reserved0 (U1) at offset 3",
+          "pdf_value": "reserved0 (U1[2]) at offset 2 (from 3.10.25.1)"
+        },
+        {
+          "field": "cfgData (data_type representation)",
+          "issue": "The canonical defines 'cfgData' with data_type 'U1[]'. However, its description (and the PDF's 'Configuration data (key and value pairs)' and 'Start of repeated group (N times)') indicates it is a sequence of structured key-value pairs (U4 key followed by variable length value). A simple 'U1[]' is an inadequate representation for such a complex, variable-length repeated group in a protocol definition.",
+          "canonical_value": "U1[]",
+          "pdf_value": "repeated_group of (U4 key, variable length value) items (implied)"
+        }
+      ],
+      "notes": "The canonical definition appears to describe the 'transactional' version of UBX-CFG-VALSET (implicitly version 0x01), which is discussed in section 3.10.25.2 of the manual. However, section 3.10.25.2 provides an overview but *does not include a detailed payload table* for this transactional version. Therefore, direct field-by-field verification of fields specific to the transactional version (like the 'transaction' field) against an explicit PDF table is not possible. The canonical's structure *does not match* the detailed payload table provided for UBX-CFG-VALSET version 0x00 in section 3.10.25.1.",
+      "pdf_pages": [
+        93,
+        94
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:18:02.517666+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-CFG-VALSET",
+      "matches": true,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "The canonical definition matches the 'Set configuration item values (with transaction)' variant of UBX-CFG-VALSET, which corresponds to `version = 0x01` as indicated in the canonical's description for the `version` field and the PDF's section 3.10.8.2. The non-transactional variant (section 3.10.8.1) is explicitly noted in the PDF as an older/simplified version (version 0) and has a different payload structure (e.g., `reserved0` at offset 2 with 2 bytes instead of `transaction` + `reserved0`).",
+      "pdf_pages": [
+        73,
+        75
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T07:18:22.626524+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-CFG-VALSET",
+      "matches": null,
+      "confidence": "high",
+      "discrepancies": [],
+      "notes": "Message not found in TOC",
+      "pdf_pages": null,
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T07:18:23.173675+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-CFG-VALSET",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Message type is incorrect. VALSET is used to send configuration to the receiver, making it an input message.",
+          "canonical_value": "output",
+          "pdf_value": "input (implied by SET operation)"
+        },
+        {
+          "field": "payload.fields[1].layers.bitfield_definitions",
+          "issue": "The PDF explicitly defines bitfields for the 'layers' field (ram, bbr, flash), but these definitions are missing in the canonical JSON.",
+          "canonical_value": "undefined",
+          "pdf_value": "bit 0 U:1 ram, bit 1 U:1 bbr, bit 2 U:1 flash"
+        },
+        {
+          "field": "payload.fields[2].transaction.data_type",
+          "issue": "Data type mismatch. The PDF specifies U1 for the 'transaction' field, while the canonical defines it as X1. While X1 might be used for bitfields, the PDF explicitly uses U1 for this specific field before defining its internal bits.",
+          "canonical_value": "X1",
+          "pdf_value": "U1"
+        }
+      ],
+      "notes": "The canonical definition accurately targets the 'Set configuration item values (with transaction)' variant (Page 2) based on the 'version' description and the presence of the 'transaction' field. The 'reserved0' field at byte_offset 3 is implicitly correct in the canonical, as the PDF's total fixed payload length (4 bytes) and preceding fields (version, layers, transaction totaling 3 bytes) imply a 1-byte reserved field at this offset, even though it's not explicitly named 'reserved0' in the PDF's table. The description for `cfgData` in the canonical adds useful detail (U4 key, variable length value) that is implied but not explicitly listed in the PDF's table.",
+      "pdf_pages": [
+        60,
+        61
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T07:18:48.807943+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 29,
+    "matches": 7,
+    "mismatches": 22
+  }
+}

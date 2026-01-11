@@ -1,0 +1,181 @@
+{
+  "name": "UBX-NAV-STATUS",
+  "class_id": "0x01",
+  "message_id": "0x03",
+  "message_type": "periodic_polled",
+  "description": "Receiver navigation status",
+  "payload": {
+    "length": {
+      "fixed": 16
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "gpsFix",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "description": "GPSfix Type, this value does not qualify a fix as valid and within the limits. See note on flag gpsFixOk below.",
+        "enum_values": {
+          "0x00": "no fix",
+          "0x01": "dead reckoning only",
+          "0x02": "2D-fix",
+          "0x03": "3D-fix",
+          "0x04": "GPS + dead reckoning combined",
+          "0x05": "Time only fix",
+          "0x06-0xff": "reserved"
+        }
+      },
+      {
+        "name": "flags",
+        "byte_offset": 5,
+        "data_type": "X1",
+        "description": "Navigation Status Flags",
+        "sub_fields": [
+          {
+            "name": "gpsFixOk",
+            "data_type": "U1",
+            "bits": [
+              0
+            ],
+            "description": "1 = position and velocity valid and within DOP and ACC Masks."
+          },
+          {
+            "name": "diffSoln",
+            "data_type": "U1",
+            "bits": [
+              1
+            ],
+            "description": "1 = differential corrections were applied"
+          },
+          {
+            "name": "wknSet",
+            "data_type": "U1",
+            "bits": [
+              2
+            ],
+            "description": "1 = Week Number valid (see section Time validity in the integration manual for details)"
+          },
+          {
+            "name": "towSet",
+            "data_type": "U1",
+            "bits": [
+              3
+            ],
+            "description": "1 = Time of Week valid (see section Time validity in the integration manual for details)"
+          }
+        ]
+      },
+      {
+        "name": "fixStat",
+        "byte_offset": 6,
+        "data_type": "X1",
+        "description": "Fix Status Information",
+        "sub_fields": [
+          {
+            "name": "diffCorr",
+            "data_type": "U1",
+            "bits": [
+              0
+            ],
+            "description": "1 = differential corrections available"
+          },
+          {
+            "name": "carrSolnValid",
+            "data_type": "U1",
+            "bits": [
+              1
+            ],
+            "description": "1 = valid carrSoln"
+          },
+          {
+            "name": "mapMatching",
+            "data_type": "U2",
+            "bits": [
+              6,
+              7
+            ],
+            "description": "map matching status:",
+            "enum_values": {
+              "00": "none",
+              "01": "valid but not used, i.e. map matching data was received, but was too old",
+              "10": "valid and used, map matching data was applied",
+              "11": "valid and used, map matching data was applied. In case of sensor unavailability map matching data enables dead reckoning. This requires map matched latitude/longitude or heading data."
+            }
+          }
+        ]
+      },
+      {
+        "name": "flags2",
+        "byte_offset": 7,
+        "data_type": "X1",
+        "description": "further information about navigation output",
+        "sub_fields": [
+          {
+            "name": "psmState",
+            "data_type": "U2",
+            "bits": [
+              0,
+              1
+            ],
+            "description": "power save mode state (not supported for protocol versions less than 13.01)",
+            "enum_values": {
+              "0": "ACQUISITION [or when psm disabled]",
+              "1": "TRACKING",
+              "2": "POWER OPTIMIZED TRACKING",
+              "3": "INACTIVE"
+            }
+          },
+          {
+            "name": "spoofDetState",
+            "data_type": "U2",
+            "bits": [
+              3,
+              4
+            ],
+            "description": "Spoofing detection state (not supported for protocol versions less than 18.00)",
+            "enum_values": {
+              "0": "Unknown or deactivated",
+              "1": "No spoofing indicated",
+              "2": "Spoofing indicated",
+              "3": "Multiple spoofing indications"
+            }
+          },
+          {
+            "name": "carrSoln",
+            "data_type": "U2",
+            "bits": [
+              6,
+              7
+            ],
+            "description": "Carrier phase range solution status:",
+            "enum_values": {
+              "0": "no carrier phase range solution",
+              "1": "carrier phase range solution with floating ambiguities",
+              "2": "carrier phase range solution with fixed ambiguities"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ttff",
+        "byte_offset": 8,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "Time to first fix (millisecond time tag)"
+      },
+      {
+        "name": "msss",
+        "byte_offset": 12,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "Milliseconds since Startup / Reset"
+      }
+    ]
+  }
+}

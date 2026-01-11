@@ -1,0 +1,39 @@
+{
+  "name": "UBX-ESF-RAW",
+  "class_id": "0x10",
+  "message_id": "0x03",
+  "message_type": "output",
+  "description": "The message contains measurements from the active inertial sensors connected to the GNSS receiver directly via hardware interface. Possible data types for the data field are accelerometer, gyroscope and temperature readings. The output rate depends on the output rate of the inertial sensors connected. It includes one sample of every data type per message. See section Raw sensor data output in the integration manual for details.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + N*8"
+      }
+    },
+    "fields": [
+      {
+        "name": "reserved0",
+        "byte_offset": 0,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "data",
+        "byte_offset": 4,
+        "data_type": "X4",
+        "description": "Sensor data. This field, along with the subsequent 'sTtag' field, forms a repeated block. There are N such blocks in the payload, where N is determined by (Payload Length - 4) / 8. Each 4-byte 'data' field is composed of: `dataField` (bits 23-0, U:24) and `dataType` (bits 31-24, U:8). The `dataType` indicates the type of data (0 = no data; 1..255 = data type). Same as in UBX-ESF-MEAS."
+      },
+      {
+        "name": "sTtag",
+        "byte_offset": 8,
+        "data_type": "U4",
+        "description": "Sensor time tag. This field, along with the preceding 'data' field, forms a repeated block. There are N such blocks in the payload, where N is determined by (Payload Length - 4) / 8. This is the sensor time tag associated with the corresponding 'data' field."
+      }
+    ]
+  }
+}

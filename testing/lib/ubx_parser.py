@@ -3,7 +3,7 @@
 import struct
 from typing import Any, Optional
 
-from .schema_loader import get_message_by_ids, parse_hex_id
+from .schema_loader import get_message_by_ids, parse_hex_id, select_variant_by_payload
 
 # UBX sync characters
 SYNC_CHAR_1 = 0xB5
@@ -47,20 +47,56 @@ def verify_checksum(data: bytes) -> bool:
 
 def decode_field(data: bytes, offset: int, data_type) -> tuple[Any, int]:
     """Decode a single field from bytes.
-    
+
     Returns:
         Tuple of (value, bytes_consumed)
     """
     # Handle data_type being a dict
     if isinstance(data_type, dict):
+        if "array_of" in data_type:
+            base_type = data_type["array_of"]
+            # Handle nested structures - can't decode them
+            if isinstance(base_type, dict):
+                return [], 0
+            count = data_type.get("count", 1)
+            # Handle variable count
+            if not isinstance(count, int):
+                return [], 0
+            if base_type == "CH":
+                end = offset + count
+                if end > len(data):
+                    end = len(data)
+                raw = data[offset:end]
+                value = raw.decode("ascii", errors="replace").rstrip("\x00")
+                return value, count
+            else:
+                fmt, size = DATA_TYPE_MAP.get(base_type, ("B", 1))
+                values = []
+                for i in range(count):
+                    pos = offset + i * size
+                    if pos + size <= len(data):
+                        values.append(struct.unpack_from(f"<{fmt}", data, pos)[0])
+                    else:
+                        values.append(0)
+                return values, size * count
+        # Handle complex element structures
+        if "elements" in data_type or "num_elements_field" in data_type:
+            return [], 0
         data_type = data_type.get("type", "U1")
     if not isinstance(data_type, str):
         data_type = "U1"
-    
+
     # Handle array types
     if "[" in data_type:
         base_type = data_type.split("[")[0]
-        count = int(data_type.split("[")[1].rstrip("]"))
+        count_str = data_type.split("[")[1].rstrip("]")
+        # Handle variable-length arrays like "U1[]"
+        if not count_str:
+            return [], 0
+        try:
+            count = int(count_str)
+        except ValueError:
+            return [], 0
         
         if base_type == "CH":
             # String/character array
@@ -134,7 +170,7 @@ def parse_ubx_message(data: bytes, message_def: Optional[dict] = None) -> dict:
     # Look up message definition if not provided
     if message_def is None:
         message_def = get_message_by_ids(class_id, msg_id)
-    
+
     if message_def is None:
         # Return basic info without field parsing
         return {
@@ -146,25 +182,58 @@ def parse_ubx_message(data: bytes, message_def: Optional[dict] = None) -> dict:
             "fields": {},
             "parsed": False,
         }
-    
+
+    # Handle multi-variant messages
+    variant = None
+    variant_name = None
+    payload_source = message_def.get("payload", {})
+
+    if "variants" in message_def:
+        variant = select_variant_by_payload(message_def, payload)
+        if variant:
+            variant_name = variant.get("name")
+            payload_source = variant.get("payload", {})
+        else:
+            # Couldn't determine variant, return basic info
+            return {
+                "class_id": class_id,
+                "message_id": msg_id,
+                "name": message_def.get("name", f"UBX-{class_id:02X}-{msg_id:02X}"),
+                "payload_length": payload_len,
+                "payload_raw": payload.hex(),
+                "fields": {},
+                "parsed": False,
+                "variant_error": "Could not determine variant from payload",
+            }
+
     # Parse fields according to schema
-    fields_def = message_def.get("payload", {}).get("fields", [])
-    sorted_fields = sorted(fields_def, key=lambda f: f.get("byte_offset", 0))
+    fields_def = payload_source.get("fields", [])
+    # Handle fields with None or non-integer byte_offsets by putting them at the end
+    def get_sort_key(f):
+        offset = f.get("byte_offset")
+        if isinstance(offset, int):
+            return (0, offset)  # Integer offsets first, sorted by value
+        return (1, 0)  # Non-integer offsets (None, strings) at the end
+    sorted_fields = sorted(fields_def, key=get_sort_key)
     
     parsed_fields = {}
     for field_def in sorted_fields:
         name = field_def.get("name")
         data_type = field_def.get("data_type", "U1")
-        byte_offset = field_def.get("byte_offset", 0)
-        
+        byte_offset = field_def.get("byte_offset")
+
+        # Skip fields with non-integer byte_offsets (variable position fields)
+        if not isinstance(byte_offset, int):
+            continue
+
         if byte_offset >= len(payload):
             # Field beyond payload (variable length message)
             continue
-        
+
         value, _ = decode_field(payload, byte_offset, data_type)
         parsed_fields[name] = value
-    
-    return {
+
+    result = {
         "class_id": class_id,
         "message_id": msg_id,
         "name": message_def.get("name", f"UBX-{class_id:02X}-{msg_id:02X}"),
@@ -172,6 +241,14 @@ def parse_ubx_message(data: bytes, message_def: Optional[dict] = None) -> dict:
         "fields": parsed_fields,
         "parsed": True,
     }
+
+    # Add variant info if this is a multi-variant message
+    if variant_name:
+        result["variant"] = variant_name
+        # Also provide legacy alias name for compatibility
+        result["variant_alias"] = f"{message_def.get('name')}-{variant_name}"
+
+    return result
 
 
 def extract_ubx_messages(data: bytes) -> list[bytes]:

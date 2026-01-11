@@ -1,0 +1,138 @@
+{
+  "name": "UBX-NAV-SBAS",
+  "class_id": "0x01",
+  "message_id": "0x32",
+  "message_type": "periodic_polled",
+  "description": "This message outputs the status of the SBAS sub system",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 12,
+        "formula": "12 + cnt * 12"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTow",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "name": "geo",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "description": "PRN Number of the GEO where correction and integrity data is used from"
+      },
+      {
+        "name": "mode",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "SBAS Mode: 0 Disabled, 1 Enabled integrity, 3 Enabled test mode."
+      },
+      {
+        "name": "sys",
+        "byte_offset": 6,
+        "data_type": "I1",
+        "description": "SBAS System (WAAS/EGNOS/...): -1 Unknown, 0 WAAS, 1 EGNOS, 2 MSAS, 3 GAGAN, 16 GPS."
+      },
+      {
+        "name": "service",
+        "byte_offset": 7,
+        "data_type": "X1",
+        "description": "SBAS Services available. Bit 0: Ranging (GEO may be used as ranging source). Bit 1: Corrections (GEO is providing correction data). Bit 2: Integrity (GEO is providing integrity). Bit 3: Testmode (GEO is in test mode). Bit 4: Bad (Problem with signal or broadcast data indicated)."
+      },
+      {
+        "name": "cnt",
+        "byte_offset": 8,
+        "data_type": "U1",
+        "description": "Number of SV data following"
+      },
+      {
+        "name": "statusFlags",
+        "byte_offset": 9,
+        "data_type": "X1",
+        "description": "SBAS status flags. Bits 1...0: integrityUsed (SBAS integrity used: 0 = Unknown, 1 = Integrity information is not available or SBAS integrity is not enabled, 2 = Receiver uses only GPS satellites for which integrity information is available)."
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 10,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "repeated_group",
+        "byte_offset": 12,
+        "num_repeats_field": "cnt",
+        "fields": [
+          {
+            "name": "svid",
+            "byte_offset": 0,
+            "data_type": "U1",
+            "description": "SV ID"
+          },
+          {
+            "name": "flags",
+            "byte_offset": 1,
+            "data_type": "U1",
+            "description": "Flags for this SV"
+          },
+          {
+            "name": "udre",
+            "byte_offset": 2,
+            "data_type": "U1",
+            "description": "Monitoring status"
+          },
+          {
+            "name": "svSys",
+            "byte_offset": 3,
+            "data_type": "U1",
+            "description": "System (WAAS/EGNOS/...) same as SYS"
+          },
+          {
+            "name": "svService",
+            "byte_offset": 4,
+            "data_type": "U1",
+            "description": "Services available same as SERVICE"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 5,
+            "data_type": "U1",
+            "reserved": true,
+            "description": "Reserved"
+          },
+          {
+            "name": "prc",
+            "byte_offset": 6,
+            "data_type": "I2",
+            "unit": "cm",
+            "description": "Pseudo Range correction in [cm]"
+          },
+          {
+            "name": "reserved2",
+            "byte_offset": 8,
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "reserved": true,
+            "description": "Reserved"
+          },
+          {
+            "name": "ic",
+            "byte_offset": 10,
+            "data_type": "I2",
+            "unit": "cm",
+            "description": "Ionosphere correction in [cm]"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "name": "UBX-RXM-TM",
+  "class_id": "0x02",
+  "message_id": "0x74",
+  "message_type": "periodic_polled",
+  "description": "Time mark data for UBX-RXM-RAWX. This message contains information for high precision time stamping / pulse counting in UBX-RXM-RAWX message's local time base. It allows a user to link the time mark measurements directly with the raw measurements. Note that UBX-RXM-RAWX local time is approximately aligned to the GPS time system. Refer to UBX-RXM-RAWX specs for more details on raw measurements local time base.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numMeas*24"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Message version",
+        "fixed_value": 0
+      },
+      {
+        "name": "numMeas",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of measurements"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 4,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "repeated_group_start",
+        "byte_offset": 8,
+        "data_type": "GROUP",
+        "description": "Start of repeated group (numMeas times)",
+        "count_field": "numMeas",
+        "group_fields": [
+          {
+            "name": "edgeInfo",
+            "byte_offset": 0,
+            "data_type": "X4",
+            "description": "Detailed edge measurement information. Bits 3-0: channel (U4, EXTINT channel number). Bit 4: edgeType (U1, 0=rising edge, 1=falling edge)."
+          },
+          {
+            "name": "count",
+            "byte_offset": 4,
+            "data_type": "U2",
+            "description": "Rising edge count. It is zero for falling edges."
+          },
+          {
+            "name": "wno",
+            "byte_offset": 6,
+            "data_type": "U2",
+            "description": "Week number"
+          },
+          {
+            "name": "towMs",
+            "byte_offset": 8,
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "Time of Week (ToW)"
+          },
+          {
+            "name": "towSubMsR",
+            "byte_offset": 12,
+            "data_type": "U4",
+            "unit": "ps",
+            "description": "Sub-millisecond part of ToW"
+          },
+          {
+            "name": "reserved2",
+            "byte_offset": 16,
+            "data_type": {
+              "array_of": "U1",
+              "count": 4
+            },
+            "description": "Reserved",
+            "reserved": true
+          },
+          {
+            "name": "reserved3",
+            "byte_offset": 20,
+            "data_type": {
+              "array_of": "U1",
+              "count": 4
+            },
+            "description": "Reserved",
+            "reserved": true
+          }
+        ]
+      }
+    ]
+  }
+}

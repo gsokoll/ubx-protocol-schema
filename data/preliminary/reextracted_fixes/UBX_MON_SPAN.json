@@ -1,0 +1,95 @@
+{
+  "name": "UBX-MON-SPAN",
+  "class_id": "0x0a",
+  "message_id": "0x31",
+  "message_type": "periodic_polled",
+  "description": "This message is to be used as a basic spectrum analyzer, where it displays one spectrum for each of the receiver's existing RF paths. The spectrum is conveyed with the following parameters: The frequency span in Hz, the frequency bin resolution in Hz, the center frequency in Hz, and 256 bins with amplitude data. Additionally, in order to give further insight on the signal captured by the receiver, the current gain of the internal programmable gain amplifier (PGA) is provided.\nThis message gives information for comparative analysis rather than absolute and precise spectrum overview. Users should not expect highly accurate spectrum amplitude.\nNote that the PGA gain is not included in the spectrum data but is available as a separate field. Neither the spectrum, nor the PGA gain considers the internal fixed LNA gain or an external third-party LNA.\nThe center frequency at each bin, assuming a zero-based bin count, can be computed as f(i) = center + span * (i - 127) / 256",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + numRfBlocks * 272"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "numRfBlocks",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of RF blocks included"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "rfBlockData",
+        "byte_offset": 4,
+        "num_repeats_field": "numRfBlocks",
+        "repeats": [
+          {
+            "name": "spectrum",
+            "byte_offset": 0,
+            "data_type": {
+              "array_of": "U1",
+              "count": 256
+            },
+            "unit": "dB",
+            "description": "Spectrum data (number of points = span/res)"
+          },
+          {
+            "name": "span",
+            "byte_offset": 256,
+            "data_type": "U4",
+            "unit": "Hz",
+            "description": "Spectrum span"
+          },
+          {
+            "name": "res",
+            "byte_offset": 260,
+            "data_type": "U4",
+            "unit": "Hz",
+            "description": "Resolution of the spectrum"
+          },
+          {
+            "name": "center",
+            "byte_offset": 264,
+            "data_type": "U4",
+            "unit": "Hz",
+            "description": "Center of spectrum span"
+          },
+          {
+            "name": "pga",
+            "byte_offset": 268,
+            "data_type": "U1",
+            "unit": "dB",
+            "description": "Programmable gain amplifier"
+          },
+          {
+            "name": "reserved1",
+            "byte_offset": 269,
+            "data_type": {
+              "array_of": "U1",
+              "count": 3
+            },
+            "reserved": true,
+            "description": "Reserved"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,642 @@
+{
+  "message_name": "UBX-CFG-SMGR",
+  "protocol_version": 0,
+  "status": "split",
+  "agreement_ratio": 0.5,
+  "winning_structure": {
+    "name": "UBX-CFG-SMGR",
+    "class_id": "0x06",
+    "message_id": "0x62",
+    "description": "Synchronization manager configuration",
+    "message_type": "get_set",
+    "payload": {
+      "length": {
+        "fixed": 20
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "minGNSSFix",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Minimum number of GNSS fixes before we commit to use it as a source"
+        },
+        {
+          "name": "maxFreqChange",
+          "byte_offset": 2,
+          "data_type": "U2",
+          "unit": "ppb/s",
+          "description": "Maximum frequency change rate during disciplining. Must not exceed 30ppb/s"
+        },
+        {
+          "name": "maxPhaseCorrRate",
+          "byte_offset": 4,
+          "data_type": "U2",
+          "unit": "ns/s",
+          "description": "Maximum phase correction rate in coherent time pulse mode. For maximum phase correction rate in corrective time pulse mode see maxSlewRate. Note that in coherent time pulse mode phase correction is achieved by intentional frequency offset. Allowing for a high phase correction rate can result in large intentional frequency offset. Must not exceed 100ns/s"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 6,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "freqTolerance",
+          "byte_offset": 8,
+          "data_type": "U2",
+          "unit": "ppb",
+          "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that frequency is out of tolerance"
+        },
+        {
+          "name": "timeTolerance",
+          "byte_offset": 10,
+          "data_type": "U2",
+          "unit": "ns",
+          "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that time pulse is out of tolerance"
+        },
+        {
+          "name": "messageCfg",
+          "byte_offset": 12,
+          "data_type": "X2",
+          "description": "Sync manager message configuration (see graphic below)",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "measInternal",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "1 = report the estimated offset of the internal oscillator based on the oscillator model"
+              },
+              {
+                "name": "measGNSS",
+                "bit_start": 1,
+                "bit_end": 1,
+                "description": "1 = report the internal oscillator's offset relative to GNSS"
+              },
+              {
+                "name": "measEXTINT0",
+                "bit_start": 2,
+                "bit_end": 2,
+                "description": "1 = report the internal oscillator's offset relative to the source on EXTINT0"
+              },
+              {
+                "name": "measEXTINT1",
+                "bit_start": 3,
+                "bit_end": 3,
+                "description": "1 = report the internal oscillator's offset relative to the source on EXTINT1"
+              }
+            ]
+          }
+        },
+        {
+          "name": "maxSlewRate",
+          "byte_offset": 14,
+          "data_type": "U2",
+          "unit": "us/s",
+          "description": "Maximum slew rate, the maximum time correction that shall be applied between locked pulses in corrective time pulse mode. To have no limit on the slew rate, set the flag disableMaxSlewRate to 1. For maximum phase correction rate in coherent time pulse mode see maxPhaseCorrRate."
+        },
+        {
+          "name": "flags",
+          "byte_offset": 16,
+          "data_type": "X4",
+          "description": "Flags (see graphic below)",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "disableOffset",
+                "bit_start": 0,
+                "bit_end": 0,
+                "description": "1=disable automatic storage of oscillator offset"
+              },
+              {
+                "name": "TPCoherent",
+                "bit_start": 1,
+                "bit_end": 2,
+                "description": "Control time pulse coherency. 0 - Coherent pulses. Time phase offsets will be corrected gradually by varying the GNSS oscillator rate within frequency tolerance limits. There will always be the correct number of GNSS oscillator cycles between time pulses. Given tight limits this may take a long time. 1 - Non-coherent pulses. In this mode the receiver will correct time phase offsets as quickly as allowed by the specified maximum slew rate, in which case there may not be the expected number of GNSS oscillator cycles between time pulses. 2 - Post-initialization coherent pulses. The receiver will run in non-coherent mode as described above until the pulse timing has been corrected and PLL is active on the internal oscillator, but will then switch to coherent pulse mode."
+              },
+              {
+                "name": "issueTimeWarning",
+                "bit_start": 3,
+                "bit_end": 3,
+                "description": "1=issue a warning (via UBX-TIM-TOS flag) when time uncertainty exceeds timeTolerance"
+              },
+              {
+                "name": "issueFreqWarning",
+                "bit_start": 4,
+                "bit_end": 4,
+                "description": "1=issue a warning (via UBX-TIM-TOS flag) when frequency uncertainty exceeds freqTolerance"
+              },
+              {
+                "name": "disableMaxSlewRate",
+                "bit_start": 5,
+                "bit_end": 5,
+                "description": "0-use the value in the field maxSlewRate for maximum time correction in corrective time pulse mode. 1- don't use the value in the field maxSlewRate"
+              },
+              {
+                "name": "useAnyFix",
+                "bit_start": 6,
+                "bit_end": 6,
+                "description": "0 - use over-determined navigation solutions only. 1 - use any fix"
+              },
+              {
+                "name": "enableHostMeasExt",
+                "bit_start": 7,
+                "bit_end": 7,
+                "description": "1 = enable use of host measurements on the external oscillator as synchronization source. Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA0 message."
+              },
+              {
+                "name": "enableHostMeasInt",
+                "bit_start": 8,
+                "bit_end": 8,
+                "description": "1 enable use of host measurements on the internal oscillator as synchronization source. Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA message."
+              },
+              {
+                "name": "enableEXTINT1",
+                "bit_start": 9,
+                "bit_end": 9,
+                "description": "1=enable use of EXTINT1 as synchronization source"
+              },
+              {
+                "name": "enableEXTINT0",
+                "bit_start": 10,
+                "bit_end": 10,
+                "description": "1=enable use of EXTINT0 as synchronization source"
+              },
+              {
+                "name": "enableGNSS",
+                "bit_start": 11,
+                "bit_end": 11,
+                "description": "1 = enable use of GNSS as synchronization source"
+              },
+              {
+                "name": "preferenceMode",
+                "bit_start": 12,
+                "bit_end": 12,
+                "description": "Reference selection preference. 0 - best frequency accuracy. 1- best phase accuracy"
+              },
+              {
+                "name": "disableExternal",
+                "bit_start": 13,
+                "bit_end": 13,
+                "description": "1=disable disciplining of the external oscillator"
+              },
+              {
+                "name": "disableInternal",
+                "bit_start": 14,
+                "bit_end": 14,
+                "description": "1=disable disciplining of the internal oscillator"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "ca602a901c84d296",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23"
+  ],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-CFG-SMGR",
+        "class_id": "0x06",
+        "message_id": "0x62",
+        "description": "Synchronization manager configuration",
+        "message_type": "get_set",
+        "payload": {
+          "length": {
+            "fixed": 20
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "minGNSSFix",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Minimum number of GNSS fixes before we commit to use it as a source"
+            },
+            {
+              "name": "maxFreqChange",
+              "byte_offset": 2,
+              "data_type": "U2",
+              "unit": "ppb/s",
+              "description": "Maximum frequency change rate during disciplining. Must not exceed 30ppb/s"
+            },
+            {
+              "name": "maxPhaseCorrRate",
+              "byte_offset": 4,
+              "data_type": "U2",
+              "unit": "ns/s",
+              "description": "Maximum phase correction rate in coherent time pulse mode. For maximum phase correction rate in corrective time pulse mode see maxSlewRate. Note that in coherent time pulse mode phase correction is achieved by intentional frequency offset. Allowing for a high phase correction rate can result in large intentional frequency offset. Must not exceed 100ns/s"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "freqTolerance",
+              "byte_offset": 8,
+              "data_type": "U2",
+              "unit": "ppb",
+              "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that frequency is out of tolerance"
+            },
+            {
+              "name": "timeTolerance",
+              "byte_offset": 10,
+              "data_type": "U2",
+              "unit": "ns",
+              "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that time pulse is out of tolerance"
+            },
+            {
+              "name": "messageCfg",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "Sync manager message configuration (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "measInternal",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = report the estimated offset of the internal oscillator based on the oscillator model"
+                  },
+                  {
+                    "name": "measGNSS",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = report the internal oscillator's offset relative to GNSS"
+                  },
+                  {
+                    "name": "measEXTINT0",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "1 = report the internal oscillator's offset relative to the source on EXTINT0"
+                  },
+                  {
+                    "name": "measEXTINT1",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "1 = report the internal oscillator's offset relative to the source on EXTINT1"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "maxSlewRate",
+              "byte_offset": 14,
+              "data_type": "U2",
+              "unit": "us/s",
+              "description": "Maximum slew rate, the maximum time correction that shall be applied between locked pulses in corrective time pulse mode. To have no limit on the slew rate, set the flag disableMaxSlewRate to 1. For maximum phase correction rate in coherent time pulse mode see maxPhaseCorrRate."
+            },
+            {
+              "name": "flags",
+              "byte_offset": 16,
+              "data_type": "X4",
+              "description": "Flags (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "disableOffset",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1=disable automatic storage of oscillator offset"
+                  },
+                  {
+                    "name": "TPCoherent",
+                    "bit_start": 1,
+                    "bit_end": 2,
+                    "description": "Control time pulse coherency. 0 - Coherent pulses. Time phase offsets will be corrected gradually by varying the GNSS oscillator rate within frequency tolerance limits. There will always be the correct number of GNSS oscillator cycles between time pulses. Given tight limits this may take a long time. 1 - Non-coherent pulses. In this mode the receiver will correct time phase offsets as quickly as allowed by the specified maximum slew rate, in which case there may not be the expected number of GNSS oscillator cycles between time pulses. 2 - Post-initialization coherent pulses. The receiver will run in non-coherent mode as described above until the pulse timing has been corrected and PLL is active on the internal oscillator, but will then switch to coherent pulse mode."
+                  },
+                  {
+                    "name": "issueTimeWarning",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "1=issue a warning (via UBX-TIM-TOS flag) when time uncertainty exceeds timeTolerance"
+                  },
+                  {
+                    "name": "issueFreqWarning",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "1=issue a warning (via UBX-TIM-TOS flag) when frequency uncertainty exceeds freqTolerance"
+                  },
+                  {
+                    "name": "disableMaxSlewRate",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "0-use the value in the field maxSlewRate for maximum time correction in corrective time pulse mode. 1- don't use the value in the field maxSlewRate"
+                  },
+                  {
+                    "name": "useAnyFix",
+                    "bit_start": 6,
+                    "bit_end": 6,
+                    "description": "0 - use over-determined navigation solutions only. 1 - use any fix"
+                  },
+                  {
+                    "name": "enableHostMeasExt",
+                    "bit_start": 7,
+                    "bit_end": 7,
+                    "description": "1 = enable use of host measurements on the external oscillator as synchronization source. Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA0 message."
+                  },
+                  {
+                    "name": "enableHostMeasInt",
+                    "bit_start": 8,
+                    "bit_end": 8,
+                    "description": "1 enable use of host measurements on the internal oscillator as synchronization source. Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA message."
+                  },
+                  {
+                    "name": "enableEXTINT1",
+                    "bit_start": 9,
+                    "bit_end": 9,
+                    "description": "1=enable use of EXTINT1 as synchronization source"
+                  },
+                  {
+                    "name": "enableEXTINT0",
+                    "bit_start": 10,
+                    "bit_end": 10,
+                    "description": "1=enable use of EXTINT0 as synchronization source"
+                  },
+                  {
+                    "name": "enableGNSS",
+                    "bit_start": 11,
+                    "bit_end": 11,
+                    "description": "1 = enable use of GNSS as synchronization source"
+                  },
+                  {
+                    "name": "preferenceMode",
+                    "bit_start": 12,
+                    "bit_end": 12,
+                    "description": "Reference selection preference. 0 - best frequency accuracy. 1- best phase accuracy"
+                  },
+                  {
+                    "name": "disableExternal",
+                    "bit_start": 13,
+                    "bit_end": 13,
+                    "description": "1=disable disciplining of the external oscillator"
+                  },
+                  {
+                    "name": "disableInternal",
+                    "bit_start": 14,
+                    "bit_end": 14,
+                    "description": "1=disable disciplining of the internal oscillator"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fingerprint": "ca602a901c84d296"
+    },
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "structure": {
+        "name": "UBX-CFG-SMGR",
+        "class_id": "0x06",
+        "message_id": "0x62",
+        "message_type": "get_set",
+        "payload_length": {
+          "fixed": 20
+        },
+        "payload": {
+          "fields": [
+            {
+              "byte_offset": 0,
+              "data_type": "U1",
+              "name": "version",
+              "description": "Message version (0x00 for this version)",
+              "fixed_value": 0
+            },
+            {
+              "byte_offset": 1,
+              "data_type": "U1",
+              "name": "minGNSSFix",
+              "description": "Minimum number of GNSS fixes before we commit to use it as a source"
+            },
+            {
+              "byte_offset": 2,
+              "data_type": "U2",
+              "name": "maxFreqChange",
+              "unit": "ppb/s",
+              "description": "Maximum frequency change rate during disciplining. Must not exceed 30ppb/s"
+            },
+            {
+              "byte_offset": 4,
+              "data_type": "U2",
+              "name": "maxPhaseCorrRate",
+              "unit": "ns/s",
+              "description": "Maximum phase correction rate in coherent time pulse mode. For maximum phase correction rate in corrective time pulse mode see maxSlewRate. Note that in coherent time pulse mode phase correction is achieved by intentional frequency offset. Allowing for a high phase correction rate can result in large intentional frequency offset. Must not exceed 100ns/s"
+            },
+            {
+              "byte_offset": 6,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "name": "reserved1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "byte_offset": 8,
+              "data_type": "U2",
+              "name": "freqTolerance",
+              "unit": "ppb",
+              "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that frequency is out of tolerance"
+            },
+            {
+              "byte_offset": 10,
+              "data_type": "U2",
+              "name": "timeTolerance",
+              "unit": "ns",
+              "description": "Limit of possible deviation from nominal before UBX-TIM-TOS indicates that time pulse is out of tolerance"
+            },
+            {
+              "byte_offset": 12,
+              "data_type": {
+                "bitfield": {
+                  "base_type": "X2",
+                  "fields": [
+                    {
+                      "bit_offset": 0,
+                      "name": "measInternal",
+                      "size": 1,
+                      "description": "1 = report the estimated offset of the internal oscillator based on the oscillator model"
+                    },
+                    {
+                      "bit_offset": 1,
+                      "name": "measGNSS",
+                      "size": 1,
+                      "description": "1 = report the internal oscillator's offset relative to GNSS"
+                    },
+                    {
+                      "bit_offset": 2,
+                      "name": "measEXTINT0",
+                      "size": 1,
+                      "description": "1 = report the internal oscillator's offset relative to the source on EXTINT0"
+                    },
+                    {
+                      "bit_offset": 3,
+                      "name": "measEXTINT1",
+                      "size": 1,
+                      "description": "1 = report the internal oscillator's offset relative to the source on EXTINT1"
+                    },
+                    {
+                      "bit_offset": 4,
+                      "name": "reserved_0",
+                      "size": 12,
+                      "reserved": true
+                    }
+                  ]
+                }
+              },
+              "name": "messageCfg",
+              "description": "Sync manager message configuration (see graphic below)"
+            },
+            {
+              "byte_offset": 14,
+              "data_type": "U2",
+              "name": "maxSlewRate",
+              "unit": "us/s",
+              "description": "Maximum slew rate, the maximum time correction that shall be applied between locked pulses in corrective time pulse mode. To have no limit on the slew rate, set the flag disableMaxSlewRate to 1 For maximum phase correction rate in coherent time pulse mode see maxPhaseCorrRate."
+            },
+            {
+              "byte_offset": 16,
+              "data_type": {
+                "bitfield": {
+                  "base_type": "X4",
+                  "fields": [
+                    {
+                      "bit_offset": 0,
+                      "name": "disableInternal",
+                      "size": 1,
+                      "description": "1=disable disciplining of the internal oscillator"
+                    },
+                    {
+                      "bit_offset": 1,
+                      "name": "disableExternal",
+                      "size": 1,
+                      "description": "1=disable disciplining of the external oscillator"
+                    },
+                    {
+                      "bit_offset": 2,
+                      "name": "preferenceMode",
+                      "size": 2,
+                      "description": "Reference selection preference: 0 - best frequency accuracy, 1- best phase accuracy"
+                    },
+                    {
+                      "bit_offset": 4,
+                      "name": "enableGNSS",
+                      "size": 1,
+                      "description": "1 = enable use of GNSS as synchronization source"
+                    },
+                    {
+                      "bit_offset": 5,
+                      "name": "enableEXTINT0",
+                      "size": 1,
+                      "description": "1=enable use of EXTINT0 as synchronization source"
+                    },
+                    {
+                      "bit_offset": 6,
+                      "name": "enableEXTINT1",
+                      "size": 1,
+                      "description": "1=enable use of EXTINT1 as synchronization source"
+                    },
+                    {
+                      "bit_offset": 7,
+                      "name": "enableHostMeasInt",
+                      "size": 1,
+                      "description": "1 enable use of host measurements on the internal oscillator as synchronization source Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA0 message."
+                    },
+                    {
+                      "bit_offset": 8,
+                      "name": "reserved_0",
+                      "size": 2,
+                      "reserved": true
+                    },
+                    {
+                      "bit_offset": 10,
+                      "name": "enableHostMeasExt",
+                      "size": 1,
+                      "description": "1 = enable use of host measurements on the external oscillator as synchronization source Measurements made by the host must be sent to the receiver using a UBX-TIM-SMEAS-DATA0 message."
+                    },
+                    {
+                      "bit_offset": 11,
+                      "name": "useAnyFix",
+                      "size": 1,
+                      "description": "0 - use over-determined navigation solutions only, 1 - use any fix"
+                    },
+                    {
+                      "bit_offset": 12,
+                      "name": "disableMaxSlewRate",
+                      "size": 1,
+                      "description": "0-use the value in the field maxSlewRate for maximum time correction in corrective time pulse mode, 1- don't use the value in the field maxSlewRate"
+                    },
+                    {
+                      "bit_offset": 13,
+                      "name": "issueFreqWarning",
+                      "size": 1,
+                      "description": "1=issue a warning (via UBX-TIM-TOS flag) when frequency uncertainty exceeds freqTolerance"
+                    },
+                    {
+                      "bit_offset": 14,
+                      "name": "issueTimeWarning",
+                      "size": 1,
+                      "description": "1=issue a warning (via UBX-TIM-TOS flag) when time uncertainty exceeds timeTolerance"
+                    },
+                    {
+                      "bit_offset": 15,
+                      "name": "TPCoherent",
+                      "size": 2,
+                      "description": "Control time pulse coherency: 0 - Coherent pulses. Time phase offsets will be corrected gradually by varying the GNSS oscillator rate within frequency tolerance limits. There will always be the correct number of GNSS oscillator cycles between time pulses. Given tight limits this may take a long time, 1 - Non-coherent pulses. In this mode the receiver will correct time phase offsets as quickly as allowed by the specified maximum slew rate, in which case there may not be the expected number of GNSS oscillator cycles between time pulses., 2 - Post-initialization coherent pulses. The receiver will run in non-coherent mode as described above until the pulse timing has been corrected and PLL is active on the internal oscillator, but will then switch to coherent pulse mode."
+                    },
+                    {
+                      "bit_offset": 17,
+                      "name": "disableOffset",
+                      "size": 1,
+                      "description": "1=disable automatic storage of oscillator offset"
+                    },
+                    {
+                      "bit_offset": 18,
+                      "name": "reserved_1",
+                      "size": 14,
+                      "reserved": true
+                    }
+                  ]
+                }
+              },
+              "name": "flags",
+              "description": "Flags (see graphic below)"
+            }
+          ]
+        }
+      },
+      "fingerprint": "afdff7b00c24d41e"
+    }
+  ]
+}

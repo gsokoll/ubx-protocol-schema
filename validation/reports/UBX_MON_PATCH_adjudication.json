@@ -1,0 +1,110 @@
+{
+  "message": "UBX-MON-PATCH",
+  "total_discrepancies": 7,
+  "fix_canonical": 7,
+  "valid_variation": 0,
+  "needs_human": 0,
+  "adjudications": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "payload.length",
+      "original_issue": "The canonical definition provides a fixed payload length of 0 bytes, which corresponds to the UBX-MON-PATCH poll request message. However, the rest of the canonical definition (fields and repeated groups) clearly describes the UBX-MON-PATCH response message, which has a variable payload length of '4 + 16 * nEntries' bytes as specified in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The canonical definition provides fields and repeated groups that clearly describe the UBX-MON-PATCH *response* message, which has a variable payload length of '4 + 16 * nEntries' bytes according to the PDF manual (section 32.16.7.2). However, the 'length' property in the canonical definition is set to 'fixed: 0', which is only correct for the UBX-MON-PATCH *poll request* message (section 32.16.7.1). This creates a contradiction where the definition describes a payload but states its length is zero. The canonical definition should be updated to reflect the variable length of the response message it defines.",
+      "suggested_fix": {
+        "field": "length",
+        "change": "Change the payload length from a fixed value of 0 to a variable expression that depends on the 'nEntries' field, consistent with the described payload structure for the response message.",
+        "new_value": {
+          "variable": "4 + (16 * nEntries)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "payload.length",
+      "original_issue": "The canonical definition for the UBX-MON-PATCH *response* message incorrectly specifies a fixed payload length of 0 bytes, while the PDF clearly indicates a variable payload length of '4 + 16*nEntries' bytes.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states that the UBX-MON-PATCH *response* message (for 'Installed patches') has a payload length of '4 + 16*nEntries' bytes. The canonical definition, while correctly detailing the fields (version, nEntries, and the repeated patch entries), incorrectly specifies a fixed payload length of 0 bytes for the response. A fixed length of 0 bytes is only applicable to the UBX-MON-PATCH *poll request* message, which is a different message type (though using the same message ID).",
+      "suggested_fix": {
+        "field": "length",
+        "change": "Update the length definition from a fixed value of 0 to a variable length formula based on the 'nEntries' field.",
+        "new_value": {
+          "formula": "4 + nEntries * 16"
+        }
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "field": "payload.repeated_groups[0].fields[1].name",
+      "original_issue": "The name of the field differs slightly. The PDF has a space in the name.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF manual explicitly states the field name as 'comparatorNum ber' (with a space) in the payload contents table for the UBX-MON-PATCH message. The canonical definition uses 'comparatorNumber' (without a space). Although the space in the PDF is very likely a typographical error, to strictly align the canonical definition with the provided manual's text, the canonical field name should be updated to match the PDF's literal wording.",
+      "suggested_fix": {
+        "field": "payload.repeated_groups[0].fields[1].name",
+        "change": "Update field name to match PDF",
+        "new_value": "comparatorNum ber"
+      }
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "field": "payload.length",
+      "original_issue": "The canonical definition's payload length is set to fixed: 0, which corresponds to the poll request message. However, the rest of the payload fields and repeated groups describe the variable-length response message (Installed patches). The PDF specifies the response message length as '4 + nEntries * 16'.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF clearly distinguishes between the poll request and the response for UBX-MON-PATCH. The poll request has a length of 0 and no payload. The response message (Installed patches) has a payload length of '4 + nEntries * 16' and a detailed payload structure. The canonical definition, while specifying a 'fixed: 0' length (corresponding to the poll request), then proceeds to define the detailed payload fields (`version`, `nEntries`, `patch_entries`) which are exclusively part of the response message. This conflates the two message types. The canonical definition intends to describe the response message, but has the incorrect length from the poll request.",
+      "suggested_fix": {
+        "field": "length",
+        "change": "Change the length definition to reflect the variable length of the response message.",
+        "new_value": {
+          "expression": "4 + $nEntries * 16"
+        }
+      }
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "field": "payload.length",
+      "original_issue": "The canonical definition specifies a fixed payload length of 0 bytes, but the PDF indicates a variable payload length determined by a formula involving the nEntries field.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the Length (Bytes) for UBX-MON-PATCH (0x0a 0x27) in its header as '4 + nEntries*16'. The payload description further supports this by detailing initial fields (version, nEntries totaling 4 bytes) followed by a repeated group that is 16 bytes long and repeats 'nEntries' times, starting at byte offset 4. This directly calculates to a total payload length of 4 + nEntries * 16 bytes. The canonical definition stating a fixed payload length of 0 bytes is incorrect given the detailed field structure provided.",
+      "suggested_fix": {
+        "field": "length",
+        "change": "Change from fixed length to variable formula",
+        "new_value": {
+          "variable_formula": "4 + nEntries * 16"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "field": "payload.length.fixed",
+      "original_issue": "The fixed portion of the payload length is incorrect. The canonical states 0 bytes, but the PDF indicates 4 bytes (for version and nEntries) before the variable repeated group.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly states the payload length as '4 + nEntries*16', indicating a fixed part of 4 bytes. The canonical definition also defines 'version' (U2 at offset 0) and 'nEntries' (U2 at offset 2) as fields that occupy the first 4 bytes of the payload before the 'patch_entries' repeated group, which has a 'base_offset' of 4. Therefore, the 'fixed' length of the payload is 4 bytes, not 0.",
+      "suggested_fix": {
+        "field": "length.fixed",
+        "change": "change value",
+        "new_value": 4
+      }
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "field": "payload.length",
+      "original_issue": "The canonical definition provides a fixed payload length of 0. While this is correct for the poll request (UBX-MON-PATCH, 0x0a 0x27, Length 0), the subsequent `fields` and `repeated_groups` describe the *response* message, which has a variable payload length. The response payload length is calculated as 4 + nEntries * 16 bytes, as indicated in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The canonical definition provides a fixed payload length of 0 bytes, which is correct for the poll request message (UBX-MON-PATCH poll request). However, the subsequent 'fields' and 'repeated_groups' in the canonical definition describe the structure of the *response* message (UBX-MON-PATCH installed patches), which, according to the PDF, has a variable payload length of 4 + nEntries * 16 bytes. This creates a clear contradiction where the specified length does not match the described payload structure. The canonical definition should reflect the length of the payload structure it defines.",
+      "suggested_fix": {
+        "field": "length",
+        "change": "Change from fixed length to a variable length formula based on the 'nEntries' field.",
+        "new_value": {
+          "formula": "4 + nEntries * 16"
+        }
+      }
+    }
+  ]
+}

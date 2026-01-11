@@ -1,0 +1,142 @@
+{
+  "_comment": "Mapping between our canonical schema (from u-blox manuals) and pyubx2 naming conventions",
+  "_version": "1.0",
+
+  "field_aliases": {
+    "_comment": "Maps our canonical field names to pyubx2 equivalents",
+    "sec": "second",
+    "leaps": "leapS",
+    "refStationId": "refStationID",
+    "pDOP": "pDop",
+    "vDOP": "vDop",
+    "tDOP": "tDop",
+    "hMSL": "hMsl",
+    "dgnssTimeout": "dgnssTimeOut",
+    "meanV": "meanv",
+    "refInfo": "refinfo",
+    "wnOG": "wn0G",
+    "tOG": "t0G",
+    "X": "x",
+    "Y": "y",
+    "Z": "z",
+    "intDeltaFreqUnc": "intDeltaFreqU",
+    "extDeltaFreqUnc": "extDeltaFreqU",
+    "timSyncReq": "timeSyncReq",
+    "gpsTOWAcc": "gpsTOWacc",
+    "gloTOWAcc": "gloTOWacc",
+    "bdsTOWAcc": "bdsTOWacc",
+    "qzssTOWAcc": "qzssTOWacc",
+    "numSV": "numSv",
+    "deltas": "deltaS",
+    "iniWno": "iniWho",
+    "propWno": "propWho",
+    "qzssTOW": "qzssTow",
+    "NavICTow": "navICTow",
+    "NavICWno": "navICWno",
+    "iDot": "idot"
+  },
+
+  "bitfield_aliases": {
+    "_comment": "Maps our bit names to pyubx2 equivalents within bitfields",
+    "gnssFixOK": "gnssFixOk",
+    "GPSfixOK": "gpsfixOK",
+    "TOWSET": "towSet",
+    "WKNSET": "wknSet",
+    "DiffSoln": "diffSoln",
+    "SVCS": "svcs",
+    "PPP": "ppp",
+    "en": "enable",
+    "extendedTx": "extendedTxTimeout",
+    "inUbx": "inUBX",
+    "inNmea": "inNMEA",
+    "inRtcm": "inRTCM",
+    "inRtcm3": "inRTCM3",
+    "outUbx": "outUBX",
+    "outNmea": "outNMEA",
+    "outRtcm3": "outRTCM3",
+    "mem": "lem",
+    "numberSVs": "numSVs",
+    "lastCorrection": "lastCorrectionAge",
+    "qzssSv": "qzssSvAvailable",
+    "mode": "rcvrMode"
+  },
+
+  "repeated_group_patterns": {
+    "_comment": "pyubx2 expands repeated groups into multiple fields with these patterns",
+    "patterns": [
+      "^group[A-Z]",
+      "^channels$",
+      "^optBlock$",
+      "^navdata$",
+      "^_HP",
+      "^rate[A-Z]",
+      "^end_\\d+$",
+      "^msg\\d+$",
+      "^groupmsg\\d+$",
+      "^groupskipped$",
+      "^repeated_block$",
+      "^keys$",
+      "^cfgData$"
+    ]
+  },
+
+  "extra_pyubx2_fields": {
+    "_comment": "Fields pyubx2 has that we intentionally don't include (different representation)",
+    "UBX-CFG-MSG": ["rateDDC", "rateUART1", "rateUART2", "rateUSB", "rateSPI"],
+    "UBX-CFG-ODO": ["cogMaxSpeed", "cogMaxPosAcc", "velLpGain", "cogLpGain"],
+    "UBX-CFG-PRT": ["UARTmode"],
+    "UBX-CFG-SBAS": ["mode", "usage", "scanmode1", "scanmode2"],
+    "UBX-CFG-PM2": ["updatePeriod", "searchPeriod", "gridOffset", "onTime", "minAcqTime", "extintInactivityMs"],
+    "UBX-CFG-TMODE2": ["svinMinDur", "svinAccLimit"],
+    "UBX-CFG-VALSET": ["transaction"],
+    "UBX-ESF-INS": ["iTOW", "xAngRate", "yAngRate", "zAngRate", "xAccel", "yAccel", "zAccel"],
+    "UBX-NAV-TIMETRUSTED": ["validFlags"],
+    "UBX-INF-DEBUG": ["message"],
+    "UBX-INF-ERROR": ["message"],
+    "UBX-INF-NOTICE": ["message"],
+    "UBX-INF-TEST": ["message"],
+    "UBX-INF-WARNING": ["message"],
+    "UBX-MON-IO": ["rxBytes", "txBytes", "parityErrs", "framingErrs", "overrunErrs", "breakCond", "rxBusy", "txBusy"],
+    "UBX-RXM-COR": ["ebno"],
+    "UBX-LOG-RETRIEVE": ["version"]
+  },
+
+  "type_equivalences": {
+    "_comment": "Fields where our type differs from pyubx2 but represents same byte (U1=X1 semantic difference)",
+    "UBX-NAV-AOPSTATUS": {
+      "aopCfg": "X1=U1"
+    },
+    "UBX-CFG-VALDEL": {
+      "layers": "U1=X1",
+      "transaction": "U1=X1"
+    },
+    "UBX-CFG-VALGET": {
+      "layers": "U1=X1"
+    },
+    "UBX-ESF-ALG": {
+      "flags": "U1=X1",
+      "error": "U1=X1"
+    }
+  },
+
+  "expanded_hp_fields": {
+    "_comment": "High-precision fields that pyubx2 expands with _HP prefix",
+    "UBX-NAV-HPPOSECEF": {
+      "ecefXHp": "_HPecefX",
+      "ecefYHp": "_HPecefY",
+      "ecefZHp": "_HPecefZ"
+    },
+    "UBX-NAV-HPPOSLLH": {
+      "latHp": "_HPlat",
+      "lonHp": "_HPlon",
+      "heightHp": "_HPheight",
+      "hMSLHp": "_HPhMSL"
+    },
+    "UBX-NAV-RELPOSNED": {
+      "relPosHPN": "_HPrelPosN",
+      "relPosHPE": "_HPrelPosE",
+      "relPosHPD": "_HPrelPosD",
+      "relPosHPLength": "_HPrelPosLength"
+    }
+  }
+}

@@ -1,0 +1,409 @@
+{
+  "message_name": "UBX-ESF-STATUS",
+  "protocol_version": 0,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-ESF-STATUS",
+    "class_id": "0x10",
+    "message_id": "0x10",
+    "description": "External sensor fusion status",
+    "message_type": "periodic_polled",
+    "payload_length": {
+      "variable": {
+        "base": 16,
+        "formula": "16 + numSens * 4"
+      }
+    },
+    "payload": [
+      {
+        "byte_offset": 0,
+        "name": "iTOW",
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "byte_offset": 4,
+        "name": "version",
+        "data_type": "U1",
+        "fixed_value": 2,
+        "description": "Message version (0x02 for this version)"
+      },
+      {
+        "byte_offset": 5,
+        "name": "reserved1",
+        "data_type": {
+          "array_of": "U1",
+          "count": 7
+        },
+        "reserved": true
+      },
+      {
+        "byte_offset": 12,
+        "name": "fusionMode",
+        "data_type": "U1",
+        "description": "Fusion mode:",
+        "enum_values": [
+          {
+            "value": 0,
+            "description": "Initialization mode: receiver is initializing some unknown values required for doing sensor fusion"
+          },
+          {
+            "value": 1,
+            "description": "Fusion mode: GNSS and sensor data are used for navigation solution computation"
+          },
+          {
+            "value": 2,
+            "description": "Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry"
+          },
+          {
+            "value": 3,
+            "description": "Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error"
+          }
+        ]
+      },
+      {
+        "byte_offset": 13,
+        "name": "reserved2",
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true
+      },
+      {
+        "byte_offset": 15,
+        "name": "numSens",
+        "data_type": "U1",
+        "description": "Number of sensors"
+      },
+      {
+        "byte_offset": 16,
+        "name": "sensor_status_block",
+        "data_type": {
+          "repeating_group": {
+            "count_field": "numSens"
+          }
+        },
+        "elements": [
+          {
+            "byte_offset": 0,
+            "name": "sensStatus1",
+            "data_type": "X1",
+            "description": "Sensor status, part 1",
+            "bitfields": [
+              {
+                "name": "type",
+                "mask": "0x0F",
+                "description": "Sensor data type. See section Sensor data types in the Integration manual for details."
+              },
+              {
+                "name": "used",
+                "mask": "0x10",
+                "description": "If set, sensor data is used for the current sensor fusion solution."
+              },
+              {
+                "name": "ready",
+                "mask": "0x20",
+                "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+              }
+            ]
+          },
+          {
+            "byte_offset": 1,
+            "name": "sensStatus2",
+            "data_type": "X1",
+            "description": "Sensor status, part 2",
+            "bitfields": [
+              {
+                "name": "calibStatus",
+                "mask": "0x03",
+                "description": "Sensor calibration status",
+                "enum_values": [
+                  {
+                    "value": 0,
+                    "description": "00: Sensor is not calibrated"
+                  },
+                  {
+                    "value": 1,
+                    "description": "01: Sensor is calibrating"
+                  },
+                  {
+                    "value": 2,
+                    "description": "10/11: Sensor is calibrated"
+                  }
+                ]
+              },
+              {
+                "name": "timeStatus",
+                "mask": "0x0C",
+                "description": "Time tag status",
+                "enum_values": [
+                  {
+                    "value": 0,
+                    "description": "00: No data"
+                  },
+                  {
+                    "value": 1,
+                    "description": "01: Reception of the first byte used to tag the measurement"
+                  },
+                  {
+                    "value": 2,
+                    "description": "10: Event input used to tag the measurement"
+                  },
+                  {
+                    "value": 3,
+                    "description": "11: Time tag provided with the data"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "byte_offset": 2,
+            "name": "freq",
+            "data_type": "U1",
+            "unit": "Hz",
+            "description": "Observation frequency"
+          },
+          {
+            "byte_offset": 3,
+            "name": "faults",
+            "data_type": "X1",
+            "description": "Sensor faults",
+            "bitfields": [
+              {
+                "name": "badMeas",
+                "mask": "0x01",
+                "description": "Bad measurements detected"
+              },
+              {
+                "name": "badTTag",
+                "mask": "0x02",
+                "description": "Bad measurement time-tags detected"
+              },
+              {
+                "name": "missingMeas",
+                "mask": "0x04",
+                "description": "Missing or time-misaligned measurements detected"
+              },
+              {
+                "name": "noisyMeas",
+                "mask": "0x08",
+                "description": "High measurement noise-level detected"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "winning_fingerprint": "empty_4bf483e4838f",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "structure": {
+        "name": "UBX-ESF-STATUS",
+        "class_id": "0x10",
+        "message_id": "0x10",
+        "description": "External sensor fusion status",
+        "message_type": "periodic_polled",
+        "payload_length": {
+          "variable": {
+            "base": 16,
+            "formula": "16 + numSens * 4"
+          }
+        },
+        "payload": [
+          {
+            "byte_offset": 0,
+            "name": "iTOW",
+            "data_type": "U4",
+            "unit": "ms",
+            "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+          },
+          {
+            "byte_offset": 4,
+            "name": "version",
+            "data_type": "U1",
+            "fixed_value": 2,
+            "description": "Message version (0x02 for this version)"
+          },
+          {
+            "byte_offset": 5,
+            "name": "reserved1",
+            "data_type": {
+              "array_of": "U1",
+              "count": 7
+            },
+            "reserved": true
+          },
+          {
+            "byte_offset": 12,
+            "name": "fusionMode",
+            "data_type": "U1",
+            "description": "Fusion mode:",
+            "enum_values": [
+              {
+                "value": 0,
+                "description": "Initialization mode: receiver is initializing some unknown values required for doing sensor fusion"
+              },
+              {
+                "value": 1,
+                "description": "Fusion mode: GNSS and sensor data are used for navigation solution computation"
+              },
+              {
+                "value": 2,
+                "description": "Suspended fusion mode: sensor fusion is temporarily disabled due to e.g. invalid sensor data or detected ferry"
+              },
+              {
+                "value": 3,
+                "description": "Disabled fusion mode: sensor fusion is permanently disabled until receiver reset due e.g. to sensor error"
+              }
+            ]
+          },
+          {
+            "byte_offset": 13,
+            "name": "reserved2",
+            "data_type": {
+              "array_of": "U1",
+              "count": 2
+            },
+            "reserved": true
+          },
+          {
+            "byte_offset": 15,
+            "name": "numSens",
+            "data_type": "U1",
+            "description": "Number of sensors"
+          },
+          {
+            "byte_offset": 16,
+            "name": "sensor_status_block",
+            "data_type": {
+              "repeating_group": {
+                "count_field": "numSens"
+              }
+            },
+            "elements": [
+              {
+                "byte_offset": 0,
+                "name": "sensStatus1",
+                "data_type": "X1",
+                "description": "Sensor status, part 1",
+                "bitfields": [
+                  {
+                    "name": "type",
+                    "mask": "0x0F",
+                    "description": "Sensor data type. See section Sensor data types in the Integration manual for details."
+                  },
+                  {
+                    "name": "used",
+                    "mask": "0x10",
+                    "description": "If set, sensor data is used for the current sensor fusion solution."
+                  },
+                  {
+                    "name": "ready",
+                    "mask": "0x20",
+                    "description": "If set, sensor is set up (configuration is available or not required) but not used for computing the current sensor fusion solution."
+                  }
+                ]
+              },
+              {
+                "byte_offset": 1,
+                "name": "sensStatus2",
+                "data_type": "X1",
+                "description": "Sensor status, part 2",
+                "bitfields": [
+                  {
+                    "name": "calibStatus",
+                    "mask": "0x03",
+                    "description": "Sensor calibration status",
+                    "enum_values": [
+                      {
+                        "value": 0,
+                        "description": "00: Sensor is not calibrated"
+                      },
+                      {
+                        "value": 1,
+                        "description": "01: Sensor is calibrating"
+                      },
+                      {
+                        "value": 2,
+                        "description": "10/11: Sensor is calibrated"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "timeStatus",
+                    "mask": "0x0C",
+                    "description": "Time tag status",
+                    "enum_values": [
+                      {
+                        "value": 0,
+                        "description": "00: No data"
+                      },
+                      {
+                        "value": 1,
+                        "description": "01: Reception of the first byte used to tag the measurement"
+                      },
+                      {
+                        "value": 2,
+                        "description": "10: Event input used to tag the measurement"
+                      },
+                      {
+                        "value": 3,
+                        "description": "11: Time tag provided with the data"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "byte_offset": 2,
+                "name": "freq",
+                "data_type": "U1",
+                "unit": "Hz",
+                "description": "Observation frequency"
+              },
+              {
+                "byte_offset": 3,
+                "name": "faults",
+                "data_type": "X1",
+                "description": "Sensor faults",
+                "bitfields": [
+                  {
+                    "name": "badMeas",
+                    "mask": "0x01",
+                    "description": "Bad measurements detected"
+                  },
+                  {
+                    "name": "badTTag",
+                    "mask": "0x02",
+                    "description": "Bad measurement time-tags detected"
+                  },
+                  {
+                    "name": "missingMeas",
+                    "mask": "0x04",
+                    "description": "Missing or time-misaligned measurements detected"
+                  },
+                  {
+                    "name": "noisyMeas",
+                    "mask": "0x08",
+                    "description": "High measurement noise-level detected"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "fingerprint": "empty_4bf483e4838f"
+    }
+  ]
+}

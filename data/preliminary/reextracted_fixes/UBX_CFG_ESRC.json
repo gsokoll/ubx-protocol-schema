@@ -1,0 +1,148 @@
+{
+  "name": "UBX-CFG-ESRC",
+  "class_id": "0x06",
+  "message_id": "0x60",
+  "message_type": "get_set",
+  "description": "External synchronization source configuration",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 4,
+        "formula": "4 + 36*numSources"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "name": "numSources",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of sources (affects length of this message)"
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "repeated_block",
+        "byte_offset": 4,
+        "data_type": {
+          "array_of": {
+            "fields": [
+              {
+                "name": "extInt",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "EXTINT index of this source (0 for EXTINT0 and 1 for EXTINT1)"
+              },
+              {
+                "name": "sourceType",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Source type: 0: none; 1: frequency source; use with Temp, withAge, timeToTemp and maxDevLifeTime to describe the stability of the source; 2: time source; use offset, offsetUncertainty and jitter fields to describe the stability of the source; 3: feedback from external oscillator; stability data is taken from the external oscillator's configuration"
+              },
+              {
+                "name": "flags",
+                "byte_offset": 2,
+                "data_type": "X2",
+                "description": "Flags (see graphic below)"
+              },
+              {
+                "name": "freq",
+                "byte_offset": 4,
+                "data_type": "U4",
+                "scale": {
+                  "raw": "2^-2",
+                  "multiplier": 0.25
+                },
+                "unit": "Hz",
+                "description": "Nominal frequency of source"
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 8,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 4
+                },
+                "description": "Reserved",
+                "reserved": true
+              },
+              {
+                "name": "withTemp",
+                "byte_offset": 12,
+                "data_type": "U4",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                },
+                "unit": "ppb",
+                "description": "Oscillator stability limit over operating temperature range (must be > 0). Only used if sourceType is 1."
+              },
+              {
+                "name": "withAge",
+                "byte_offset": 16,
+                "data_type": "U4",
+                "scale": {
+                  "raw": "2^-8",
+                  "multiplier": 0.00390625
+                },
+                "unit": "ppb/year",
+                "description": "Oscillator stability with age (must be > 0). Only used if sourceType is 1."
+              },
+              {
+                "name": "timeToTemp",
+                "byte_offset": 20,
+                "data_type": "U2",
+                "unit": "s",
+                "description": "The minimum time that it could take for a temperature variation to move the oscillator frequency by 'withTemp' (must be > 0). Only used if sourceType is 1."
+              },
+              {
+                "name": "maxDevLifeTime",
+                "byte_offset": 22,
+                "data_type": "U2",
+                "unit": "ppb",
+                "description": "Maximum frequency deviation during lifetime (must be > 0). Only used if sourceType is 1."
+              },
+              {
+                "name": "offset",
+                "byte_offset": 24,
+                "data_type": "I4",
+                "unit": "ns",
+                "description": "Phase offset of signal. Only used if sourceType is 2."
+              },
+              {
+                "name": "offsetUncertainty",
+                "byte_offset": 28,
+                "data_type": "U4",
+                "unit": "ns",
+                "description": "Uncertainty of phase offset (one standard deviation). Only used if sourceType is 2."
+              },
+              {
+                "name": "jitter",
+                "byte_offset": 32,
+                "data_type": "U4",
+                "unit": "ns/s",
+                "description": "Phase jitter (must be > 0). Only used if sourceType is 2."
+              }
+            ]
+          },
+          "count": "numSources"
+        },
+        "description": "Configuration for each source"
+      }
+    ]
+  }
+}

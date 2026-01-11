@@ -1,0 +1,641 @@
+{
+  "message_name": "UBX-MON-GNSS",
+  "protocol_version": 1,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-MON-GNSS",
+    "class_id": "0x0a",
+    "message_id": "0x28",
+    "description": "Information message with supported GNSS and signal plans",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 4,
+          "formula": "4 + numPlans*28",
+          "min": 4
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x01 for this version)"
+        },
+        {
+          "name": "numPlans",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of signal plans available"
+        },
+        {
+          "name": "activePlanInfo",
+          "byte_offset": 2,
+          "data_type": "X2",
+          "description": "Information about currently active signal plan",
+          "bitfield": {
+            "bits": [
+              {
+                "name": "planCfgId",
+                "bit_start": 0,
+                "bit_end": 7,
+                "description": "Configuration value of the currently active plan"
+              },
+              {
+                "name": "gnssCfgLevel",
+                "bit_start": 8,
+                "bit_end": 10,
+                "description": "Configuration level of currently active plan/constellation/signal combination. 0 - N/A, 1 Standard (currently active constellation/signal combination is supported), 2 Advanced (an advanced constellation/signal combination is selected; performance may be sub-optimal)"
+              }
+            ]
+          }
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "signalPlans",
+          "repetition_type": "count_field",
+          "count_field": "numPlans",
+          "group_size_bytes": 28,
+          "base_offset": 4,
+          "fields": [
+            {
+              "name": "id",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Plan identifier"
+            },
+            {
+              "name": "name",
+              "byte_offset": 1,
+              "data_type": {
+                "array_of": "CH",
+                "count": 5
+              },
+              "description": "Plan name"
+            },
+            {
+              "name": "gpsSup",
+              "byte_offset": 6,
+              "data_type": "X2",
+              "description": "GPS supported signals. A non-zero value indicates GPS is supported. A zero value indicates GPS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gps_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "GPS L1C/A"
+                  },
+                  {
+                    "name": "gps_L1C",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "GPS L1C"
+                  },
+                  {
+                    "name": "gps_L2C",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "GPS L2C"
+                  },
+                  {
+                    "name": "gps_L5",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "GPS L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "galSup",
+              "byte_offset": 8,
+              "data_type": "X2",
+              "description": "GAL supported signals. A non-zero value indicates Galileo is supported. A zero value indicates Galileo is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "gal_E1",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "Galileo E1"
+                  },
+                  {
+                    "name": "gal_E5A",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "Galileo E5a"
+                  },
+                  {
+                    "name": "gal_E5B",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "Galileo E5b"
+                  },
+                  {
+                    "name": "gal_E6",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "Galileo E6"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "bdsSup",
+              "byte_offset": 10,
+              "data_type": "X2",
+              "description": "BDS supported signals. A non-zero value indicates BeiDou is supported. A zero value indicates BeiDou is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "bds_B1I",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "BeiDou B1I"
+                  },
+                  {
+                    "name": "bds_B1C",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "BeiDou B1C"
+                  },
+                  {
+                    "name": "bds_B2I",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "BeiDou B2I"
+                  },
+                  {
+                    "name": "bds_B2A",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "BeiDou B2a"
+                  },
+                  {
+                    "name": "bds_B3I",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "BeiDou B3I"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "gloSup",
+              "byte_offset": 12,
+              "data_type": "X2",
+              "description": "GLONASS supported signals. A non-zero value indicates GLONASS is supported. A zero value indicates GLONASS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "glo_L1OF",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "GLONASS L1OF"
+                  },
+                  {
+                    "name": "glo_L2OF",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "GLONASS L2OF"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sbasSup",
+              "byte_offset": 14,
+              "data_type": "X2",
+              "description": "SBAS supported signals. A non-zero value indicates SBAS is supported. A zero value indicates SBAS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "sbas_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "SBAS L1C/A"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "qzssSup",
+              "byte_offset": 16,
+              "data_type": "X2",
+              "description": "QZSS supported signals. A non-zero value indicates QZSS is supported. A zero value indicates QZSS is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "qzss_L1CA",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "QZSS L1C/A"
+                  },
+                  {
+                    "name": "qzss_L1CB",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "QZSS L1C/B"
+                  },
+                  {
+                    "name": "qzss_L1C",
+                    "bit_start": 2,
+                    "bit_end": 2,
+                    "description": "QZSS L1C"
+                  },
+                  {
+                    "name": "qzss_L1S",
+                    "bit_start": 3,
+                    "bit_end": 3,
+                    "description": "QZSS L1S"
+                  },
+                  {
+                    "name": "qzss_L2C",
+                    "bit_start": 4,
+                    "bit_end": 4,
+                    "description": "QZSS L2C"
+                  },
+                  {
+                    "name": "qzss_L5",
+                    "bit_start": 5,
+                    "bit_end": 5,
+                    "description": "QZSS L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "navicSup",
+              "byte_offset": 18,
+              "data_type": "X2",
+              "description": "NavIC supported signals. A non-zero value indicates NavIC is supported. A zero value indicates NavIC is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "navic_L5",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "NavIC L5"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "lbandSup",
+              "byte_offset": 20,
+              "data_type": "X2",
+              "description": "Lband supported. A non-zero value indicates Lband is supported. A zero value indicates Lband is not supported.",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "lband_L1",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "supported range: 1539-1559 MHz"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "reserved0",
+              "byte_offset": 22,
+              "data_type": {
+                "array_of": "U1",
+                "count": 6
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "e9d56f7655798f68",
+  "agreeing_sources": [
+    "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "structure": {
+        "name": "UBX-MON-GNSS",
+        "class_id": "0x0a",
+        "message_id": "0x28",
+        "description": "Information message with supported GNSS and signal plans",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 4,
+              "formula": "4 + numPlans*28",
+              "min": 4
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x01 for this version)"
+            },
+            {
+              "name": "numPlans",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of signal plans available"
+            },
+            {
+              "name": "activePlanInfo",
+              "byte_offset": 2,
+              "data_type": "X2",
+              "description": "Information about currently active signal plan",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "planCfgId",
+                    "bit_start": 0,
+                    "bit_end": 7,
+                    "description": "Configuration value of the currently active plan"
+                  },
+                  {
+                    "name": "gnssCfgLevel",
+                    "bit_start": 8,
+                    "bit_end": 10,
+                    "description": "Configuration level of currently active plan/constellation/signal combination. 0 - N/A, 1 Standard (currently active constellation/signal combination is supported), 2 Advanced (an advanced constellation/signal combination is selected; performance may be sub-optimal)"
+                  }
+                ]
+              }
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "signalPlans",
+              "repetition_type": "count_field",
+              "count_field": "numPlans",
+              "group_size_bytes": 28,
+              "base_offset": 4,
+              "fields": [
+                {
+                  "name": "id",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Plan identifier"
+                },
+                {
+                  "name": "name",
+                  "byte_offset": 1,
+                  "data_type": {
+                    "array_of": "CH",
+                    "count": 5
+                  },
+                  "description": "Plan name"
+                },
+                {
+                  "name": "gpsSup",
+                  "byte_offset": 6,
+                  "data_type": "X2",
+                  "description": "GPS supported signals. A non-zero value indicates GPS is supported. A zero value indicates GPS is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "gps_L1CA",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "GPS L1C/A"
+                      },
+                      {
+                        "name": "gps_L1C",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "GPS L1C"
+                      },
+                      {
+                        "name": "gps_L2C",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "GPS L2C"
+                      },
+                      {
+                        "name": "gps_L5",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "GPS L5"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "galSup",
+                  "byte_offset": 8,
+                  "data_type": "X2",
+                  "description": "GAL supported signals. A non-zero value indicates Galileo is supported. A zero value indicates Galileo is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "gal_E1",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "Galileo E1"
+                      },
+                      {
+                        "name": "gal_E5A",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "Galileo E5a"
+                      },
+                      {
+                        "name": "gal_E5B",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "Galileo E5b"
+                      },
+                      {
+                        "name": "gal_E6",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "Galileo E6"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "bdsSup",
+                  "byte_offset": 10,
+                  "data_type": "X2",
+                  "description": "BDS supported signals. A non-zero value indicates BeiDou is supported. A zero value indicates BeiDou is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "bds_B1I",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "BeiDou B1I"
+                      },
+                      {
+                        "name": "bds_B1C",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "BeiDou B1C"
+                      },
+                      {
+                        "name": "bds_B2I",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "BeiDou B2I"
+                      },
+                      {
+                        "name": "bds_B2A",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "BeiDou B2a"
+                      },
+                      {
+                        "name": "bds_B3I",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "BeiDou B3I"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "gloSup",
+                  "byte_offset": 12,
+                  "data_type": "X2",
+                  "description": "GLONASS supported signals. A non-zero value indicates GLONASS is supported. A zero value indicates GLONASS is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "glo_L1OF",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "GLONASS L1OF"
+                      },
+                      {
+                        "name": "glo_L2OF",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "GLONASS L2OF"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "sbasSup",
+                  "byte_offset": 14,
+                  "data_type": "X2",
+                  "description": "SBAS supported signals. A non-zero value indicates SBAS is supported. A zero value indicates SBAS is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "sbas_L1CA",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "SBAS L1C/A"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "qzssSup",
+                  "byte_offset": 16,
+                  "data_type": "X2",
+                  "description": "QZSS supported signals. A non-zero value indicates QZSS is supported. A zero value indicates QZSS is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "qzss_L1CA",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "QZSS L1C/A"
+                      },
+                      {
+                        "name": "qzss_L1CB",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "QZSS L1C/B"
+                      },
+                      {
+                        "name": "qzss_L1C",
+                        "bit_start": 2,
+                        "bit_end": 2,
+                        "description": "QZSS L1C"
+                      },
+                      {
+                        "name": "qzss_L1S",
+                        "bit_start": 3,
+                        "bit_end": 3,
+                        "description": "QZSS L1S"
+                      },
+                      {
+                        "name": "qzss_L2C",
+                        "bit_start": 4,
+                        "bit_end": 4,
+                        "description": "QZSS L2C"
+                      },
+                      {
+                        "name": "qzss_L5",
+                        "bit_start": 5,
+                        "bit_end": 5,
+                        "description": "QZSS L5"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "navicSup",
+                  "byte_offset": 18,
+                  "data_type": "X2",
+                  "description": "NavIC supported signals. A non-zero value indicates NavIC is supported. A zero value indicates NavIC is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "navic_L5",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "NavIC L5"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "lbandSup",
+                  "byte_offset": 20,
+                  "data_type": "X2",
+                  "description": "Lband supported. A non-zero value indicates Lband is supported. A zero value indicates Lband is not supported.",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "lband_L1",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "supported range: 1539-1559 MHz"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 22,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 6
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "e9d56f7655798f68"
+    }
+  ]
+}

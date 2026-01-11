@@ -1,0 +1,1294 @@
+{
+  "message": "UBX-UPD-SOS",
+  "timestamp": "2026-01-09T05:25:04.971127+00:00",
+  "results": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'payload.fields' array, failing to describe the contents of any of the variable-length payloads (length 4 and 8 bytes) as detailed in the PDF.",
+          "canonical_value": "[]",
+          "pdf_value": "Multiple fields defined for variants (cmd, reserved1, response, reserved2) at offsets 0, 1, 4, 5."
+        },
+        {
+          "field": "message_type",
+          "issue": "The UBX-UPD-SOS message serves as both command (Poll Request, Create backup, Clear backup) and output (Backup creation acknowledge, System restored). The canonical definition classifies it only as 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "Command / Output (depending on variant)"
+        }
+      ],
+      "notes": "The Class ID (0x09), Message ID (0x14), and the variable payload lengths ([0, 4, 8]) in the canonical definition match the PDF. However, the canonical is missing the detailed payload field definitions for all message variants with non-zero lengths. The 'message_type' also incorrectly restricts the message to 'output' only, whereas the PDF shows it is used for both commands and outputs.",
+      "pdf_pages": [
+        453,
+        455
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T05:13:35.948548+00:00"
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221_R23",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The UBX-UPD-SOS message acts as both input (commands) and output (acknowledgements/status). The canonical definition incorrectly labels it solely as 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "input (Command) / output (Output)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition provides an empty array for payload fields. The PDF manual clearly defines multiple payload structures for UBX-UPD-SOS, depending on the message's purpose and length (0, 4, or 8 bytes). This makes the canonical definition incomplete for payload content.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Detailed field definitions for various message types (Poll Request, Create backup, Clear backup, Backup creation acknowledge, System restored) are provided across the different sections. Examples:\n- Length 4 (Command): {offset: 0, name: 'cmd', type: 'U1'}, {offset: 1, name: 'reserved1', type: 'U1[3]'}\n- Length 8 (Output): {offset: 0, name: 'cmd', type: 'U1'}, {offset: 1, name: 'reserved1', type: 'U1[3]'}, {offset: 4, name: 'response', type: 'U1'}, {offset: 5, name: 'reserved2', type: 'U1[3]'}"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the Class ID (0x09) and Message ID (0x14), and the possible payload lengths (0, 4, 8 bytes) as described in the manual. However, it completely lacks the definition of the payload fields themselves, which vary significantly based on the message type (command vs. response) and specific action being performed (create, clear, acknowledge, etc.). This message is a multi-variant message that uses the payload content (specifically, the 'cmd' field at offset 0) and length to distinguish its purpose. The 'message_type' being solely 'output' is also incorrect as it can be used for input commands.",
+      "pdf_pages": [
+        453,
+        455
+      ],
+      "protocol_version": 1800,
+      "device_family": "M8",
+      "timestamp": "2026-01-09T05:13:58.134269+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical message_type is 'output', but the specified payload lengths [0, 4] in 'payload.length.variable.values' correspond to 'input' messages (Poll request, Command) in the PDF. The UBX-UPD-SOS message is a multi-variant message with both input and output types.",
+          "canonical_value": "output",
+          "pdf_value": "Input (for length 0 and 4 variants), Output (for length 8 variants)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'payload.fields' array, indicating no payload structure. The PDF clearly defines distinct payload fields for each message variant (Poll request (length 0, no payload), Create/Clear backup (length 4, with cmd and reserved0), Backup acknowledge/System restored (length 8, with cmd, reserved0, response, and reserved1)). This is a critical omission.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "offset": 0,
+              "type": "U1",
+              "name": "cmd"
+            },
+            {
+              "offset": 1,
+              "type": "U1[3]",
+              "name": "reserved0"
+            },
+            {
+              "offset": 4,
+              "type": "U1",
+              "name": "response"
+            },
+            {
+              "offset": 5,
+              "type": "U1[3]",
+              "name": "reserved1"
+            }
+          ]
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message encompassing both input (commands/poll requests) and output (acknowledgements/status updates) messages with different payload structures and lengths. The canonical definition attempts to group all these variants under a single entry, but incorrectly specifies a single 'message_type' as 'output' while including payload lengths (0 and 4) that correspond to 'input' messages. Furthermore, the canonical completely lacks any definition for the payload fields, which are distinctly described for each variant in the PDF. For accurate representation, this message should ideally be broken down into separate canonical entries for each distinct variant (e.g., one for poll request, one for create backup, one for clear backup, one for backup acknowledge, and one for system restored), or a more sophisticated structure that discriminates between variants based on payload length and/or an internal 'cmd' field.",
+      "pdf_pages": [
+        128,
+        129
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:14:18.715243+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the UBX-UPD-SOS class includes both input (Poll, Create, Clear) and output (Backup creation acknowledge, System restored from backup) messages as per the PDF.",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition's 'payload.fields' array is empty, indicating no payload structure. However, the PDF clearly defines distinct payload structures for the 4-byte and 8-byte message variants.",
+          "canonical_value": "[]",
+          "pdf_value": [
+            "4-byte payload: cmd (U1), reserved0 (U1[3])",
+            "8-byte payload: cmd (U1), reserved0 (U1[3]), response (U1), reserved1 (U1[3])"
+          ]
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a family of messages with different payload lengths and directions (input/output). The canonical definition currently provides a general structure but lacks the detailed field definitions for the 4-byte and 8-byte variants. To fully represent this message, the canonical definition should define these different payload structures, possibly using a multi-variant approach (e.g., through 'valid_variation' or separate message objects for input/output commands/acknowledgements).",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:14:36.984909+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.30_InterfaceDescription_UBXDOC-304424225-20395",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array, but the PDF defines distinct payload structures for UBX-UPD-SOS messages of lengths 4 and 8, and specifies no payload for length 0. The UBX-UPD-SOS message is a multi-variant message.",
+          "canonical_value": "[]",
+          "pdf_value": "Varies by payload length (0, 4, or 8 bytes) and 'cmd' field:\n- Length 0 (Poll Request): No payload fields.\n- Length 4 (Create/Clear Command): U1 cmd, U1[3] reserved0.\n- Length 8 (Acknowledge/System Restored Output): U1 cmd, U1[3] reserved0, U1 response, U1[3] reserved1."
+        },
+        {
+          "field": "message_type",
+          "issue": "The canonical definition labels the message as 'output'. However, UBX-UPD-SOS serves as both input (Poll request, Create backup command, Clear backup command) and output (Backup creation acknowledge, System restored from backup).",
+          "canonical_value": "output",
+          "pdf_value": "input/output (varies by sub-message type)"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the Class ID (0x09), Message ID (0x14), and the variable payload lengths (0, 4, 8 bytes). However, it does not provide the detailed field definitions for each of the message variants, which are clearly outlined in the PDF. The 'message_type' should reflect that this message functions as both input and output depending on the specific operation.",
+      "pdf_pages": [
+        139,
+        141
+      ],
+      "protocol_version": 3429,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:14:58.239053+00:00"
+    },
+    {
+      "manual": "u-blox-F10-SPG-6.00_InterfaceDescription_UBX-23002975",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "Payload definition is incomplete. The canonical definition has an empty 'fields' array, but the PDF defines multiple message variants with detailed payload structures.",
+          "canonical_value": "[]",
+          "pdf_value": "Detailed payload structures for variants based on length and 'cmd' field."
+        },
+        {
+          "field": "message_type",
+          "issue": "Incorrect message type. The canonical defines 'message_type' as 'output', but UBX-UPD-SOS is a multi-variant message that includes both input (Poll request, Create backup, Clear backup) and output (Backup creation acknowledge, System restored from backup) messages.",
+          "canonical_value": "output",
+          "pdf_value": "input, output (depending on variant)"
+        },
+        {
+          "field": "UBX-UPD-SOS (Clear backup in flash)",
+          "issue": "Ambiguity in PDF documentation regarding 'cmd' value. For both 'Create backup in flash' and 'Clear backup in flash' messages (which have a payload length of 4 bytes), the PDF states the 'cmd' field must be '0'. This makes these two distinct commands indistinguishable solely by their payload structure as defined in the manual.",
+          "canonical_value": null,
+          "pdf_value": "'cmd' (U1 at offset 0) = 0 for both Create and Clear backup in flash messages (length 4)."
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message, with different payload structures and `message_type` (input/output) depending on the purpose. The `payload.length.variable.values` in the canonical (`[0, 4, 8]`) correctly identifies the possible payload lengths. However, the `payload.fields` array needs to be populated with `valid_variations` to account for these distinct message types and their respective fields. The PDF details five variants: \n1. Poll backup restore status (Input, Length 0)\n2. Create backup in flash (Input, Length 4, cmd = 0)\n3. Clear backup in flash (Input, Length 4, cmd = 0) - *Note the cmd ambiguity*\n4. Backup creation acknowledge (Output, Length 8, cmd = 1)\n5. System restored from backup (Output, Length 8, cmd = 3)",
+      "pdf_pages": [
+        128,
+        129
+      ],
+      "protocol_version": 4000,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:15:31.791613+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output', but the message acts as a 'Poll request' and 'Command' in addition to 'Output' based on the payload content/length.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request, Command, Output (depending on variant)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical payload fields array is empty, but the PDF defines distinct fields for payloads of length 4 and 8 bytes.",
+          "canonical_value": [],
+          "pdf_value": [
+            "Poll (Length 0): No payload fields.",
+            "Create/Clear (Length 4): cmd (U1), reserved0 (U1[3]).",
+            "Acknowledge/System Restored (Length 8): cmd (U1), reserved0 (U1[3]), response (U1), reserved1 (U1[3])."
+          ]
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message. Its function (poll, command, output) and payload structure depend on the message length and content of the 'cmd' field. The canonical definition correctly identifies the possible payload lengths (0, 4, 8) but fails to define the fields for these different variants. This message would typically be represented with `valid_variation` based on payload length or `conditional_interpretation` based on the `cmd` field.",
+      "pdf_pages": [
+        200,
+        202
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:15:48.979018+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.10_InterfaceDescription_UBX-20048972_C1-Public",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical 'payload.fields' array is empty, which is a significant omission. The PDF defines detailed fields for this message ID, including distinct structures for input and output messages.",
+          "canonical_value": "[]",
+          "pdf_value": "The PDF details five variants for UBX-UPD-SOS (0x09 0x14):\n1.  **Poll backup restore status (Input, Length 0):** No payload fields.\n2.  **Create backup in flash (Input, Length 4):** cmd (U1, must be 0), reserved0 (U1[3]).\n3.  **Clear backup in flash (Input, Length 4):** cmd (U1, must be 1), reserved0 (U1[3]).\n4.  **Backup creation acknowledge (Output, Length 8):** cmd (U1, must be 2), reserved0 (U1[3]), response (U1), reserved1 (U1[3]).\n5.  **System restored from backup (Output, Length 8):** cmd (U1, must be 3), reserved0 (U1[3]), response (U1), reserved1 (U1[3])."
+        },
+        {
+          "field": "message_type",
+          "issue": "The canonical 'message_type' is specified as 'output'. However, the PDF clearly shows that UBX-UPD-SOS (0x09 0x14) functions as both 'input' (for poll requests and backup commands) and 'output' (for acknowledgements and status reports).",
+          "canonical_value": "output",
+          "pdf_value": "Input (Poll backup restore status, Create backup in flash, Clear backup in flash) and Output (Backup creation acknowledge, System restored from backup)."
+        },
+        {
+          "field": "payload.length.variable.values",
+          "issue": "The canonical specifies 'payload.length.variable.values' as [0, 4, 8]. If 'message_type' is strictly 'output' (as per the canonical definition), then lengths 0 and 4 are not valid for output messages. Length 0 corresponds to the 'Poll backup restore status' (input) and length 4 corresponds to the 'Create backup' and 'Clear backup' commands (input). Only length 8 is used for the output messages defined in the PDF.",
+          "canonical_value": "[0, 4, 8]",
+          "pdf_value": "Output messages (Backup creation acknowledge, System restored from backup) have a length of 8 bytes. Input messages (Poll, Create, Clear) have lengths of 0 and 4 bytes respectively."
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message that serves both as an input command/poll and an output response, each with distinct payload structures and lengths. The current canonical definition is incomplete as its 'payload.fields' array is empty, and its 'message_type' and 'payload.length.variable.values' do not accurately reflect the full scope of this message as presented in the PDF manual. A comprehensive canonical definition should either use 'valid_variations' to describe all distinct payloads under this Class/Message ID or be split into multiple canonical entries (e.g., UBX-UPD-SOS-POLL (input), UBX-UPD-SOS-CREATE (input), UBX-UPD-SOS-ACK (output), etc.) to accurately represent its functionality.",
+      "pdf_pages": [
+        157,
+        158
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:16:14.828553+00:00"
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The UBX-UPD-SOS message is a multi-variant message that serves as both input (Poll request, Create backup, Clear backup) and output (Backup creation acknowledge, System restored from backup). The canonical definition specifies only 'output', which is too restrictive as it excludes the input variants defined in the manual.",
+          "canonical_value": "output",
+          "pdf_value": "Output (for variants 3.20.1.4 and 3.20.1.5), Input (for variants 3.20.1.1, 3.20.1.2, and 3.20.1.3)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical `payload.fields` array is empty. The PDF manual defines distinct payload structures for the different UBX-UPD-SOS message variants (e.g., for Length 4 input messages and Length 8 output messages).",
+          "canonical_value": [],
+          "pdf_value": [
+            {
+              "variant": "Poll backup restore status (Input, Length 0)",
+              "fields": "No payload fields"
+            },
+            {
+              "variant": "Create/Clear backup in flash (Input, Length 4)",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "cmd",
+                  "data_type": "U1",
+                  "description": "Command (must be 0 for Create, 1 for Clear)"
+                },
+                {
+                  "byte_offset": 1,
+                  "name": "reserved0",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            },
+            {
+              "variant": "Backup creation acknowledge (Output, Length 8)",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "cmd",
+                  "data_type": "U1",
+                  "description": "Command (must be 2)"
+                },
+                {
+                  "byte_offset": 1,
+                  "name": "reserved0",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "byte_offset": 4,
+                  "name": "response",
+                  "data_type": "U1",
+                  "description": "0 = Not acknowledged, 1 = Acknowledged"
+                },
+                {
+                  "byte_offset": 5,
+                  "name": "reserved1",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            },
+            {
+              "variant": "System restored from backup (Output, Length 8)",
+              "fields": [
+                {
+                  "byte_offset": 0,
+                  "name": "cmd",
+                  "data_type": "U1",
+                  "description": "Command (must be 3)"
+                },
+                {
+                  "byte_offset": 1,
+                  "name": "reserved0",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "byte_offset": 4,
+                  "name": "response",
+                  "data_type": "U1",
+                  "description": "0 = Unknown, 1 = Failed restoring from backup, 2 = Restored from backup, 3 = Not restored (no backup)"
+                },
+                {
+                  "byte_offset": 5,
+                  "name": "reserved1",
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "notes": "The `class_id` (0x09) and `message_id` (0x14) are correct. The `payload.length.variable.values` `[0, 4, 8]` correctly reflect the various payload lengths for the different UBX-UPD-SOS message variants described in the manual. However, the canonical definition requires a complete payload structure for all its variants, particularly for the 'output' type it currently claims. The `cmd` field at offset 0 serves as a discriminator for the different variants, especially for the 8-byte output messages.",
+      "pdf_pages": [
+        163,
+        165
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:16:40.808766+00:00"
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Canonical specifies 'output' but the message has both input and output variants.",
+          "canonical_value": "output",
+          "pdf_value": "input/output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition for the payload fields is completely empty, while the PDF provides detailed definitions for five different variants of this message, distinguished by payload length and the 'cmd' field at offset 0.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Detailed field structures for 5 message variants (Poll, Create, Clear, Acknowledge, Restored) are present. These variants have payload lengths of 0, 4, or 8 bytes and specific fields including 'cmd', 'response', and 'reserved' fields."
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message covering several operations related to backup and restore of Battery-Backed RAM (BBR) in flash. The canonical definition correctly identifies the Class ID (0x09) and Message ID (0x14) and the possible payload lengths (0, 4, 8). However, it lacks all payload field definitions and an accurate message type (it should be input/output or defined as separate messages). A correct definition would require using a mechanism like 'conditional_interpretation' or 'valid_variations' based on payload length and/or the 'cmd' field (at offset 0) to distinguish between the following five variants:\n\n1.  **Poll backup restore status**: Input, Length 0 bytes, no payload fields.\n2.  **Create backup in flash**: Input, Length 4 bytes. Payload: `cmd` (U1, must be 0), `reserved0` (U1[3]).\n3.  **Clear backup in flash**: Input, Length 4 bytes. Payload: `cmd` (U1, must be 1), `reserved0` (U1[3]).\n4.  **Backup creation acknowledge**: Output, Length 8 bytes. Payload: `cmd` (U1, must be 2), `reserved0` (U1[3]), `response` (U1, 0=Not acknowledged, 1=Acknowledged), `reserved1` (U1[3]).\n5.  **System restored from backup**: Output, Length 8 bytes. Payload: `cmd` (U1, must be 3), `reserved0` (U1[3]), `response` (U1, 0=Unknown, 1=Failed, 2=Restored, 3=Not restored), `reserved1` (U1[3]).\n\nAll 'reserved' fields are correctly identified as U1 arrays in the PDF, and 'response' fields are U1 with specific value interpretations, not bitfields.",
+      "pdf_pages": [
+        165,
+        166
+      ],
+      "protocol_version": 3201,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:17:05.540680+00:00"
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition's 'payload.fields' array is empty, but the PDF clearly defines distinct payload structures for multiple variants of the UBX-UPD-SOS message (Poll request, Create backup, Clear backup, Backup acknowledge, System restored).",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Detailed field definitions for 5 message variants (lengths 0, 4, 8 bytes)."
+        },
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies a single 'message_type': 'output'. However, the UBX-UPD-SOS message, as described in the PDF, includes both 'Poll request' and 'Command' (input) variants, as well as 'Output' variants. The canonical's 'message_type' is too restrictive and does not reflect the full scope of this multi-variant message.",
+          "canonical_value": "output",
+          "pdf_value": "input (for Poll, Create, Clear) and output (for Acknowledge, Restored)"
+        },
+        {
+          "field": "payload structure for multi-variant message",
+          "issue": "The canonical definition lacks a mechanism (such as 'valid_variations' or 'conditional_interpretation' based on a discriminator field like 'cmd') to properly describe the different payload structures for the UBX-UPD-SOS message, as presented in the PDF for its various request, command, and output forms.",
+          "canonical_value": "Single, empty 'fields' array.",
+          "pdf_value": "Five distinct payload structures identified by message type and 'cmd' value at offset 0, with varying lengths (0, 4, 8 bytes)."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the class_id (0x09), message_id (0x14), and the set of variable payload lengths (0, 4, 8). However, it completely lacks the detailed payload field definitions for any of the message variants and incorrectly assigns a single 'message_type' for what is clearly a multi-variant message comprising both input/command and output messages. This indicates a significant incompleteness in the canonical representation. A proper definition would use `valid_variations` or `conditional_interpretation` based on a selector field and message type to cover all documented variants.",
+      "pdf_pages": [
+        157,
+        158
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:17:29.679852+00:00"
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the PDF indicates that this message also functions as 'input' (command/poll request) for several variants.",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'payload.fields' array, but the PDF clearly defines specific fields for payloads of length 4 and 8 bytes. This is a critical omission of the message structure.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "length": 4,
+              "fields": [
+                {
+                  "name": "cmd",
+                  "type": "U1"
+                },
+                {
+                  "name": "reserved0",
+                  "type": "U1[3]"
+                }
+              ]
+            },
+            {
+              "length": 8,
+              "fields": [
+                {
+                  "name": "cmd",
+                  "type": "U1"
+                },
+                {
+                  "name": "reserved0",
+                  "type": "U1[3]"
+                },
+                {
+                  "name": "response",
+                  "type": "U1"
+                },
+                {
+                  "name": "reserved1",
+                  "type": "U1[3]"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the class_id, message_id, and the variable payload lengths (0, 4, 8 bytes). However, it completely lacks the definition of the payload fields for these variants and incorrectly specifies the message type as solely 'output' when it is clearly bi-directional (input commands/polls and output acknowledgements/statuses).",
+      "pdf_pages": [
+        171,
+        173
+      ],
+      "protocol_version": 3510,
+      "device_family": "M9",
+      "timestamp": "2026-01-09T05:17:47.176328+00:00"
+    },
+    {
+      "manual": "u-blox-M10-SPG-5.10_InterfaceDescription_UBX-21035062",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical 'message_type' is set to 'output', but the UBX-UPD-SOS message ID is used for both input (poll requests, commands) and output (acknowledgments, notifications) messages.",
+          "canonical_value": "output",
+          "pdf_value": "input/output (via multiple variants)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical 'payload.fields' array is empty, but the PDF defines distinct payload structures for five different variants of the UBX-UPD-SOS message, differentiated by payload length and/or the 'cmd' field value.",
+          "canonical_value": "[]",
+          "pdf_value": "Detailed payload structures for 5 message variants (Poll, Create, Clear, Ack, Restored)."
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message, where the specific operation is determined by the payload length and/or the 'cmd' field at offset 0 of the payload. The canonical definition needs to be significantly expanded to include these variants, ideally using a structure like 'message_variants' or 'valid_variations' to define each specific request/response type. The 'payload.length.variable.values' correctly includes 0, 4, and 8, which are the lengths observed for the different variants.",
+      "pdf_pages": [
+        122,
+        123
+      ],
+      "protocol_version": 3410,
+      "device_family": "M10",
+      "timestamp": "2026-01-09T05:18:11.231921+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Canonical indicates 'output' only, but the PDF describes UBX-UPD-SOS as both input (Poll request, Create backup command, Clear backup command) and output (Backup creation acknowledge, System restored from backup) messages.",
+          "canonical_value": "output",
+          "pdf_value": "input_output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array, but the PDF clearly defines distinct payload structures based on length and the 'cmd' field for various UBX-UPD-SOS messages. This requires populating the 'fields' array, likely using conditional interpretation or valid variations.",
+          "canonical_value": "[]",
+          "pdf_value": {
+            "0-byte payload (Poll backup restore status - Input)": "No fields.",
+            "4-byte payload (Create backup in flash - Input)": [
+              {
+                "name": "cmd",
+                "type": "U1",
+                "byte_offset": 0,
+                "description": "Command (must be 0)"
+              },
+              {
+                "name": "reserved0",
+                "type": "U1[3]",
+                "byte_offset": 1,
+                "description": "Reserved"
+              }
+            ],
+            "4-byte payload (Clear backup in flash - Input)": "PDF provides no explicit payload description table, but context implies a similar structure to 'Create backup' (likely cmd=0) given it shares a length and operation type.",
+            "8-byte payload (Backup creation acknowledge - Output)": [
+              {
+                "name": "cmd",
+                "type": "U1",
+                "byte_offset": 0,
+                "description": "Command (must be 2)"
+              },
+              {
+                "name": "reserved0",
+                "type": "U1[3]",
+                "byte_offset": 1,
+                "description": "Reserved"
+              },
+              {
+                "name": "response",
+                "type": "U1",
+                "byte_offset": 4,
+                "description": "0 = Not acknowledged, 1 = Acknowledged"
+              },
+              {
+                "name": "reserved1",
+                "type": "U1[3]",
+                "byte_offset": 5,
+                "description": "Reserved"
+              }
+            ],
+            "8-byte payload (System restored from backup - Output)": [
+              {
+                "name": "cmd",
+                "type": "U1",
+                "byte_offset": 0,
+                "description": "Command (must be 3)"
+              },
+              {
+                "name": "reserved0",
+                "type": "U1[3]",
+                "byte_offset": 1,
+                "description": "Reserved"
+              },
+              {
+                "name": "response",
+                "type": "U1",
+                "byte_offset": 4,
+                "description": "0 = Unknown, 1 = Failed restoring from backup, 2 = Restored from backup, 3 = Not restored (no backup)"
+              },
+              {
+                "name": "reserved1",
+                "type": "U1[3]",
+                "byte_offset": 5,
+                "description": "Reserved"
+              }
+            ]
+          }
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message. Its specific function (poll, create, clear, acknowledge, restore) is determined by its payload length and the value of the 'cmd' field at byte offset 0. The canonical definition correctly lists the possible payload lengths (0, 4, 8 bytes) but is missing all payload field definitions and incorrectly specifies the message_type as 'output' only.",
+      "pdf_pages": [
+        143,
+        144
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:18:49.187410+00:00"
+    },
+    {
+      "manual": "u-blox_ZED-F9H_InterfaceDescription_(UBX-19030118)",
+      "message": "UBX-UPD-SOS",
+      "matches": null,
+      "confidence": "low",
+      "discrepancies": [],
+      "notes": "Failed to parse LLM response: Unterminated string starting at: line 18 column 12 (char 1114)",
+      "pdf_pages": [
+        153,
+        154
+      ],
+      "protocol_version": 3111,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:19:17.536167+00:00"
+    },
+    {
+      "manual": "LAP120_Interfacedescription_UBX-20046191",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical message_type is 'output', but the PDF indicates that UBX-UPD-SOS messages can be 'Poll request' (input), 'Command' (input), or 'Output'. Therefore, the message is bidirectional, not solely output.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request / Command / Output (Bidirectional)"
+        }
+      ],
+      "notes": "The Class ID (0x09) and Message ID (0x14) match the section title in the PDF. The variable payload lengths [0, 4, 8] correctly reflect the different variants (Poll, Create/Clear, Acknowledge/Restored) described in the PDF. The canonical's empty 'fields' array is consistent with it being a high-level definition for a multi-variant message, with specific fields defined per variant (which are not present in this canonical definition). \n\nNote: Page 1 of the PDF contains an internal error, listing the 'Message structure' for 'Poll backup restore status' as '0xb5 0x62 0x0d 0x06 20', which belongs to UBX-TIM-VRFY. However, the section title correctly identifies it as UBX-UPD-SOS (0x09 0x14), and subsequent descriptions in the PDF for UBX-UPD-SOS correctly use 0x09 0x14.",
+      "pdf_pages": [
+        129,
+        131
+      ],
+      "protocol_version": 3000,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:19:36.622996+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the UBX-UPD-SOS message acts as both 'input' (poll requests, create/clear commands) and 'output' (acknowledgments, system restored status) as described in the PDF manual.",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array for the payload, but the PDF manual provides detailed field definitions for each variant of UBX-UPD-SOS (e.g., cmd, response, reserved fields) for payload lengths 4 and 8.",
+          "canonical_value": "[]",
+          "pdf_value": "Contains fields for different variants (e.g., cmd, response, reserved0, reserved1)"
+        }
+      ],
+      "notes": "The canonical UBX-UPD-SOS definition is a high-level wrapper. While it correctly identifies the message name, class_id, message_id, and the variable payload lengths (0, 4, 8) observed in the PDF, it lacks the detailed field structures for the different message variants (Poll, Create, Clear, Acknowledge, System Restored). To be fully compliant with the manual, the canonical definition would need to include these variant-specific payload structures, likely through a 'valid_variation' mechanism discriminating by payload length or command field, and adjust the message_type to reflect both input and output functionalities.",
+      "pdf_pages": [
+        171,
+        172
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:19:53.074879+00:00"
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "low",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical message_type is 'output', but UBX-UPD-SOS in the PDF also includes 'Poll request' and 'Command' types, meaning it functions as both an input and output message.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request | Command | Output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition provides an empty payload.fields array, while the PDF clearly defines specific fields for different UBX-UPD-SOS message variants (e.g., cmd, reserved0, response for lengths 4 and 8). This is a major omission of the message structure.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Defined fields for length 4 and 8 payloads (e.g., {offset: 0, name: 'cmd', type: 'U1'}, {offset: 1, name: 'reserved0', type: 'U1[3]'}, etc.)"
+        }
+      ],
+      "notes": "The canonical definition correctly lists the possible payload lengths (0, 4, 8 bytes) for UBX-UPD-SOS variants. However, it fails to define the actual payload fields for these variants, and incorrectly specifies the message as solely 'output' when it includes 'Poll request' and 'Command' types as well. For a comprehensive definition, it would require a mechanism to define payload structures based on message type (input/output) or payload length/internal command field.",
+      "pdf_pages": [
+        178,
+        180
+      ],
+      "protocol_version": 3000,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:20:13.605930+00:00"
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array, but the PDF clearly defines payload fields for multiple variants of UBX-UPD-SOS (messages with 4-byte and 8-byte payloads).",
+          "canonical_value": "[]",
+          "pdf_value": "Varies by message type and length:\n- For 4-byte payloads (Create backup, Clear backup):\n  - Offset 0: U1 cmd\n  - Offset 1: U1[3] reserved0\n- For 8-byte payloads (Backup creation acknowledge, System restored):\n  - Offset 0: U1 cmd\n  - Offset 1: U1[3] reserved0\n  - Offset 4: U1 response\n  - Offset 5: U1[3] reserved1"
+        },
+        {
+          "field": "message_type",
+          "issue": "The canonical defines a single 'message_type' as 'output', but the PDF describes UBX-UPD-SOS as having different types depending on the operation: 'Poll request', 'Command', and 'Output'. This indicates a multi-variant message where the type (and payload) varies.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request, Command, Output (depending on the specific message)"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the `class_id` and `message_id`. It also correctly acknowledges the variable payload length by listing `[0, 4, 8]` in `payload.length.variable`. However, it fails to provide the detailed field definitions for these different payload lengths, which are explicitly described in the PDF manual for several UBX-UPD-SOS sub-messages (e.g., 'Create backup in flash', 'Clear backup in flash', 'Backup creation acknowledge', 'System restored from backup'). The `message_type` in canonical should ideally reflect the multi-variant nature, or specific variants should have their own `message_type` field.",
+      "pdf_pages": [
+        170,
+        172
+      ],
+      "protocol_version": 4130,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:20:31.000260+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.13_InterfaceDescription_UBX-21023318",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Canonical defines message_type as 'output', but the manual shows this message is also used for 'Poll request' and 'Command' (inputs).",
+          "canonical_value": "output",
+          "pdf_value": "Poll request (input), Command (input), Output (output)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition's 'payload.fields' array is empty, which only covers the length 0 (poll request) variant. The manual explicitly defines fields for length 4 (Create/Clear commands) and length 8 (Acknowledge/Restored outputs) variants, which are missing from the canonical.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "For length 4: [ {offset: 0, name: 'cmd', type: 'U1'}, {offset: 1, name: 'reserved0', type: 'U1[3]'} ]. For length 8: [ {offset: 0, name: 'cmd', type: 'U1'}, {offset: 1, name: 'reserved0', type: 'U1[3]'}, {offset: 4, name: 'response', type: 'U1'}, {offset: 5, name: 'reserved1', type: 'U1[3]'} ]"
+        }
+      ],
+      "notes": "The Class ID (0x09) and Message ID (0x14) match, as do the possible payload lengths (0, 4, 8 bytes). However, the canonical definition is incomplete as it does not specify the actual payload fields for the length 4 and 8 variants, nor does it correctly capture that this message serves as both input (Poll, Command) and output. A more accurate representation would use 'valid_variation' or a detailed payload structure to differentiate between the different command/response types based on the 'cmd' field value or payload length.",
+      "pdf_pages": [
+        161,
+        163
+      ],
+      "protocol_version": 2712,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:20:50.103843+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the UBX-UPD-SOS message ID 0x14 is used for both input (Poll Request, Create Backup, Clear Backup) and output (Backup Creation Acknowledge, System Restored) messages as described in the manual.",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The 'payload.fields' array is empty in the canonical definition. The PDF manual clearly defines the payload structure for all variants of UBX-UPD-SOS messages (Poll, Create, Clear, Acknowledge, System Restored).",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Defined fields for lengths 4 and 8, including 'cmd', 'reserved0', 'response', 'reserved1'."
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the class_id, message_id, name, and the variable payload lengths ([0, 4, 8]) for this message. However, it fails to capture the multi-variant nature of the message (input/output) and completely omits the detailed payload field definitions for any of the variants. The definition needs to be updated to include conditional fields or valid variations based on message direction (input/output) and payload length to accurately reflect the manual.",
+      "pdf_pages": [
+        197,
+        198
+      ],
+      "protocol_version": 2731,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:21:09.564783+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The UBX-UPD-SOS message acts as both an input (Poll request, Command to create/clear backup) and an output (Backup creation acknowledge, System restored from backup). The canonical definition incorrectly specifies it only as 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request (input), Command (input), Output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical `payload.fields` array is empty, but the PDF defines specific fields for the 4-byte and 8-byte variants of the message. This indicates that the message definition is incomplete for all but the 0-byte (poll request) variant.",
+          "canonical_value": "[]",
+          "pdf_value": "For payload length 4 (Create/Clear backup):\n[\n  {\"byte_offset\": 0, \"name\": \"cmd\", \"data_type\": \"U1\", \"description\": \"Command (0 for Create, 1 for Clear)\"},\n  {\"byte_offset\": 1, \"name\": \"reserved0\", \"data_type\": {\"array_of\": \"U1\", \"count\": 3}, \"reserved\": true}\n]\n\nFor payload length 8 (Backup creation acknowledge/System restored):\n[\n  {\"byte_offset\": 0, \"name\": \"cmd\", \"data_type\": \"U1\", \"description\": \"Command (2 for Acknowledge, 3 for System restored)\"},\n  {\"byte_offset\": 1, \"name\": \"reserved0\", \"data_type\": {\"array_of\": \"U1\", \"count\": 3}, \"reserved\": true},\n  {\"byte_offset\": 4, \"name\": \"response\", \"data_type\": \"U1\", \"description\": \"Acknowledgement/Restore status (values vary based on cmd)\"},\n  {\"byte_offset\": 5, \"name\": \"reserved1\", \"data_type\": {\"array_of\": \"U1\", \"count\": 3}, \"reserved\": true}\n]"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the variable payload lengths ([0, 4, 8]) for UBX-UPD-SOS, which is a multi-variant message. However, it fails to define the fields for the non-zero length payloads. To properly represent this message, the canonical definition should either use `valid_variation` for each message type (Poll, Create, Clear, Acknowledge, Restored) or define a discriminator field (e.g., the 'cmd' field at offset 0) within the `payload.fields` and use `conditional_interpretation` to describe the subsequent fields for each variant.",
+      "pdf_pages": [
+        210,
+        212
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:21:33.197687+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the UBX-UPD-SOS message also functions as a poll request and command (input) message depending on its payload structure and length, as shown in the PDF.",
+          "canonical_value": "output",
+          "pdf_value": "poll request, command, or output (depending on specific variant)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition for the payload's fields is an empty array. The PDF clearly defines specific fields for the UBX-UPD-SOS message when its payload length is 4 bytes (for 'Create backup' and 'Clear backup' commands) and 8 bytes (for 'Backup creation acknowledge' and 'System restored from backup' output messages). These fields include 'cmd', 'response', and 'reserved' fields.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "offset": 0,
+              "name": "cmd",
+              "type": "U1"
+            },
+            {
+              "offset": 1,
+              "name": "reserved0",
+              "type": "U1[3]"
+            },
+            {
+              "offset": 4,
+              "name": "response",
+              "type": "U1"
+            },
+            {
+              "offset": 5,
+              "name": "reserved1",
+              "type": "U1[3]"
+            }
+          ]
+        }
+      ],
+      "notes": "The `class_id` (0x09) and `message_id` (0x14) correctly match. The `payload.length.variable.values` in the canonical definition (0, 4, 8) correctly covers all the different lengths observed for the various UBX-UPD-SOS message types (Poll request: 0 bytes; Create/Clear backup: 4 bytes; Backup acknowledge/System restored: 8 bytes) as described in the PDF. However, the canonical definition is incomplete as it does not specify the actual fields within the payload for the 4-byte and 8-byte variants, nor does it correctly capture the multi-faceted nature of the message (input/output).",
+      "pdf_pages": [
+        213,
+        215
+      ],
+      "protocol_version": 2750,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:21:52.555889+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical defines the message_type as 'output'. However, the PDF clearly distinguishes this message into multiple types: 'Poll request' (input), 'Command' (input), and 'Output'. The canonical's single 'output' type is too restrictive and inaccurate for the input variants.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request (input), Command (input), Output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical defines an empty 'payload.fields' array. The PDF provides detailed payload descriptions for each message variant, including fields like 'cmd', 'reserved0', 'response', and 'reserved1' with specific offsets and data types. The canonical lacks any payload field definitions.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Specific fields defined for each variant (e.g., cmd: U1, reserved0: U1[3], response: U1, reserved1: U1[3])"
+        }
+      ],
+      "notes": "The canonical correctly identifies the message name, class_id (0x09), message_id (0x14), and the possible payload lengths (0, 4, 8 bytes) as shown in the PDF for the various UBX-UPD-SOS message variants (Poll, Create, Clear, Acknowledge, System Restored). However, it fails to capture the differing 'message_type' (input vs. output) for these variants and provides no definition for the payload fields whatsoever, which are clearly specified in the PDF.",
+      "pdf_pages": [
+        200,
+        202
+      ],
+      "protocol_version": 2740,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:22:09.182052+00:00"
+    },
+    {
+      "manual": "F9-HPS-1.21_InterfaceDescription_UBX-21019746",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "Canonical definition incorrectly states 'output'. UBX-UPD-SOS is a multi-variant message that serves as both input (poll, command) and output (status, acknowledge).",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "Canonical definition has an empty 'fields' array, indicating no payload structure is defined. The PDF specifies detailed payload structures for multiple variants of UBX-UPD-SOS messages.",
+          "canonical_value": "[]",
+          "pdf_value": "Detailed field definitions for multiple variants (Length 0, Length 4, Length 8 payloads)"
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message. The canonical definition is a generic placeholder and needs to be updated to define these variants, potentially using a `valid_variations` structure or separate definitions for each command/response type. The variable payload lengths (0, 4, 8) are correctly identified in the canonical, but the specific payload contents for each length and message type are missing.\n\nHere's a breakdown of the message variants and their payloads as found in the PDF:\n\n**1. UBX-UPD-SOS (Poll backup restore status) - Input message**\n  *   **Type**: Poll request\n  *   **Payload Length**: 0 bytes\n  *   **Fields**: None\n\n**2. UBX-UPD-SOS (Create backup in flash) - Input message**\n  *   **Type**: Command\n  *   **Payload Length**: 4 bytes\n  *   **Fields**:\n    *   `cmd` (U1, offset 0): Must be 0\n    *   `reserved0` (U1[3], offset 1)\n\n**3. UBX-UPD-SOS (Clear backup in flash) - Input message**\n  *   **Type**: Command\n  *   **Payload Length**: 4 bytes\n  *   **Fields**:\n    *   `cmd` (U1, offset 0): Must be 1\n    *   `reserved0` (U1[3], offset 1)\n\n**4. UBX-UPD-SOS (System restored from backup - Poll Acknowledge) - Output message**\n    *(Found on page 3, above 3.19.1.5 section heading)*\n  *   **Type**: Output\n  *   **Payload Length**: 8 bytes\n  *   **Fields**:\n    *   `cmd` (U1, offset 0): Must be 2\n    *   `reserved0` (U1[3], offset 1)\n    *   `response` (U1, offset 4): 0 = Not acknowledged, 1 = Acknowledged\n    *   `reserved1` (U1[3], offset 5)\n\n**5. UBX-UPD-SOS (System restored from backup - Status/Notification) - Output message**\n    *(Section 3.19.1.5)*\n  *   **Type**: Output\n  *   **Payload Length**: 8 bytes\n  *   **Fields**:\n    *   `cmd` (U1, offset 0): Must be 3\n    *   `reserved0` (U1[3], offset 1)\n    *   `response` (U1, offset 4): 0 = Unknown, 1 = Failed restoring from backup, 2 = Restored from backup, 3 = Not restored (no backup)\n    *   `reserved1` (U1[3], offset 5)\n\n**Missing Information**: The PDF section 3.19.1.4 'Backup creation acknowledge' states it is an 'Output' message but *does not provide its message structure or payload definition*. This is an omission in the manual itself. It's possible this is handled via standard UBX ACK-ACK/ACK-NAK messages or a status within another UBX-UPD-SOS message, but without explicit definition, it cannot be modeled.",
+      "pdf_pages": [
+        131,
+        133
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:22:40.844258+00:00"
+    },
+    {
+      "manual": "F9-HPS120_Interfacedescription_UBX-19056845",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "medium",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message has both input (command/poll request) and output (acknowledge/status) variants, but the canonical specifies only 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "input/output (depending on the specific variant)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition provides an empty array for payload fields, while the PDF clearly defines specific fields for messages with payload lengths of 4 and 8 bytes. The canonical should define these fields, potentially using conditional interpretation or valid_variations for the different message types (create, clear, acknowledge, restored).",
+          "canonical_value": "[]",
+          "pdf_value": [
+            {
+              "offset": 0,
+              "name": "cmd",
+              "type": "U1"
+            },
+            {
+              "offset": 1,
+              "name": "reserved0",
+              "type": "U1[3]",
+              "reserved": true
+            },
+            {
+              "offset": 4,
+              "name": "response",
+              "type": "U1"
+            },
+            {
+              "offset": 5,
+              "name": "reserved1",
+              "type": "U1[3]",
+              "reserved": true
+            }
+          ]
+        }
+      ],
+      "notes": "The class_id, message_id, and the list of variable payload lengths (0, 4, 8) in the canonical definition match the information presented in the PDF. However, the canonical is incomplete regarding the message type and the actual payload field definitions for the different variants of UBX-UPD-SOS. The PDF details 5 distinct uses for this message ID, each with specific payload structures or lack thereof.",
+      "pdf_pages": [
+        126,
+        127
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:23:03.046222+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical defines the message as 'output' only, but the PDF clearly shows input variants (Poll request, Command) for UBX-UPD-SOS messages in addition to output variants.",
+          "canonical_value": "output",
+          "pdf_value": "input/output (depends on variant)"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition's 'payload.fields' array is empty, providing no structural details for the message's payload. The PDF, however, details multiple payload structures for UBX-UPD-SOS, corresponding to different message functions and lengths (0, 4, and 8 bytes). This includes fields like 'cmd', 'reserved0', 'response', and 'reserved1' with specific offsets, types, and descriptions.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "[ {cmd, reserved0}, {cmd, reserved0, response, reserved1} ] (depending on message variant)"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the class_id (0x09), message_id (0x14), and the variable payload lengths (0, 4, 8 bytes). However, it critically lacks the actual field definitions for any of these variations and incorrectly restricts the message type to 'output' when it serves both input and output functions. To accurately represent this message, the canonical definition would require explicit payload field definitions for each variant, likely managed through a 'valid_variation' structure based on payload length or the 'cmd' field value, and a more encompassing 'message_type'.",
+      "pdf_pages": [
+        179,
+        181
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:23:21.590683+00:00"
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' message type, but the UBX-UPD-SOS message class includes both input (Poll request, Create backup command, Clear backup command) and output (Backup creation acknowledge, System restored from backup) messages according to the PDF.",
+          "canonical_value": "output",
+          "pdf_value": "input and output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical 'payload.fields' array is empty, but the PDF defines specific fields for the various UBX-UPD-SOS message variants (lengths 4 and 8).",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": [
+            {
+              "variant": "Input messages (Create backup, Clear backup) - Length 4",
+              "fields": [
+                {
+                  "name": "cmd",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Command (must be 0)"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 1,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved"
+                }
+              ]
+            },
+            {
+              "variant": "Output messages (Backup creation acknowledge, System restored from backup) - Length 8",
+              "fields": [
+                {
+                  "name": "cmd",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Command (must be 2 for acknowledge, 3 for restored)"
+                },
+                {
+                  "name": "reserved0",
+                  "byte_offset": 1,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved"
+                },
+                {
+                  "name": "response",
+                  "byte_offset": 4,
+                  "data_type": "U1",
+                  "description": "Status/acknowledgement code (values vary by message type)"
+                },
+                {
+                  "name": "reserved1",
+                  "byte_offset": 5,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 3
+                  },
+                  "description": "Reserved"
+                }
+              ]
+            },
+            {
+              "variant": "Input message (Poll backup restore status) - Length 0",
+              "fields": "No payload fields"
+            }
+          ]
+        }
+      ],
+      "notes": "The canonical 'name', 'class_id', 'message_id', and 'payload.length.variable.values' (0, 4, 8) correctly identify the message and its possible payload lengths. However, the lack of defined fields in the canonical payload, coupled with the 'output' message type when the class also includes input messages, indicates an incomplete or overly simplified definition for this multi-variant message class. A more comprehensive definition would typically use `multi_variant` or `conditional_interpretation` to distinguish between the different message types and their corresponding payloads.",
+      "pdf_pages": [
+        181,
+        182
+      ],
+      "protocol_version": 3300,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:23:43.542879+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.20_InterfaceDescription_UBX-21048598",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output', but the UBX-UPD-SOS message class includes both input (commands like 'Poll', 'Create', 'Clear') and output (acknowledgments/status like 'Acknowledge', 'System restored') messages.",
+          "canonical_value": "output",
+          "pdf_value": "input/output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty payload.fields array, indicating no payload structure is defined. The PDF clearly specifies multiple distinct payload structures for different UBX-UPD-SOS operations (Poll, Create, Clear, Acknowledge, System Restored), each with different lengths and fields.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Different structures based on message type/command, e.g., for 'Create backup in flash': cmd (U1), reserved0 (U1[3]); for 'Backup creation acknowledge': cmd (U1), reserved0 (U1[3]), response (U1), reserved1 (U1[3]); etc."
+        }
+      ],
+      "notes": "The UBX-UPD-SOS message is a multi-variant message, where the same Class/ID (0x09 0x14) is used for several different operations. The canonical definition needs to be updated to capture these variations, likely using a structure that differentiates payloads based on a command field (e.g., `cmd` at offset 0) or payload length, to define the 'Poll backup restore status' (0-byte payload), 'Create backup in flash' (4-byte payload), 'Clear backup in flash' (4-byte payload), 'Backup creation acknowledge' (8-byte payload), and 'System restored from backup' (8-byte payload) messages as described in the PDF.",
+      "pdf_pages": [
+        186,
+        187
+      ],
+      "protocol_version": 2900,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:23:59.146212+00:00"
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message is bi-directional (both input and output) according to the manual, but the canonical defines it as 'output' only.",
+          "canonical_value": "output",
+          "pdf_value": "input_output"
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the Class ID (0x09) and Message ID (0x14). The `payload.length.variable.values` correctly lists all observed payload lengths (0, 4, 8 bytes) from the various sub-messages (Poll, Create/Clear, Acknowledge/Restored). The `payload.fields` array being empty is consistent with a multi-variant message where the specific field definitions would be found in `valid_variations` or `conditional_interpretation` based on payload length, which are not part of the provided canonical snippet for validation. The only discrepancy found is the `message_type`, which should reflect its bi-directional nature as shown by the manual (Poll/Command are input; Acknowledge/Restored are output).",
+      "pdf_pages": [
+        169,
+        171
+      ],
+      "protocol_version": 2925,
+      "device_family": "F9",
+      "timestamp": "2026-01-09T05:24:17.354321+00:00"
+    },
+    {
+      "manual": "u-blox-20-HPG-2.00_InterfaceDescription_UBXDOC-304424225-19888",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The message is multi-variant and can be an input (poll/command) or an output, but the canonical definition incorrectly specifies it as only 'output'.",
+          "canonical_value": "output",
+          "pdf_value": "Poll request / Command / Output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical definition has an empty 'fields' array, but the PDF defines specific payload fields for the 4-byte and 8-byte variants of this message.",
+          "canonical_value": "[]",
+          "pdf_value": [
+            {
+              "variant_length": 4,
+              "fields": [
+                {
+                  "name": "cmd",
+                  "offset": 0,
+                  "type": "U1"
+                },
+                {
+                  "name": "reserved0",
+                  "offset": 1,
+                  "type": "U1[3]",
+                  "reserved": true
+                }
+              ]
+            },
+            {
+              "variant_length": 8,
+              "fields": [
+                {
+                  "name": "cmd",
+                  "offset": 0,
+                  "type": "U1"
+                },
+                {
+                  "name": "reserved0",
+                  "offset": 1,
+                  "type": "U1[3]",
+                  "reserved": true
+                },
+                {
+                  "name": "response",
+                  "offset": 4,
+                  "type": "U1",
+                  "description": "0=Not acknowledged, 1=Acknowledged (for acknowledge); 0=Unknown, 1=Failed, 2=Restored, 3=Not restored (for restore)"
+                },
+                {
+                  "name": "reserved1",
+                  "offset": 5,
+                  "type": "U1[3]",
+                  "reserved": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "notes": "The canonical definition correctly identifies the message by its class and ID, and lists the possible payload lengths (0, 4, 8 bytes). However, it completely lacks the payload field definitions for the 4-byte (command) and 8-byte (acknowledge/restore output) variants. Additionally, the 'message_type' is too restrictive, as this message serves as both input (poll/command) and output.",
+      "pdf_pages": [
+        136,
+        138
+      ],
+      "protocol_version": 5001,
+      "device_family": null,
+      "timestamp": "2026-01-09T05:24:34.115606+00:00"
+    },
+    {
+      "manual": "u-blox-X20-HPG-2.02_InterfaceDescription_UBXDOC-304424225-19967",
+      "message": "UBX-UPD-SOS",
+      "matches": false,
+      "confidence": "high",
+      "discrepancies": [
+        {
+          "field": "message_type",
+          "issue": "The canonical definition specifies 'output' as the message type, but the UBX-UPD-SOS message is used for both input (Poll Request, Create Backup Command, Clear Backup Command) and output (Backup Creation Acknowledge, System Restored from Backup) operations as shown in the PDF.",
+          "canonical_value": "output",
+          "pdf_value": "input/output"
+        },
+        {
+          "field": "payload.fields",
+          "issue": "The canonical 'payload.fields' array is empty, indicating no payload fields are defined. However, the PDF explicitly defines specific payload fields for messages with lengths 4 and 8 bytes.",
+          "canonical_value": "[] (empty array)",
+          "pdf_value": "Fields are defined for payloads of length 4 and 8."
+        },
+        {
+          "field": "payload.fields.for_length_4",
+          "issue": "For payload length 4 (Create/Clear backup commands), the PDF defines a 'cmd' (U1) field at offset 0 and a 'reserved0' (U1[3]) field at offset 1. These fields are missing from the canonical definition.",
+          "canonical_value": "Not defined",
+          "pdf_value": "cmd (U1, offset 0), reserved0 (U1[3], offset 1)"
+        },
+        {
+          "field": "payload.fields.for_length_8",
+          "issue": "For payload length 8 (Backup Creation Acknowledge/System Restored messages), the PDF defines a 'cmd' (U1) field at offset 0, 'reserved0' (U1[3]) at offset 1, 'response' (U1) at offset 4, and 'reserved1' (U1[3]) at offset 5. These fields are missing from the canonical definition.",
+          "canonical_value": "Not defined",
+          "pdf_value": "cmd (U1, offset 0), reserved0 (U1[3], offset 1), response (U1, offset 4), reserved1 (U1[3], offset 5)"
+        }
+      ],
+      "notes": "The canonical `payload.length.variable.values = [0, 4, 8]` correctly identifies the possible payload lengths for this message. However, the lack of any defined fields within the `payload.fields` array makes the canonical definition critically incomplete for parsing or generating these messages. The PDF indicates that the 'cmd' field (at offset 0 for non-zero length messages) serves as a discriminator for the specific UBX-UPD-SOS message type (e.g., 0 for Create Backup Request, 2 for Backup Creation Acknowledge, 3 for System Restored). The `cmd` value for 'Clear Backup Request' (payload length 4) is not explicitly stated in the PDF but can be logically inferred (e.g., 1) based on the sequential nature of other 'cmd' values.",
+      "pdf_pages": [
+        143,
+        144
+      ],
+      "protocol_version": 5010,
+      "device_family": "F10",
+      "timestamp": "2026-01-09T05:25:04.466340+00:00"
+    }
+  ],
+  "summary": {
+    "total_manuals": 32,
+    "found_in": 31,
+    "matches": 0,
+    "mismatches": 31
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "name": "UBX-NAV-ORB",
+  "class_id": "0x01",
+  "message_id": "0x34",
+  "message_type": "periodic_polled",
+  "description": "GNSS orbit database info. Status of the GNSS orbit database knowledge.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 8,
+        "formula": "8 + numSv * 6"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See section iTOW timestamps in the integration manual for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 1,
+        "description": "Message version (0x01 for this version)"
+      },
+      {
+        "name": "numSv",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "Number of SVs in the database"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 6,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "reserved": true,
+        "description": "Reserved"
+      },
+      {
+        "name": "svs",
+        "byte_offset": 8,
+        "data_type": {
+          "array_of": {
+            "name": "SV",
+            "type": "structure",
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "GNSS ID"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Satellite ID"
+              },
+              {
+                "name": "svFlag",
+                "byte_offset": 2,
+                "data_type": "X1",
+                "description": "Information Flags",
+                "bitfields": [
+                  {
+                    "name": "health",
+                    "bit_offset": 0,
+                    "bit_length": 2,
+                    "data_type": "U:2",
+                    "description": "SV health",
+                    "values": {
+                      "0": "unknown",
+                      "1": "healthy",
+                      "2": "not healty"
+                    }
+                  },
+                  {
+                    "name": "visibility",
+                    "bit_offset": 2,
+                    "bit_length": 2,
+                    "data_type": "U:2",
+                    "description": "SV health",
+                    "values": {
+                      "0": "unknown",
+                      "1": "below horizon",
+                      "2": "above horizon",
+                      "3": "above elevation mask"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "eph",
+                "byte_offset": 3,
+                "data_type": "X1",
+                "description": "Ephemeris data. In products supporting L5 signals, the receiver may store multiple ephemeris data sets per satellite. ephUsability and ephSource fields show information on one of the data sets. It is not possible to choose which data set's status is shown.",
+                "bitfields": [
+                  {
+                    "name": "ephUsability",
+                    "bit_offset": 0,
+                    "bit_length": 5,
+                    "data_type": "U:5",
+                    "description": "How long the receiver will be able to use the stored ephemeris data from now on:\n\u2022 31 = The usability period is unknown\n\u2022 30 = The usability period is more than 450 minutes\n\u2022 Range 1 to 29 = The usability period is between (n-1)*15 and n*15 minutes\n\u2022 0 = Ephemeris can no longer be used"
+                  },
+                  {
+                    "name": "ephSource",
+                    "bit_offset": 5,
+                    "bit_length": 3,
+                    "data_type": "U:3",
+                    "description": "Source of ephemeris data.",
+                    "values": {
+                      "0": "not available",
+                      "1": "GNSS transmission",
+                      "2": "external aiding",
+                      "3-7": "other"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "alm",
+                "byte_offset": 4,
+                "data_type": "X1",
+                "description": "Almanac data",
+                "bitfields": [
+                  {
+                    "name": "almUsability",
+                    "bit_offset": 0,
+                    "bit_length": 5,
+                    "data_type": "U:5",
+                    "description": "How long the receiver will be able to use the stored almanac data from now on:\n\u2022 31 = The usability period is unknown\n\u2022 30 = The usability period is more than 30 days\n\u2022 Range 1 to 29 = The usability period is between n-1 and n days\n\u2022 0 = Almanac can no longer be used"
+                  },
+                  {
+                    "name": "almSource",
+                    "bit_offset": 5,
+                    "bit_length": 3,
+                    "data_type": "U:3",
+                    "description": "Source of almanac data.",
+                    "values": {
+                      "0": "not available",
+                      "1": "GNSS transmission",
+                      "2": "external aiding",
+                      "3-7": "other"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "otherOrb",
+                "byte_offset": 5,
+                "data_type": "X1",
+                "description": "Other orbit data available",
+                "bitfields": [
+                  {
+                    "name": "anoAopUsability",
+                    "bit_offset": 0,
+                    "bit_length": 5,
+                    "data_type": "U:5",
+                    "description": "How long the receiver will be able to use the orbit data from now on (ANoAOP data)."
+                  }
+                ]
+              }
+            ]
+          },
+          "count_field": "numSv"
+        },
+        "description": "Repeated group for each satellite"
+      }
+    ]
+  }
+}

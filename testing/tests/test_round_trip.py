@@ -141,15 +141,20 @@ class TestSchemaIntegrity:
             if not fields:
                 continue
             
-            # Sort by offset
-            sorted_fields = sorted(fields, key=lambda f: f.get("byte_offset", 0))
+            # Sort by offset (handle None values by putting them at the end)
+            def get_offset_key(f):
+                offset = f.get("byte_offset")
+                return (0, offset) if isinstance(offset, int) else (1, 0)
+            sorted_fields = sorted(fields, key=get_offset_key)
             
             # Check for overlaps (basic check)
             # Note: Some messages have variant fields at same offset, so we just warn
             prev_end = 0
             overlaps = []
             for field in sorted_fields:
-                offset = field.get("byte_offset", 0)
+                offset = field.get("byte_offset")
+                if not isinstance(offset, int):
+                    continue  # Skip fields without valid byte offsets
                 if offset < prev_end:
                     overlaps.append(f"{name}: Field {field.get('name')} at offset {offset} overlaps with previous field ending at {prev_end}")
                 
@@ -161,7 +166,9 @@ class TestSchemaIntegrity:
                     data_type = "U1"
                 if "[" in data_type:
                     base = data_type.split("[")[0]
-                    count = int(data_type.split("[")[1].rstrip("]"))
+                    count_str = data_type.split("[")[1].rstrip("]")
+                    # Handle variable-length arrays like U1[] where count is empty
+                    count = int(count_str) if count_str.isdigit() else 0
                     size = {"U1": 1, "I1": 1, "U2": 2, "I2": 2, "U4": 4, "I4": 4, "R4": 4, "R8": 8, "CH": 1}.get(base, 1) * count
                 else:
                     size = {"U1": 1, "I1": 1, "U2": 2, "I2": 2, "U4": 4, "I4": 4, "R4": 4, "R8": 8}.get(data_type, 1)

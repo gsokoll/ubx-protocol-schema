@@ -1,0 +1,159 @@
+{
+  "name": "UBX-NAV2-SBAS",
+  "class_id": "0x29",
+  "message_id": "0x32",
+  "message_type": "periodic_polled",
+  "description": "This message outputs the status of the SBAS sub system",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 12,
+        "formula": "12 + cnt * 12"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "name": "geo",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "description": "PRN Number of the GEO where correction and integrity data is used from"
+      },
+      {
+        "name": "mode",
+        "byte_offset": 5,
+        "data_type": "U1",
+        "description": "SBAS Mode (0 Disabled, 1 Enabled integrity, 3 Enabled test mode)"
+      },
+      {
+        "name": "sys",
+        "byte_offset": 6,
+        "data_type": "I1",
+        "description": "SBAS System (WAAS/EGNOS/...) (-1 Unknown, 0 WAAS, 1 EGNOS, 2 MSAS, 3 GAGAN, 16 GPS)"
+      },
+      {
+        "name": "service",
+        "byte_offset": 7,
+        "data_type": "X1",
+        "description": "SBAS Services available",
+        "bit_fields": [
+          {
+            "name": "ranging",
+            "data_type": "U:1",
+            "bit_offset": 0,
+            "description": "GEO may be used as ranging source"
+          },
+          {
+            "name": "corrections",
+            "data_type": "U:1",
+            "bit_offset": 1,
+            "description": "GEO is providing correction data"
+          },
+          {
+            "name": "integrity",
+            "data_type": "U:1",
+            "bit_offset": 2,
+            "description": "GEO is providing integrity"
+          },
+          {
+            "name": "testmode",
+            "data_type": "U:1",
+            "bit_offset": 3,
+            "description": "GEO is in test mode"
+          },
+          {
+            "name": "bad",
+            "data_type": "U:1",
+            "bit_offset": 4,
+            "description": "Problem with signal or broadcast data indicated"
+          },
+          {
+            "name": "reserved",
+            "data_type": "U:3",
+            "bit_offset": 5,
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "name": "cnt",
+        "byte_offset": 8,
+        "data_type": "U1",
+        "description": "Number of SV data following"
+      },
+      {
+        "name": "statusFlags",
+        "byte_offset": 9,
+        "data_type": "X1",
+        "description": "SBAS status flags",
+        "bit_fields": [
+          {
+            "name": "integrityUsed",
+            "data_type": "U:2",
+            "bit_offset": 0,
+            "description": "SBAS integrity used (0 = Unknown, 1 = Integrity information is not available or SBAS integrity is not enabled, 2 = Receiver uses only GPS satellites for which integrity information is available)"
+          },
+          {
+            "name": "reserved",
+            "data_type": "U:6",
+            "bit_offset": 2,
+            "reserved": true
+          }
+        ]
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 10,
+        "data_type": "U1[2]",
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "repeated_group",
+        "byte_offset": 12,
+        "array_of_fields": {
+          "count_field": "cnt",
+          "fields": [
+            {
+              "name": "svid",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "SV ID"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "udre",
+              "byte_offset": 2,
+              "data_type": "U1",
+              "description": "Monitoring status"
+            },
+            {
+              "name": "svSys",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "System (WAAS/EGNOS/...) same as SYS"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 4,
+              "data_type": "U1[8]",
+              "description": "Reserved",
+              "reserved": true
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

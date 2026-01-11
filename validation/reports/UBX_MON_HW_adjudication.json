@@ -1,0 +1,684 @@
+{
+  "message": "UBX-MON-HW",
+  "total_discrepancies": 42,
+  "fix_canonical": 39,
+  "valid_variation": 2,
+  "needs_human": 1,
+  "adjudications": [
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "reserved0",
+      "original_issue": "Field name mismatch for a reserved field. Offset and type match.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for u-blox 8/M8 Receiver description (UBX-13003221), which covers protocol version 1800, explicitly lists the field at byte offset 23 as 'reserved1' with a U1 format. The canonical definition has 'reserved0' for this field. Given that the PDF is an official documentation source, the canonical definition should be updated to match it for consistency, especially for a reserved field where the name itself is for documentation purposes.",
+      "suggested_fix": {
+        "field": "reserved0",
+        "change": "rename_field",
+        "new_value": "reserved1"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch for a functional field. Description is functionally similar.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for u-blox 8/u-blox M8 receivers, covering protocol version 18 (among others), defines the field at byte offset 45 in the UBX-MON-HW message as `cwSuppression`. The canonical definition lists this field as `jamInd` at the same byte offset with a functionally similar description. As the official manual is the authoritative source for this protocol version, the canonical definition should be updated to reflect the name used in the manual.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename_field",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "reserved1",
+      "original_issue": "Field name mismatch for a reserved array. Offset, type and count match.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF manual (official u-blox documentation) consistently uses 'reserved2' for the 2-byte reserved field starting at byte offset 46 in the UBX-MON-HW message. The canonical definition, for the same byte offset, type (U1 array of count 2), and purpose, uses the name 'reserved1'. This is a direct name mismatch for the same field. For consistency with the official documentation, the canonical definition should be updated.",
+      "suggested_fix": {
+        "field": "reserved1",
+        "change": "name",
+        "new_value": "reserved2"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "aStatus",
+      "original_issue": "Canonical description is missing detailed enum values provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual for u-blox 8/M8 (covering protocol version 18, as specified) provides detailed enum values for the 'aStatus' field that are missing from the canonical definition. This additional information clarifies the meaning of the field's values and should be included in the canonical description, as it is directly applicable to the specified protocol version.",
+      "suggested_fix": {
+        "field": "aStatus",
+        "change": "update_description",
+        "new_value": "Status of antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "aPower",
+      "original_issue": "Canonical description is missing detailed enum values provided in the PDF.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual provides a more detailed description for the 'aPower' field, including specific enum values (0=OFF, 1=ON, 2=DONTKNOW) which are missing from the canonical definition. This additional information is crucial for interpreting the field correctly and should be incorporated into the canonical definition.",
+      "suggested_fix": {
+        "field": "aPower",
+        "change": "update_description",
+        "new_value": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+      }
+    },
+    {
+      "manual": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "field": "jamInd (description)",
+      "original_issue": "Canonical description for this field (named 'cwSuppression' in PDF) is missing scaling details.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides crucial scaling information for the 'cwSuppression' field (equivalent to 'jamInd' in the canonical definition) which is missing from the canonical description. This scaling information is essential for correctly interpreting the U1 value and is applicable for the specified protocol version.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "update_description",
+        "new_value": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "field": "flags.description",
+      "original_issue": "The canonical description of 'flags' implies 'jammingState' and 'xtalAbsent' are bits within the flags field (X1). The PDF lists 'rtcCalib' (bit 0) and 'safeBoot' (bit 1) as part of 'flags' (X1 at offset 22), but then describes 'jammingState' (bits 3...2 U:2) and 'xtalAbsent' (bit 4 U:1) separately without an explicit byte offset or field name in the main table, only in a sub-section after 'flags'. While these bits could fit within the X1 byte for 'flags', the PDF's presentation makes it ambiguous whether they are formally part of the 'flags' bitfield.",
+      "decision": "fix_canonical",
+      "confidence": 0.8,
+      "reasoning": "The PDF's layout, while ambiguous, implies that 'jammingState' and 'xtalAbsent' are distinct logical fields, even if bit-packed into the same byte as 'flags'. The canonical definition's current approach of listing them in the description of a single 'flags' X1 field can be improved for granularity and explicit representation of these logical fields.",
+      "suggested_fix": {
+        "field": "flags",
+        "change": "Redefine the content of byte 22 into multiple distinct bit-fields instead of a single X1 'flags' field with a descriptive list of all bits. The 'flags' field itself should contain only 'rtcCalib' and 'safeBoot', and new fields should be created for 'jammingState' and 'xtalAbsent' at the same byte offset with appropriate bit offsets and lengths.",
+        "new_value": [
+          {
+            "name": "flags",
+            "byte_offset": 22,
+            "data_type": "X1",
+            "description": "Status flags (rtcCalib, safeBoot)"
+          },
+          {
+            "name": "rtcCalib",
+            "byte_offset": 22,
+            "bit_offset": 0,
+            "bit_length": 1,
+            "data_type": "U:1",
+            "description": "RTC is calibrated"
+          },
+          {
+            "name": "safeBoot",
+            "byte_offset": 22,
+            "bit_offset": 1,
+            "bit_length": 1,
+            "data_type": "U:1",
+            "description": "Safeboot mode (0 = inactive, 1 = active)"
+          },
+          {
+            "name": "jammingState",
+            "byte_offset": 22,
+            "bit_offset": 2,
+            "bit_length": 2,
+            "data_type": "U:2",
+            "description": "Output from jamming/interference monitor"
+          },
+          {
+            "name": "xtalAbsent",
+            "byte_offset": 22,
+            "bit_offset": 4,
+            "bit_length": 1,
+            "data_type": "U:1",
+            "description": "RTC xtal has been determined to be absent"
+          }
+        ]
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "field": "jamInd.name",
+      "original_issue": "The field name differs, though the byte offset and description indicate it refers to the same underlying data.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The byte offset (45), data type (U1), and description are consistent between the canonical definition and the PDF manual, indicating they refer to the same field. The only discrepancy is the field name. The PDF's name, 'cwSuppression', directly aligns with its more detailed description ('CW interference suppression level, scaled...'), which provides valuable context not explicitly in the canonical description. Aligning the canonical field name with the PDF's name will improve consistency with the official documentation.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename field",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "M9-ADR-5.15_InterfaceDescription_UBX-22037101",
+      "field": "jamInd / cwSuppression",
+      "original_issue": "Field name mismatch",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The field at byte offset 45 is named `jamInd` in the canonical definition and `cwSuppression` in the PDF manual. Both refer to the same byte offset, data type (U1), and similar descriptions regarding 'CW jamming/interference suppression level'. The PDF manual, being the official documentation for the M9 device family and Protocol Version 3510, should be considered authoritative for the field name. Renaming `jamInd` to `cwSuppression` in the canonical definition will align it with the documentation.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox-M9-SPG-4.04_InterfaceDescription_UBX-21022436",
+      "field": "jamInd",
+      "original_issue": "Field name and description mismatch.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual, 'u-blox M9 SPG 4.04 - Interface description', clearly defines the field at byte offset 45 for the UBX-MON-HW message as 'cwSuppression' with the description 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. This directly contradicts the canonical definition's field name 'jamInd' and its description. The PDF is the authoritative source for this specific device family and protocol version.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "Rename field and update description",
+        "new_value": {
+          "name": "cwSuppression",
+          "byte_offset": 45,
+          "data_type": "U1",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "field": "agcCnt",
+      "original_issue": "Description is less detailed in canonical definition.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides a more detailed and descriptive explanation for the 'agcCnt' field, specifically indicating 'counts SIGHI xor SIGLO'. This additional information clarifies how the AGC monitor functions and does not conflict with the existing canonical definition. It appears to be an omission of detail in the canonical source rather than a valid variation.",
+      "suggested_fix": {
+        "field": "agcCnt",
+        "change": "update_description",
+        "new_value": "AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)"
+      }
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "field": "jamInd",
+      "original_issue": "Description wording differs slightly.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual provides a more complete and descriptive explanation for the 'jamInd' field, detailing its scaling (0 = no jamming, 255 = strong jamming). This additional information is highly valuable for understanding the field's meaning and is likely the intended full description from the manufacturer.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "Update description",
+        "new_value": "CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+      }
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "field": "noisePerMS",
+      "original_issue": "Description wording differs slightly.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF manual for M9 MDR 2.10 explicitly states 'Noise level as measured by the GPS core' for the `noisePerMS` field of the UBX-MON-HW message. The canonical definition's description is less specific, omitting 'GPS'. Therefore, the canonical definition should be updated to match the official documentation.",
+      "suggested_fix": {
+        "field": "noisePerMS",
+        "change": "update_description",
+        "new_value": "Noise level as measured by the GPS core"
+      }
+    },
+    {
+      "manual": "M9-MDR-2.10_InterfaceDescription_UBX-21036678",
+      "field": "pinIrq",
+      "original_issue": "Description wording differs slightly.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF's description 'Mask of pins value using the PIO Irq' is slightly more precise and consistent with other pin-related fields like 'pinVal' (Mask of pins value low/high) which explicitly mention 'value'. The canonical definition omits the word 'value'.",
+      "suggested_fix": {
+        "field": "pinIrq",
+        "change": "update_description",
+        "new_value": "Mask of pins value using the PIO Irq"
+      }
+    },
+    {
+      "manual": "u-blox-M9-MDR-2.16_InterfaceDescription_UBX-22037308",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch and missing scale detail in description.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual provides a more accurate and descriptive name for the field at byte offset 45 (`cwSuppression` vs `jamInd`) and includes crucial scaling information (0 = no CW jamming, 255 = strong CW jamming) in its description, which is missing from the canonical definition. This is not a variation but an improvement to the existing field definition for the same message.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "Update field name and description",
+        "new_value": {
+          "name": "cwSuppression",
+          "byte_offset": 45,
+          "data_type": "U1",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.30_InterfaceDescription_UBX-22005157",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch and slightly different description. Canonical uses 'jamInd', PDF uses 'cwSuppression'. PDF description also includes scaling information.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The u-blox F9 LAP 1.30 manual, which is the authoritative source, explicitly names the field at byte offset 45 as 'cwSuppression' and provides a more detailed description including scaling information. The canonical definition's field name 'jamInd' and its simpler description are inconsistent with the manual for this protocol version.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "update_name_and_description",
+        "new_value": {
+          "name": "cwSuppression",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF documentation for UBX-MON-HW (0x0a 0x09) explicitly names the field at byte offset 45 as 'cwSuppression' with the description 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. This directly matches the byte offset, data type (U1), and semantic meaning (CW jamming/suppression) of the canonical field 'jamInd'. Furthermore, the UBX-MON-HW2 message (also shown in the PDF) uses 'cwSuppression' for the same offset and description, reinforcing that this is the intended name in this documentation. Therefore, the canonical definition should be updated to align with the PDF.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "name",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox-F9-DBD-1.30_InterfaceDescription_UBX-23006360",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual for u-blox F9 DBD 1.30 (UBX-23006360) explicitly defines the field at byte offset 45 within the UBX-MON-HW message as 'cwSuppression'. The canonical definition's name 'jamInd' for this field is a mismatch. The PDF description also provides more detail regarding the scaling of this value.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename_field",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.32_InterfaceDescription_UBX-22008968",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch. Canonical uses 'jamInd', PDF uses 'cwSuppression'. The description also varies slightly.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF (u-blox F9 HPG 1.32 - Interface Description, page 128) explicitly defines the field at byte offset 45 as 'cwSuppression' with the description 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. This directly contradicts the canonical definition's 'jamInd' name and slightly different description for the same byte offset and data type. The PDF serves as the authoritative source for this specific protocol version.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename and update description",
+        "new_value": {
+          "name": "cwSuppression",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "noisePerMS.description",
+      "original_issue": "Description differs slightly.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual (u-blox F9 HPG 1.50 - Interface description, page 1) explicitly states 'Noise level as measured by the GPS core' for the 'noisePerMS' field's description. Adding 'GPS' provides more specific and accurate context for a GNSS receiver compared to the canonical 'the core'. This is a minor textual improvement.",
+      "suggested_fix": {
+        "field": "noisePerMS.description",
+        "change": "update_value",
+        "new_value": "Noise level as measured by the GPS core"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "agcCnt.description",
+      "original_issue": "Description in PDF is more verbose.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual provides a more verbose and informative description for the `agcCnt` field, clarifying that it represents a 'percentage of maximum gain' and adding '(100%)' to the range specification. This additional detail enhances understanding without contradicting the canonical definition, which appears to be a shortened version. Since the PDF is an official u-blox interface description for the specified product and version, it should be considered authoritative for this level of detail, even for a deprecated message.",
+      "suggested_fix": {
+        "field": "agcCnt.description",
+        "change": "update_value",
+        "new_value": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "aStatus.description",
+      "original_issue": "Description in PDF is more verbose, providing state values.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF provides a more complete and useful description for the 'aStatus' field by enumerating the possible state values. This is not a variation but an enhancement to the description, making the canonical definition less informative by comparison. The canonical definition is missing valuable detail.",
+      "suggested_fix": {
+        "field": "aStatus",
+        "change": "Update description to include state enumerations",
+        "new_value": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "aPower.description",
+      "original_issue": "Description in PDF is more verbose, providing power states.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides a more detailed and helpful description for the 'aPower' field by enumerating the possible states and their meanings. This is an enhancement to the existing description, not a conflicting variation.",
+      "suggested_fix": {
+        "field": "aPower.description",
+        "change": "update_description",
+        "new_value": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "flags.bitfield_definition",
+      "original_issue": "Canonical is missing the bitfield breakdown for 'flags'. PDF explicitly defines bits 0, 1, 2-3, and 4.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF manual clearly provides a bitfield breakdown for the 'flags' field (byte offset 22) within the UBX-MON-HW message. The canonical definition's 'description' even lists the names of these sub-fields ('rtcCalib', 'safeBoot', 'jammingState', 'xtalAbsent'), indicating that a bitfield breakdown is intended but missing. This is an omission in the canonical definition, not a valid variation across protocol versions, as the PDF details are specific to the F9 series and the notes about 'jammingState' and 'xtalAbsent' refer to their behavior across versions, not their presence in the 'flags' byte.",
+      "suggested_fix": {
+        "field": "flags",
+        "change": "Add bitfield_definition to the 'flags' field.",
+        "new_value": {
+          "name": "flags",
+          "byte_offset": 22,
+          "data_type": "X1",
+          "description": "Status flags (rtcCalib, safeBoot, jammingState, xtalAbsent)",
+          "bitfield_definition": [
+            {
+              "name": "rtcCalib",
+              "bit_offset": 0,
+              "data_type": "U:1",
+              "description": "RTC is calibrated"
+            },
+            {
+              "name": "safeBoot",
+              "bit_offset": 1,
+              "data_type": "U:1",
+              "description": "Safeboot mode (0 = inactive, 1 = active)"
+            },
+            {
+              "name": "jammingState",
+              "bit_offset": 2,
+              "data_type": "U:2",
+              "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+            },
+            {
+              "name": "xtalAbsent",
+              "bit_offset": 4,
+              "data_type": "U:1",
+              "description": "RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "jamInd",
+      "original_issue": "The canonical definition includes 'jamInd' (U1) at offset 45. The UBX-MON-HW payload description table on PDF page 1 does not list this field. Furthermore, the PDF's 'flags' field (offset 22) includes a deprecated 'jammingState' bitfield, suggesting a different approach to jamming status.",
+      "decision": "fix_canonical",
+      "confidence": 0.8,
+      "reasoning": "The UBX-MON-HW message in the provided PDF (u-blox F9 HPG 1.50 - Interface description) lists fields only up to byte offset 44 (the end of the 'VP' array). While the message header indicates a total length of 60 bytes, the 'jamInd' field at offset 45 is not explicitly listed in the 'UBX-MON-HW' payload description table. To align the canonical definition strictly with the explicit content of the provided PDF for UBX-MON-HW, 'jamInd' should be considered an undocumented or reserved portion of the message in this specific context.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "Remove 'jamInd' field and extend the subsequent 'reserved1' field to cover its byte offset. If 'reserved1' currently starts at offset 46 and its length covers bytes 46-59 (14 bytes), it should be updated to start at offset 45 and cover bytes 45-59 (15 bytes).",
+        "new_value": "Remove the canonical field: `{\"name\": \"jamInd\", \"byte_offset\": 45, \"data_type\": \"U1\"}`. Adjust the subsequent reserved field (e.g., 'reserved1') to start at `byte_offset: 45` and increase its length by 1 byte accordingly."
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "reserved1 (after jamInd)",
+      "original_issue": "The canonical defines a 'reserved1' (U1[2]) at offset 46. The UBX-MON-HW payload description table on PDF page 1 does not list this field.",
+      "decision": "valid_variation",
+      "confidence": 1.0,
+      "reasoning": "The 'reserved1' field at offset 46 (U1[2]) is present in the PDF for UBX-MON-HW. While the initial payload description table for UBX-MON-HW ends on PDF page 1, the description continues on PDF page 2, under the same '3.14.3 UBX-MON-HW' heading. The field '46 U1[2] reserved1' is clearly listed there, matching the canonical definition.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "pinIrq",
+      "original_issue": "The canonical defines 'pinIrq' (X4) at offset 48. The UBX-MON-HW payload description table on PDF page 1 does not list this field.",
+      "decision": "needs_human",
+      "confidence": 1.0,
+      "reasoning": "The 'pinIrq' field (X4) at offset 48 IS listed in the provided PDF for the UBX-MON-HW message. While it is not on 'page 1' of the UBX-MON-HW payload description table, the table continues onto 'page 2' (visible in the provided images) where 'pinIrq' is clearly listed at offset 48. Therefore, the canonical definition for 'pinIrq' matches the PDF, and there is no discrepancy between them for this field. The canonical is correct as is.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "pullH",
+      "original_issue": "The canonical defines 'pullH' (X4) at offset 52. The UBX-MON-HW payload description table on PDF page 1 does not list this field.",
+      "decision": "valid_variation",
+      "confidence": 0.9,
+      "reasoning": "The PDF manual explicitly states that 'UBX-MON-HW' is deprecated in this protocol version (F9 HPG 1.50, Protocol Version 2750) and recommends using 'UBX-MON-HW3' and 'UBX-MON-RF' instead. The payload description table for 'UBX-MON-HW' in the PDF is incomplete, ending at 'VP' (offset 28) despite the message having a fixed length of 60 bytes. This means fields from byte 45 to 59 are not described in the PDF for UBX-MON-HW.\n\nThe canonical definition, however, includes fields such as 'jamInd' (offset 45), 'reserved1' (offset 46), 'pinIrq' (offset 48), 'pullH' (offset 52), and 'pullL' (offset 56), which perfectly account for the remaining 15 bytes and fill the 60-byte message length (0-59).\n\nIt is common practice for documentation of deprecated messages to be abbreviated or to omit detailed field descriptions in newer manuals, guiding users to the recommended alternative messages. The fact that 'pullH' is also present in 'UBX-MON-HW2' (also deprecated in this manual) suggests that this functionality existed but was perhaps moved or superseded, and its documentation for the original 'UBX-MON-HW' was reduced due to deprecation. Therefore, the canonical definition likely represents a more complete historical or generalized definition of 'UBX-MON-HW', while the PDF provides an intentionally abridged view specific to the F9 HPG 1.50 manual due to the message's deprecated status. The canonical definition does not appear to be wrong for the full message structure.",
+      "suggested_fix": null
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.50_InterfaceDescription_UBXDOC-963802114-12815",
+      "field": "pullL",
+      "original_issue": "The canonical defines 'pullL' (X4) at offset 56. The UBX-MON-HW payload description table on PDF page 1 does not list this field.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The canonical definition is correct. The UBX-MON-HW message definition starts on PDF page 1 and continues onto PDF page 2. The field 'pullL' (X4) at byte offset 56 is clearly listed on PDF page 2, as part of the UBX-MON-HW message, before the UBX-MON-HW2 section begins. The user's statement that it's 'not listed in UBX-MON-HW payload description table' refers only to the table on page 1, missing the continuation on page 2.",
+      "suggested_fix": {
+        "field": "pullL",
+        "change": "No change needed in canonical. The canonical definition is accurate.",
+        "new_value": null
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "jamInd / cwSuppression",
+      "original_issue": "Field name mismatch and missing scale information.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF provides a more descriptive name ('cwSuppression') and crucial scaling information for the field at byte offset 45, which is missing from the canonical definition's 'jamInd' field. The description in the PDF also clarifies the meaning of the value. Given that both canonical and PDF refer to Protocol Version 2750 and the same byte offset, this is likely an improvement to the definition rather than a variation.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename and update description",
+        "new_value": {
+          "name": "cwSuppression",
+          "byte_offset": 45,
+          "data_type": "U1",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "flags.jammingState",
+      "original_issue": "The 'jammingState' sub-field within 'flags' is a 2-bit field according to the PDF, while the canonical description implies a single-bit flag.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF explicitly defines the 'flags' field (byte_offset 22) as a bitmask with several sub-fields, including 'jammingState' at 'bits 3...2 U:2'. This means 'jammingState' is a 2-bit field starting at bit offset 2. The canonical definition for 'flags' is a simple 'X1' (1-byte bitmask) without any sub-field breakdown, leading to an ambiguous or implied single-bit interpretation for 'jammingState' and other flags mentioned in its description. To accurately represent the message structure as documented for this protocol version (even though deprecated), the canonical definition must be updated to include the detailed bitfield structure of the 'flags' byte.",
+      "suggested_fix": {
+        "field": "flags",
+        "change": "Change the 'flags' field from a simple X1 byte to a composite bitfield structure that explicitly defines its sub-fields as per the PDF documentation.",
+        "new_value": {
+          "name": "flags",
+          "byte_offset": 22,
+          "data_type": "X1",
+          "description": "Status flags",
+          "sub_fields": [
+            {
+              "name": "rtcCalib",
+              "bit_offset": 0,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "RTC is calibrated"
+            },
+            {
+              "name": "safeBoot",
+              "bit_offset": 1,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "Safeboot mode (0 = inactive, 1 = active)"
+            },
+            {
+              "name": "jammingState",
+              "bit_offset": 2,
+              "bit_length": 2,
+              "data_type": "U2",
+              "description": "Output from jamming/interference monitor (0 = unknown or feature disabled or flag unavailable, 1 = ok - no significant jamming, 2 = warning - interference visible but fix OK, 3 = critical - interference visible and no fix). This flag is deprecated in protocol versions that support UBX-SEC-SIG (version 0x02) and always reported as 0; instead jammingState in UBX-SEC-SIG should be monitored."
+            },
+            {
+              "name": "xtalAbsent",
+              "bit_offset": 4,
+              "bit_length": 1,
+              "data_type": "U1",
+              "description": "RTC xtal has been determined to be absent (not supported for protocol versions less than 18.00)"
+            },
+            {
+              "name": "reserved_bits_5_7",
+              "bit_offset": 5,
+              "bit_length": 3,
+              "data_type": "U1",
+              "reserved": true,
+              "description": "Reserved"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "noisePerMS",
+      "original_issue": "Slight difference in description.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF explicitly states 'GPS core', which adds specificity and clarity to 'the core' in the context of a GNSS receiver. It is highly probable that 'the core' refers to the GNSS/GPS processing core. This is a minor descriptive enhancement rather than a functional change or a version-specific variation.",
+      "suggested_fix": {
+        "field": "noisePerMS",
+        "change": "update_description",
+        "new_value": "Noise level as measured by the GPS core"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "agcCnt",
+      "original_issue": "Canonical description omits details about the measurement unit (percentage of maximum gain).",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides additional, clarifying detail regarding the unit and scaling of the 'agcCnt' field that is missing from the canonical definition. This extra information ('as percentage of maximum gain, range 0 to 8191 (100%)') enhances the understanding of the field without contradicting its core meaning or range. This is not a variation across protocol versions, but rather an incompleteness in the canonical definition.",
+      "suggested_fix": {
+        "field": "agcCnt",
+        "change": "update description",
+        "new_value": "AGC Monitor, as percentage of maximum gain, range 0 to 8191 (100%)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "aStatus",
+      "original_issue": "Canonical description omits the specific enumeration values.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides specific enumeration values for the 'aStatus' field that are missing from the canonical definition. Adding these values enhances the description without contradicting the existing information and makes the definition more complete and useful. There is no indication this is a variation across protocol versions; it's simply a more detailed description.",
+      "suggested_fix": {
+        "field": "aStatus",
+        "change": "update_description",
+        "new_value": "Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "aPower",
+      "original_issue": "Canonical description omits the specific enumeration values.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF provides specific enumeration values for the 'aPower' field which are critical for interpreting its value, making the PDF's description more complete and accurate. The canonical definition is missing this important detail.",
+      "suggested_fix": {
+        "field": "aPower",
+        "change": "update_description",
+        "new_value": "Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "pinIrq",
+      "original_issue": "Minor difference in description.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF consistently includes the word 'value' in the description for `pinIrq`, `pinVal`, `pullH`, and `pullL` fields (e.g., 'Mask of pins value using the PIO Irq', 'Mask of pins value low/high'). The canonical definition for `pinVal`, `pullH`, and `pullL` also includes 'value'. To maintain consistency within the canonical definitions and align with the PDF for related pin mask fields, the canonical description for `pinIrq` should also include 'value'.",
+      "suggested_fix": {
+        "field": "pinIrq",
+        "change": "update_description",
+        "new_value": "Mask of pins value using the PIO Irq"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "pullH",
+      "original_issue": "Minor difference in description.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF description 'Mask of pins value using the PIO pull high resistor' is more explicit and descriptive than the canonical 'Mask of pins using pull high resistor'. The addition of 'value' clarifies what is being masked (the pin's value) and 'the PIO' adds context that these are peripheral I/O pins, which aligns with other pin-related descriptions in the message (e.g., 'pinSel' 'Mask of pins set as peripheral/PIO'). This is an improvement to clarity.",
+      "suggested_fix": {
+        "field": "pullH",
+        "change": "update_description",
+        "new_value": "Mask of pins value using the PIO pull high resistor"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-1.51_InterfaceDescription_UBXDOC-963802114-13124",
+      "field": "pullL",
+      "original_issue": "Minor difference in description.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF description 'Mask of pins value using the PIO pull low resistor' is more precise and consistent with other pin-related fields in the same message (e.g., 'pinIrq' and 'pullH' also include 'value using the PIO'). The canonical definition is missing 'value' and 'the PIO', making it less descriptive. This is an improvement in clarity, not a valid variation.",
+      "suggested_fix": {
+        "field": "pullL",
+        "change": "update_description",
+        "new_value": "Mask of pins value using the PIO pull low resistor"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPG-L1L5-1.40_InterfaceDescription_UBX-23006991",
+      "field": "payload.fields[12].name",
+      "original_issue": "Field name mismatch",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The PDF, which is the official u-blox F9 HPG L1L5 1.40 Interface Description, explicitly lists the field at byte offset 45 for UBX-MON-HW as 'cwSuppression' with type U1 and description 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. The canonical definition has the same byte offset, data type, and a very similar description ('CW jamming indicator/suppression level'), but uses the name 'jamInd'. The PDF's name 'cwSuppression' is more precise given the description.",
+      "suggested_fix": {
+        "field": "payload.fields[12].name",
+        "change": "rename",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.30_InterfaceDescription_UBX-22010984",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch and slight description difference.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The PDF explicitly lists the field at byte offset 45 for the UBX-MON-HW message with the name 'cwSuppression' and a more detailed description. The data type and byte offset match perfectly, indicating that the PDF provides a more accurate and descriptive definition for this field. The fields at the top of page 2 in the PDF are a continuation of the UBX-MON-HW message payload description from page 1.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename and update description",
+        "new_value": {
+          "name": "cwSuppression",
+          "data_type": "U1",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    },
+    {
+      "manual": "u-blox-F9-HPS-1.40_InterfaceDescription_UBXDOC-963802114-13138",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch. The description and data type match, indicating it refers to the same underlying data.",
+      "decision": "fix_canonical",
+      "confidence": 0.9,
+      "reasoning": "The byte offset, data type, and the core meaning of the description are identical in both the canonical definition and the PDF manual. The canonical description for 'jamInd' is 'CW jamming indicator/suppression level', which closely matches the PDF's field name 'cwSuppression' and its description 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. The PDF's field name 'cwSuppression' is more specific and descriptive, aligning better with the detailed description of the field's purpose. This is a naming discrepancy that should be resolved by updating the canonical definition to use the more precise name from the official documentation.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "rename_field",
+        "new_value": "cwSuppression"
+      }
+    },
+    {
+      "manual": "u-blox-F9-TIM-2.25_InterfaceDescription_UBXDOC-963802114-13231",
+      "field": "jamInd",
+      "original_issue": "Field name mismatch and description detail difference.",
+      "decision": "fix_canonical",
+      "confidence": 1.0,
+      "reasoning": "The provided PDF for 'u-blox F9 TIM 2.25 - Interface description' clearly states the field at byte offset 45 for UBX-MON-HW (0x0a 0x09) is named 'cwSuppression' with a specific, detailed description: 'CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)'. This directly contradicts the canonical definition's name 'jamInd' and its less specific description. The PDF is the authoritative source for this specific protocol version.",
+      "suggested_fix": {
+        "field": "jamInd",
+        "change": "update_name_and_description",
+        "new_value": {
+          "name": "cwSuppression",
+          "description": "CW interference suppression level, scaled (0 = no CW jamming, 255 = strong CW jamming)"
+        }
+      }
+    }
+  ]
+}

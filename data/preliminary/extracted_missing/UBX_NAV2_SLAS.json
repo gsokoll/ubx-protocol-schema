@@ -1,0 +1,151 @@
+{
+  "name": "UBX-NAV2-SLAS",
+  "class_id": "0x29",
+  "message_id": "0x42",
+  "message_type": "periodic_polled",
+  "description": "QZSS L1S SLAS status data",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 20,
+        "formula": "20 + cnt*8"
+      }
+    },
+    "fields": [
+      {
+        "name": "iTOW",
+        "byte_offset": 0,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "GPS time of week of the navigation epoch. See the description of iTOW for details."
+      },
+      {
+        "name": "version",
+        "byte_offset": 4,
+        "data_type": "U1",
+        "fixed_value": 0,
+        "description": "Message version (0x00 for this version)"
+      },
+      {
+        "name": "reserved0",
+        "byte_offset": 5,
+        "data_type": {
+          "array_of": "U1",
+          "count": 3
+        },
+        "reserved": true
+      },
+      {
+        "name": "gmsLon",
+        "byte_offset": 8,
+        "data_type": "I4",
+        "scale": {
+          "raw": "1e-3",
+          "multiplier": 0.001
+        },
+        "unit": "deg",
+        "description": "Longitude of the used ground monitoring station"
+      },
+      {
+        "name": "gmsLat",
+        "byte_offset": 12,
+        "data_type": "I4",
+        "scale": {
+          "raw": "1e-3",
+          "multiplier": 0.001
+        },
+        "unit": "deg",
+        "description": "Latitude of the used ground monitoring station"
+      },
+      {
+        "name": "gmsCode",
+        "byte_offset": 16,
+        "data_type": "U1",
+        "description": "Code of the used ground monitoring station according to the QZSS SLAS Interface Specification, available from qzss.go.jp/en/"
+      },
+      {
+        "name": "qzssSvId",
+        "byte_offset": 17,
+        "data_type": "U1",
+        "description": "Satellite identifier of the QZS/GEO whose correction data is used (see Satellite Numbering)"
+      },
+      {
+        "name": "serviceFlags",
+        "byte_offset": 18,
+        "data_type": "X1",
+        "description": "Flags regarding SLAS service",
+        "fields": [
+          {
+            "name": "gmsAvailable",
+            "data_type": "U:1",
+            "description": "1 = Ground monitoring station available"
+          },
+          {
+            "name": "qzssSvAvailable",
+            "data_type": "U:1",
+            "description": "1 = Correction providing QZSS SV available"
+          },
+          {
+            "name": "testMode",
+            "data_type": "U:1",
+            "description": "1 = Currently used QZSS SV in test mode"
+          }
+        ]
+      },
+      {
+        "name": "cnt",
+        "byte_offset": 19,
+        "data_type": "U1",
+        "description": "Number of pseudorange corrections following",
+        "linked_field_for_variable_length": true
+      },
+      {
+        "name": "corrections",
+        "byte_offset": 20,
+        "data_type": {
+          "array_of": {
+            "type": "object",
+            "fields": [
+              {
+                "name": "gnssId",
+                "byte_offset": 0,
+                "data_type": "U1",
+                "description": "GNSS identifier (see Satellite Numbering)"
+              },
+              {
+                "name": "svId",
+                "byte_offset": 1,
+                "data_type": "U1",
+                "description": "Satellite identifier (see Satellite Numbering)"
+              },
+              {
+                "name": "reserved1",
+                "byte_offset": 2,
+                "data_type": "U1",
+                "reserved": true
+              },
+              {
+                "name": "reserved2",
+                "byte_offset": 3,
+                "data_type": {
+                  "array_of": "U1",
+                  "count": 3
+                },
+                "reserved": true
+              },
+              {
+                "name": "prc",
+                "byte_offset": 6,
+                "data_type": "I2",
+                "unit": "cm",
+                "description": "Pseudorange correction"
+              }
+            ]
+          },
+          "count_field": "cnt"
+        },
+        "description": "Pseudorange corrections data for multiple satellites"
+      }
+    ]
+  }
+}

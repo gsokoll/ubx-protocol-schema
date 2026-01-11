@@ -1,0 +1,345 @@
+{
+  "message_name": "UBX-TIM-SMEAS",
+  "protocol_version": 0,
+  "status": "single_source",
+  "agreement_ratio": 1.0,
+  "winning_structure": {
+    "name": "UBX-TIM-SMEAS",
+    "class_id": "0x0D",
+    "message_id": "0x13",
+    "description": "Source measurement",
+    "message_type": "output",
+    "payload": {
+      "length": {
+        "variable": {
+          "base": 12,
+          "formula": "12 + numMeas * 24",
+          "min": 12
+        }
+      },
+      "fields": [
+        {
+          "name": "version",
+          "byte_offset": 0,
+          "data_type": "U1",
+          "description": "Message version (0x00 for this version)"
+        },
+        {
+          "name": "numMeas",
+          "byte_offset": 1,
+          "data_type": "U1",
+          "description": "Number of measurements in repeated block"
+        },
+        {
+          "name": "reserved1",
+          "byte_offset": 2,
+          "data_type": {
+            "array_of": "U1",
+            "count": 2
+          },
+          "description": "Reserved",
+          "reserved": true
+        },
+        {
+          "name": "iTow",
+          "byte_offset": 4,
+          "data_type": "U4",
+          "description": "Time of the week",
+          "unit": "ms"
+        },
+        {
+          "name": "reserved2",
+          "byte_offset": 8,
+          "data_type": {
+            "array_of": "U1",
+            "count": 4
+          },
+          "description": "Reserved",
+          "reserved": true
+        }
+      ],
+      "repeated_groups": [
+        {
+          "name": "measurements",
+          "repetition_type": "count_field",
+          "count_field": "numMeas",
+          "group_size_bytes": 24,
+          "base_offset": 12,
+          "fields": [
+            {
+              "name": "sourceId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Index of source. SMEAS can provide six measurement sources. The first four sourceId values represent measurements made by the receiver and sent to the host. The first of these with a sourceId value of 0 is a measurement of the internal oscillator against the current receiver time-and-frequency estimate. The internal oscillator is being disciplined against that estimate and this result represents the current offset between the actual and desired internal oscillator states. The next three sourceId values represent frequency and time measurements made by the receiver against the internal oscillator. sourceId 1 represents the GNSS-derived frequency and time compared with the internal oscillator frequency and time. sourceId 2 give measurements of a signal coming in on EXTINTO. sourceId 3 corresponds to a similar measurement on EXTINT1. The remaining two of these measurements (sourceId 4 and 5) are made by the host and sent to the receiver. A measurement with sourceId 4 is a measurement by the host of the internal oscillator and sourceId 5 indicates a host measurement of the external oscillator."
+            },
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Flags (see graphic below)",
+              "bitfield": {
+                "bits": [
+                  {
+                    "name": "freqValid",
+                    "bit_start": 0,
+                    "bit_end": 0,
+                    "description": "1 = frequency measurement is valid"
+                  },
+                  {
+                    "name": "phaseValid",
+                    "bit_start": 1,
+                    "bit_end": 1,
+                    "description": "1 = phase measurement is valid"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "phaseOffsetFrac",
+              "byte_offset": 2,
+              "data_type": "I1",
+              "description": "Sub-nanosecond phase offset; the total offset is the sum of phaseOffset and phaseOffsetFrac",
+              "unit": "ns",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "phaseUncFrac",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "description": "Sub-nanosecond phase uncertainty",
+              "unit": "ns",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "phaseOffset",
+              "byte_offset": 4,
+              "data_type": "I4",
+              "description": "Phase offset, positive if the source lags accurate phase and negative if the source is early",
+              "unit": "ns"
+            },
+            {
+              "name": "phaseUnc",
+              "byte_offset": 8,
+              "data_type": "U4",
+              "description": "Phase uncertainty (one standard deviation)",
+              "unit": "ns"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 12,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "freqOffset",
+              "byte_offset": 16,
+              "data_type": "I4",
+              "description": "Frequency offset, positive if the source frequency is too high, negative if the frequency is too low.",
+              "unit": "ppb",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            },
+            {
+              "name": "freqUnc",
+              "byte_offset": 20,
+              "data_type": "U4",
+              "description": "Frequency uncertainty (one standard deviation)",
+              "unit": "ppb",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "winning_fingerprint": "f004e674ecac9ed5",
+  "agreeing_sources": [
+    "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221"
+  ],
+  "disagreeing_sources": [],
+  "all_extractions": [
+    {
+      "source": "u-blox8-M8_ReceiverDescrProtSpec_UBX-13003221",
+      "structure": {
+        "name": "UBX-TIM-SMEAS",
+        "class_id": "0x0D",
+        "message_id": "0x13",
+        "description": "Source measurement",
+        "message_type": "output",
+        "payload": {
+          "length": {
+            "variable": {
+              "base": 12,
+              "formula": "12 + numMeas * 24",
+              "min": 12
+            }
+          },
+          "fields": [
+            {
+              "name": "version",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Message version (0x00 for this version)"
+            },
+            {
+              "name": "numMeas",
+              "byte_offset": 1,
+              "data_type": "U1",
+              "description": "Number of measurements in repeated block"
+            },
+            {
+              "name": "reserved1",
+              "byte_offset": 2,
+              "data_type": {
+                "array_of": "U1",
+                "count": 2
+              },
+              "description": "Reserved",
+              "reserved": true
+            },
+            {
+              "name": "iTow",
+              "byte_offset": 4,
+              "data_type": "U4",
+              "description": "Time of the week",
+              "unit": "ms"
+            },
+            {
+              "name": "reserved2",
+              "byte_offset": 8,
+              "data_type": {
+                "array_of": "U1",
+                "count": 4
+              },
+              "description": "Reserved",
+              "reserved": true
+            }
+          ],
+          "repeated_groups": [
+            {
+              "name": "measurements",
+              "repetition_type": "count_field",
+              "count_field": "numMeas",
+              "group_size_bytes": 24,
+              "base_offset": 12,
+              "fields": [
+                {
+                  "name": "sourceId",
+                  "byte_offset": 0,
+                  "data_type": "U1",
+                  "description": "Index of source. SMEAS can provide six measurement sources. The first four sourceId values represent measurements made by the receiver and sent to the host. The first of these with a sourceId value of 0 is a measurement of the internal oscillator against the current receiver time-and-frequency estimate. The internal oscillator is being disciplined against that estimate and this result represents the current offset between the actual and desired internal oscillator states. The next three sourceId values represent frequency and time measurements made by the receiver against the internal oscillator. sourceId 1 represents the GNSS-derived frequency and time compared with the internal oscillator frequency and time. sourceId 2 give measurements of a signal coming in on EXTINTO. sourceId 3 corresponds to a similar measurement on EXTINT1. The remaining two of these measurements (sourceId 4 and 5) are made by the host and sent to the receiver. A measurement with sourceId 4 is a measurement by the host of the internal oscillator and sourceId 5 indicates a host measurement of the external oscillator."
+                },
+                {
+                  "name": "flags",
+                  "byte_offset": 1,
+                  "data_type": "X1",
+                  "description": "Flags (see graphic below)",
+                  "bitfield": {
+                    "bits": [
+                      {
+                        "name": "freqValid",
+                        "bit_start": 0,
+                        "bit_end": 0,
+                        "description": "1 = frequency measurement is valid"
+                      },
+                      {
+                        "name": "phaseValid",
+                        "bit_start": 1,
+                        "bit_end": 1,
+                        "description": "1 = phase measurement is valid"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "phaseOffsetFrac",
+                  "byte_offset": 2,
+                  "data_type": "I1",
+                  "description": "Sub-nanosecond phase offset; the total offset is the sum of phaseOffset and phaseOffsetFrac",
+                  "unit": "ns",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "phaseUncFrac",
+                  "byte_offset": 3,
+                  "data_type": "U1",
+                  "description": "Sub-nanosecond phase uncertainty",
+                  "unit": "ns",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "phaseOffset",
+                  "byte_offset": 4,
+                  "data_type": "I4",
+                  "description": "Phase offset, positive if the source lags accurate phase and negative if the source is early",
+                  "unit": "ns"
+                },
+                {
+                  "name": "phaseUnc",
+                  "byte_offset": 8,
+                  "data_type": "U4",
+                  "description": "Phase uncertainty (one standard deviation)",
+                  "unit": "ns"
+                },
+                {
+                  "name": "reserved3",
+                  "byte_offset": 12,
+                  "data_type": {
+                    "array_of": "U1",
+                    "count": 4
+                  },
+                  "description": "Reserved",
+                  "reserved": true
+                },
+                {
+                  "name": "freqOffset",
+                  "byte_offset": 16,
+                  "data_type": "I4",
+                  "description": "Frequency offset, positive if the source frequency is too high, negative if the frequency is too low.",
+                  "unit": "ppb",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                },
+                {
+                  "name": "freqUnc",
+                  "byte_offset": 20,
+                  "data_type": "U4",
+                  "description": "Frequency uncertainty (one standard deviation)",
+                  "unit": "ppb",
+                  "scale": {
+                    "raw": "2^-8",
+                    "multiplier": 0.00390625
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "fingerprint": "f004e674ecac9ed5"
+    }
+  ]
+}

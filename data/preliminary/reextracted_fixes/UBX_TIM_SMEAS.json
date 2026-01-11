@@ -1,0 +1,131 @@
+{
+  "name": "UBX-TIM-SMEAS",
+  "class_id": "0x0D",
+  "message_id": "0x13",
+  "message_type": "input_output",
+  "description": "Source measurement. Frequency and/or phase measurement of synchronization sources. The measurements are relative to the nominal frequency and nominal phase. The receiver reports the measurements on its sync sources using this message. Which measurements are reported can be configured using UBX-CFG-SMGR. The host may report offset of the receiver's outputs with this message as well. The receiver has to be configured using UBX-CFG-SMGR to enable the use of the external measurement messages. Otherwise the receiver will ignore them.",
+  "payload": {
+    "length": {
+      "variable": {
+        "base": 12,
+        "formula": "12 + numMeas * 24"
+      }
+    },
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "data_type": "U1",
+        "description": "Message version (0x00 for this version)",
+        "fixed_value": 0
+      },
+      {
+        "name": "numMeas",
+        "byte_offset": 1,
+        "data_type": "U1",
+        "description": "Number of measurements in repeated block"
+      },
+      {
+        "name": "reserved1",
+        "byte_offset": 2,
+        "data_type": {
+          "array_of": "U1",
+          "count": 2
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "iTow",
+        "byte_offset": 4,
+        "data_type": "U4",
+        "unit": "ms",
+        "description": "Time of the week"
+      },
+      {
+        "name": "reserved2",
+        "byte_offset": 8,
+        "data_type": {
+          "array_of": "U1",
+          "count": 4
+        },
+        "description": "Reserved",
+        "reserved": true
+      },
+      {
+        "name": "measurements",
+        "byte_offset": 12,
+        "array_of": {
+          "count_field": "numMeas",
+          "fields": [
+            {
+              "name": "sourceId",
+              "byte_offset": 0,
+              "data_type": "U1",
+              "description": "Index of source. SMEAS can provide six measurement sources. The first four sourceId values represent measurements made by the receiver and sent to the host. The first of these with a sourceId value of 0 is a measurement of the internal oscillator against the current receiver time-and-frequency estimate. The internal oscillator is being disciplined against that estimate and this result represents the current offset between the actual and desired internal oscillator states. The next three sourceId values represent frequency and time measurements made by the receiver against the internal oscillator. sourceId 1 represents the GNSS-derived frequency and time compared with the internal oscillator frequency and time. sourceId2 give measurements of a signal coming in on EXTINT0. sourceId 3 corresponds to a similar measurement on EXTINT1. The remaining two of these measurements (sourceId 4 and 5) are made by the host and sent to the receiver. A measurement with sourceId 4 is a measurement by the host of the internal oscillator and sourceId 5 indicates a host measurement of the external oscillator."
+            },
+            {
+              "name": "flags",
+              "byte_offset": 1,
+              "data_type": "X1",
+              "description": "Flags",
+              "bitfield": [
+                {
+                  "name": "raw",
+                  "position": 0,
+                  "length": 1,
+                  "description": "Type of value: 0: frequency offset, 1: raw digital output"
+                },
+                {
+                  "name": "difference",
+                  "position": 1,
+                  "length": 1,
+                  "description": "Nature of value: 0: absolute (i.e. relative to 0), 1: relative to current setting"
+                },
+                {
+                  "name": "reserved_bits",
+                  "position": 2,
+                  "length": 6,
+                  "description": "Reserved",
+                  "reserved": true
+                }
+              ]
+            },
+            {
+              "name": "phaseOffsetFrac",
+              "byte_offset": 2,
+              "data_type": "I1",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              },
+              "unit": "ns",
+              "description": "Sub-nanosecond phase offset; the total offset is the sum of phaseOffset and phaseOffsetFrac"
+            },
+            {
+              "name": "phaseUncFrac",
+              "byte_offset": 3,
+              "data_type": "U1",
+              "scale": {
+                "raw": "2^-8",
+                "multiplier": 0.00390625
+              },
+              "unit": "ns",
+              "description": "Sub-nanosecond phase uncertainty"
+            },
+            {
+              "name": "reserved3",
+              "byte_offset": 4,
+              "data_type": {
+                "array_of": "U1",
+                "count": 20
+              },
+              "description": "Reserved to fill the 24-byte block",
+              "reserved": true
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
