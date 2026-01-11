@@ -480,3 +480,98 @@ def build_message_extraction_prompt(message_name: str) -> str:
         ubx_overview=UBX_PROTOCOL_OVERVIEW,
         message_name=message_name,
     )
+
+
+# Enum extraction prompt - for extracting enum values for E-type config keys
+ENUM_EXTRACTION_TEMPLATE = """
+You are extracting enumeration values from a UBX protocol PDF manual.
+
+## TASK
+
+Extract the COMPLETE enumeration definition for configuration key "{key_name}".
+
+This key has data type {data_type}, which is an enumeration.
+
+## WHAT TO LOOK FOR
+
+In the PDF, find the table or section that shows the enumeration values for this key.
+Look for:
+1. A table with columns like "Value", "Name", "Description"
+2. A list of constants like "CFG-NAVSPG-DYNMODEL-PORT = 0", "CFG-NAVSPG-DYNMODEL-STAT = 2"
+3. The configuration key description section showing allowed values
+
+## EXTRACTION RULES
+
+1. **Extract ALL values**: Include every enumeration value shown in the PDF
+2. **Numeric values**: Use the exact integer values shown (decimal, not hex)
+3. **Names**: Use the constant suffix (e.g., "PORT" not "CFG-NAVSPG-DYNMODEL-PORT")
+4. **Descriptions**: Include "(not available in all products)" if shown
+5. **Do NOT skip values**: Even if some seem redundant, include them all
+
+## RESPONSE FORMAT
+
+Return a JSON object with the extracted enumeration:
+```json
+{{
+  "key_name": "{key_name}",
+  "data_type": "{data_type}",
+  "values": {{
+    "<NAME>": {{
+      "value": <integer>,
+      "description": "<description from PDF>"
+    }},
+    ...
+  }},
+  "extraction_confidence": "high" | "medium" | "low",
+  "notes": "<any observations about the extraction>"
+}}
+```
+
+If the enumeration definition is NOT found in the PDF:
+```json
+{{
+  "key_name": "{key_name}",
+  "error": "enum_not_found",
+  "notes": "<what you found instead or why it's missing>"
+}}
+```
+
+## EXAMPLE
+
+For CFG-NAVSPG-DYNMODEL (E1 type), a correct extraction might be:
+```json
+{{
+  "key_name": "CFG-NAVSPG-DYNMODEL",
+  "data_type": "E1",
+  "values": {{
+    "PORT": {{"value": 0, "description": "Portable"}},
+    "STAT": {{"value": 2, "description": "Stationary"}},
+    "PED": {{"value": 3, "description": "Pedestrian"}},
+    "AUTOMOT": {{"value": 4, "description": "Automotive"}},
+    "SEA": {{"value": 5, "description": "Sea"}},
+    "AIR1": {{"value": 6, "description": "Airborne with <1g acceleration"}},
+    "AIR2": {{"value": 7, "description": "Airborne with <2g acceleration"}},
+    "AIR4": {{"value": 8, "description": "Airborne with <4g acceleration"}},
+    "WRIST": {{"value": 9, "description": "Wrist-worn watch (not available in all products)"}},
+    "BIKE": {{"value": 10, "description": "Motorbike (not available in all products)"}},
+    "MOWER": {{"value": 11, "description": "Robotic lawn mower (not available in all products)"}},
+    "ESCOOTER": {{"value": 12, "description": "E-scooter (not available in all products)"}}
+  }},
+  "extraction_confidence": "high",
+  "notes": "Complete enumeration extracted from Table 21"
+}}
+```
+"""
+
+
+def build_enum_extraction_prompt(key_name: str, data_type: str = "E1") -> str:
+    """Build a prompt for extracting enum values for a config key.
+
+    Args:
+        key_name: The config key name (e.g., "CFG-NAVSPG-DYNMODEL")
+        data_type: The enum data type (E1, E2, or E4)
+    """
+    return ENUM_EXTRACTION_TEMPLATE.format(
+        key_name=key_name,
+        data_type=data_type,
+    )

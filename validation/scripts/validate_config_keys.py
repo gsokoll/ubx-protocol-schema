@@ -6,9 +6,14 @@ Config keys are validated by group (e.g., CFG-RATE, CFG-NAVSPG) since they
 appear together in the PDFs.
 
 Usage:
+    # Validate config keys against manuals
     uv run python validation/scripts/validate_config_keys.py CFG-RATE
     uv run python validation/scripts/validate_config_keys.py CFG-RATE --manual F9-HPG-1.51
     uv run python validation/scripts/validate_config_keys.py --list-groups
+
+    # Extract missing enum values (fix incomplete extractions)
+    uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual LAP-1.50 --extract-missing --dry-run
+    uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual LAP-1.50 --extract-missing --apply
 """
 
 from __future__ import annotations
@@ -30,7 +35,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "validation"))
 
-from prompts.ubx_knowledge import build_config_key_validation_prompt
+from prompts.ubx_knowledge import build_config_key_validation_prompt, build_enum_extraction_prompt
 from validation.scripts.validate_message import (
     ManualMetadata,
     load_manual_metadata,
@@ -358,6 +363,393 @@ def save_results(group_name: str, results: list[ConfigKeyValidationResult]):
     print(f"Results saved to: {results_file}")
 
 
+# ============================================================================
+# Enum Extraction Functions (--extract-missing --apply workflow)
+# ============================================================================
+
+def get_by_manual_file(manual_pattern: str) -> Path | None:
+    """Find a by-manual extraction file matching the pattern."""
+    by_manual_dir = PROJECT_ROOT / "data" / "config_keys" / "by-manual"
+    for f in by_manual_dir.glob("*_gemini_config_keys.json"):
+        if manual_pattern.lower() in f.stem.lower():
+            return f
+    return None
+
+
+def get_pdf_for_manual(manual_file: Path) -> Path | None:
+    """Find the PDF corresponding to a by-manual extraction file."""
+    # Extract the manual name from the extraction filename
+    # e.g., "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052_gemini_config_keys.json"
+    # -> "u-blox-F9-LAP-1.50_InterfaceDescription_UBXDOC-963802114-13052.pdf"
+    manual_name = manual_file.stem.replace("_gemini_config_keys", "")
+
+    # Search in interface_manuals subdirectories
+    for pdf in (PROJECT_ROOT / "interface_manuals").rglob("*.pdf"):
+        if manual_name in pdf.stem or pdf.stem in manual_name:
+            return pdf
+    return None
+
+
+def load_by_manual_keys(manual_file: Path) -> dict:
+    """Load config keys from a by-manual extraction file."""
+    with open(manual_file) as f:
+        return json.load(f)
+
+
+def find_incomplete_enums(
+    manual_file: Path,
+    group_name: str,
+    reference_file: Path | None = None,
+) -> list[dict]:
+    """Find E-type keys with potentially incomplete inline_enum in a by-manual file.
+
+    Args:
+        manual_file: Path to the by-manual extraction file
+        group_name: Config key group to check (e.g., "CFG-NAVSPG")
+        reference_file: Optional reference file with known-good enums
+
+    Returns:
+        List of dicts with key info and missing values
+    """
+    data = load_by_manual_keys(manual_file)
+    groups = data.get("groups", {})
+
+    if group_name not in groups:
+        return []
+
+    group = groups[group_name]
+    keys = group.get("keys", [])
+
+    # Load reference if provided
+    reference_enums = {}
+    if reference_file:
+        ref_data = load_by_manual_keys(reference_file)
+        ref_groups = ref_data.get("groups", {})
+        if group_name in ref_groups:
+            for key in ref_groups[group_name].get("keys", []):
+                if key.get("data_type", "").startswith("E"):
+                    enum_values = key.get("inline_enum", {}).get("values", {})
+                    if enum_values:
+                        reference_enums[key["name"]] = enum_values
+
+    incomplete = []
+    for key in keys:
+        data_type = key.get("data_type", "")
+        if not data_type.startswith("E"):
+            continue
+
+        key_name = key["name"]
+        current_values = key.get("inline_enum", {}).get("values", {})
+
+        # Check if this enum has fewer values than reference
+        if key_name in reference_enums:
+            ref_values = reference_enums[key_name]
+            missing = set(ref_values.keys()) - set(current_values.keys())
+            if missing:
+                incomplete.append({
+                    "key_name": key_name,
+                    "data_type": data_type,
+                    "current_count": len(current_values),
+                    "reference_count": len(ref_values),
+                    "current_values": list(current_values.keys()),
+                    "missing_values": list(missing),
+                })
+        elif len(current_values) <= 1:
+            # No reference, but suspiciously few values
+            incomplete.append({
+                "key_name": key_name,
+                "data_type": data_type,
+                "current_count": len(current_values),
+                "reference_count": None,
+                "current_values": list(current_values.keys()),
+                "missing_values": [],
+                "note": "Only 1 or fewer enum values - likely incomplete",
+            })
+
+    return incomplete
+
+
+def extract_enum_from_pdf(
+    key_name: str,
+    data_type: str,
+    pdf_path: Path,
+    client: any,
+    model: str = "gemini-2.5-flash",
+    verbose: bool = False,
+) -> dict | None:
+    """Extract complete enum definition for a config key from PDF.
+
+    Args:
+        key_name: Config key name (e.g., "CFG-NAVSPG-DYNMODEL")
+        data_type: Data type (E1, E2, E4)
+        pdf_path: Path to PDF manual
+        client: Gemini client
+        model: Model to use
+        verbose: Show progress
+
+    Returns:
+        Dict with extracted enum values, or None if not found
+    """
+    # Get the group name from key name
+    parts = key_name.split("-")
+    if len(parts) >= 2:
+        group_name = f"{parts[0]}-{parts[1]}"
+    else:
+        group_name = key_name
+
+    # Find config key pages
+    pages = discover_config_key_pages(pdf_path, group_name)
+    if not pages:
+        if verbose:
+            print(f"  Config key group {group_name} not found in TOC")
+        return None
+
+    start_page, end_page = pages
+    if verbose:
+        print(f"  Found {group_name} on pages {start_page}-{end_page}")
+
+    # Extract relevant pages
+    temp_pdf = extract_pdf_pages(pdf_path, start_page, end_page)
+
+    try:
+        # Upload PDF to Gemini
+        uploaded_file = client.files.upload(file=temp_pdf)
+
+        # Build extraction prompt
+        prompt = build_enum_extraction_prompt(key_name, data_type)
+
+        # Call LLM
+        response = client.models.generate_content(
+            model=model,
+            contents=[uploaded_file, prompt],
+        )
+
+        # Parse response
+        response_text = response.text.strip()
+
+        # Extract JSON from response
+        if "```json" in response_text:
+            json_start = response_text.find("```json") + 7
+            json_end = response_text.find("```", json_start)
+            response_text = response_text[json_start:json_end].strip()
+        elif "```" in response_text:
+            json_start = response_text.find("```") + 3
+            json_end = response_text.find("```", json_start)
+            response_text = response_text[json_start:json_end].strip()
+
+        result = json.loads(response_text)
+
+        if "error" in result:
+            if verbose:
+                print(f"  Extraction error: {result.get('notes', 'unknown')}")
+            return None
+
+        return result
+
+    except json.JSONDecodeError as e:
+        if verbose:
+            print(f"  Failed to parse LLM response: {e}")
+        return None
+    except Exception as e:
+        if verbose:
+            print(f"  Extraction error: {e}")
+        return None
+    finally:
+        temp_pdf.unlink(missing_ok=True)
+
+
+def apply_extracted_enum(
+    manual_file: Path,
+    group_name: str,
+    key_name: str,
+    enum_values: dict,
+    dry_run: bool = False,
+) -> bool:
+    """Update a by-manual extraction file with extracted enum values.
+
+    Args:
+        manual_file: Path to the by-manual extraction file
+        group_name: Config key group (e.g., "CFG-NAVSPG")
+        key_name: Config key name (e.g., "CFG-NAVSPG-DYNMODEL")
+        enum_values: Dict of {NAME: {value: int, description: str}}
+        dry_run: If True, show what would change without applying
+
+    Returns:
+        True if changes were made (or would be made in dry_run)
+    """
+    data = load_by_manual_keys(manual_file)
+    groups = data.get("groups", {})
+
+    if group_name not in groups:
+        print(f"  Group {group_name} not found in {manual_file.name}")
+        return False
+
+    # Find the key
+    keys = groups[group_name].get("keys", [])
+    key_found = False
+    for key in keys:
+        if key["name"] == key_name:
+            key_found = True
+            old_values = key.get("inline_enum", {}).get("values", {})
+
+            # Show diff
+            new_names = set(enum_values.keys())
+            old_names = set(old_values.keys())
+            added = new_names - old_names
+
+            if not added:
+                print(f"  No new enum values to add for {key_name}")
+                return False
+
+            print(f"  {key_name}: Adding {len(added)} enum values:")
+            for name in sorted(added):
+                val = enum_values[name]
+                print(f"    + {name} = {val['value']}: {val.get('description', '')[:50]}")
+
+            if dry_run:
+                print(f"  [DRY RUN] Would update {manual_file.name}")
+                return True
+
+            # Apply changes
+            if "inline_enum" not in key:
+                key["inline_enum"] = {"values": {}}
+            key["inline_enum"]["values"] = enum_values
+            break
+
+    if not key_found:
+        print(f"  Key {key_name} not found in group {group_name}")
+        return False
+
+    if not dry_run:
+        # Save updated file
+        with open(manual_file, "w") as f:
+            json.dump(data, f, indent=2)
+        print(f"  Updated {manual_file.name}")
+
+    return True
+
+
+def extract_missing_enums(
+    group_name: str,
+    manual_pattern: str | None = None,
+    apply: bool = False,
+    dry_run: bool = False,
+    verbose: bool = False,
+) -> dict:
+    """Extract missing enum values for a config key group.
+
+    Args:
+        group_name: Config key group (e.g., "CFG-NAVSPG")
+        manual_pattern: Substring to match manual filename (e.g., "LAP-1.50")
+        apply: If True, apply extracted enums to by-manual files
+        dry_run: If True, show what would change without applying
+        verbose: Show detailed progress
+
+    Returns:
+        Dict with extraction results and statistics
+    """
+    from google import genai
+
+    # Find the manual file to fix
+    if manual_pattern:
+        manual_file = get_by_manual_file(manual_pattern)
+        if not manual_file:
+            print(f"Error: No by-manual file matching '{manual_pattern}'")
+            return {"error": "manual_not_found"}
+    else:
+        print("Error: --manual is required for --extract-missing")
+        return {"error": "manual_required"}
+
+    print(f"Checking {manual_file.name} for incomplete enums in {group_name}...")
+
+    # Find a good reference file (F9-HPG-1.51 is usually most complete)
+    reference_file = None
+    for pattern in ["F9-HPG-1.51", "F9-HPG-1.50", "F9-HPS-1.40", "X20-HPG"]:
+        ref = get_by_manual_file(pattern)
+        if ref and ref != manual_file:
+            reference_file = ref
+            if verbose:
+                print(f"Using {ref.name} as reference")
+            break
+
+    # Find incomplete enums
+    incomplete = find_incomplete_enums(manual_file, group_name, reference_file)
+
+    if not incomplete:
+        print(f"No incomplete enums found in {group_name}")
+        return {"group": group_name, "incomplete": 0, "extracted": 0}
+
+    print(f"Found {len(incomplete)} potentially incomplete enums:")
+    for info in incomplete:
+        missing_str = f", missing: {info['missing_values']}" if info.get("missing_values") else ""
+        print(f"  - {info['key_name']}: {info['current_count']} values{missing_str}")
+
+    # Find corresponding PDF
+    pdf_path = get_pdf_for_manual(manual_file)
+    if not pdf_path:
+        print(f"Error: Could not find PDF for {manual_file.name}")
+        return {"error": "pdf_not_found"}
+
+    if verbose:
+        print(f"Using PDF: {pdf_path.name}")
+
+    # Initialize Gemini client
+    client = genai.Client()
+
+    # Extract each incomplete enum
+    extracted = {}
+    for info in incomplete:
+        key_name = info["key_name"]
+        data_type = info["data_type"]
+
+        print(f"\nExtracting {key_name}...")
+
+        result = extract_enum_from_pdf(
+            key_name=key_name,
+            data_type=data_type,
+            pdf_path=pdf_path,
+            client=client,
+            verbose=verbose,
+        )
+
+        if result and "values" in result:
+            confidence = result.get("extraction_confidence", "unknown")
+            num_values = len(result["values"])
+            print(f"  ✓ Extracted {num_values} enum values (confidence: {confidence})")
+            extracted[key_name] = result
+
+            # Apply if requested
+            if apply or dry_run:
+                apply_extracted_enum(
+                    manual_file=manual_file,
+                    group_name=group_name,
+                    key_name=key_name,
+                    enum_values=result["values"],
+                    dry_run=dry_run,
+                )
+        else:
+            print(f"  ✗ Could not extract enum values")
+
+        # Rate limiting
+        time.sleep(0.5)
+
+    # Summary
+    print(f"\n=== Summary ===")
+    print(f"  Incomplete enums found: {len(incomplete)}")
+    print(f"  Successfully extracted: {len(extracted)}")
+    if apply and not dry_run:
+        print(f"  Applied to: {manual_file.name}")
+        print(f"\n  Next step: Run 'uv run python scripts/merge_config_keys.py' to update unified database")
+
+    return {
+        "group": group_name,
+        "manual": manual_file.name,
+        "incomplete": len(incomplete),
+        "extracted": len(extracted),
+        "keys": extracted,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Validate UBX config keys against PDF manuals"
@@ -386,7 +778,22 @@ def main():
         action="store_true",
         help="Don't save results to file"
     )
-    
+    parser.add_argument(
+        "--extract-missing",
+        action="store_true",
+        help="Extract missing enum values from PDF"
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply extracted enum values to by-manual files"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would change without applying"
+    )
+
     args = parser.parse_args()
     
     # List groups mode
@@ -406,7 +813,20 @@ def main():
     if not os.environ.get("GOOGLE_API_KEY"):
         print("Error: GOOGLE_API_KEY not set")
         return 1
-    
+
+    # Extract missing enums mode
+    if args.extract_missing:
+        result = extract_missing_enums(
+            group_name=args.group,
+            manual_pattern=args.manual,
+            apply=args.apply,
+            dry_run=args.dry_run,
+            verbose=args.verbose,
+        )
+        if "error" in result:
+            return 1
+        return 0
+
     # Filter manuals if specified
     manuals = None
     if args.manual:

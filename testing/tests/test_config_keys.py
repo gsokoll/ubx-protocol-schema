@@ -319,3 +319,100 @@ class TestConfigKeyContent:
             if len(non_matching) > 10:
                 msg += f"  ... and {len(non_matching) - 10} more"
             pytest.fail(msg)
+
+
+class TestConfigKeyProvenance:
+    """Test source provenance tracking for config keys."""
+
+    def test_keys_have_sources(self):
+        """All config keys should have sources list."""
+        keys = get_all_keys()
+
+        missing = []
+        for key in keys:
+            if "sources" not in key:
+                missing.append(key.get("name", "UNNAMED"))
+            elif not key["sources"]:
+                missing.append(f"{key.get('name')} (empty)")
+
+        if missing:
+            msg = "Config keys missing sources:\n"
+            for name in missing[:10]:
+                msg += f"  {name}\n"
+            if len(missing) > 10:
+                msg += f"  ... and {len(missing) - 10} more"
+            pytest.fail(msg)
+
+    def test_enum_values_have_sources(self):
+        """Enum values should have sources list."""
+        keys_with_enum = get_keys_with_inline_enum()
+
+        missing = []
+        for key in keys_with_enum:
+            enum = key.get("inline_enum", {})
+            for val_name, val_def in enum.get("values", {}).items():
+                if "sources" not in val_def:
+                    missing.append(f"{key.get('name')}.{val_name}")
+                elif not val_def["sources"]:
+                    missing.append(f"{key.get('name')}.{val_name} (empty)")
+
+        if missing:
+            msg = "Enum values missing sources:\n"
+            for name in missing[:10]:
+                msg += f"  {name}\n"
+            if len(missing) > 10:
+                msg += f"  ... and {len(missing) - 10} more"
+            pytest.fail(msg)
+
+    def test_sources_are_valid_manual_ids(self):
+        """Sources should be valid manual ID format."""
+        keys = get_all_keys()
+
+        # Valid patterns: "F9-HPG-1.51", "M10-SPG-5.30", "F9H", "F9-HPG-L1L5-1.40", "20-HPG-2.00"
+        # Allow multiple dash-separated segments ending with version number
+        valid_pattern = re.compile(r"^[A-Z0-9]+(-[A-Z0-9.]+)+$|^[A-Z0-9]+$")
+
+        invalid = []
+        for key in keys:
+            for source in key.get("sources", []):
+                if not valid_pattern.match(source):
+                    invalid.append((key.get("name"), source))
+
+        if invalid:
+            msg = "Invalid source format:\n"
+            for key_name, source in invalid[:10]:
+                msg += f"  {key_name}: '{source}'\n"
+            if len(invalid) > 10:
+                msg += f"  ... and {len(invalid) - 10} more"
+            pytest.fail(msg)
+
+    def test_dynmodel_provenance_f9h_exclusion(self):
+        """F9H should be in DYNMODEL key sources but NOT in BIKE/MOWER enum sources."""
+        keys = get_all_keys()
+
+        dynmodel = None
+        for key in keys:
+            if key.get("name") == "CFG-NAVSPG-DYNMODEL":
+                dynmodel = key
+                break
+
+        if not dynmodel:
+            pytest.skip("CFG-NAVSPG-DYNMODEL not found")
+
+        # F9H should be in key sources (it has the key)
+        # Note: The actual source ID may vary, check for F9H-related pattern
+        key_sources = dynmodel.get("sources", [])
+        f9h_in_key = any("F9H" in s or "ZED-F9H" in s for s in key_sources)
+
+        # Check enum values for BIKE - F9H should NOT be a source
+        enum_values = dynmodel.get("inline_enum", {}).get("values", {})
+        bike_sources = enum_values.get("BIKE", {}).get("sources", [])
+
+        # If F9H is in key sources but has enum values extracted,
+        # BIKE should not be in F9H's enum (timing module exclusion)
+        if f9h_in_key and bike_sources:
+            f9h_in_bike = any("F9H" in s or "ZED-F9H" in s for s in bike_sources)
+            assert not f9h_in_bike, (
+                "F9H should not be a source for BIKE enum value "
+                "(F9H is a timing module that excludes motion-specific dynamic models)"
+            )

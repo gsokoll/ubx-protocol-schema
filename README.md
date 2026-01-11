@@ -124,9 +124,16 @@ For F9+ devices using CFG-VAL* messages:
 # Extract config keys from a manual
 uv run python scripts/bulk_extraction/extract_config_keys_with_gemini.py --pdf-path <manual.pdf>
 
-# Detect conflicts and merge
+# Detect and resolve conflicts
 uv run python scripts/detect_config_key_conflicts.py
+uv run python scripts/adjudicate_config_keys.py
+uv run python scripts/apply_adjudication.py --apply
+
+# Merge into unified database
 uv run python scripts/merge_config_keys.py
+
+# Fix incomplete enum extractions (optional)
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-HPG-1.51 --extract-missing --apply
 ```
 
 See [docs/config-key-extraction-workflow.md](docs/config-key-extraction-workflow.md) for details.
@@ -162,7 +169,9 @@ data/
 scripts/
   add_manual.py               # Orchestrator for adding new manuals
   generate_coverage_report.py # Generate COVERAGE.md
-  bulk_extraction/            # Bulk extraction scripts (historical)
+  apply_adjudication.py       # Apply LLM conflict resolutions
+  merge_config_keys.py        # Merge config keys with provenance
+  bulk_extraction/            # Bulk extraction scripts
 
 validation/
   scripts/                    # Validation and extraction tools
@@ -174,6 +183,7 @@ validation/
     validate_all_messages.py  # Batch validation and fixing
     cross_validate.py         # Compare against pyubx2
     validate_enumerations.py  # Validate enums against PDFs
+    validate_config_keys.py   # Validate/fix config key enums
   inventory/                  # PDF message inventory
   reports/                    # Validation reports
 

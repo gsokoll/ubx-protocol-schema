@@ -157,11 +157,21 @@ def make_schema_compliant(keys: list[dict]) -> tuple[dict, list[dict]]:
                     if 'bit_end' not in bit:
                         bit['bit_end'] = bit.get('bit_start', 0)
         
-        # 8. Remove internal fields not in schema
+        # 8. Remove internal fields not in schema (but keep 'sources')
         for field in ['source_count', '_sources']:
             if field in key:
                 del key[field]
-        
+
+        # 9. Sort sources lists for consistent output
+        if 'sources' in key and isinstance(key['sources'], list):
+            key['sources'] = sorted(set(key['sources']))
+
+        # 10. Sort sources in enum values too
+        if 'inline_enum' in key and isinstance(key['inline_enum'].get('values'), dict):
+            for val in key['inline_enum']['values'].values():
+                if isinstance(val, dict) and 'sources' in val:
+                    val['sources'] = sorted(set(val['sources']))
+
         compliant_keys.append(key)
     
     return groups, compliant_keys
@@ -174,15 +184,40 @@ def extract_manual_info(filename: str) -> dict:
     #   u-blox-F9-HPG-1.51_InterfaceDescription_...
     #   u-blox-M10-SPG-5.30_InterfaceDescription_...
     #   u-blox-20-HPG-2.00_InterfaceDescription_...
-    
+    #   F9-HPS-1.21_InterfaceDescription_...
+    #   M9-ADR-5.10_InterfaceDescription_...
+    #   u-blox_ZED-F9H_InterfaceDescription_...
+
+    # Pattern 1: u-blox-{family}-{type}-{version}_
     match = re.match(r'u-blox-([A-Z0-9]+-[A-Z]+-[L0-9.]+)_', filename)
     if match:
         full_id = match.group(1)
-        # Split into family (F9-HPG) and version (1.51)
         parts = full_id.rsplit('-', 1)
         if len(parts) == 2:
             return {"family": parts[0], "version": parts[1], "full_id": full_id}
-    
+
+    # Pattern 2: {family}-{type}-{version}_ (no u-blox prefix)
+    match = re.match(r'([A-Z0-9]+-[A-Z]+-\d+\.\d+)_', filename)
+    if match:
+        full_id = match.group(1)
+        parts = full_id.rsplit('-', 1)
+        if len(parts) == 2:
+            return {"family": parts[0], "version": parts[1], "full_id": full_id}
+
+    # Pattern 3: u-blox_ZED-{device}_  (ZED-F9H style)
+    match = re.match(r'u-blox_ZED-([A-Z0-9]+)_', filename)
+    if match:
+        device = match.group(1)
+        return {"family": f"ZED-{device}", "version": "unknown", "full_id": device}
+
+    # Pattern 4: {family}-{type}-{version}_InterfaceDescription_... with long suffix
+    match = re.match(r'([A-Z0-9]+-[A-Z]+-\d+\.\d+)_InterfaceDescription', filename)
+    if match:
+        full_id = match.group(1)
+        parts = full_id.rsplit('-', 1)
+        if len(parts) == 2:
+            return {"family": parts[0], "version": parts[1], "full_id": full_id}
+
     # Fallback: try alternate patterns
     match = re.match(r'u-blox-([A-Z0-9-]+)-(\d+\.\d+)', filename)
     if match:
@@ -223,22 +258,86 @@ def merge_keys(input_dir: Path, output_file: Path):
             file_keys += 1
             
             # Track source
+            source_id = manual_info["full_id"]
             key_sources[key_id].append({
                 "family": manual_info["family"],
                 "version": manual_info["version"],
                 "filename": f.name,
             })
-            
+
             # Merge key data (prefer latest version by keeping last seen)
             if key_id not in keys_by_id:
                 keys_by_id[key_id] = key.copy()
+                keys_by_id[key_id]["sources"] = [source_id]
+                # Initialize sources for each enum value
+                if keys_by_id[key_id].get("inline_enum"):
+                    enum_values = keys_by_id[key_id]["inline_enum"].get("values")
+                    if isinstance(enum_values, dict):
+                        for val in enum_values.values():
+                            if isinstance(val, dict):
+                                val["sources"] = [source_id]
+                    elif isinstance(enum_values, list):
+                        # Convert list to dict and add sources
+                        new_values = {}
+                        for item in enum_values:
+                            if isinstance(item, dict) and 'name' in item:
+                                new_values[item['name']] = {
+                                    'value': item.get('value', 0),
+                                    'description': item.get('description', ''),
+                                    'sources': [source_id]
+                                }
+                        keys_by_id[key_id]["inline_enum"]["values"] = new_values
             else:
                 # Merge: keep richer data (more fields, longer description)
                 existing = keys_by_id[key_id]
-                
-                # Prefer entry with inline_enum if other doesn't have it
-                if key.get("inline_enum") and not existing.get("inline_enum"):
-                    existing["inline_enum"] = key["inline_enum"]
+
+                # Add this manual to key sources
+                if source_id not in existing.get("sources", []):
+                    existing.setdefault("sources", []).append(source_id)
+
+                # Merge inline_enum values (take union of all enum values)
+                if key.get("inline_enum"):
+                    key_values = key["inline_enum"].get("values")
+
+                    # Convert list to dict if needed
+                    if isinstance(key_values, list):
+                        key_values = {
+                            item['name']: {'value': item.get('value', 0), 'description': item.get('description', '')}
+                            for item in key_values if isinstance(item, dict) and 'name' in item
+                        }
+
+                    if not existing.get("inline_enum"):
+                        existing["inline_enum"] = {"values": {}}
+                        for enum_name, val in key_values.items():
+                            val_copy = val.copy() if isinstance(val, dict) else {"value": val}
+                            val_copy["sources"] = [source_id]
+                            existing["inline_enum"]["values"][enum_name] = val_copy
+                    else:
+                        existing_values = existing["inline_enum"].get("values", {})
+                        # Ensure existing_values is a dict
+                        if isinstance(existing_values, list):
+                            existing_values = {
+                                item['name']: {'value': item.get('value', 0), 'description': item.get('description', '')}
+                                for item in existing_values if isinstance(item, dict) and 'name' in item
+                            }
+                            existing["inline_enum"]["values"] = existing_values
+
+                        if isinstance(key_values, dict):
+                            # Get existing numeric values to avoid duplicates
+                            existing_numeric = {v.get("value") for v in existing_values.values() if isinstance(v, dict)}
+                            for enum_name, val in key_values.items():
+                                if enum_name not in existing_values:
+                                    # Only add if numeric value doesn't already exist
+                                    if isinstance(val, dict) and val.get("value") not in existing_numeric:
+                                        val_copy = val.copy()
+                                        val_copy["sources"] = [source_id]
+                                        existing_values[enum_name] = val_copy
+                                else:
+                                    # Enum value exists - add source if not already tracked
+                                    existing_val = existing_values[enum_name]
+                                    if isinstance(existing_val, dict):
+                                        if source_id not in existing_val.get("sources", []):
+                                            existing_val.setdefault("sources", []).append(source_id)
                 
                 # Prefer entry with bitfield if other doesn't have it
                 if key.get("bitfield") and not existing.get("bitfield"):

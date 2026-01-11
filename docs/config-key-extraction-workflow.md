@@ -11,7 +11,9 @@ Extract UBX configuration keys from u-blox PDF interface manuals using Google Ge
 | `bulk_extraction/extract_config_keys_with_gemini.py` | Extract keys from PDF using Gemini |
 | `detect_config_key_conflicts.py` | Detect conflicts across extractions |
 | `adjudicate_config_keys.py` | Resolve conflicts using LLM |
+| `apply_adjudication.py` | Apply adjudication decisions to unified file |
 | `merge_config_keys.py` | Merge into unified schema-compliant database |
+| `validation/scripts/validate_config_keys.py` | Validate and fix incomplete enums |
 
 ## Quick Start
 
@@ -26,8 +28,15 @@ uv run python scripts/detect_config_key_conflicts.py
 # 3. Resolve conflicts with LLM (or review manually)
 uv run python scripts/adjudicate_config_keys.py
 
-# 4. Merge into unified database (auto-applies schema fixes)
+# 4. Apply adjudication decisions to unified file
+uv run python scripts/apply_adjudication.py --apply
+
+# 5. Merge into unified database (auto-applies schema fixes, adds provenance)
 uv run python scripts/merge_config_keys.py
+
+# 6. (Optional) Fix incomplete enum extractions
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-HPG-1.51 --extract-missing --dry-run
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-HPG-1.51 --extract-missing --apply
 ```
 
 ## Files
@@ -182,6 +191,46 @@ The merge script automatically:
 
 Output shows: `✓ Schema validation: PASSED`
 
+### Provenance Tracking
+
+The merge script now tracks which manuals contributed each key and enum value via `sources` arrays:
+
+```json
+{
+  "name": "CFG-NAVSPG-DYNMODEL",
+  "key_id": "0x20110021",
+  "sources": ["F9-HPG-1.51", "F9-LAP-1.50", "M10-SPG-5.30"],
+  "inline_enum": {
+    "values": {
+      "PORT": {
+        "value": 0,
+        "description": "Portable",
+        "sources": ["F9-HPG-1.51", "F9-LAP-1.50"]
+      }
+    }
+  }
+}
+```
+
+This enables:
+- Tracing data back to source PDFs
+- Understanding device-specific variations
+- Detecting incomplete extractions
+
+## Phase 3.5: Applying Adjudication Decisions
+
+After LLM adjudication populates the `decision` field in `adjudication_queue.json`:
+
+```bash
+# Preview changes
+uv run python scripts/apply_adjudication.py --dry-run
+
+# Apply decisions to unified file
+uv run python scripts/apply_adjudication.py --apply
+```
+
+The script updates fields (name, unit, scale) in `unified_config_keys.json` based on adjudicated decisions.
+
 ## Phase 4: Version Tracking
 
 ### Per-Key Metadata
@@ -205,7 +254,37 @@ Each key in unified database includes:
 }
 ```
 
-## Phase 5: Code Generation (Future)
+## Phase 5: Fixing Incomplete Extractions
+
+Initial LLM extractions sometimes capture incomplete enum values (e.g., only 1-3 of 8+ values). The `validate_config_keys.py` script can identify and fix these.
+
+### Identify Incomplete Enums
+
+```bash
+# Validate a config group against a manual
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-HPG-1.51
+
+# Check for incomplete enums (dry-run)
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-LAP-1.50 --extract-missing --dry-run
+```
+
+### Fix Incomplete Enums
+
+```bash
+# Extract missing enum values from PDF and apply to by-manual file
+uv run python validation/scripts/validate_config_keys.py CFG-NAVSPG --manual F9-LAP-1.50 --extract-missing --apply
+
+# Re-merge to update unified file
+uv run python scripts/merge_config_keys.py
+```
+
+This workflow:
+1. Finds E-type keys with suspiciously few enum values
+2. Extracts complete enum definitions from the source PDF
+3. Updates the by-manual extraction file
+4. Re-merges to propagate fixes to unified database
+
+## Phase 6: Code Generation (Future)
 
 ### Potential Outputs
 
@@ -264,16 +343,17 @@ Some older manuals (M9-SPG, M9-MDR, X20-HPG) have 5-column tables (no Scale colu
 
 CFG-MSGOUT is ~22 pages, exceeding the default 15-page batch limit. It gets its own batch automatically.
 
-## Statistics (21 Manuals)
+## Statistics (27 Manuals)
 
 | Metric | Value |
 |--------|-------|
-| Total unique keys | 1,063 |
+| Total unique keys | 1,109 |
 | Groups | 47 |
 | Keys with enums | 57 |
 | Keys with bitfields | 17 |
 | Keys with scale | 52 |
 | Keys with unit | 110 |
+| Source manuals tracked | 24 |
 | Extraction cost | ~$0.60 |
 
 ## Notes
